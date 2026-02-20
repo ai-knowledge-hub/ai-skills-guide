@@ -6,7 +6,7 @@ Practical, reusable AI skills for marketing practitioners and ad-tech software e
 
 This repository is the executable companion to our written guide. It contains production-oriented `SKILL.md` packages, deterministic scripts, test prompts, and contribution standards.
 
-- Guide article: `ARTICLE_LINK_PLACEHOLDER`
+- Guide article: [The Agent Architect’s Playbook: Building AI Skills for Marketing & Ad Tech](https://ai-news-hub.performics-labs.com/news/agent-architect-playbook-building-ai-skills-marketing-adtech)
 - Community references: [VoltAgent awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills)
 
 ## v0.1 Scope (6 practical skills)

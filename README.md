@@ -1,32 +1,64 @@
 # AI Skills Guide
 
-Open-source marketing and ad-tech skill library for AI agent runtimes.
+Practical, reusable AI skills for marketing practitioners and ad-tech software engineers.
 
-This repository contains practical, reusable `SKILL.md` packages, optional scripts/config, and test prompts that teams can run in Codex, Claude-style environments, and other compatible toolchains.
+## What this repo is
 
-## Repository Layout
+This repository is the executable companion to our written guide. It contains production-oriented `SKILL.md` packages, deterministic scripts, test prompts, and contribution standards.
+
+- Guide article: `ARTICLE_LINK_PLACEHOLDER`
+- Community references: [VoltAgent awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills)
+
+## v0.1 Scope (6 practical skills)
+
+1. `meta-google-weekly-performance-review` (Beginner)
+2. `creative-workshop-pmax-reels` (Intermediate)
+3. `lifecycle-experiment-planner` (Intermediate)
+4. `policy-brand-compliance-checker` (Intermediate)
+5. `seo-paid-search-synergy` (Advanced)
+6. `analyst-copilot-bigquery-redshift` (Advanced)
+
+## Definition of done for each skill
+
+- Has `SKILL.md` with clear routing intent and guardrails
+- Has `tests/test-prompts.md` (>= 5 realistic prompts)
+- Has `examples/` with sample input/output shape
+- Documents runtime assumptions and dependencies
+- Uses scripts/config for deterministic logic where relevant
+
+## Repository layout
 
 ```text
 skills/
   marketing/
   adtech/
-templates/
-  skill-template/
+shared/
+  metrics/
+  policies/
+  schemas/
+  naming/
 docs/
+scripts/
+.github/
 ```
 
-## Getting Started
+## Provider and framework examples to explore
 
-1. Pick a skill in `skills/` that matches your use case.
-2. Read the skill's `SKILL.md` and required inputs.
-3. Run the test prompts in `tests/test-prompts.md`.
-4. Adapt for your own stack and submit improvements.
+Cross-runtime examples are cataloged in [awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills). Useful sections include skills for:
+- OpenAI Codex / Agent Skills
+- Claude-style skills
+- Gemini CLI patterns
+- GitHub Copilot / VS Code patterns
+- Vercel AI SDK agent resources
 
-## Initial Skills
+## Quickstart
 
-- `skills/marketing/weekly-performance-review`
-- `skills/adtech/compliance-checker`
+1. Pick a skill folder under `skills/`.
+2. Read `README.md` + `SKILL.md` for required inputs.
+3. Run prompts in `tests/test-prompts.md`.
+4. Verify structure with `bash scripts/validate-skills.sh`.
+5. Submit improvements via PR.
 
 ## Contributing
 
-See `CONTRIBUTING.md` for contribution, review, and quality expectations.
+See `CONTRIBUTING.md` and `docs/how-to-contribute-a-skill.md`.

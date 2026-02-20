@@ -1,33 +1,41 @@
 # Contributing
 
-## Scope
+## Who this is for
 
-Contribute reusable skills for marketing practitioners and ad-tech engineers.
+- Marketing practitioners creating reusable workflows
+- Ad-tech engineers hardening workflows with scripts/tools
 
-## Pull Request Requirements
+## Pull request requirements
 
-1. Add or update one skill folder under `skills/`.
-2. Include a `SKILL.md` with clear routing description and guardrails.
-3. Include `tests/test-prompts.md` with at least 3 realistic prompts.
-4. Document required tools, APIs, and runtime assumptions.
-5. Add risk notes for security-sensitive actions (shell, data writes, external publishing).
+1. Add/update one skill under `skills/marketing` or `skills/adtech`.
+2. Include `SKILL.md`, `README.md`, `tests/test-prompts.md`, and `examples/`.
+3. Add at least 5 realistic prompts with expected behavior.
+4. Document assumptions (APIs, data sources, required tools).
+5. Include risk notes if shell commands, writes, or publishing actions are involved.
 
-## Skill Folder Standard
+## Skill folder standard
 
 ```text
 <skill-name>/
+  README.md
   SKILL.md
-  scripts/        # optional deterministic logic
-  references/     # optional long-form guidance
-  config/         # optional policy/config files
+  scripts/        # deterministic logic
+  references/     # optional deep docs
+  config/         # optional rules
+  examples/       # input/output examples
   tests/
     test-prompts.md
 ```
 
-## Review Checklist
+## Review checklist
 
-- Does the description reliably trigger for the intended intent?
-- Are deterministic calculations moved to scripts where needed?
-- Are failure modes and non-fabrication rules explicit?
-- Are tool permissions and risky actions clearly constrained?
-- Are outputs structured and testable?
+- Routing description is explicit and discoverable.
+- Guardrails prevent fabrication and unsafe actions.
+- Deterministic logic is scripted, not only prompt-based.
+- Failures and fallback paths are documented.
+- Output shape is consistent and testable.
+
+## Branch and commit guidance
+
+- Use short feature branches (e.g., `feature/skill-utm-linter`).
+- Use scoped commit messages (e.g., `feat(skill): add pmax creative workshop`).

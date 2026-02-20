@@ -1,0 +1,21 @@
+name: Skill Bug / Regression
+description: Report behavior regressions in an existing skill
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: input
+    id: skill
+    attributes:
+      label: Skill path
+  - type: textarea
+    id: prompt
+    attributes:
+      label: Prompt used
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior

@@ -1,0 +1,7 @@
+blocked_phrases:
+  - "guaranteed results"
+  - "no risk"
+required_utm_params:
+  - utm_source
+  - utm_medium
+  - utm_campaign

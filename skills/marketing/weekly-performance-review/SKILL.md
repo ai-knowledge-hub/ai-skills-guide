@@ -1,6 +1,8 @@
 ---
 name: weekly-performance-review
 description: Analyze paid media campaign performance and recommend optimization actions. Use for ROAS, CPA, CTR trend reviews and weekly reporting.
+deprecated: true
+replaced_by: skills/marketing/meta-google-weekly-performance-review
 ---
 
 # Weekly Performance Review
@@ -29,3 +31,6 @@ Use when the user asks for ad performance analysis, weekly summaries, period-ove
 - Never fabricate numbers.
 - If data is missing, state limitations explicitly.
 - If tool calls fail, request a CSV export from the user.
+
+## Deprecation
+This skill is a legacy alias. Prefer `skills/marketing/meta-google-weekly-performance-review` for new usage.

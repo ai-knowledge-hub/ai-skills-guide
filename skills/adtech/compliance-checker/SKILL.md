@@ -1,6 +1,8 @@
 ---
 name: adtech-compliance-checker
 description: Review ad copy, landing links, and tracking conventions for policy and implementation compliance. Use before campaign launch or when diagnosing disapprovals.
+deprecated: true
+replaced_by: skills/adtech/policy-brand-compliance-checker
 ---
 
 # Ad-Tech Compliance Checker
@@ -28,3 +30,6 @@ Use for pre-launch QA, disapproval triage, UTM linting, and policy-sensitive cop
 - Do not claim platform approval certainty.
 - Mark ambiguous issues as "needs human review".
 - Require confirmation before any automated publishing action.
+
+## Deprecation
+This skill is a legacy alias. Prefer `skills/adtech/policy-brand-compliance-checker` for new usage.

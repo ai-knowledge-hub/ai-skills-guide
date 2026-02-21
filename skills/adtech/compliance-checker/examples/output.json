@@ -1,0 +1,18 @@
+{
+  "status": "FAIL",
+  "findings": [
+    {
+      "severity": "critical",
+      "category": "policy_phrase",
+      "issue": "Contains blocked phrase: guaranteed results",
+      "fix": "Replace with evidence-based claim and qualifiers."
+    },
+    {
+      "severity": "warning",
+      "category": "utm",
+      "issue": "Missing utm_campaign",
+      "fix": "Add utm_campaign to all destination URLs."
+    }
+  ],
+  "launch_recommendation": "Do not launch until critical issues are fixed."
+}

@@ -1,0 +1,15 @@
+{
+  "account_ids": [
+    "123"
+  ],
+  "date_range": {
+    "current_start": "2026-02-09",
+    "current_end": "2026-02-15",
+    "previous_start": "2026-02-02",
+    "previous_end": "2026-02-08"
+  },
+  "channels": [
+    "google_ads",
+    "meta_ads"
+  ]
+}

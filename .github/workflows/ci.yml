@@ -13,6 +13,13 @@ jobs:
       - name: Validate skill structure
         run: bash scripts/validate-skills.sh
 
+  script-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run deterministic skill script checks
+        run: bash scripts/test-skill-scripts.sh
+
   markdown:
     runs-on: ubuntu-latest
     steps:

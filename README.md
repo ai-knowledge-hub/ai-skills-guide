@@ -1,13 +1,20 @@
 # AI Skills Guide
 
-Practical, reusable AI skills for marketing practitioners and ad-tech software engineers.
+Practical, reusable AI skills for marketing practitioners and ad-tech
+software engineers.
 
 ## What this repo is
 
-This repository is the executable companion to our written guide. It contains production-oriented `SKILL.md` packages, deterministic scripts, test prompts, and contribution standards.
+This repository is the executable companion to our written guide.
+It contains production-oriented `SKILL.md` packages, deterministic
+scripts, test prompts, and contribution standards.
 
-- Guide article: [The Agent Architect’s Playbook: Building AI Skills for Marketing & Ad Tech](https://ai-news-hub.performics-labs.com/news/agent-architect-playbook-building-ai-skills-marketing-adtech)
-- Community references: [VoltAgent awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills)
+- Guide article site:
+  [ai-news-hub.performics-labs.com](https://ai-news-hub.performics-labs.com)
+  (article title: The Agent Architect’s Playbook: Building AI Skills
+  for Marketing & Ad Tech)
+- Community references:
+  [awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills)
 
 ## v0.1 Scope (6 practical skills)
 
@@ -44,7 +51,10 @@ scripts/
 
 ## Provider and framework examples to explore
 
-Cross-runtime examples are cataloged in [awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills). Useful sections include skills for:
+Cross-runtime examples are cataloged in
+[awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills).
+Useful sections include skills for:
+
 - OpenAI Codex / Agent Skills
 - Claude-style skills
 - Gemini CLI patterns
@@ -58,6 +68,29 @@ Cross-runtime examples are cataloged in [awesome-agent-skills](https://github.co
 3. Run prompts in `tests/test-prompts.md`.
 4. Verify structure with `bash scripts/validate-skills.sh`.
 5. Submit improvements via PR.
+
+## CLI Scaffold (Go)
+
+This repo now includes a starter CLI at `cmd/skills-hub`
+for local skill management.
+
+Build and test:
+
+```bash
+make cli-test
+make cli-build
+```
+
+Example usage:
+
+```bash
+./bin/skills-hub list
+./bin/skills-hub validate
+./bin/skills-hub info --skill marketing/meta-google-weekly-performance-review
+./bin/skills-hub install \
+  --skill marketing/meta-google-weekly-performance-review \
+  --target ~/.codex/skills
+```
 
 ## Contributing
 

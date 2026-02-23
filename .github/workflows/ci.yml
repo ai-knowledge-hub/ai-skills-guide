@@ -20,6 +20,19 @@ jobs:
       - name: Run deterministic skill script checks
         run: bash scripts/test-skill-scripts.sh
 
+  manifest-schemas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install check-jsonschema
+        run: python3 -m pip install --upgrade pip check-jsonschema
+      - name: Generate registry index
+        run: go run ./cmd/registry-builder
+      - name: Validate manifests and registry schemas
+        run: bash scripts/validate-manifests.sh
+      - name: Ensure registry index is committed
+        run: git diff --exit-code registry/index.json
+
   markdown:
     runs-on: ubuntu-latest
     steps:

@@ -1,0 +1,35 @@
+id: marketing/seo-paid-search-synergy
+name: SEO to Paid Search Synergy
+description: Turn top-performing SEO themes into paid search opportunities
+  with keyword clustering and launch-ready recommendations.
+version: 0.1.0
+released_at: "2026-02-23T00:00:00Z"
+category: marketing-tools/seo-sem
+tags:
+  - seo
+  - paid-search
+  - keyword-strategy
+  - campaign-planning
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  scripts_dir: scripts
+  examples_dir: examples
+dependencies:
+  tools:
+    - python3
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: true
+  security_reviewed: false
+deprecated: false

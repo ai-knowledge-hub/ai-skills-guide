@@ -81,6 +81,19 @@ make cli-test
 make cli-build
 ```
 
+Schema validation (requires `check-jsonschema`):
+
+```bash
+python3 -m pip install check-jsonschema
+make manifests
+```
+
+Generate `registry/index.json` from manifests:
+
+```bash
+make registry
+```
+
 Example usage:
 
 ```bash

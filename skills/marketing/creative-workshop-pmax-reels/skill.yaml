@@ -1,0 +1,35 @@
+id: marketing/creative-workshop-pmax-reels
+name: Creative Workshop (PMax + Reels)
+description: Generate channel-specific creative variants for Google PMax
+  and Meta Reels with deterministic length checks.
+version: 0.1.0
+released_at: "2026-02-23T00:00:00Z"
+category: marketing-tools/creative-ops
+tags:
+  - creative
+  - pmax
+  - reels
+  - copy-generation
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  scripts_dir: scripts
+  examples_dir: examples
+dependencies:
+  tools:
+    - python3
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: true
+  security_reviewed: false
+deprecated: false

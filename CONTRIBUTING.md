@@ -50,7 +50,8 @@ cd apps/web
 pnpm test:e2e
 ```
 
-If Playwright browsers are not installed yet, run `pnpm test:e2e:setup` first (see `apps/web/README.md`).
+If Playwright browsers are not installed yet, run `pnpm test:e2e:setup`
+first (see `apps/web/README.md`).
 
 ## Branch and commit guidance
 

@@ -49,7 +49,7 @@ jobs:
           fail: true
 
   web-e2e-smoke:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: apps/web

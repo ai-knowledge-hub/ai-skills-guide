@@ -42,6 +42,7 @@ func BuildIndex(root string) (Index, error) {
 			ID:          m.ID,
 			Name:        m.Name,
 			Description: m.Description,
+			Category:    m.Category,
 			Latest:      m.Version,
 			Versions: []VersionEntry{{
 				Version:     m.Version,

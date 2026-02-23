@@ -98,16 +98,18 @@ Example usage:
 
 ```bash
 ./bin/skills-hub list
+./bin/skills-hub search --tag paid-media --runtime codex
 ./bin/skills-hub validate
-./bin/skills-hub info --skill marketing/meta-google-weekly-performance-review
+./bin/skills-hub info \
+  --skill marketing/meta-google-weekly-performance-review@latest
 ./bin/skills-hub install \
-  --skill marketing/meta-google-weekly-performance-review \
+  marketing/meta-google-weekly-performance-review@latest \
   --runtime codex
 ./bin/skills-hub install \
-  --skill marketing/meta-google-weekly-performance-review \
+  marketing/meta-google-weekly-performance-review@latest \
   --runtime claude
 ./bin/skills-hub install \
-  --skill marketing/meta-google-weekly-performance-review \
+  marketing/meta-google-weekly-performance-review@0.1.0 \
   --runtime generic \
   --target ./my-agent/skills
 ```

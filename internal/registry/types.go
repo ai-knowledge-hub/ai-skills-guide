@@ -6,6 +6,7 @@ type Manifest struct {
 	Description string
 	Version     string
 	ReleasedAt  string
+	Category    string
 	Tags        []string
 	Runtimes    []string
 	Deprecated  bool
@@ -22,6 +23,7 @@ type SkillEntry struct {
 	ID          string         `json:"id"`
 	Name        string         `json:"name"`
 	Description string         `json:"description"`
+	Category    string         `json:"category"`
 	Latest      string         `json:"latest"`
 	Versions    []VersionEntry `json:"versions"`
 	Runtimes    []string       `json:"runtimes"`

@@ -41,6 +41,9 @@ deprecated: false
 	if m.Description != "First sentence, second sentence." {
 		t.Fatalf("unexpected description: %s", m.Description)
 	}
+	if m.Category != "marketing-tools/ads-ops" {
+		t.Fatalf("unexpected category: %s", m.Category)
+	}
 	if len(m.Tags) != 2 || m.Tags[0] != "one" || m.Tags[1] != "two" {
 		t.Fatalf("unexpected tags: %#v", m.Tags)
 	}

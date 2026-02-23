@@ -6,6 +6,7 @@
       "id": "adtech/analyst-copilot-bigquery-redshift",
       "name": "Analyst Co-pilot (BigQuery + Redshift)",
       "description": "Assist analysts with safe SQL drafting, metric validation, and stakeholder-ready summaries across BigQuery and Redshift.",
+      "category": "adtech/analytics-engineering",
       "latest": "0.1.0",
       "versions": [
         {
@@ -33,6 +34,7 @@
       "id": "adtech/policy-brand-compliance-checker",
       "name": "Policy + Brand Compliance Checker",
       "description": "Validate ad copy, landing URLs, and UTM tracking for policy and brand compliance before campaign launch.",
+      "category": "adtech/compliance",
       "latest": "0.1.0",
       "versions": [
         {
@@ -60,6 +62,7 @@
       "id": "marketing/creative-workshop-pmax-reels",
       "name": "Creative Workshop (PMax + Reels)",
       "description": "Generate channel-specific creative variants for Google PMax and Meta Reels with deterministic length checks.",
+      "category": "marketing-tools/creative-ops",
       "latest": "0.1.0",
       "versions": [
         {
@@ -87,6 +90,7 @@
       "id": "marketing/lifecycle-experiment-planner",
       "name": "Lifecycle Experiment Planner",
       "description": "Design lifecycle A/B tests with hypothesis checks, sample-size guidance, and stopping criteria.",
+      "category": "marketing-tools/lifecycle-crm",
       "latest": "0.1.0",
       "versions": [
         {
@@ -114,6 +118,7 @@
       "id": "marketing/meta-google-weekly-performance-review",
       "name": "Meta + Google Weekly Performance Review",
       "description": "Analyze weekly paid media performance across Meta and Google Ads with KPI deltas and prioritized actions.",
+      "category": "marketing-tools/ads-ops",
       "latest": "0.1.0",
       "versions": [
         {
@@ -141,6 +146,7 @@
       "id": "marketing/seo-paid-search-synergy",
       "name": "SEO to Paid Search Synergy",
       "description": "Turn top-performing SEO themes into paid search opportunities with keyword clustering and launch-ready recommendations.",
+      "category": "marketing-tools/seo-sem",
       "latest": "0.1.0",
       "versions": [
         {

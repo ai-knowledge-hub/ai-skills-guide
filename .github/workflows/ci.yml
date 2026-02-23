@@ -20,6 +20,15 @@ jobs:
       - name: Run deterministic skill script checks
         run: bash scripts/test-skill-scripts.sh
 
+  manifest-schemas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install check-jsonschema
+        run: python3 -m pip install --upgrade pip check-jsonschema
+      - name: Validate manifests and registry schemas
+        run: bash scripts/validate-manifests.sh
+
   markdown:
     runs-on: ubuntu-latest
     steps:

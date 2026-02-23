@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hub.ai-knowledge-hub.org/schemas/skill.schema.json",
+  "title": "Skill Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "description",
+    "version",
+    "category",
+    "tags",
+    "license",
+    "author",
+    "runtimes",
+    "entrypoints"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+/[a-z0-9-]+$",
+      "description": "Canonical ID in category/slug format."
+    },
+    "name": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 120
+    },
+    "description": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 400
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "marketing-tools/ads-ops",
+        "marketing-tools/creative-ops",
+        "marketing-tools/measurement",
+        "marketing-tools/seo-sem",
+        "marketing-tools/lifecycle-crm",
+        "marketing-tools/compliance",
+        "adtech/analytics-engineering",
+        "adtech/compliance",
+        "adtech/activation",
+        "adtech/other"
+      ]
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+      },
+      "minItems": 1,
+      "maxItems": 20,
+      "uniqueItems": true
+    },
+    "license": {
+      "type": "string",
+      "minLength": 2
+    },
+    "author": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    "homepage": {
+      "type": "string",
+      "format": "uri"
+    },
+    "repository": {
+      "type": "string",
+      "format": "uri"
+    },
+    "runtimes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "codex",
+          "claude",
+          "generic"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "entrypoints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "skill_md"
+      ],
+      "properties": {
+        "skill_md": {
+          "type": "string",
+          "default": "SKILL.md"
+        },
+        "readme": {
+          "type": "string",
+          "default": "README.md"
+        },
+        "tests": {
+          "type": "string",
+          "default": "tests/test-prompts.md"
+        },
+        "scripts_dir": {
+          "type": "string",
+          "default": "scripts"
+        },
+        "examples_dir": {
+          "type": "string",
+          "default": "examples"
+        }
+      }
+    },
+    "dependencies": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "apis": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tests_min_prompts": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "deterministic_scripts": {
+          "type": "boolean"
+        },
+        "security_reviewed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "deprecated": {
+      "type": "boolean",
+      "default": false
+    },
+    "replaced_by": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "deprecated": {
+            "const": true
+          }
+        },
+        "required": [
+          "deprecated"
+        ]
+      },
+      "then": {
+        "required": [
+          "replaced_by"
+        ]
+      }
+    }
+  ]
+}

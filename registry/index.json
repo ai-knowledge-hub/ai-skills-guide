@@ -60,6 +60,35 @@
       "deprecated": false
     },
     {
+      "id": "adtech/playwright-vscode-loop-codex",
+      "name": "Playwright VS Code Loop for Codex",
+      "description": "Orchestrate Playwright planner, generator, and healer workflows from Codex with VS Code loop execution for reusable web UX QA.",
+      "category": "adtech/other",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-02-23T00:00:00Z",
+          "manifest_url": "https://hub.ai-knowledge-hub.org/skills/adtech/playwright-vscode-loop-codex/skill.yaml",
+          "artifact_url": "https://hub.ai-knowledge-hub.org/artifacts/adtech/playwright-vscode-loop-codex/0.1.0.tar.gz",
+          "sha256": "93ef3df77fd46d685ae4f49524807bc350e7dd954c57c4306760f3a98e76dba4"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "qa",
+        "playwright",
+        "codex",
+        "vscode",
+        "ux-testing"
+      ],
+      "deprecated": false
+    },
+    {
       "id": "adtech/policy-brand-compliance-checker",
       "name": "Policy + Brand Compliance Checker",
       "description": "Validate ad copy, landing URLs, and UTM tracking for policy and brand compliance before campaign launch.",

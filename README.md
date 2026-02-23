@@ -134,7 +134,7 @@ For local toolchain setup, see `docs/dev-setup.md`.
 The repo now includes a Next.js catalog app at `apps/web`.
 
 Production site:
-[hub.ai-knowledge-hub.org](https://hub.ai-knowledge-hub.org/)
+[skills.ai-knowledge-hub.org](https://skills.ai-knowledge-hub.org/)
 
 ```bash
 cd apps/web

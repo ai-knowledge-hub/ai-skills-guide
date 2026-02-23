@@ -63,6 +63,42 @@ into a public skills hub while staying on free-tier infrastructure.
   - CLI, website, and CI can rely on a single source of truth
   - reduces migration pain during rapid iteration
 
+## Decision 7: Technology Stack (POC)
+
+- Decision: keep core implementation in Go and Next.js.
+- Scope:
+  - Go:
+    - CLI (`cmd/skills-hub`)
+    - registry builder (`cmd/registry-builder`)
+    - shared validation logic where practical
+  - Next.js:
+    - public hub website
+    - static catalog rendering from registry JSON
+- Reason:
+  - one systems language for CLI and build tooling
+  - fast web iteration and hosting fit on Vercel
+  - fewer moving parts for a small team
+
+## Decision 8: Deployment Strategy (POC)
+
+- Decision: use static-first deployment with GitHub Actions + Vercel.
+- Strategy:
+  - Source of truth: this repository.
+  - CI on pull request:
+    - skill structure checks
+    - deterministic script checks
+    - schema checks
+    - registry generation freshness check
+  - Merge to `main`:
+    - generate and commit `registry/index.json`
+    - deploy website on Vercel with custom domain
+- Environment model:
+  - `dev` branch: staging and preview validation
+  - `main` branch: production release path
+- Artifact distribution:
+  - short term: registry metadata + local install paths
+  - next phase: hosted versioned artifacts and signatures
+
 ## Open Questions
 
 - Final public name for the hub website.

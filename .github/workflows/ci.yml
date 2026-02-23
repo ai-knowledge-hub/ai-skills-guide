@@ -27,7 +27,7 @@ jobs:
       - name: Install check-jsonschema
         run: python3 -m pip install --upgrade pip check-jsonschema
       - name: Generate registry index
-        run: ruby scripts/generate-registry.rb
+        run: go run ./cmd/registry-builder
       - name: Validate manifests and registry schemas
         run: bash scripts/validate-manifests.sh
       - name: Ensure registry index is committed

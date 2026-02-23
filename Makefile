@@ -20,7 +20,7 @@ manifests:
 	bash scripts/validate-manifests.sh
 
 registry:
-	ruby scripts/generate-registry.rb
+	go run ./cmd/registry-builder
 
 test-scripts:
 	bash scripts/test-skill-scripts.sh

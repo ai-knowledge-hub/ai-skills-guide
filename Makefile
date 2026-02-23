@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: help doctor validate manifests registry test-scripts test ci-local cli-build cli-test web-dev web-build
+.PHONY: help doctor validate manifests registry test-scripts test ci-local cli-build cli-test web-dev web-build web-lint web-e2e
 
 help:
 	@echo "Targets:"
@@ -15,6 +15,8 @@ help:
 	@echo "  make cli-build     - Build the skills-hub CLI binary"
 	@echo "  make web-dev       - Run Next.js hub app in dev mode"
 	@echo "  make web-build     - Build Next.js hub app"
+	@echo "  make web-lint      - Lint Next.js hub app"
+	@echo "  make web-e2e       - Run Playwright smoke tests for web app"
 
 doctor:
 	@echo "[check] go"
@@ -51,7 +53,13 @@ cli-build:
 	go build -o bin/skills-hub ./cmd/skills-hub
 
 web-dev:
-	cd apps/web && npm run dev
+	cd apps/web && pnpm dev
 
 web-build:
-	cd apps/web && npm run build
+	cd apps/web && pnpm build
+
+web-lint:
+	cd apps/web && pnpm lint
+
+web-e2e:
+	cd apps/web && pnpm test:e2e

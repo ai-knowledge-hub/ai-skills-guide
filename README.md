@@ -89,8 +89,22 @@ Example usage:
 ./bin/skills-hub info --skill marketing/meta-google-weekly-performance-review
 ./bin/skills-hub install \
   --skill marketing/meta-google-weekly-performance-review \
-  --target ~/.codex/skills
+  --runtime codex
+./bin/skills-hub install \
+  --skill marketing/meta-google-weekly-performance-review \
+  --runtime claude
+./bin/skills-hub install \
+  --skill marketing/meta-google-weekly-performance-review \
+  --runtime generic \
+  --target ./my-agent/skills
 ```
+
+Runtime target defaults:
+
+- `--runtime codex` -> `$CODEX_HOME/skills` (or `~/.codex/skills`)
+- `--runtime claude` -> `$CLAUDE_HOME/skills` (or `$CLAUDE_CODE_HOME/skills`,
+  or `~/.claude/skills`)
+- `--runtime generic` -> requires explicit `--target`
 
 ## Contributing
 

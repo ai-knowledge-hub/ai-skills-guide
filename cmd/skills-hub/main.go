@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/installer"
@@ -121,14 +120,12 @@ func runValidate(args []string) error {
 func runInstall(args []string) error {
 	fs := flag.NewFlagSet("install", flag.ContinueOnError)
 	root := fs.String("root", "skills", "skills root directory")
-	target := fs.String("target", "", "destination skills directory")
+	runtimeName := fs.String("runtime", "generic", "runtime adapter: codex|claude|generic")
+	target := fs.String("target", "", "destination skills directory (optional for codex/claude)")
 	skillID := fs.String("skill", "", "skill id (category/slug)")
 	force := fs.Bool("force", false, "overwrite destination if it already exists")
 	if err := fs.Parse(args); err != nil {
 		return err
-	}
-	if *target == "" {
-		return errors.New("--target is required")
 	}
 	if *skillID == "" {
 		return errors.New("--skill is required")
@@ -151,16 +148,16 @@ func runInstall(args []string) error {
 		fmt.Fprintln(os.Stderr)
 	}
 
-	absTarget, err := filepath.Abs(*target)
+	rt, err := installer.ResolveRuntimeTarget(*runtimeName, *target)
 	if err != nil {
-		return fmt.Errorf("resolve target path: %w", err)
+		return err
 	}
-	destination, err := installer.InstallSkill(skill.Path, absTarget, skill.ID, *force)
+	destination, err := installer.InstallSkill(skill.Path, rt.TargetPath, skill.ID, *force)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("Installed %s to %s\n", skill.ID, destination)
+	fmt.Printf("Installed %s to %s (runtime=%s)\n", skill.ID, destination, rt.Runtime)
 	return nil
 }
 
@@ -181,7 +178,9 @@ func printUsage() {
 		"  skills-hub list",
 		"  skills-hub info --skill marketing/meta-google-weekly-performance-review",
 		"  skills-hub validate",
-		"  skills-hub install --skill marketing/meta-google-weekly-performance-review --target ~/.codex/skills",
+		"  skills-hub install --skill marketing/meta-google-weekly-performance-review --runtime codex",
+		"  skills-hub install --skill marketing/meta-google-weekly-performance-review --runtime claude",
+		"  skills-hub install --skill marketing/meta-google-weekly-performance-review --runtime generic --target ./my-agent/skills",
 	}
 	fmt.Println(strings.Join(lines, "\n"))
 }

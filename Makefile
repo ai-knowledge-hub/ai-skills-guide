@@ -1,11 +1,12 @@
 SHELL := /bin/bash
 
-.PHONY: help validate manifests test-scripts test ci-local cli-build cli-test
+.PHONY: help validate manifests registry test-scripts test ci-local cli-build cli-test
 
 help:
 	@echo "Targets:"
 	@echo "  make validate      - Validate skill structure and standards"
 	@echo "  make manifests     - Validate skill.yaml and registry index schemas"
+	@echo "  make registry      - Generate registry/index.json from skill manifests"
 	@echo "  make test-scripts  - Run deterministic script checks"
 	@echo "  make test          - Run all local tests (validate + test-scripts)"
 	@echo "  make ci-local      - Run local checks similar to CI"
@@ -18,12 +19,15 @@ validate:
 manifests:
 	bash scripts/validate-manifests.sh
 
+registry:
+	ruby scripts/generate-registry.rb
+
 test-scripts:
 	bash scripts/test-skill-scripts.sh
 
 test: validate test-scripts
 
-ci-local: test manifests
+ci-local: test registry manifests
 
 cli-test:
 	go test ./...

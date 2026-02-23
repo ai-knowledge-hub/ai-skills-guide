@@ -1,14 +1,15 @@
-id: marketing/meta-google-weekly-performance-review
-name: Meta + Google Weekly Performance Review
-description: Analyze weekly paid media performance across Meta and Google Ads with KPI deltas and prioritized actions.
+id: marketing/creative-workshop-pmax-reels
+name: Creative Workshop (PMax + Reels)
+description: Generate channel-specific creative variants for Google PMax
+  and Meta Reels with deterministic length checks.
 version: 0.1.0
 released_at: "2026-02-23T00:00:00Z"
-category: marketing-tools/ads-ops
+category: marketing-tools/creative-ops
 tags:
-  - paid-media
-  - weekly-reporting
-  - meta-ads
-  - google-ads
+  - creative
+  - pmax
+  - reels
+  - copy-generation
 license: MIT
 author:
   name: AI Skills Guide Maintainers

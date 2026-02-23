@@ -10,6 +10,18 @@ if ! command -v check-jsonschema >/dev/null 2>&1; then
   exit 1
 fi
 
+missing=0
+while IFS= read -r -d '' skill_dir; do
+  if [[ ! -f "$skill_dir/skill.yaml" ]]; then
+    echo "[ERROR] Missing skill.yaml in ${skill_dir#$ROOT/}"
+    missing=1
+  fi
+done < <(find "$ROOT/skills" -mindepth 2 -maxdepth 2 -type d -print0)
+
+if [[ "$missing" -ne 0 ]]; then
+  exit 1
+fi
+
 mapfile -t manifests < <(find "$ROOT/skills" -mindepth 3 -maxdepth 3 -name "skill.yaml" | sort)
 if [[ "${#manifests[@]}" -eq 0 ]]; then
   echo "[WARN] No skill.yaml manifests found under skills/. Skipping skill manifest validation."

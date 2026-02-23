@@ -1,14 +1,15 @@
-id: marketing/meta-google-weekly-performance-review
-name: Meta + Google Weekly Performance Review
-description: Analyze weekly paid media performance across Meta and Google Ads with KPI deltas and prioritized actions.
+id: adtech/analyst-copilot-bigquery-redshift
+name: Analyst Co-pilot (BigQuery + Redshift)
+description: Assist analysts with safe SQL drafting, metric validation,
+  and stakeholder-ready summaries across BigQuery and Redshift.
 version: 0.1.0
 released_at: "2026-02-23T00:00:00Z"
-category: marketing-tools/ads-ops
+category: adtech/analytics-engineering
 tags:
-  - paid-media
-  - weekly-reporting
-  - meta-ads
-  - google-ads
+  - sql
+  - analytics
+  - bigquery
+  - redshift
 license: MIT
 author:
   name: AI Skills Guide Maintainers

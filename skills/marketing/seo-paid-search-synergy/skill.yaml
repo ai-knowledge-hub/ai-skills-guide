@@ -1,14 +1,15 @@
-id: marketing/meta-google-weekly-performance-review
-name: Meta + Google Weekly Performance Review
-description: Analyze weekly paid media performance across Meta and Google Ads with KPI deltas and prioritized actions.
+id: marketing/seo-paid-search-synergy
+name: SEO to Paid Search Synergy
+description: Turn top-performing SEO themes into paid search opportunities
+  with keyword clustering and launch-ready recommendations.
 version: 0.1.0
 released_at: "2026-02-23T00:00:00Z"
-category: marketing-tools/ads-ops
+category: marketing-tools/seo-sem
 tags:
-  - paid-media
-  - weekly-reporting
-  - meta-ads
-  - google-ads
+  - seo
+  - paid-search
+  - keyword-strategy
+  - campaign-planning
 license: MIT
 author:
   name: AI Skills Guide Maintainers

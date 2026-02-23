@@ -1,14 +1,15 @@
-id: marketing/meta-google-weekly-performance-review
-name: Meta + Google Weekly Performance Review
-description: Analyze weekly paid media performance across Meta and Google Ads with KPI deltas and prioritized actions.
+id: adtech/policy-brand-compliance-checker
+name: Policy + Brand Compliance Checker
+description: Validate ad copy, landing URLs, and UTM tracking for policy
+  and brand compliance before campaign launch.
 version: 0.1.0
 released_at: "2026-02-23T00:00:00Z"
-category: marketing-tools/ads-ops
+category: adtech/compliance
 tags:
-  - paid-media
-  - weekly-reporting
-  - meta-ads
-  - google-ads
+  - policy
+  - brand-safety
+  - utm
+  - prelaunch-qa
 license: MIT
 author:
   name: AI Skills Guide Maintainers

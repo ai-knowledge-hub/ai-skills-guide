@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 FAIL=0
 
 while IFS= read -r -d '' skill_dir; do
-  required=("SKILL.md" "README.md" "tests/test-prompts.md")
+  required=("SKILL.md" "README.md" "skill.yaml" "tests/test-prompts.md")
   for f in "${required[@]}"; do
     if [[ ! -f "$skill_dir/$f" ]]; then
       echo "[ERROR] Missing $f in ${skill_dir#$ROOT/}"

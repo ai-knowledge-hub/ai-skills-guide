@@ -1,0 +1,168 @@
+{
+  "registry_version": "1.0",
+  "generated_at": "2026-02-23T00:00:00Z",
+  "skills": [
+    {
+      "id": "adtech/analyst-copilot-bigquery-redshift",
+      "name": "Analyst Co-pilot (BigQuery + Redshift)",
+      "description": "Assist analysts with safe SQL drafting, metric validation, and stakeholder-ready summaries across BigQuery and Redshift.",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-02-23T00:00:00Z",
+          "manifest_url": "https://hub.ai-knowledge-hub.org/skills/adtech/analyst-copilot-bigquery-redshift/skill.yaml",
+          "artifact_url": "https://hub.ai-knowledge-hub.org/artifacts/adtech/analyst-copilot-bigquery-redshift/0.1.0.tar.gz",
+          "sha256": "5f71bceb61e489bb69104d690ec0eb863056b8bdd6b886587306f99d5cba58ca"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "sql",
+        "analytics",
+        "bigquery",
+        "redshift"
+      ],
+      "deprecated": false
+    },
+    {
+      "id": "adtech/policy-brand-compliance-checker",
+      "name": "Policy + Brand Compliance Checker",
+      "description": "Validate ad copy, landing URLs, and UTM tracking for policy and brand compliance before campaign launch.",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-02-23T00:00:00Z",
+          "manifest_url": "https://hub.ai-knowledge-hub.org/skills/adtech/policy-brand-compliance-checker/skill.yaml",
+          "artifact_url": "https://hub.ai-knowledge-hub.org/artifacts/adtech/policy-brand-compliance-checker/0.1.0.tar.gz",
+          "sha256": "288d5795725c8348d2ff02a553d00142a88ef9027e4244d7d86354645b52d9ac"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "policy",
+        "brand-safety",
+        "utm",
+        "prelaunch-qa"
+      ],
+      "deprecated": false
+    },
+    {
+      "id": "marketing/creative-workshop-pmax-reels",
+      "name": "Creative Workshop (PMax + Reels)",
+      "description": "Generate channel-specific creative variants for Google PMax and Meta Reels with deterministic length checks.",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-02-23T00:00:00Z",
+          "manifest_url": "https://hub.ai-knowledge-hub.org/skills/marketing/creative-workshop-pmax-reels/skill.yaml",
+          "artifact_url": "https://hub.ai-knowledge-hub.org/artifacts/marketing/creative-workshop-pmax-reels/0.1.0.tar.gz",
+          "sha256": "64e981fc44af92bbb6a6aff0baefc3229771a0a59aa50cc270b1a09535c34a75"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "creative",
+        "pmax",
+        "reels",
+        "copy-generation"
+      ],
+      "deprecated": false
+    },
+    {
+      "id": "marketing/lifecycle-experiment-planner",
+      "name": "Lifecycle Experiment Planner",
+      "description": "Design lifecycle A/B tests with hypothesis checks, sample-size guidance, and stopping criteria.",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-02-23T00:00:00Z",
+          "manifest_url": "https://hub.ai-knowledge-hub.org/skills/marketing/lifecycle-experiment-planner/skill.yaml",
+          "artifact_url": "https://hub.ai-knowledge-hub.org/artifacts/marketing/lifecycle-experiment-planner/0.1.0.tar.gz",
+          "sha256": "a59868da91877823558670707e8f32531bef2c77049dcfaa6e9e3d426d4f91a6"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "experimentation",
+        "ab-testing",
+        "lifecycle",
+        "statistics"
+      ],
+      "deprecated": false
+    },
+    {
+      "id": "marketing/meta-google-weekly-performance-review",
+      "name": "Meta + Google Weekly Performance Review",
+      "description": "Analyze weekly paid media performance across Meta and Google Ads with KPI deltas and prioritized actions.",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-02-23T00:00:00Z",
+          "manifest_url": "https://hub.ai-knowledge-hub.org/skills/marketing/meta-google-weekly-performance-review/skill.yaml",
+          "artifact_url": "https://hub.ai-knowledge-hub.org/artifacts/marketing/meta-google-weekly-performance-review/0.1.0.tar.gz",
+          "sha256": "b4c90869ffab316f78f9439a1c96c021921249de5eb974a4e595c632ef8da057"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "paid-media",
+        "weekly-reporting",
+        "meta-ads",
+        "google-ads"
+      ],
+      "deprecated": false
+    },
+    {
+      "id": "marketing/seo-paid-search-synergy",
+      "name": "SEO to Paid Search Synergy",
+      "description": "Turn top-performing SEO themes into paid search opportunities with keyword clustering and launch-ready recommendations.",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-02-23T00:00:00Z",
+          "manifest_url": "https://hub.ai-knowledge-hub.org/skills/marketing/seo-paid-search-synergy/skill.yaml",
+          "artifact_url": "https://hub.ai-knowledge-hub.org/artifacts/marketing/seo-paid-search-synergy/0.1.0.tar.gz",
+          "sha256": "b4496217276d81c17ace07a41f1f526388cae5b51192ea7bc7bd5f28cd16b9f7"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "seo",
+        "paid-search",
+        "keyword-strategy",
+        "campaign-planning"
+      ],
+      "deprecated": false
+    }
+  ]
+}

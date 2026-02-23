@@ -35,7 +35,24 @@
 - Failures and fallback paths are documented.
 - Output shape is consistent and testable.
 
+## Quality gates
+
+Run before opening a PR:
+
+```bash
+bash scripts/validate-skills.sh
+```
+
+If your changes touch `apps/web`, also run:
+
+```bash
+cd apps/web
+pnpm test:e2e
+```
+
+If Playwright browsers are not installed yet, run `pnpm test:e2e:setup` first (see `apps/web/README.md`).
+
 ## Branch and commit guidance
 
-- Use short feature branches (e.g., `feature/skill-utm-linter`).
+- Use short feature branches prefixed with `codex/` (e.g., `codex/skill-utm-linter`).
 - Use scoped commit messages (e.g., `feat(skill): add pmax creative workshop`).

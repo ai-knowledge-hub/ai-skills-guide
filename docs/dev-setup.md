@@ -4,6 +4,8 @@
 
 - Go `>= 1.22`
 - Python `>= 3.10`
+- Node `>= 20`
+- pnpm `>= 10`
 - `check-jsonschema` (for manifest/schema checks)
 
 ## Install Options for `check-jsonschema`
@@ -42,4 +44,13 @@ make manifests
 make test
 make cli-test
 make cli-build
+```
+
+## Web App + E2E QA
+
+```bash
+cd apps/web
+pnpm install
+pnpm test:e2e:setup
+pnpm test:e2e
 ```

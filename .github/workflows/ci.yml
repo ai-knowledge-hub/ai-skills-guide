@@ -47,3 +47,25 @@ jobs:
         uses: lycheeverse/lychee-action@v2
         with:
           fail: true
+
+  web-e2e-smoke:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: apps/web/pnpm-lock.yaml
+      - name: Install web dependencies
+        run: pnpm install
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+      - name: Run smoke e2e
+        run: npx playwright test

@@ -1,7 +1,7 @@
 # AI Skills Guide
 
 Practical, reusable AI skills for marketing practitioners and ad-tech
-software engineers.
+software engineers, plus a hub UI and QA automation flows.
 
 ## What this repo is
 
@@ -16,7 +16,7 @@ scripts, test prompts, and contribution standards.
 - Community references:
   [awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills)
 
-## v0.1 Scope (6 practical skills)
+## Current Scope (7 practical skills)
 
 1. `meta-google-weekly-performance-review` (Beginner)
 2. `creative-workshop-pmax-reels` (Intermediate)
@@ -24,6 +24,7 @@ scripts, test prompts, and contribution standards.
 4. `policy-brand-compliance-checker` (Intermediate)
 5. `seo-paid-search-synergy` (Advanced)
 6. `analyst-copilot-bigquery-redshift` (Advanced)
+7. `playwright-agentic-e2e` (QA / Infrastructure)
 
 ## Definition of done for each skill
 
@@ -39,6 +40,8 @@ scripts, test prompts, and contribution standards.
 skills/
   marketing/
   adtech/
+apps/
+  web/
 shared/
   metrics/
   policies/
@@ -132,8 +135,8 @@ The repo now includes a Next.js catalog app at `apps/web`.
 
 ```bash
 cd apps/web
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 Core routes:
@@ -141,3 +144,11 @@ Core routes:
 - `/` overview
 - `/skills` searchable catalog
 - `/skills/<category>/<slug>` skill details and install snippets
+
+Smoke E2E tests:
+
+```bash
+cd apps/web
+pnpm test:e2e:setup
+pnpm test:e2e
+```

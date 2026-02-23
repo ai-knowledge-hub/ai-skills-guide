@@ -6,6 +6,10 @@
   - 6 practical skills from the guide
   - shared conventions and validation
   - CI and contribution templates
+- v0.3 in progress:
+  - Hub website MVP routes are live in `apps/web`
+  - Playwright smoke E2E is wired into CI
+  - reusable `adtech/playwright-agentic-e2e` QA skill added
 - Current focus: evolve from companion repo to public skills hub.
 
 ## v0.2 (Foundation)

@@ -1,0 +1,37 @@
+id: adtech/playwright-agentic-e2e
+name: Playwright Agentic E2E QA
+description: Build and maintain reusable Playwright smoke tests with planner, generator, and healer loops for web app regression checks.
+version: 0.1.0
+released_at: "2026-02-23T00:00:00Z"
+category: adtech/other
+tags:
+  - qa
+  - e2e
+  - playwright
+  - smoke-tests
+  - ci
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  scripts_dir: scripts
+  examples_dir: examples
+dependencies:
+  tools:
+    - node
+    - pnpm
+    - npx
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

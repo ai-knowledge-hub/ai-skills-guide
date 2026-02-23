@@ -6,17 +6,32 @@ This app renders a static-first skills catalog from `../../registry/index.json`.
 
 ```bash
 cd apps/web
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 Then open `http://localhost:3000`.
 
+## E2E smoke tests (Playwright)
+
+First-time setup downloads the browser binary:
+
+```bash
+cd apps/web
+pnpm test:e2e:setup
+```
+
+Run tests:
+
+```bash
+pnpm test:e2e
+```
+
 ## Build
 
 ```bash
-npm run build
-npm start
+pnpm build
+pnpm start
 ```
 
 ## Routes

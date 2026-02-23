@@ -19,3 +19,12 @@
 ## Runtime notes
 
 These skills are authored for Agent Skills-style runtimes and can be adapted to Codex, Claude-style, and similar ecosystems.
+
+## Hub UI quick check
+
+If you are working on the website catalog:
+
+1. `cd apps/web`
+2. `pnpm install`
+3. `pnpm dev`
+4. `pnpm test:e2e`

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, IBM_Plex_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import "./tokens.css";
 import "./globals.css";
 
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           CONTRIBUTE VIA PR •
         </div>
         {children}
+        <Analytics />
       </body>
     </html>
   );

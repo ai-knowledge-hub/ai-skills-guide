@@ -99,6 +99,19 @@ into a public skills hub while staying on free-tier infrastructure.
   - short term: registry metadata + local install paths
   - next phase: hosted versioned artifacts and signatures
 
+## Vercel Deployment Notes (Web MVP)
+
+- Deploy target: `apps/web`.
+- Build command: `npm run build`.
+- Install command: `npm install`.
+- Output: standard Next.js deployment on Vercel.
+- Environment assumptions:
+  - app reads `registry/index.json` from repository at build/runtime
+  - no database or auth dependency required for MVP
+- Domain plan:
+  - production custom domain on Vercel
+  - preview deployments from pull requests
+
 ## Open Questions
 
 - Final public name for the hub website.

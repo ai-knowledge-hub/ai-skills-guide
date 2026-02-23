@@ -16,5 +16,12 @@ __pycache__/
 # Go build artifacts
 bin/
 
+# Node / Next.js
+node_modules/
+.pnpm-store/
+pnpm-debug.log*
+.vercel/
+*.tsbuildinfo
+
 # Logs
 *.log

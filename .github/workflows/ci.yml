@@ -27,7 +27,7 @@ jobs:
       - name: Install check-jsonschema
         run: python3 -m pip install --upgrade pip check-jsonschema
       - name: Generate registry index
-        run: go run ./cmd/registry-builder
+        run: make registry
       - name: Validate manifests and registry schemas
         run: bash scripts/validate-manifests.sh
       - name: Ensure registry index is committed
@@ -64,8 +64,30 @@ jobs:
           cache: pnpm
           cache-dependency-path: apps/web/pnpm-lock.yaml
       - name: Install web dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
       - name: Run smoke e2e
         run: npx playwright test
+
+  web-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: apps/web/pnpm-lock.yaml
+      - name: Install web dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint web app
+        run: pnpm lint
+      - name: Build web app
+        run: pnpm build

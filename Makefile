@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: help doctor validate manifests registry test-scripts test ci-local cli-build cli-test
+.PHONY: help doctor validate manifests registry test-scripts test ci-local cli-build cli-test web-dev web-build
 
 help:
 	@echo "Targets:"
@@ -13,6 +13,8 @@ help:
 	@echo "  make ci-local      - Run local checks similar to CI"
 	@echo "  make cli-test      - Run Go unit tests for CLI packages"
 	@echo "  make cli-build     - Build the skills-hub CLI binary"
+	@echo "  make web-dev       - Run Next.js hub app in dev mode"
+	@echo "  make web-build     - Build Next.js hub app"
 
 doctor:
 	@echo "[check] go"
@@ -47,3 +49,9 @@ cli-test:
 
 cli-build:
 	go build -o bin/skills-hub ./cmd/skills-hub
+
+web-dev:
+	cd apps/web && npm run dev
+
+web-build:
+	cd apps/web && npm run build

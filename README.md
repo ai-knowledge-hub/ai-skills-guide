@@ -98,16 +98,18 @@ Example usage:
 
 ```bash
 ./bin/skills-hub list
+./bin/skills-hub search --tag paid-media --runtime codex
 ./bin/skills-hub validate
-./bin/skills-hub info --skill marketing/meta-google-weekly-performance-review
+./bin/skills-hub info \
+  --skill marketing/meta-google-weekly-performance-review@latest
 ./bin/skills-hub install \
-  --skill marketing/meta-google-weekly-performance-review \
+  marketing/meta-google-weekly-performance-review@latest \
   --runtime codex
 ./bin/skills-hub install \
-  --skill marketing/meta-google-weekly-performance-review \
+  marketing/meta-google-weekly-performance-review@latest \
   --runtime claude
 ./bin/skills-hub install \
-  --skill marketing/meta-google-weekly-performance-review \
+  marketing/meta-google-weekly-performance-review@0.1.0 \
   --runtime generic \
   --target ./my-agent/skills
 ```
@@ -123,3 +125,19 @@ Runtime target defaults:
 
 See `CONTRIBUTING.md` and `docs/how-to-contribute-a-skill.md`.
 For local toolchain setup, see `docs/dev-setup.md`.
+
+## Hub Website (MVP Scaffold)
+
+The repo now includes a Next.js catalog app at `apps/web`.
+
+```bash
+cd apps/web
+npm install
+npm run dev
+```
+
+Core routes:
+
+- `/` overview
+- `/skills` searchable catalog
+- `/skills/<category>/<slug>` skill details and install snippets

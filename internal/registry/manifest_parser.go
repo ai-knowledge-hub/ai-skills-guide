@@ -84,6 +84,8 @@ func ParseManifest(path string) (Manifest, error) {
 			out.Version = value
 		case "released_at":
 			out.ReleasedAt = value
+		case "category":
+			out.Category = value
 		case "tags":
 			currentListKey = "tags"
 		case "runtimes":
@@ -124,6 +126,9 @@ func validateManifestFields(m Manifest, path string) error {
 	}
 	if len(m.Runtimes) == 0 {
 		return fmt.Errorf("manifest %s missing runtimes", path)
+	}
+	if m.Category == "" {
+		return fmt.Errorf("manifest %s missing category", path)
 	}
 	if len(m.Tags) == 0 {
 		return fmt.Errorf("manifest %s missing tags", path)

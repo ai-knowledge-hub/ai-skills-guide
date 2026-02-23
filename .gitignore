@@ -1,0 +1,20 @@
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Environment / local config
+.env
+.env.*
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# Go build artifacts
+bin/
+
+# Logs
+*.log

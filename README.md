@@ -23,7 +23,7 @@ same automations in silos.
 - Community references:
   [awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills)
 
-## Current Scope (7 practical skills)
+## Current Scope (11 practical skills)
 
 1. `meta-google-weekly-performance-review` (Beginner)
 2. `creative-workshop-pmax-reels` (Intermediate)
@@ -32,6 +32,16 @@ same automations in silos.
 5. `seo-paid-search-synergy` (Advanced)
 6. `analyst-copilot-bigquery-redshift` (Advanced)
 7. `playwright-agentic-e2e` (QA / Infrastructure)
+8. `playwright-vscode-loop-codex` (QA / VS Code Loop)
+9. `ai-output-eval-scorecard` (Governance / Evaluation)
+10. `cross-channel-budget-pacing-agent` (Ads Ops)
+11. `ab-test-planner-analyzer` (Measurement / Experimentation)
+
+## New in v0.2 alpha
+
+- `ai-output-eval-scorecard`
+- `cross-channel-budget-pacing-agent`
+- `ab-test-planner-analyzer`
 
 ## Definition of done for each skill
 

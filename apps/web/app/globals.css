@@ -238,6 +238,14 @@ p {
   margin-bottom: 1.5rem;
 }
 
+.hero-mission p + p {
+  margin-top: 0.6rem;
+}
+
+.snapshot-actions .button {
+  width: fit-content;
+}
+
 .display {
   font-size: clamp(2.2rem, 9vw, 5.4rem);
   line-height: 0.92;

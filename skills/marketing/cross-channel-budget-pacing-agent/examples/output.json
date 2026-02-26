@@ -1,0 +1,44 @@
+{
+  "pacing_status": "underpacing",
+  "channel_summary": [
+    {
+      "channel": "google",
+      "planned_spend": 18000,
+      "actual_spend": 16500,
+      "variance_pct": -8.3,
+      "cpa": 47.2,
+      "roas": 3.4,
+      "status": "amber"
+    },
+    {
+      "channel": "meta",
+      "planned_spend": 14000,
+      "actual_spend": 12900,
+      "variance_pct": -7.9,
+      "cpa": 39.8,
+      "roas": 2.9,
+      "status": "amber"
+    }
+  ],
+  "anomalies": [
+    {
+      "channel": "google",
+      "metric": "spend",
+      "delta_pct": -14.1,
+      "severity": "medium",
+      "hypothesis": "Bid constraint too restrictive"
+    }
+  ],
+  "reallocation_plan": [
+    {
+      "from_channel": "google",
+      "to_channel": "meta",
+      "amount": 1200,
+      "reason": "Meta prospecting has better marginal CPA this week"
+    }
+  ],
+  "next_7d_actions": [
+    "Increase Google budget utilization with relaxed bid caps",
+    "Hold Meta reallocation test for 3 days and re-evaluate"
+  ]
+}

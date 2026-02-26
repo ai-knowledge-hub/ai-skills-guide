@@ -1,0 +1,31 @@
+{
+  "plan": {
+    "hypothesis": "Variant B will improve conversion by simplifying above-the-fold copy",
+    "primary_metric": "checkout_conversion_rate",
+    "guardrail_metrics": [
+      "average_order_value",
+      "refund_rate"
+    ],
+    "sample_size_per_variant": 12400,
+    "recommended_duration_days": 14,
+    "stop_rules": [
+      "Stop early only for severe guardrail degradation",
+      "Do not stop for positive trend before minimum sample threshold"
+    ]
+  },
+  "analysis": {
+    "status": "complete",
+    "winner": "treatment",
+    "lift_pct": 6.4,
+    "confidence_assessment": "medium",
+    "decision": "iterate"
+  },
+  "risks": [
+    "Lift below target MDE threshold",
+    "Weekend traffic mix differed from baseline"
+  ],
+  "next_tests": [
+    "Test pricing trust signal placement",
+    "Test shorter checkout form variant"
+  ]
+}

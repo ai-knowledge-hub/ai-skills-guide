@@ -1,11 +1,18 @@
 import Link from "next/link";
 import { loadRegistry, uniqueValues } from "@/lib/registry";
+import { FEATURED_SKILL_IDS, NEW_ALPHA_SKILL_IDS } from "@/lib/home";
 
 export default async function HomePage() {
   const registry = await loadRegistry();
   const skills = registry.skills;
   const categories = uniqueValues(skills.map((s) => s.category));
   const tags = uniqueValues(skills.flatMap((s) => s.tags));
+  const featuredSkills = FEATURED_SKILL_IDS
+    .map((id) => skills.find((skill) => skill.id === id))
+    .filter((skill): skill is (typeof skills)[number] => Boolean(skill));
+  const newAlphaSkills = NEW_ALPHA_SKILL_IDS
+    .map((id) => skills.find((skill) => skill.id === id))
+    .filter((skill): skill is (typeof skills)[number] => Boolean(skill));
 
   return (
     <main>
@@ -55,11 +62,31 @@ export default async function HomePage() {
             <span className="tag">Registry v{registry.registry_version}</span>
             <span className="tag">Generated {registry.generated_at.slice(0, 10)}</span>
           </div>
+          <div className="new-alpha">
+            <p className="meta">New in v0.2 alpha</p>
+            <ul>
+              {newAlphaSkills.map((skill) => (
+                <li key={skill.id}>
+                  <Link href={`/skills/${skill.id}`}>{skill.name}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </article>
       </section>
 
-      <section className="grid">
-        {skills.slice(0, 6).map((skill) => (
+      <section className="featured-section">
+        <div className="section-head">
+          <h2>Featured Skills</h2>
+          <p className="meta">Sample cards from the full catalog.</p>
+          <Link href="/skills" className="button button--secondary">
+            View all {skills.length} skills
+          </Link>
+        </div>
+      </section>
+
+      <section className="grid featured-grid">
+        {featuredSkills.map((skill) => (
           <Link key={skill.id} href={`/skills/${skill.id}`} className="card">
             <p className="meta">{skill.category}</p>
             <h3>{skill.name}</h3>

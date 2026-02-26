@@ -117,6 +117,64 @@
       "deprecated": false
     },
     {
+      "id": "marketing/ab-test-planner-analyzer",
+      "name": "A/B Test Planner + Analyzer",
+      "description": "Plan and analyze A/B tests with explicit hypotheses, sample sizing assumptions, and decision rules.",
+      "category": "marketing-tools/measurement",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-02-23T00:00:00Z",
+          "manifest_url": "https://hub.ai-knowledge-hub.org/skills/marketing/ab-test-planner-analyzer/skill.yaml",
+          "artifact_url": "https://hub.ai-knowledge-hub.org/artifacts/marketing/ab-test-planner-analyzer/0.1.0.tar.gz",
+          "sha256": "774114da87c62eac1cda68ca379c2d87241287cfdadcfafee968358d222f0e3c"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "experimentation",
+        "ab-testing",
+        "hypothesis",
+        "measurement",
+        "decisioning"
+      ],
+      "deprecated": false
+    },
+    {
+      "id": "marketing/ai-output-eval-scorecard",
+      "name": "AI Output Eval Scorecard",
+      "description": "Score AI-generated marketing outputs across accuracy, clarity, brand fit, policy compliance, and actionability.",
+      "category": "marketing-tools/compliance",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-02-23T00:00:00Z",
+          "manifest_url": "https://hub.ai-knowledge-hub.org/skills/marketing/ai-output-eval-scorecard/skill.yaml",
+          "artifact_url": "https://hub.ai-knowledge-hub.org/artifacts/marketing/ai-output-eval-scorecard/0.1.0.tar.gz",
+          "sha256": "5a1b8950e7914ebdfeb6864f137d5b117c1fddb3a68b8093e7569e363c2ffe05"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "evaluation",
+        "governance",
+        "qa",
+        "llm-judge",
+        "risk-control"
+      ],
+      "deprecated": false
+    },
+    {
       "id": "marketing/creative-workshop-pmax-reels",
       "name": "Creative Workshop (PMax + Reels)",
       "description": "Generate channel-specific creative variants for Google PMax and Meta Reels with deterministic length checks.",
@@ -141,6 +199,35 @@
         "pmax",
         "reels",
         "copy-generation"
+      ],
+      "deprecated": false
+    },
+    {
+      "id": "marketing/cross-channel-budget-pacing-agent",
+      "name": "Cross-Channel Budget Pacing Agent",
+      "description": "Monitor pacing across paid channels, detect anomalies, and recommend budget reallocation actions.",
+      "category": "marketing-tools/ads-ops",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-02-23T00:00:00Z",
+          "manifest_url": "https://hub.ai-knowledge-hub.org/skills/marketing/cross-channel-budget-pacing-agent/skill.yaml",
+          "artifact_url": "https://hub.ai-knowledge-hub.org/artifacts/marketing/cross-channel-budget-pacing-agent/0.1.0.tar.gz",
+          "sha256": "7ac6b0350925f9c53e875abf8c57d5bbfe9e5721eba2acb2ea58d6079dee04f8"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "paid-media",
+        "budget-pacing",
+        "anomaly-detection",
+        "meta-ads",
+        "google-ads"
       ],
       "deprecated": false
     },

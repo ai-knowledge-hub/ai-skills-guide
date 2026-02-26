@@ -9,6 +9,13 @@ This repository is the executable companion to our written guide.
 It contains production-oriented `SKILL.md` packages, deterministic
 scripts, test prompts, and contribution standards.
 
+## Positioning
+
+AI Knowledge Hub is an open, runtime-agnostic skills platform for
+marketing and adtech teams. We publish reusable AI skill packages with
+guardrails, tests, and install paths so teams can stop rebuilding the
+same automations in silos.
+
 - Guide article site:
   [ai-news-hub.performics-labs.com](https://ai-news-hub.performics-labs.com)
   (article title: The Agent Architect’s Playbook: Building AI Skills

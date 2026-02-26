@@ -15,8 +15,8 @@ export default async function HomePage() {
       </div>
 
       <section className="hero">
-        <article className="card">
-          <span className="kicker">Open Skill Registry</span>
+        <article className="card hero-mission">
+          <span className="kicker">Open Skills Infrastructure</span>
           <h1 className="display">
             Build
             <br />
@@ -25,10 +25,21 @@ export default async function HomePage() {
             with <span className="accent">real skills.</span>
           </h1>
           <p>
-            Discover reusable AI skill packages, copy runtime-specific install
-            commands, and contribute new workflows via pull requests.
+            AI Knowledge Hub is an open, runtime-agnostic skills platform for
+            marketing and adtech teams.
           </p>
-          <div className="actions">
+          <p>
+            We publish reusable skill packages with guardrails, tests, and
+            install paths so teams can stop rebuilding the same automations in
+            silos.
+          </p>
+        </article>
+        <article className="card">
+          <h2>Catalog Snapshot</h2>
+          <p><span className="meta">Categories:</span> {categories.length}</p>
+          <p><span className="meta">Tags:</span> {tags.length}</p>
+          <p><span className="meta">Runtimes:</span> codex, claude, generic</p>
+          <div className="actions snapshot-actions">
             <Link href="/skills" className="button button--accent">
               Explore catalog
             </Link>
@@ -43,15 +54,6 @@ export default async function HomePage() {
             <span className="tag">{skills.length} skills</span>
             <span className="tag">Registry v{registry.registry_version}</span>
             <span className="tag">Generated {registry.generated_at.slice(0, 10)}</span>
-          </div>
-        </article>
-        <article className="card">
-          <h2>Catalog Snapshot</h2>
-          <p><span className="meta">Categories:</span> {categories.length}</p>
-          <p><span className="meta">Tags:</span> {tags.length}</p>
-          <p><span className="meta">Runtimes:</span> codex, claude, generic</p>
-          <div className="actions">
-            <Link href="/skills" className="button button--secondary">Open full catalog</Link>
           </div>
         </article>
       </section>

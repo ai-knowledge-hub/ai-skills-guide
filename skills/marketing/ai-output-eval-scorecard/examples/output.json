@@ -1,0 +1,24 @@
+{
+  "overall_score": 82,
+  "verdict": "revise",
+  "dimension_scores": {
+    "accuracy": 84,
+    "clarity": 80,
+    "brand_fit": 88,
+    "policy_compliance": 76,
+    "actionability": 82
+  },
+  "critical_findings": [
+    {
+      "severity": "high",
+      "issue": "Unqualified outcome claim",
+      "evidence": "Uses guaranteed performance language",
+      "fix": "Replace with probability-based and evidence-backed claim"
+    }
+  ],
+  "rewrite_recommendations": [
+    "Use measurable but non-guaranteed language",
+    "Add explicit limitations for outcome variability"
+  ],
+  "confidence": "medium"
+}

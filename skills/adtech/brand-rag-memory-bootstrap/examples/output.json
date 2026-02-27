@@ -1,0 +1,35 @@
+{
+  "source_inventory": {
+    "product_docs": 42,
+    "policy_docs": 9,
+    "campaign_reports": 31
+  },
+  "metadata_schema": {
+    "required_fields": [
+      "doc_type",
+      "brand",
+      "product",
+      "audience",
+      "channel",
+      "effective_date"
+    ]
+  },
+  "chunking_plan": {
+    "max_tokens": 600,
+    "overlap_tokens": 80,
+    "citation_required": true
+  },
+  "retrieval_eval_plan": {
+    "golden_questions": 25,
+    "metrics": [
+      "citation_coverage",
+      "answer_relevance",
+      "policy_conflict_rate"
+    ]
+  },
+  "refresh_schedule": {
+    "policy_docs": "weekly",
+    "campaign_reports": "bi-weekly",
+    "product_docs": "monthly"
+  }
+}

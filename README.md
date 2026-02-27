@@ -23,7 +23,7 @@ same automations in silos.
 - Community references:
   [awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills)
 
-## Current Scope (11 practical skills)
+## Current Scope (14 practical skills)
 
 1. `meta-google-weekly-performance-review` (Beginner)
 2. `creative-workshop-pmax-reels` (Intermediate)
@@ -36,12 +36,18 @@ same automations in silos.
 9. `ai-output-eval-scorecard` (Governance / Evaluation)
 10. `cross-channel-budget-pacing-agent` (Ads Ops)
 11. `ab-test-planner-analyzer` (Measurement / Experimentation)
+12. `lifecycle-journey-trigger-designer` (Lifecycle CRM)
+13. `dynamic-creative-rules-engine` (Creative Ops / Personalization)
+14. `brand-rag-memory-bootstrap` (Analytics Engineering / RAG)
 
 ## New in v0.2 alpha
 
 - `ai-output-eval-scorecard`
 - `cross-channel-budget-pacing-agent`
 - `ab-test-planner-analyzer`
+- `lifecycle-journey-trigger-designer`
+- `dynamic-creative-rules-engine`
+- `brand-rag-memory-bootstrap`
 
 ## Definition of done for each skill
 

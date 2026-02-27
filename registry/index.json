@@ -31,6 +31,35 @@
       "deprecated": false
     },
     {
+      "id": "adtech/brand-rag-memory-bootstrap",
+      "name": "Brand RAG Memory Bootstrap",
+      "description": "Build a private retrieval-ready brand memory from product, campaign, and policy context for downstream agent skills.",
+      "category": "adtech/analytics-engineering",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-02-23T00:00:00Z",
+          "manifest_url": "https://hub.ai-knowledge-hub.org/skills/adtech/brand-rag-memory-bootstrap/skill.yaml",
+          "artifact_url": "https://hub.ai-knowledge-hub.org/artifacts/adtech/brand-rag-memory-bootstrap/0.1.0.tar.gz",
+          "sha256": "05de3932e35bfd3b52a58332624d69502847f1a2c2f71d74eb0427fcc3f125be"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "rag",
+        "brand-memory",
+        "knowledge-base",
+        "retrieval",
+        "governance"
+      ],
+      "deprecated": false
+    },
+    {
       "id": "adtech/playwright-agentic-e2e",
       "name": "Playwright Agentic E2E QA",
       "description": "Build and maintain reusable Playwright smoke tests with planner, generator, and healer loops for web app regression checks.",
@@ -232,6 +261,35 @@
       "deprecated": false
     },
     {
+      "id": "marketing/dynamic-creative-rules-engine",
+      "name": "Dynamic Creative Rules Engine",
+      "description": "Define dynamic creative assembly rules per audience and context while enforcing brand and policy constraints.",
+      "category": "marketing-tools/creative-ops",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-02-23T00:00:00Z",
+          "manifest_url": "https://hub.ai-knowledge-hub.org/skills/marketing/dynamic-creative-rules-engine/skill.yaml",
+          "artifact_url": "https://hub.ai-knowledge-hub.org/artifacts/marketing/dynamic-creative-rules-engine/0.1.0.tar.gz",
+          "sha256": "e15dfe6bb25335f6061f78222fef48a8bd7c97e571e19d23790fd9c9c057590e"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "personalization",
+        "creative-ops",
+        "dynamic-creative",
+        "brand-safety",
+        "experimentation"
+      ],
+      "deprecated": false
+    },
+    {
       "id": "marketing/lifecycle-experiment-planner",
       "name": "Lifecycle Experiment Planner",
       "description": "Design lifecycle A/B tests with hypothesis checks, sample-size guidance, and stopping criteria.",
@@ -256,6 +314,35 @@
         "ab-testing",
         "lifecycle",
         "statistics"
+      ],
+      "deprecated": false
+    },
+    {
+      "id": "marketing/lifecycle-journey-trigger-designer",
+      "name": "Lifecycle Journey Trigger Designer",
+      "description": "Design lifecycle triggers and channel sequencing for CRM journeys with measurable guardrails and rollout rules.",
+      "category": "marketing-tools/lifecycle-crm",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-02-23T00:00:00Z",
+          "manifest_url": "https://hub.ai-knowledge-hub.org/skills/marketing/lifecycle-journey-trigger-designer/skill.yaml",
+          "artifact_url": "https://hub.ai-knowledge-hub.org/artifacts/marketing/lifecycle-journey-trigger-designer/0.1.0.tar.gz",
+          "sha256": "276a554d450d20db68f66116718e7bd9ea73b5e5b8b380587660b981c09151c5"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "lifecycle",
+        "crm",
+        "journey-design",
+        "triggers",
+        "retention"
       ],
       "deprecated": false
     },

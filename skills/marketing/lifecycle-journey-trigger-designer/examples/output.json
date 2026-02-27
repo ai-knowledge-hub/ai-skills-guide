@@ -1,0 +1,30 @@
+{
+  "journey_blueprint": {
+    "goal": "Increase 60-day repeat purchase rate",
+    "audience": "Customers with first purchase in last 14 days",
+    "entry_condition": "purchase_completed"
+  },
+  "trigger_rules": [
+    {
+      "stage": "post-purchase day 3",
+      "trigger": "no_second_purchase",
+      "action": "send_email_education"
+    }
+  ],
+  "channel_sequence": [
+    "email_day3",
+    "push_day6",
+    "email_day10"
+  ],
+  "suppression_rules": [
+    "suppress_if_unsubscribed",
+    "max_2_messages_per_7_days"
+  ],
+  "measurement_plan": {
+    "primary_metric": "repeat_purchase_rate_60d",
+    "guardrails": [
+      "unsubscribe_rate",
+      "push_optout_rate"
+    ]
+  }
+}

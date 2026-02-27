@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: help doctor validate manifests registry test-scripts test ci-local cli-build cli-test web-dev web-build web-lint web-e2e
+.PHONY: help doctor validate manifests registry test-scripts test ci-local cli-build cli-test web-dev web-build web-lint web-e2e release-cut
 
 help:
 	@echo "Targets:"
@@ -17,6 +17,7 @@ help:
 	@echo "  make web-build     - Build Next.js hub app"
 	@echo "  make web-lint      - Lint Next.js hub app"
 	@echo "  make web-e2e       - Run Playwright smoke tests for web app"
+	@echo "  make release-cut VERSION=vX.Y.Z[-alpha.N] - Validate and push release tag from main"
 
 doctor:
 	@echo "[check] go"
@@ -63,3 +64,7 @@ web-lint:
 
 web-e2e:
 	cd apps/web && pnpm test:e2e
+
+release-cut:
+	@if [ -z "$(VERSION)" ]; then echo "Usage: make release-cut VERSION=vX.Y.Z[-alpha.N]"; exit 1; fi
+	bash scripts/release-cut.sh "$(VERSION)"

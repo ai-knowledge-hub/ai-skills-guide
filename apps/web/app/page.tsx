@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { loadRegistry, uniqueValues } from "@/lib/registry";
-import { FEATURED_SKILL_IDS, NEW_ALPHA_SKILL_IDS } from "@/lib/home";
+import { FEATURED_SKILL_IDS } from "@/lib/home";
 
 export default async function HomePage() {
   const registry = await loadRegistry();
@@ -10,9 +10,22 @@ export default async function HomePage() {
   const featuredSkills = FEATURED_SKILL_IDS
     .map((id) => skills.find((skill) => skill.id === id))
     .filter((skill): skill is (typeof skills)[number] => Boolean(skill));
-  const newAlphaSkills = NEW_ALPHA_SKILL_IDS
-    .map((id) => skills.find((skill) => skill.id === id))
-    .filter((skill): skill is (typeof skills)[number] => Boolean(skill));
+  const newestSkills = [...skills]
+    .sort((a, b) => {
+      const aDate = new Date(
+        a.versions.find((version) => version.version === a.latest)?.released_at ?? 0
+      ).getTime();
+      const bDate = new Date(
+        b.versions.find((version) => version.version === b.latest)?.released_at ?? 0
+      ).getTime();
+
+      if (bDate !== aDate) {
+        return bDate - aDate;
+      }
+
+      return a.id.localeCompare(b.id);
+    })
+    .slice(0, 3);
 
   return (
     <main>
@@ -63,9 +76,9 @@ export default async function HomePage() {
             <span className="tag">Generated {registry.generated_at.slice(0, 10)}</span>
           </div>
           <div className="new-alpha">
-            <p className="meta">New in v0.2 alpha</p>
+            <p className="meta">Newest skills</p>
             <ul>
-              {newAlphaSkills.map((skill) => (
+              {newestSkills.map((skill) => (
                 <li key={skill.id}>
                   <Link href={`/skills/${skill.id}`}>{skill.name}</Link>
                 </li>

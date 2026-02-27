@@ -1,0 +1,34 @@
+{
+  "segmentation_logic": [
+    "new_visitors",
+    "cart_abandoners",
+    "repeat_buyers"
+  ],
+  "creative_rules": [
+    {
+      "segment": "cart_abandoners",
+      "headline": "Complete your order in 2 minutes",
+      "cta": "Return to cart",
+      "context": "mobile"
+    }
+  ],
+  "blocked_combinations": [
+    {
+      "headline": "Guaranteed results",
+      "cta": "Claim now",
+      "reason": "Unqualified claim risk"
+    }
+  ],
+  "test_matrix": [
+    {
+      "rule_id": "cart-mobile-01",
+      "priority": 1,
+      "hypothesis": "Urgency CTA improves completion rate"
+    }
+  ],
+  "monitoring_metrics": [
+    "ctr",
+    "cvr",
+    "policy_violation_rate"
+  ]
+}

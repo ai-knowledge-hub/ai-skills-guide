@@ -6,11 +6,23 @@
   - 6 practical skills from the guide
   - shared conventions and validation
   - CI and contribution templates
-- v0.3 in progress:
-  - Hub website MVP routes are live in `apps/web`
-  - Playwright smoke E2E is wired into CI
-  - reusable `adtech/playwright-agentic-e2e` QA skill added
-- Current focus: evolve from companion repo to public skills hub.
+- v0.2 delivered:
+  - stable `skill.yaml` and `registry/index.json` contracts
+  - deterministic registry generation and validation in CI
+  - runtime-aware CLI install paths (`codex`, `claude`, `generic`)
+- v0.3 delivered (Hub POC):
+  - public catalog is live at `https://skills.ai-knowledge-hub.org`
+  - Next.js hub routes and install UX are live in `apps/web`
+  - web lint/build + Playwright smoke checks are in CI
+  - release-cut and tag-publish automation are in place
+- Catalog expansion in progress:
+  - current catalog includes marketing, adtech, QA, and BI-oriented skills
+  - BI-related additions now include:
+    - `adtech/weekly-performance-review-bi`
+    - `adtech/dashboard-generator`
+    - `adtech/dashboard-qa-checker`
+    - `adtech/executive-narrative-writer`
+- Current focus: v0.4 trust, governance, and release maturity.
 
 ## v0.2 (Foundation)
 
@@ -62,6 +74,7 @@
 - Users can discover skills and copy install commands.
 - Registry updates are visible on the website after publish.
 - External contributor can submit a skill PR end-to-end.
+- Status: Delivered.
 
 ## v0.4 (Hub Beta)
 
@@ -75,12 +88,17 @@
 - Verified badges and quality scoring signals.
 - Version history and deprecation migration UX.
 - CLI remote install/update from registry URL.
+- BI workflows hardening:
+  - dashboard generation quality checks
+  - executive narrative consistency checks
+  - weekly BI review reliability baselines
 - Optional backend + database only if product needs exceed static flow.
 
 ### Exit Criteria
 
 - Stable release workflow for skills and CLI.
 - Clear governance for review, deprecation, and compatibility.
+- Consistent release cadence with milestone-quality tags.
 
 ## Decision Gates
 

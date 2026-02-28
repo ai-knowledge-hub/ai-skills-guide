@@ -1,0 +1,34 @@
+id: adtech/dashboard-qa-checker
+name: Dashboard QA Checker
+description: Validate dashboard datasets with freshness, completeness, reconciliation, anomaly, and schema drift checks before publish.
+version: 0.1.0
+released_at: "2026-02-27T00:00:00Z"
+category: adtech/analytics-engineering
+tags:
+  - qa
+  - dashboard
+  - data-quality
+  - anomaly-detection
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  scripts_dir: scripts
+  examples_dir: examples
+dependencies:
+  tools:
+    - python3
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

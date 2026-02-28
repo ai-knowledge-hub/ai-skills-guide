@@ -1,0 +1,31 @@
+{
+  "executive_summary": [
+    "Paid Search ROAS improved week over week with stable CPA."
+  ],
+  "channel_table": [
+    {
+      "channel": "Paid Search",
+      "spend": 3200,
+      "conversions": 370,
+      "cpa": 8.65,
+      "roas": 5.5
+    }
+  ],
+  "anomaly_panel": [],
+  "action_panel": [
+    {
+      "priority": 1,
+      "action": "Scale high-ROAS Paid Search campaigns by 10% budget",
+      "confidence": "medium"
+    }
+  ],
+  "publish_payload": {
+    "schema_version": "1.0",
+    "sections": [
+      "executive_summary",
+      "channel_table",
+      "anomaly_panel",
+      "action_panel"
+    ]
+  }
+}

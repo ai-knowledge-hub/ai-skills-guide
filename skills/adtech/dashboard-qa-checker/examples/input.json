@@ -1,0 +1,14 @@
+{
+  "run_id": "weekly-2026-02-22",
+  "freshness_sla_hours": 8,
+  "latest_source_timestamp": "2026-02-22T05:00:00Z",
+  "required_channels": ["Paid Search", "Paid Social"],
+  "source_totals": {
+    "spend": 25100,
+    "conversions": 1420
+  },
+  "dashboard_totals": {
+    "spend": 24780,
+    "conversions": 1409
+  }
+}

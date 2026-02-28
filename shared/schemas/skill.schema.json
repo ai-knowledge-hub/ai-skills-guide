@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://hub.ai-knowledge-hub.org/schemas/skill.schema.json",
+  "$id": "https://skills.ai-knowledge-hub.org/schemas/skill.schema.json",
   "title": "Skill Manifest",
   "type": "object",
   "additionalProperties": false,

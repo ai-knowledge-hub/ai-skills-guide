@@ -1,0 +1,22 @@
+{
+  "run_metadata": {
+    "run_id": "wpr-bi-2026-02-22",
+    "execution_timestamp": "2026-02-27T12:00:00Z"
+  },
+  "publish_decision": "approved",
+  "dashboard_package": {
+    "sections": [
+      "executive_summary",
+      "channel_table",
+      "anomaly_panel",
+      "action_panel"
+    ]
+  },
+  "qa_package": {
+    "status": "approved",
+    "failed_checks": 0
+  },
+  "executive_narrative": {
+    "headline": "Efficiency improved week over week with positive conversion growth."
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "date_window_current": "2026-02-16 to 2026-02-22",
+  "date_window_previous": "2026-02-09 to 2026-02-15",
+  "rows": [
+    {
+      "channel": "Paid Search",
+      "campaign": "Brand",
+      "spend": 3200,
+      "impressions": 210000,
+      "clicks": 8400,
+      "conversions": 370,
+      "revenue": 17600
+    }
+  ]
+}

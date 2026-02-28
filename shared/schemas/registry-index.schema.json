@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://hub.ai-knowledge-hub.org/schemas/registry-index.schema.json",
+  "$id": "https://skills.ai-knowledge-hub.org/schemas/registry-index.schema.json",
   "title": "Skills Registry Index",
   "type": "object",
   "additionalProperties": false,

@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-const baseURL = "https://hub.ai-knowledge-hub.org"
+const baseURL = "https://skills.ai-knowledge-hub.org"
 
 func BuildIndex(root string) (Index, error) {
 	manifests, err := findManifests(filepath.Join(root, "skills"))

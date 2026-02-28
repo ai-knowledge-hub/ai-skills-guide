@@ -20,7 +20,7 @@ This repo is a monorepo. The web app lives at `apps/web`.
 
 Attach custom domain:
 
-- `hub.ai-knowledge-hub.org`
+- `skills.ai-knowledge-hub.org`
 
 Then set DNS records in your DNS provider as instructed by Vercel.
 

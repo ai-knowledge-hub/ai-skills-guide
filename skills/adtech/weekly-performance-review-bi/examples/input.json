@@ -1,0 +1,12 @@
+{
+  "run_id": "wpr-bi-2026-02-22",
+  "date_window_current": "2026-02-16 to 2026-02-22",
+  "date_window_previous": "2026-02-09 to 2026-02-15",
+  "metric_dictionary": ["ctr", "cpc", "cpa", "roas", "cvr"],
+  "qa_thresholds": {
+    "freshness_hours": 8,
+    "reconciliation_tolerance_pct": 1.0,
+    "anomaly_delta_pct": 30
+  },
+  "audience": "CMO"
+}

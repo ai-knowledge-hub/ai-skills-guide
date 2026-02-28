@@ -1,0 +1,15 @@
+{
+  "qa_status": "approved",
+  "headline_metrics": {
+    "spend_delta_pct": 5.2,
+    "conversions_delta_pct": 8.1,
+    "roas_delta_pct": 4.4
+  },
+  "top_drivers": [
+    {
+      "channel": "Paid Search",
+      "impact": "positive",
+      "note": "Brand campaigns increased conversion efficiency"
+    }
+  ]
+}

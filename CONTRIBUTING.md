@@ -11,7 +11,8 @@
 2. Include `SKILL.md`, `README.md`, `tests/test-prompts.md`, and `examples/`.
 3. Add at least 5 realistic prompts with expected behavior.
 4. Document assumptions (APIs, data sources, required tools).
-5. Include risk notes if shell commands, writes, or publishing actions are involved.
+5. Include risk notes if shell commands, writes, or publishing actions are
+   involved.
 
 ## Skill folder standard
 
@@ -55,5 +56,6 @@ first (see `apps/web/README.md`).
 
 ## Branch and commit guidance
 
-- Use short feature branches prefixed with `codex/` (e.g., `codex/skill-utm-linter`).
+- Default flow in this repo is `dev` -> `main`.
+- Keep commits on `dev` focused and reviewable; merge into `main` via PR.
 - Use scoped commit messages (e.g., `feat(skill): add pmax creative workshop`).

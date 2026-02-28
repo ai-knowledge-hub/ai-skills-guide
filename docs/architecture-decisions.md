@@ -14,9 +14,10 @@ into a public skills hub while staying on free-tier infrastructure.
   - lower operational overhead for a small core team
 - Initial modules:
   - `apps/web`
-  - `apps/cli`
-  - `packages/schemas`
-  - `packages/registry-builder`
+  - `cmd/skills-hub`
+  - `cmd/registry-builder`
+  - `shared/schemas`
+  - `internal/*` shared logic
 
 ## Decision 2: Frontend and Hosting
 
@@ -102,18 +103,17 @@ into a public skills hub while staying on free-tier infrastructure.
 ## Vercel Deployment Notes (Web MVP)
 
 - Deploy target: `apps/web`.
-- Build command: `npm run build`.
-- Install command: `npm install`.
+- Build command: `pnpm build`.
+- Install command: `pnpm install --frozen-lockfile`.
 - Output: standard Next.js deployment on Vercel.
 - Environment assumptions:
   - app reads `registry/index.json` from repository at build/runtime
   - no database or auth dependency required for MVP
 - Domain plan:
-  - production custom domain on Vercel
+  - production custom domain on Vercel: `skills.ai-knowledge-hub.org`
   - preview deployments from pull requests
 
 ## Open Questions
 
-- Final public name for the hub website.
 - Whether to split monorepo into multiple repos after beta.
 - Whether verified badge issuance should require signed artifacts.

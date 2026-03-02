@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { loadSkillsRegistry, uniqueValues } from "@/lib/registry";
+import { loadToolsRegistry, uniqueValues } from "@/lib/registry";
 import CatalogClient from "@/components/CatalogClient";
 
 type SearchParams = {
@@ -9,8 +9,8 @@ type SearchParams = {
   runtime?: string;
 };
 
-export default async function SkillsPage({ searchParams }: { searchParams: SearchParams }) {
-  const registry = await loadSkillsRegistry();
+export default async function ToolsMcpPage({ searchParams }: { searchParams: SearchParams }) {
+  const registry = await loadToolsRegistry();
   const q = searchParams.q ?? "";
   const tag = searchParams.tag ?? "";
   const category = searchParams.category ?? "";
@@ -23,19 +23,19 @@ export default async function SkillsPage({ searchParams }: { searchParams: Searc
     <main>
       <div className="nav">
         <Link href="/" className="pill">Home</Link>
+        <Link href="/skills" className="pill">Skills</Link>
         <Link href="/agents" className="pill">Agents</Link>
-        <Link href="/tools-mcp" className="pill">Tools &amp; MCP</Link>
-        <span className="pill">Catalog</span>
+        <span className="pill">Tools &amp; MCP</span>
       </div>
 
-      <h1>Skills Catalog</h1>
-      <p>Filter by intent, runtime, and category to find install-ready skills.</p>
+      <h1>Tools &amp; MCP Catalog</h1>
+      <p>Browse tool integrations and MCP adapters used by skills and agent templates.</p>
 
       <CatalogClient
         entries={registry.skills}
         categories={categories}
         tags={tags}
-        basePath="/skills"
+        basePath="/tools-mcp"
         initial={{ q, tag, category, runtime }}
       />
     </main>

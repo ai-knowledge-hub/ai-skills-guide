@@ -1,10 +1,16 @@
 import Link from "next/link";
-import { loadRegistry, uniqueValues } from "@/lib/registry";
+import { loadAgentsRegistry, loadSkillsRegistry, loadToolsRegistry, uniqueValues } from "@/lib/registry";
 import { FEATURED_SKILL_IDS } from "@/lib/home";
 
 export default async function HomePage() {
-  const registry = await loadRegistry();
-  const skills = registry.skills;
+  const [skillsRegistry, agentsRegistry, toolsRegistry] = await Promise.all([
+    loadSkillsRegistry(),
+    loadAgentsRegistry(),
+    loadToolsRegistry()
+  ]);
+  const skills = skillsRegistry.skills;
+  const agents = agentsRegistry.skills;
+  const tools = toolsRegistry.skills;
   const categories = uniqueValues(skills.map((s) => s.category));
   const tags = uniqueValues(skills.flatMap((s) => s.tags));
   const featuredSkills = FEATURED_SKILL_IDS
@@ -31,7 +37,9 @@ export default async function HomePage() {
     <main>
       <div className="nav">
         <span className="pill">AI Knowledge Hub</span>
-        <Link href="/skills" className="pill">Browse Skills</Link>
+        <Link href="/skills" className="pill">Skills</Link>
+        <Link href="/agents" className="pill">Agents</Link>
+        <Link href="/tools-mcp" className="pill">Tools &amp; MCP</Link>
       </div>
 
       <section className="hero">
@@ -56,12 +64,18 @@ export default async function HomePage() {
         </article>
         <article className="card">
           <h2>Catalog Snapshot</h2>
-          <p><span className="meta">Categories:</span> {categories.length}</p>
-          <p><span className="meta">Tags:</span> {tags.length}</p>
+          <p><span className="meta">Skills categories:</span> {categories.length}</p>
+          <p><span className="meta">Skills tags:</span> {tags.length}</p>
           <p><span className="meta">Runtimes:</span> codex, claude, generic</p>
           <div className="actions snapshot-actions">
             <Link href="/skills" className="button button--accent">
-              Explore catalog
+              Explore skills
+            </Link>
+            <Link href="/agents" className="button button--secondary">
+              Browse agents
+            </Link>
+            <Link href="/tools-mcp" className="button button--secondary">
+              Browse tools
             </Link>
             <a
               href="https://github.com/ai-knowledge-hub/ai-skills-guide"
@@ -72,8 +86,10 @@ export default async function HomePage() {
           </div>
           <div className="tags">
             <span className="tag">{skills.length} skills</span>
-            <span className="tag">Registry v{registry.registry_version}</span>
-            <span className="tag">Generated {registry.generated_at.slice(0, 10)}</span>
+            <span className="tag">{agents.length} agents</span>
+            <span className="tag">{tools.length} tools</span>
+            <span className="tag">Skills registry v{skillsRegistry.registry_version}</span>
+            <span className="tag">Generated {skillsRegistry.generated_at.slice(0, 10)}</span>
           </div>
           <div className="new-alpha">
             <p className="meta">Newest skills</p>

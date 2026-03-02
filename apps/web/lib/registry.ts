@@ -1,6 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
+export type ModuleKey = "skills" | "agents" | "tools";
+
 export type VersionEntry = {
   version: string;
   released_at: string;
@@ -9,7 +11,7 @@ export type VersionEntry = {
   sha256: string;
 };
 
-export type SkillEntry = {
+export type RegistryEntry = {
   id: string;
   name: string;
   description: string;
@@ -25,24 +27,62 @@ export type SkillEntry = {
 export type RegistryIndex = {
   registry_version: string;
   generated_at: string;
-  skills: SkillEntry[];
+  skills: RegistryEntry[];
 };
 
-function registryPath() {
-  return path.resolve(process.cwd(), "..", "..", "registry", "index.json");
+export type SkillEntry = RegistryEntry;
+
+function moduleIndexPath(module: ModuleKey) {
+  const base = path.resolve(process.cwd(), "..", "..", "registry");
+  if (module === "skills") {
+    return path.join(base, "skills-index.json");
+  }
+  if (module === "agents") {
+    return path.join(base, "agents-index.json");
+  }
+  return path.join(base, "tools-index.json");
 }
 
-export async function loadRegistry(): Promise<RegistryIndex> {
-  const data = await fs.readFile(registryPath(), "utf-8");
+async function resolveRegistryPath(module: ModuleKey) {
+  const primary = moduleIndexPath(module);
+  if (module !== "skills") {
+    return primary;
+  }
+  try {
+    await fs.access(primary);
+    return primary;
+  } catch {
+    return path.resolve(process.cwd(), "..", "..", "registry", "index.json");
+  }
+}
+
+export async function loadRegistry(module: ModuleKey = "skills"): Promise<RegistryIndex> {
+  const data = await fs.readFile(await resolveRegistryPath(module), "utf-8");
   return JSON.parse(data) as RegistryIndex;
 }
 
-export async function getSkillById(id: string): Promise<SkillEntry | undefined> {
-  const registry = await loadRegistry();
+export async function loadSkillsRegistry() {
+  return loadRegistry("skills");
+}
+
+export async function loadAgentsRegistry() {
+  return loadRegistry("agents");
+}
+
+export async function loadToolsRegistry() {
+  return loadRegistry("tools");
+}
+
+export async function getEntryById(module: ModuleKey, id: string): Promise<RegistryEntry | undefined> {
+  const registry = await loadRegistry(module);
   return registry.skills.find((s) => s.id === id);
 }
 
-export function buildInstallSnippet(skill: SkillEntry, runtime: "codex" | "claude" | "generic") {
+export async function getSkillById(id: string): Promise<SkillEntry | undefined> {
+  return getEntryById("skills", id);
+}
+
+export function buildInstallSnippet(skill: RegistryEntry, runtime: "codex" | "claude" | "generic") {
   const base = `./bin/skills-hub install ${skill.id}@${skill.latest}`;
   if (runtime === "generic") {
     return `${base} --runtime generic --target ./my-agent/skills`;

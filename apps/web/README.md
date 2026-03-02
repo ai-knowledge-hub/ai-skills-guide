@@ -27,6 +27,12 @@ Run tests:
 pnpm test:e2e
 ```
 
+Current smoke coverage:
+- home module navigation
+- skills catalog and skill detail
+- agents catalog and agent detail
+- tools-mcp catalog and tool detail
+
 ## Build
 
 ```bash
@@ -39,3 +45,7 @@ pnpm start
 - `/` overview
 - `/skills` catalog with filters
 - `/skills/<category>/<slug>` skill details with install snippets
+- `/agents` catalog with filters
+- `/agents/<category>/<slug>` agent details
+- `/tools-mcp` catalog with filters
+- `/tools-mcp/<category>/<slug>` tool and MCP details

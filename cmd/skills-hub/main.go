@@ -50,12 +50,17 @@ func main() {
 
 func runList(args []string) error {
 	fs := flag.NewFlagSet("list", flag.ContinueOnError)
-	registryPath := fs.String("registry", "registry/index.json", "registry index path")
+	module := fs.String("module", "skills", "module: skills|agents|tools")
+	registryPath := fs.String("registry", "", "registry index path (defaults by module)")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
+	moduleName, err := normalizeModule(*module)
+	if err != nil {
+		return err
+	}
 
-	idx, err := registry.LoadIndex(*registryPath)
+	idx, err := registry.LoadIndex(resolveRegistryPath(*registryPath, moduleName))
 	if err != nil {
 		return err
 	}
@@ -71,7 +76,8 @@ func runList(args []string) error {
 
 func runSearch(args []string) error {
 	fs := flag.NewFlagSet("search", flag.ContinueOnError)
-	registryPath := fs.String("registry", "registry/index.json", "registry index path")
+	module := fs.String("module", "skills", "module: skills|agents|tools")
+	registryPath := fs.String("registry", "", "registry index path (defaults by module)")
 	text := fs.String("q", "", "free text search against id/name/description")
 	tag := fs.String("tag", "", "filter by tag")
 	category := fs.String("category", "", "filter by category")
@@ -79,8 +85,12 @@ func runSearch(args []string) error {
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
+	moduleName, err := normalizeModule(*module)
+	if err != nil {
+		return err
+	}
 
-	idx, err := registry.LoadIndex(*registryPath)
+	idx, err := registry.LoadIndex(resolveRegistryPath(*registryPath, moduleName))
 	if err != nil {
 		return err
 	}
@@ -99,28 +109,38 @@ func runSearch(args []string) error {
 
 func runInfo(args []string) error {
 	fs := flag.NewFlagSet("info", flag.ContinueOnError)
-	registryPath := fs.String("registry", "registry/index.json", "registry index path")
-	skillsRoot := fs.String("root", "skills", "skills root directory")
+	module := fs.String("module", "skills", "module: skills|agents|tools")
+	registryPath := fs.String("registry", "", "registry index path (defaults by module)")
+	entriesRoot := fs.String("root", "", "module root directory (defaults by module)")
 	skillSpec := fs.String("skill", "", "skill id, optionally with @version")
+	entrySpec := fs.String("entry", "", "entry id, optionally with @version")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
-	if *skillSpec == "" {
-		return errors.New("--skill is required")
+	moduleName, err := normalizeModule(*module)
+	if err != nil {
+		return err
+	}
+	selectedSpec := strings.TrimSpace(*entrySpec)
+	if selectedSpec == "" {
+		selectedSpec = strings.TrimSpace(*skillSpec)
+	}
+	if selectedSpec == "" {
+		return errors.New("--entry is required (or use legacy --skill)")
 	}
 
-	id, requestedVersion, err := parseSkillSpec(*skillSpec)
+	id, requestedVersion, err := parseSkillSpec(selectedSpec)
 	if err != nil {
 		return err
 	}
 
-	idx, err := registry.LoadIndex(*registryPath)
+	idx, err := registry.LoadIndex(resolveRegistryPath(*registryPath, moduleName))
 	if err != nil {
 		return err
 	}
 	skill, ok := registry.FindSkill(idx, id)
 	if !ok {
-		return fmt.Errorf("skill not found in registry: %s", id)
+		return fmt.Errorf("entry not found in registry: %s", id)
 	}
 	resolvedVersion, err := registry.ResolveVersion(skill, requestedVersion)
 	if err != nil {
@@ -134,7 +154,7 @@ func runInfo(args []string) error {
 	sort.Strings(versions)
 
 	fmt.Printf("id: %s\n", skill.ID)
-	fmt.Printf("path: %s\n", filepath.Join(*skillsRoot, filepath.FromSlash(skill.ID)))
+	fmt.Printf("path: %s\n", filepath.Join(resolveModuleRoot(*entriesRoot, moduleName), filepath.FromSlash(skill.ID)))
 	fmt.Printf("name: %s\n", skill.Name)
 	fmt.Printf("description: %s\n", skill.Description)
 	fmt.Printf("category: %s\n", skill.Category)
@@ -180,22 +200,31 @@ func runInstall(args []string) error {
 	}
 
 	fs := flag.NewFlagSet("install", flag.ContinueOnError)
-	skillsRoot := fs.String("root", "skills", "skills root directory")
-	registryPath := fs.String("registry", "registry/index.json", "registry index path")
+	module := fs.String("module", "skills", "module: skills|agents|tools")
+	entriesRoot := fs.String("root", "", "module root directory (defaults by module)")
+	registryPath := fs.String("registry", "", "registry index path (defaults by module)")
 	runtimeName := fs.String("runtime", "generic", "runtime adapter: codex|claude|generic")
-	target := fs.String("target", "", "destination skills directory (optional for codex/claude)")
+	target := fs.String("target", "", "destination module directory (optional for codex/claude)")
 	skillSpecFlag := fs.String("skill", "", "skill id, optionally with @version")
+	entrySpecFlag := fs.String("entry", "", "entry id, optionally with @version")
 	force := fs.Bool("force", false, "overwrite destination if it already exists")
 	if err := fs.Parse(parsedArgs); err != nil {
 		return err
 	}
+	moduleName, err := normalizeModule(*module)
+	if err != nil {
+		return err
+	}
 
-	skillSpec := strings.TrimSpace(*skillSpecFlag)
+	skillSpec := strings.TrimSpace(*entrySpecFlag)
+	if skillSpec == "" {
+		skillSpec = strings.TrimSpace(*skillSpecFlag)
+	}
 	if skillSpec == "" {
 		skillSpec = positionalSpec
 	}
 	if skillSpec == "" {
-		return errors.New("skill is required (use --skill <id[@version]> or positional <id[@version]>)")
+		return errors.New("entry is required (use --entry <id[@version]>, --skill, or positional <id[@version]>)")
 	}
 
 	id, requestedVersion, err := parseSkillSpec(skillSpec)
@@ -203,13 +232,13 @@ func runInstall(args []string) error {
 		return err
 	}
 
-	idx, err := registry.LoadIndex(*registryPath)
+	idx, err := registry.LoadIndex(resolveRegistryPath(*registryPath, moduleName))
 	if err != nil {
 		return err
 	}
 	skill, ok := registry.FindSkill(idx, id)
 	if !ok {
-		return fmt.Errorf("skill not found in registry: %s", id)
+		return fmt.Errorf("entry not found in registry: %s", id)
 	}
 	resolvedVersion, err := registry.ResolveVersion(skill, requestedVersion)
 	if err != nil {
@@ -224,12 +253,12 @@ func runInstall(args []string) error {
 		fmt.Fprintln(os.Stderr)
 	}
 
-	sourceDir := filepath.Join(*skillsRoot, filepath.FromSlash(skill.ID))
+	sourceDir := filepath.Join(resolveModuleRoot(*entriesRoot, moduleName), filepath.FromSlash(skill.ID))
 	if stat, statErr := os.Stat(sourceDir); statErr != nil || !stat.IsDir() {
 		return fmt.Errorf("local source not found for %s at %s", skill.ID, sourceDir)
 	}
 
-	rt, err := installer.ResolveRuntimeTarget(*runtimeName, *target)
+	rt, err := installer.ResolveRuntimeTargetForModule(*runtimeName, moduleName, *target)
 	if err != nil {
 		return err
 	}
@@ -265,25 +294,76 @@ func parseSkillSpec(spec string) (string, string, error) {
 
 func printUsage() {
 	lines := []string{
-		"skills-hub: manage local marketing/adtech skill packages",
+		"skills-hub: manage local marketing/adtech skill, agent, and tool packages",
 		"",
 		"Usage:",
 		"  skills-hub <command> [flags]",
 		"",
 		"Commands:",
-		"  list      List skills from registry/index.json",
-		"  search    Search skills by text/tag/category/runtime",
-		"  info      Show details for one skill",
+		"  list      List entries from module registry index",
+		"  search    Search entries by text/tag/category/runtime",
+		"  info      Show details for one entry",
 		"  validate  Validate local skill structure and prompt coverage",
-		"  install   Install a local skill package resolved from registry metadata",
+		"  install   Install a local module entry resolved from registry metadata",
 		"",
 		"Examples:",
 		"  skills-hub list",
 		"  skills-hub search --tag paid-media --runtime codex",
 		"  skills-hub info --skill marketing/meta-google-weekly-performance-review@latest",
+		"  skills-hub info --module agents --entry marketing/weekly-performance-supervisor@latest",
 		"  skills-hub validate",
 		"  skills-hub install marketing/meta-google-weekly-performance-review@latest --runtime codex",
+		"  skills-hub install --module agents --entry marketing/weekly-performance-supervisor@latest --runtime codex",
 		"  skills-hub install --skill marketing/meta-google-weekly-performance-review@0.1.0 --runtime generic --target ./my-agent/skills",
 	}
 	fmt.Println(strings.Join(lines, "\n"))
+}
+
+func normalizeModule(raw string) (string, error) {
+	module := strings.ToLower(strings.TrimSpace(raw))
+	if module == "" {
+		module = "skills"
+	}
+	switch module {
+	case "skills", "skill":
+		return "skills", nil
+	case "agents", "agent":
+		return "agents", nil
+	case "tools", "tool", "tools-mcp":
+		return "tools", nil
+	default:
+		return "", fmt.Errorf("unsupported module: %s (supported: skills, agents, tools)", raw)
+	}
+}
+
+func resolveRegistryPath(explicit, module string) string {
+	if strings.TrimSpace(explicit) != "" {
+		return explicit
+	}
+	switch module {
+	case "skills":
+		return "registry/skills-index.json"
+	case "agents":
+		return "registry/agents-index.json"
+	case "tools":
+		return "registry/tools-index.json"
+	default:
+		return "registry/index.json"
+	}
+}
+
+func resolveModuleRoot(explicit, module string) string {
+	if strings.TrimSpace(explicit) != "" {
+		return explicit
+	}
+	switch module {
+	case "skills":
+		return "skills"
+	case "agents":
+		return "agents"
+	case "tools":
+		return "tools-mcp"
+	default:
+		return "skills"
+	}
 }

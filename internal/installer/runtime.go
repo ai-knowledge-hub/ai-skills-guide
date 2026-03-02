@@ -14,9 +14,17 @@ type RuntimeTarget struct {
 }
 
 func ResolveRuntimeTarget(runtimeName, explicitTarget string) (RuntimeTarget, error) {
+	return ResolveRuntimeTargetForModule(runtimeName, "skills", explicitTarget)
+}
+
+func ResolveRuntimeTargetForModule(runtimeName, moduleName, explicitTarget string) (RuntimeTarget, error) {
 	runtime := strings.ToLower(strings.TrimSpace(runtimeName))
 	if runtime == "" {
 		runtime = "generic"
+	}
+	moduleDir, err := normalizeModuleDir(moduleName)
+	if err != nil {
+		return RuntimeTarget{}, err
 	}
 
 	if strings.TrimSpace(explicitTarget) != "" {
@@ -29,9 +37,9 @@ func ResolveRuntimeTarget(runtimeName, explicitTarget string) (RuntimeTarget, er
 
 	switch runtime {
 	case "codex":
-		return RuntimeTarget{Runtime: runtime, TargetPath: codexDefaultSkillsDir()}, nil
+		return RuntimeTarget{Runtime: runtime, TargetPath: codexDefaultDir(moduleDir)}, nil
 	case "claude":
-		return RuntimeTarget{Runtime: runtime, TargetPath: claudeDefaultSkillsDir()}, nil
+		return RuntimeTarget{Runtime: runtime, TargetPath: claudeDefaultDir(moduleDir)}, nil
 	case "generic", "custom", "other":
 		return RuntimeTarget{}, errors.New("--target is required for generic/custom runtimes")
 	default:
@@ -39,27 +47,44 @@ func ResolveRuntimeTarget(runtimeName, explicitTarget string) (RuntimeTarget, er
 	}
 }
 
-func codexDefaultSkillsDir() string {
+func codexDefaultDir(moduleDir string) string {
 	if codexHome := strings.TrimSpace(os.Getenv("CODEX_HOME")); codexHome != "" {
-		return filepath.Join(codexHome, "skills")
+		return filepath.Join(codexHome, moduleDir)
 	}
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return ".codex/skills"
+		return filepath.Join(".codex", moduleDir)
 	}
-	return filepath.Join(home, ".codex", "skills")
+	return filepath.Join(home, ".codex", moduleDir)
 }
 
-func claudeDefaultSkillsDir() string {
+func claudeDefaultDir(moduleDir string) string {
 	if claudeHome := strings.TrimSpace(os.Getenv("CLAUDE_HOME")); claudeHome != "" {
-		return filepath.Join(claudeHome, "skills")
+		return filepath.Join(claudeHome, moduleDir)
 	}
 	if claudeCodeHome := strings.TrimSpace(os.Getenv("CLAUDE_CODE_HOME")); claudeCodeHome != "" {
-		return filepath.Join(claudeCodeHome, "skills")
+		return filepath.Join(claudeCodeHome, moduleDir)
 	}
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return ".claude/skills"
+		return filepath.Join(".claude", moduleDir)
 	}
-	return filepath.Join(home, ".claude", "skills")
+	return filepath.Join(home, ".claude", moduleDir)
+}
+
+func normalizeModuleDir(moduleName string) (string, error) {
+	module := strings.ToLower(strings.TrimSpace(moduleName))
+	if module == "" {
+		module = "skills"
+	}
+	switch module {
+	case "skills", "skill":
+		return "skills", nil
+	case "agents", "agent":
+		return "agents", nil
+	case "tools", "tool", "tools-mcp":
+		return "tools-mcp", nil
+	default:
+		return "", fmt.Errorf("unsupported module: %s (supported: skills, agents, tools)", moduleName)
+	}
 }

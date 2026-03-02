@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "prepare:assets": "node scripts/prepare-public-assets.mjs",
+    "build": "pnpm prepare:assets && next build",
     "start": "next start",
     "lint": "next lint",
     "test:e2e:setup": "playwright install chromium",

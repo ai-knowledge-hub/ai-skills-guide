@@ -29,6 +29,7 @@ adtech teams. We publish reusable building blocks across three modules:
 ## Current Scope
 
 ### Skills (18)
+
 1. `meta-google-weekly-performance-review` (Beginner)
 2. `creative-workshop-pmax-reels` (Intermediate)
 3. `lifecycle-experiment-planner` (Intermediate)
@@ -171,6 +172,7 @@ make registry
 ```
 
 This now writes:
+
 - `registry/skills-index.json`
 - `registry/agents-index.json`
 - `registry/tools-index.json`

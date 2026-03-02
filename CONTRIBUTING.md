@@ -11,7 +11,8 @@
    - `skills/<domain>/<slug>`
    - `agents/<domain>/<slug>`
    - `tools-mcp/<domain>/<slug>`
-2. Include spec file (`SKILL.md` or `AGENT.md` or `TOOL.md`), `README.md`, `tests/test-prompts.md`, and `examples/`.
+2. Include spec file (`SKILL.md` or `AGENT.md` or `TOOL.md`),
+   `README.md`, `tests/test-prompts.md`, and `examples/`.
 3. Include correct manifest (`skill.yaml`, `agent.yaml`, or `tool.yaml`).
 4. Ensure at least 5 realistic prompts with expected behavior.
 5. Document assumptions (APIs, data sources, required tools).

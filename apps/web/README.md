@@ -28,6 +28,7 @@ pnpm test:e2e
 ```
 
 Current smoke coverage:
+
 - home module navigation
 - skills catalog and skill detail
 - agents catalog and agent detail
@@ -36,9 +37,14 @@ Current smoke coverage:
 ## Build
 
 ```bash
+pnpm prepare:assets
 pnpm build
 pnpm start
 ```
+
+`pnpm prepare:assets` copies module manifests and packages tarball artifacts
+from repository source into `apps/web/public` so `manifest_url` and
+`artifact_url` links resolve in production.
 
 ## Routes
 

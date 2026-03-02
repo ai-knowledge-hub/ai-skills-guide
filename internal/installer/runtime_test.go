@@ -48,3 +48,27 @@ func TestResolveRuntimeTargetGenericNeedsTarget(t *testing.T) {
 		t.Fatalf("expected error for missing target")
 	}
 }
+
+func TestResolveRuntimeTargetForModuleAgents(t *testing.T) {
+	t.Setenv("CODEX_HOME", "/tmp/codex-home")
+	target, err := ResolveRuntimeTargetForModule("codex", "agents", "")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	expected := filepath.Join("/tmp/codex-home", "agents")
+	if target.TargetPath != expected {
+		t.Fatalf("expected %s, got %s", expected, target.TargetPath)
+	}
+}
+
+func TestResolveRuntimeTargetForModuleToolsMcp(t *testing.T) {
+	t.Setenv("CLAUDE_HOME", "/tmp/claude-home")
+	target, err := ResolveRuntimeTargetForModule("claude", "tools", "")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	expected := filepath.Join("/tmp/claude-home", "tools-mcp")
+	if target.TargetPath != expected {
+		t.Fatalf("expected %s, got %s", expected, target.TargetPath)
+	}
+}

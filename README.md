@@ -196,6 +196,18 @@ Example usage:
   marketing/meta-google-weekly-performance-review@0.1.0 \
   --runtime generic \
   --target ./my-agent/skills
+./bin/skills-hub info \
+  --module agents \
+  --entry adtech/bi-insights-orchestrator@latest
+./bin/skills-hub install \
+  --module agents \
+  --entry marketing/weekly-performance-supervisor@latest \
+  --runtime codex
+./bin/skills-hub install \
+  --module tools \
+  --entry analytics/ga4-mcp-connector@latest \
+  --runtime generic \
+  --target ./my-agent/tools-mcp
 ```
 
 Runtime target defaults:
@@ -240,3 +252,14 @@ cd apps/web
 pnpm test:e2e:setup
 pnpm test:e2e
 ```
+
+Static manifest/artifact URLs:
+
+- During web build, `pnpm prepare:assets` generates static files under
+  `apps/web/public`.
+- This makes registry `manifest_url` and `artifact_url` resolvable on
+  production routes like:
+  - `/skills/.../skill.yaml`
+  - `/agents/.../agent.yaml`
+  - `/tools-mcp/.../tool.yaml`
+  - `/artifacts/<id>/<version>.tar.gz`

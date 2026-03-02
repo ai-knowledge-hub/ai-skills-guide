@@ -30,8 +30,8 @@ jobs:
         run: make registry
       - name: Validate manifests and registry schemas
         run: bash scripts/validate-manifests.sh
-      - name: Ensure registry index is committed
-        run: git diff --exit-code registry/index.json
+      - name: Ensure registry indexes are committed
+        run: git diff --exit-code registry/index.json registry/skills-index.json registry/agents-index.json registry/tools-index.json
 
   markdown:
     runs-on: ubuntu-latest

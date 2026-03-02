@@ -1,0 +1,34 @@
+id: marketing/campaign-qa-supervisor
+name: Campaign QA Supervisor
+description: Validate campaign setup quality, tracking integrity, and policy compliance before launch or major edits.
+version: 0.1.0
+released_at: "2026-03-02T00:00:00Z"
+category: marketing-agents/governance
+tags:
+  - campaign-qa
+  - policy
+  - governance
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  spec: AGENT.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  skills:
+    - adtech/policy-brand-compliance-checker
+  tools:
+    - campaign_config_reader
+    - slack_post
+verification:
+  tests_min_prompts: 5
+  security_reviewed: false
+deprecated: false

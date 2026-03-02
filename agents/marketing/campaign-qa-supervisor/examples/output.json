@@ -1,0 +1,6 @@
+{
+  "status": "warn",
+  "critical_failures": 0,
+  "warnings": ["utm_campaign missing naming suffix"],
+  "actions": ["Update UTM naming to required convention"]
+}

@@ -1,0 +1,87 @@
+{
+  "registry_version": "1.0",
+  "generated_at": "2026-03-02T00:00:00Z",
+  "skills": [
+    {
+      "id": "adtech/bi-insights-orchestrator",
+      "name": "BI Insights Orchestrator",
+      "description": "Orchestrate warehouse and ad platform data analysis into standardized BI insights with QA-aware controls.",
+      "category": "adtech-agents/analytics",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-02T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/agents/adtech/bi-insights-orchestrator/agent.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/bi-insights-orchestrator/0.1.0.tar.gz",
+          "sha256": "dfe8275313e50fe7ca6044946e56a722e9201f640e19e6a254d85cbb6fb98336"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "bi",
+        "analytics",
+        "orchestration"
+      ],
+      "deprecated": false
+    },
+    {
+      "id": "marketing/campaign-qa-supervisor",
+      "name": "Campaign QA Supervisor",
+      "description": "Validate campaign setup quality, tracking integrity, and policy compliance before launch or major edits.",
+      "category": "marketing-agents/governance",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-02T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/agents/marketing/campaign-qa-supervisor/agent.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/campaign-qa-supervisor/0.1.0.tar.gz",
+          "sha256": "2ce4cba13aa763f3e4443c8b2781853fc0fc15dac3f42c27cb9067a64b8dbcdc"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "campaign-qa",
+        "policy",
+        "governance"
+      ],
+      "deprecated": false
+    },
+    {
+      "id": "marketing/weekly-performance-supervisor",
+      "name": "Weekly Performance Supervisor",
+      "description": "Orchestrate weekly performance reporting by chaining dashboard generation, QA checks, and executive narrative output.",
+      "category": "marketing-agents/performance",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-02T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/agents/marketing/weekly-performance-supervisor/agent.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/weekly-performance-supervisor/0.1.0.tar.gz",
+          "sha256": "16de9fb13df6dd4864a4b51d0706a7846c1fc048b22d7ff9b1ebe082da3d33af"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "weekly-reporting",
+        "orchestration",
+        "qa-gating"
+      ],
+      "deprecated": false
+    }
+  ]
+}

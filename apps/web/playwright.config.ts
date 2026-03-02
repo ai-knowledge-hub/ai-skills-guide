@@ -6,7 +6,8 @@ const webAppRoot = __dirname;
 export default defineConfig({
   testDir: path.join(webAppRoot, "e2e"),
   outputDir: path.join(webAppRoot, "test-results"),
-  fullyParallel: true,
+  fullyParallel: !!process.env.CI,
+  workers: process.env.CI ? undefined : 1,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? [["github"], ["html", { open: "never" }]] : [["list"], ["html", { open: "never" }]],
   use: {

@@ -1,0 +1,5 @@
+{
+  "window_current": "2026-02-23 to 2026-03-01",
+  "window_previous": "2026-02-16 to 2026-02-22",
+  "sources": ["GA4", "BigQuery", "Meta Ads"]
+}

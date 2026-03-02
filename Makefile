@@ -5,9 +5,9 @@ SHELL := /bin/bash
 help:
 	@echo "Targets:"
 	@echo "  make doctor        - Verify local toolchain prerequisites"
-	@echo "  make validate      - Validate skill structure and standards"
-	@echo "  make manifests     - Validate skill.yaml and registry index schemas"
-	@echo "  make registry      - Generate registry/index.json from skill manifests"
+	@echo "  make validate      - Validate module structure and standards"
+	@echo "  make manifests     - Validate skill/agent/tool manifests and registry schemas"
+	@echo "  make registry      - Generate skills, agents, tools, and compatibility indexes"
 	@echo "  make test-scripts  - Run deterministic script checks"
 	@echo "  make test          - Run all local tests (validate + test-scripts)"
 	@echo "  make ci-local      - Run local checks similar to CI"

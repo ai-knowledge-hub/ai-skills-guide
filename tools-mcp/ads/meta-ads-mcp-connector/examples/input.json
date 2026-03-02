@@ -1,0 +1,5 @@
+{
+  "account_id": "act_1234567890",
+  "date_range": "2026-02-23 to 2026-03-01",
+  "fields": ["campaign_name", "spend", "impressions", "clicks", "actions"]
+}

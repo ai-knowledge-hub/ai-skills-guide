@@ -2,8 +2,11 @@
 
 ## Track A: Marketing Practitioner (no coding required)
 
-1. Choose one skill matching your repeated workflow.
-2. Copy `SKILL.md` into your runtime skill directory.
+1. Choose one entry matching your workflow:
+   - `skills/` for task-level expertise
+   - `agents/` for orchestrated templates
+   - `tools-mcp/` for integration connectors
+2. Copy the module spec (`SKILL.md`, `AGENT.md`, or `TOOL.md`) into your runtime workflow.
 3. Run the prompts in `tests/test-prompts.md`.
 4. Evaluate output consistency against expected format.
 5. Tune wording and constraints, then re-test.
@@ -28,3 +31,8 @@ If you are working on the website catalog:
 2. `pnpm install`
 3. `pnpm dev`
 4. `pnpm test:e2e`
+
+Primary routes:
+- `/skills`
+- `/agents`
+- `/tools-mcp`

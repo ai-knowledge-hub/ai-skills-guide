@@ -1,0 +1,6 @@
+{
+  "status": "approved",
+  "normalized_metrics": ["ctr", "cpc", "cpa", "roas", "cvr"],
+  "anomaly_count": 2,
+  "publish_recommendation": "approved"
+}

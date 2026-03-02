@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { loadRegistry, uniqueValues } from "@/lib/registry";
-import SkillsCatalogClient from "@/components/SkillsCatalogClient";
+import { loadSkillsRegistry, uniqueValues } from "@/lib/registry";
+import CatalogClient from "@/components/CatalogClient";
 
 type SearchParams = {
   q?: string;
@@ -10,7 +10,7 @@ type SearchParams = {
 };
 
 export default async function SkillsPage({ searchParams }: { searchParams: SearchParams }) {
-  const registry = await loadRegistry();
+  const registry = await loadSkillsRegistry();
   const q = searchParams.q ?? "";
   const tag = searchParams.tag ?? "";
   const category = searchParams.category ?? "";
@@ -23,16 +23,19 @@ export default async function SkillsPage({ searchParams }: { searchParams: Searc
     <main>
       <div className="nav">
         <Link href="/" className="pill">Home</Link>
+        <Link href="/agents" className="pill">Agents</Link>
+        <Link href="/tools-mcp" className="pill">Tools &amp; MCP</Link>
         <span className="pill">Catalog</span>
       </div>
 
       <h1>Skills Catalog</h1>
       <p>Filter by intent, runtime, and category to find install-ready skills.</p>
 
-      <SkillsCatalogClient
-        skills={registry.skills}
+      <CatalogClient
+        entries={registry.skills}
         categories={categories}
         tags={tags}
+        basePath="/skills"
         initial={{ q, tag, category, runtime }}
       />
     </main>

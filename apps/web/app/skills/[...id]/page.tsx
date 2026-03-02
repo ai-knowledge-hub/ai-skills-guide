@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { buildInstallSnippet, getSkillById, loadRegistry } from "@/lib/registry";
+import { buildInstallSnippet, getSkillById, loadSkillsRegistry } from "@/lib/registry";
 import InstallCommands from "@/components/InstallCommands";
 
 export async function generateStaticParams() {
-  const registry = await loadRegistry();
+  const registry = await loadSkillsRegistry();
   return registry.skills.map((skill) => ({ id: skill.id.split("/") }));
 }
 
@@ -20,6 +20,8 @@ export default async function SkillDetailPage({ params }: { params: { id: string
       <div className="nav">
         <Link href="/" className="pill">Home</Link>
         <Link href="/skills" className="pill">Catalog</Link>
+        <Link href="/agents" className="pill">Agents</Link>
+        <Link href="/tools-mcp" className="pill">Tools &amp; MCP</Link>
         <span className="pill">{skill.id}</span>
       </div>
 

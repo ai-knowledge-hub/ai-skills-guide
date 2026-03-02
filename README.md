@@ -1,7 +1,8 @@
 # AI Skills Guide
 
 Practical, reusable AI skills for marketing practitioners and ad-tech
-software engineers, plus a hub UI and QA automation flows.
+software engineers, plus agent templates, tools/MCP definitions, a hub UI,
+and QA automation flows.
 
 ## What this repo is
 
@@ -11,10 +12,12 @@ scripts, test prompts, and contribution standards.
 
 ## Positioning
 
-AI Knowledge Hub is an open, runtime-agnostic skills platform for
-marketing and adtech teams. We publish reusable AI skill packages with
-guardrails, tests, and install paths so teams can stop rebuilding the
-same automations in silos.
+AI Knowledge Hub is an open, runtime-agnostic platform for marketing and
+adtech teams. We publish reusable building blocks across three modules:
+
+- skills (task-level expertise)
+- agents (orchestrated templates)
+- tools & MCP connectors (integration layer)
 
 - Guide article site:
   [ai-news-hub.performics-labs.com](https://ai-news-hub.performics-labs.com)
@@ -23,8 +26,9 @@ same automations in silos.
 - Community references:
   [awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills)
 
-## Current Scope (18 practical skills)
+## Current Scope
 
+### Skills (18)
 1. `meta-google-weekly-performance-review` (Beginner)
 2. `creative-workshop-pmax-reels` (Intermediate)
 3. `lifecycle-experiment-planner` (Intermediate)
@@ -44,7 +48,19 @@ same automations in silos.
 17. `dashboard-qa-checker` (BI QA)
 18. `executive-narrative-writer` (BI Insights Communication)
 
-## New in v0.2 alpha
+### Agents (3)
+
+1. `marketing/weekly-performance-supervisor`
+2. `marketing/campaign-qa-supervisor`
+3. `adtech/bi-insights-orchestrator`
+
+### Tools & MCP (3)
+
+1. `analytics/ga4-mcp-connector`
+2. `ads/meta-ads-mcp-connector`
+3. `warehouse/bigquery-mcp-query-runner`
+
+## Recent Additions
 
 - `ai-output-eval-scorecard`
 - `cross-channel-budget-pacing-agent`
@@ -56,12 +72,25 @@ same automations in silos.
 - `dashboard-generator`
 - `dashboard-qa-checker`
 - `executive-narrative-writer`
+- `marketing/weekly-performance-supervisor`
+- `marketing/campaign-qa-supervisor`
+- `adtech/bi-insights-orchestrator`
+- `analytics/ga4-mcp-connector`
+- `ads/meta-ads-mcp-connector`
+- `warehouse/bigquery-mcp-query-runner`
 
-## Definition of done for each skill
+## Definition of done for each module entry
 
-- Has `SKILL.md` with clear routing intent and guardrails
+- Has a module spec file:
+  - skills: `SKILL.md`
+  - agents: `AGENT.md`
+  - tools-mcp: `TOOL.md`
 - Has `tests/test-prompts.md` (>= 5 realistic prompts)
 - Has `examples/` with sample input/output shape
+- Has a valid manifest:
+  - skills: `skill.yaml`
+  - agents: `agent.yaml`
+  - tools-mcp: `tool.yaml`
 - Documents runtime assumptions and dependencies
 - Uses scripts/config for deterministic logic where relevant
 
@@ -71,6 +100,18 @@ same automations in silos.
 skills/
   marketing/
   adtech/
+agents/
+  marketing/
+  adtech/
+tools-mcp/
+  analytics/
+  ads/
+  warehouse/
+registry/
+  index.json           # compatibility skills index
+  skills-index.json
+  agents-index.json
+  tools-index.json
 apps/
   web/
 shared/
@@ -97,11 +138,12 @@ Useful sections include skills for:
 
 ## Quickstart
 
-1. Pick a skill folder under `skills/`.
-2. Read `README.md` + `SKILL.md` for required inputs.
+1. Pick a module entry under `skills/`, `agents/`, or `tools-mcp/`.
+2. Read `README.md` and the module spec file (`SKILL.md`/`AGENT.md`/`TOOL.md`).
 3. Run prompts in `tests/test-prompts.md`.
 4. Verify structure with `bash scripts/validate-skills.sh`.
-5. Submit improvements via PR.
+5. Validate manifests with `bash scripts/validate-manifests.sh`.
+6. Submit improvements via PR.
 
 ## CLI Scaffold (Go)
 
@@ -122,11 +164,17 @@ python3 -m pip install check-jsonschema
 make manifests
 ```
 
-Generate `registry/index.json` from manifests:
+Generate module indexes from manifests:
 
 ```bash
 make registry
 ```
+
+This now writes:
+- `registry/skills-index.json`
+- `registry/agents-index.json`
+- `registry/tools-index.json`
+- `registry/index.json` (skills compatibility index)
 
 Example usage:
 
@@ -177,7 +225,11 @@ Core routes:
 
 - `/` overview
 - `/skills` searchable catalog
+- `/agents` searchable catalog
+- `/tools-mcp` searchable catalog
 - `/skills/<category>/<slug>` skill details and install snippets
+- `/agents/<category>/<slug>` agent details
+- `/tools-mcp/<category>/<slug>` tool/MCP details
 
 Smoke E2E tests:
 

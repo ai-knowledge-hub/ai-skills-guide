@@ -18,6 +18,10 @@ into a public skills hub while staying on free-tier infrastructure.
   - `cmd/registry-builder`
   - `shared/schemas`
   - `internal/*` shared logic
+- Current content modules:
+  - `skills/*`
+  - `agents/*`
+  - `tools-mcp/*`
 
 ## Decision 2: Frontend and Hosting
 
@@ -59,10 +63,25 @@ into a public skills hub while staying on free-tier infrastructure.
 - Decision: define and enforce schemas before feature expansion.
 - Artifacts:
   - `shared/schemas/skill.schema.json`
+  - `shared/schemas/agent.schema.json`
+  - `shared/schemas/tool.schema.json`
   - `shared/schemas/registry-index.schema.json`
 - Reason:
   - CLI, website, and CI can rely on a single source of truth
   - reduces migration pain during rapid iteration
+
+## Decision 6b: Modular Registry Outputs
+
+- Decision: generate one index per module, plus a compatibility index.
+- Artifacts:
+  - `registry/skills-index.json`
+  - `registry/agents-index.json`
+  - `registry/tools-index.json`
+  - `registry/index.json` (skills compatibility)
+- Reason:
+  - avoids coupling independent module catalogs
+  - supports route-specific web loading and future domain splits
+  - keeps existing skills consumers unbroken
 
 ## Decision 7: Technology Stack (POC)
 
@@ -91,7 +110,11 @@ into a public skills hub while staying on free-tier infrastructure.
     - schema checks
     - registry generation freshness check
   - Merge to `main`:
-    - generate and commit `registry/index.json`
+    - generate and commit module indexes
+      - `registry/skills-index.json`
+      - `registry/agents-index.json`
+      - `registry/tools-index.json`
+      - `registry/index.json` (skills compatibility)
     - deploy website on Vercel with custom domain
 - Environment model:
   - `dev` branch: staging and preview validation
@@ -107,10 +130,14 @@ into a public skills hub while staying on free-tier infrastructure.
 - Install command: `pnpm install --frozen-lockfile`.
 - Output: standard Next.js deployment on Vercel.
 - Environment assumptions:
-  - app reads `registry/index.json` from repository at build/runtime
+  - app reads module indexes from repository at build/runtime
+    - `registry/skills-index.json`
+    - `registry/agents-index.json`
+    - `registry/tools-index.json`
   - no database or auth dependency required for MVP
 - Domain plan:
   - production custom domain on Vercel: `skills.ai-knowledge-hub.org`
+  - optional additional domain surface: `agents.ai-knowledge-hub.org`
   - preview deployments from pull requests
 
 ## Open Questions

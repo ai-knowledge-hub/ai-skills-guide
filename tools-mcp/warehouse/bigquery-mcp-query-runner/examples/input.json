@@ -1,0 +1,7 @@
+{
+  "sql_template": "SELECT channel, SUM(spend) AS spend FROM marketing.performance WHERE date BETWEEN @start AND @end GROUP BY 1",
+  "params": {
+    "start": "2026-02-23",
+    "end": "2026-03-01"
+  }
+}

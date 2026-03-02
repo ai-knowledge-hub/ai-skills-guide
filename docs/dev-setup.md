@@ -46,6 +46,12 @@ make cli-test
 make cli-build
 ```
 
+`make registry` now generates:
+- `registry/skills-index.json`
+- `registry/agents-index.json`
+- `registry/tools-index.json`
+- `registry/index.json` (skills compatibility)
+
 ## Web App + E2E QA
 
 ```bash

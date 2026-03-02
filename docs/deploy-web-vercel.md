@@ -16,13 +16,22 @@ This repo is a monorepo. The web app lives at `apps/web`.
 - **Production branch**: `main`
 - **Preview branch**: `dev` (and optional feature branches)
 
-## Domain
+## Domains
 
 Attach custom domain:
 
 - `skills.ai-knowledge-hub.org`
 
 Then set DNS records in your DNS provider as instructed by Vercel.
+
+Optional additional surface using same app deployment:
+
+- `agents.ai-knowledge-hub.org`
+
+Recommended routing model (same codebase/app):
+- `skills.ai-knowledge-hub.org` -> `/skills`
+- `agents.ai-knowledge-hub.org` -> `/agents`
+- tools & MCP remains on `/tools-mcp` until a dedicated domain is required
 
 ## CI alignment
 
@@ -42,3 +51,9 @@ pnpm lint
 pnpm build
 pnpm test:e2e
 ```
+
+## Current route modules
+
+- `/skills`
+- `/agents`
+- `/tools-mcp`

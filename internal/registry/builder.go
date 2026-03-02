@@ -16,7 +16,23 @@ import (
 const baseURL = "https://skills.ai-knowledge-hub.org"
 
 func BuildIndex(root string) (Index, error) {
-	manifests, err := findManifests(filepath.Join(root, "skills"))
+	return BuildSkillsIndex(root)
+}
+
+func BuildSkillsIndex(root string) (Index, error) {
+	return buildIndexFor(root, "skills", "skill.yaml")
+}
+
+func BuildAgentsIndex(root string) (Index, error) {
+	return buildIndexFor(root, "agents", "agent.yaml")
+}
+
+func BuildToolsIndex(root string) (Index, error) {
+	return buildIndexFor(root, "tools-mcp", "tool.yaml")
+}
+
+func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
+	manifests, err := findManifests(filepath.Join(root, moduleDir), manifestName)
 	if err != nil {
 		return Index{}, err
 	}
@@ -94,22 +110,29 @@ func WriteIndex(path string, index Index) error {
 	return nil
 }
 
-func findManifests(skillsRoot string) ([]string, error) {
+func findManifests(moduleRoot, manifestName string) ([]string, error) {
 	entries := make([]string, 0)
-	err := filepath.WalkDir(skillsRoot, func(path string, d fs.DirEntry, walkErr error) error {
+	if _, err := os.Stat(moduleRoot); err != nil {
+		if os.IsNotExist(err) {
+			return entries, nil
+		}
+		return nil, fmt.Errorf("stat module root %s: %w", moduleRoot, err)
+	}
+
+	err := filepath.WalkDir(moduleRoot, func(path string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
 			return walkErr
 		}
 		if d.IsDir() {
 			return nil
 		}
-		if d.Name() == "skill.yaml" {
+		if d.Name() == manifestName {
 			entries = append(entries, path)
 		}
 		return nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("walk skills root %s: %w", skillsRoot, err)
+		return nil, fmt.Errorf("walk module root %s: %w", moduleRoot, err)
 	}
 	sort.Strings(entries)
 	return entries, nil

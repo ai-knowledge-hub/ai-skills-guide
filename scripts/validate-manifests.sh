@@ -3,6 +3,8 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SKILL_SCHEMA="$ROOT/shared/schemas/skill.schema.json"
+AGENT_SCHEMA="$ROOT/shared/schemas/agent.schema.json"
+TOOL_SCHEMA="$ROOT/shared/schemas/tool.schema.json"
 REGISTRY_SCHEMA="$ROOT/shared/schemas/registry-index.schema.json"
 
 if ! command -v check-jsonschema >/dev/null 2>&1; then
@@ -10,31 +12,41 @@ if ! command -v check-jsonschema >/dev/null 2>&1; then
   exit 1
 fi
 
-missing=0
-while IFS= read -r -d '' skill_dir; do
-  if [[ ! -f "$skill_dir/skill.yaml" ]]; then
-    echo "[ERROR] Missing skill.yaml in ${skill_dir#$ROOT/}"
-    missing=1
+validate_module_manifests() {
+  local module_dir="$1"
+  local manifest_name="$2"
+  local schema_path="$3"
+  local label="$4"
+
+  if [[ ! -d "$module_dir" ]]; then
+    echo "[info] ${module_dir#$ROOT/}/ not found, skipping $label manifest validation."
+    return 0
   fi
-done < <(find "$ROOT/skills" -mindepth 2 -maxdepth 2 -type d -print0)
 
-if [[ "$missing" -ne 0 ]]; then
-  exit 1
-fi
+  mapfile -t manifests < <(find "$module_dir" -mindepth 3 -maxdepth 3 -name "$manifest_name" | sort)
+  if [[ "${#manifests[@]}" -eq 0 ]]; then
+    echo "[WARN] No $manifest_name manifests found under ${module_dir#$ROOT/}/. Skipping $label manifest validation."
+    return 0
+  fi
 
-mapfile -t manifests < <(find "$ROOT/skills" -mindepth 3 -maxdepth 3 -name "skill.yaml" | sort)
-if [[ "${#manifests[@]}" -eq 0 ]]; then
-  echo "[WARN] No skill.yaml manifests found under skills/. Skipping skill manifest validation."
-else
-  echo "[check] validating ${#manifests[@]} skill manifest(s)"
-  check-jsonschema --schemafile "$SKILL_SCHEMA" "${manifests[@]}"
-fi
+  echo "[check] validating ${#manifests[@]} $label manifest(s)"
+  check-jsonschema --schemafile "$schema_path" "${manifests[@]}"
+}
 
-if [[ -f "$ROOT/registry/index.json" ]]; then
-  echo "[check] validating registry/index.json"
-  check-jsonschema --schemafile "$REGISTRY_SCHEMA" "$ROOT/registry/index.json"
-else
-  echo "[info] registry/index.json not found, skipping registry index validation."
-fi
+validate_module_manifests "$ROOT/skills" "skill.yaml" "$SKILL_SCHEMA" "skill"
+validate_module_manifests "$ROOT/agents" "agent.yaml" "$AGENT_SCHEMA" "agent"
+validate_module_manifests "$ROOT/tools-mcp" "tool.yaml" "$TOOL_SCHEMA" "tool"
+
+for index_path in \
+  "$ROOT/registry/index.json" \
+  "$ROOT/registry/skills-index.json" \
+  "$ROOT/registry/agents-index.json" \
+  "$ROOT/registry/tools-index.json"
+do
+  if [[ -f "$index_path" ]]; then
+    echo "[check] validating ${index_path#$ROOT/}"
+    check-jsonschema --schemafile "$REGISTRY_SCHEMA" "$index_path"
+  fi
+done
 
 echo "Manifest schema validation completed."

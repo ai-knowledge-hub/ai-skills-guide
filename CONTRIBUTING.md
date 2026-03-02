@@ -7,19 +7,24 @@
 
 ## Pull request requirements
 
-1. Add/update one skill under `skills/marketing` or `skills/adtech`.
-2. Include `SKILL.md`, `README.md`, `tests/test-prompts.md`, and `examples/`.
-3. Add at least 5 realistic prompts with expected behavior.
-4. Document assumptions (APIs, data sources, required tools).
-5. Include risk notes if shell commands, writes, or publishing actions are
+1. Add/update one entry under one module:
+   - `skills/<domain>/<slug>`
+   - `agents/<domain>/<slug>`
+   - `tools-mcp/<domain>/<slug>`
+2. Include spec file (`SKILL.md` or `AGENT.md` or `TOOL.md`), `README.md`, `tests/test-prompts.md`, and `examples/`.
+3. Include correct manifest (`skill.yaml`, `agent.yaml`, or `tool.yaml`).
+4. Ensure at least 5 realistic prompts with expected behavior.
+5. Document assumptions (APIs, data sources, required tools).
+6. Include risk notes if shell commands, writes, or publishing actions are
    involved.
 
-## Skill folder standard
+## Module folder standard
 
 ```text
-<skill-name>/
+<entry-slug>/
   README.md
-  SKILL.md
+  SKILL.md | AGENT.md | TOOL.md
+  skill.yaml | agent.yaml | tool.yaml
   scripts/        # deterministic logic
   references/     # optional deep docs
   config/         # optional rules
@@ -42,6 +47,8 @@ Run before opening a PR:
 
 ```bash
 bash scripts/validate-skills.sh
+go run ./cmd/registry-builder
+bash scripts/validate-manifests.sh
 ```
 
 If your changes touch `apps/web`, also run:

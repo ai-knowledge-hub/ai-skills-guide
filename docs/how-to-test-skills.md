@@ -1,8 +1,8 @@
-# How to Test Skills
+# How to Test Skills, Agents, and Tools
 
 ## Test types
 
-1. Activation: skill triggers only on intended requests.
+1. Activation: entry triggers only on intended requests.
 2. Workflow: tool/script sequence is followed.
 3. Failure mode: missing data/tool errors handled safely.
 4. Output shape: required sections/schema preserved.
@@ -30,5 +30,9 @@ Current smoke scope:
 - `/`
 - `/skills`
 - `/skills/<sample>`
-- filter interaction
-- copy-button presence/click
+- `/agents`
+- `/agents/<sample>`
+- `/tools-mcp`
+- `/tools-mcp/<sample>`
+- filter interaction (skills catalog)
+- copy-button presence (skills detail)

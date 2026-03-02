@@ -15,6 +15,20 @@
   - Next.js hub routes and install UX are live in `apps/web`
   - web lint/build + Playwright smoke checks are in CI
   - release-cut and tag-publish automation are in place
+- v0.4 delivered (Modular registries + routes):
+  - three registry indexes are generated:
+    - `registry/skills-index.json`
+    - `registry/agents-index.json`
+    - `registry/tools-index.json`
+  - compatibility `registry/index.json` preserved for skills
+  - web route modules are live:
+    - `/skills`
+    - `/agents`
+    - `/tools-mcp`
+  - seeded module catalogs:
+    - 3 agent templates
+    - 3 tools/MCP connectors
+  - Playwright smoke coverage includes agents and tools routes
 - Catalog expansion in progress:
   - current catalog includes marketing, adtech, QA, and BI-oriented skills
   - BI-related additions now include:
@@ -22,7 +36,7 @@
     - `adtech/dashboard-generator`
     - `adtech/dashboard-qa-checker`
     - `adtech/executive-narrative-writer`
-- Current focus: v0.4 trust, governance, and release maturity.
+- Current focus: v0.5 trust, governance, and release maturity across all modules.
 
 ## v0.2 (Foundation)
 

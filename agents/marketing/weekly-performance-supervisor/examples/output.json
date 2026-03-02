@@ -1,0 +1,6 @@
+{
+  "publish_decision": "approved",
+  "sections": ["executive_summary", "channel_table", "anomaly_panel", "action_panel"],
+  "qa_status": "approved",
+  "narrative_status": "generated"
+}

@@ -1,8 +1,11 @@
-# How to Run Skills
+# How to Run Skills, Agents, and Tools
 
 ## 1. Read required inputs
 
-Open the skill's `README.md` and `SKILL.md`.
+Open the entry `README.md` and spec file:
+- skills: `SKILL.md`
+- agents: `AGENT.md`
+- tools-mcp: `TOOL.md`
 
 ## 2. Provide minimum context
 
@@ -22,3 +25,10 @@ Check for:
 ## 5. Escalate to scripts when needed
 
 If outputs drift, use deterministic scripts and schemas from `shared/`.
+
+## Registry files
+
+When testing hub output consistency, use module indexes in `registry/`:
+- `skills-index.json`
+- `agents-index.json`
+- `tools-index.json`

@@ -8,9 +8,9 @@
 ## Release hardening checklist
 
 1. CI green on `dev`:
-   - skill structure validation
+   - module structure validation
    - manifest schema validation
-   - registry freshness check
+   - registry generation for all module indexes
    - web lint + build
    - web Playwright smoke E2E
 2. Merge `dev` into `main`.
@@ -87,10 +87,10 @@ Suggested cadence:
 
 ## Release notes template
 
-- Scope: CLI + registry baseline and hub web MVP.
+- Scope: CLI + modular registries and hub web routes.
 - Install: include CLI install/usage commands.
 - Site: include hub URL and key routes.
-- QA: mention smoke E2E coverage (`/`, `/skills`, `/skills/<sample>`).
+- QA: mention smoke E2E coverage (`/`, `/skills`, `/agents`, `/tools-mcp`).
 
 ## Deployment reference
 

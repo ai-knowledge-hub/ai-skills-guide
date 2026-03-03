@@ -146,6 +146,176 @@ Useful sections include skills for:
 5. Validate manifests with `bash scripts/validate-manifests.sh`.
 6. Submit improvements via PR.
 
+## Use Agent Packages (Step-by-step)
+
+This follows the agent model from our article:
+
+`Agent = Role + Memory + Tools + Skills + Model`
+
+### 1. Pick an agent package
+
+Example:
+
+- `marketing/weekly-performance-supervisor`
+- `adtech/bi-insights-orchestrator`
+
+Inspect details:
+
+```bash
+./bin/skills-hub info \
+  --module agents \
+  --entry marketing/weekly-performance-supervisor@latest
+```
+
+### 2. Install the agent and required packages
+
+Install the agent:
+
+```bash
+./bin/skills-hub install \
+  --module agents \
+  --entry marketing/weekly-performance-supervisor@latest \
+  --runtime codex
+```
+
+Install dependent skills:
+
+```bash
+./bin/skills-hub install \
+  adtech/dashboard-generator@latest \
+  --runtime codex
+./bin/skills-hub install \
+  adtech/dashboard-qa-checker@latest \
+  --runtime codex
+./bin/skills-hub install \
+  adtech/executive-narrative-writer@latest \
+  --runtime codex
+```
+
+Install tools/MCP connectors:
+
+```bash
+./bin/skills-hub install \
+  --module tools \
+  --entry analytics/ga4-mcp-connector@latest \
+  --runtime codex
+./bin/skills-hub install \
+  --module tools \
+  --entry warehouse/bigquery-mcp-query-runner@latest \
+  --runtime codex
+```
+
+### 3. Configure Role and Memory
+
+Use project-level instructions:
+
+- role and goals
+- constraints (read-only, approval gates)
+- response style
+- memory references (brand docs, KPI dictionary, runbooks)
+
+For Codex, use `AGENTS.md` in repo root.
+For Claude projects, use your project guidance file/workspace instructions.
+
+### 4. Connect Tools via MCP
+
+Map your installed tool connectors to real MCP servers and credentials:
+
+- GA4
+- warehouse (BigQuery/Redshift)
+- ads platforms
+- Slack/Teams for alerts
+
+Keep tool permissions scoped. Start read-only, then expand.
+
+### 5. Run and validate
+
+Run your workflow request and verify:
+
+- deterministic section ordering
+- QA block behavior on critical failures
+- explicit evidence values in failures
+- no fabricated metrics
+
+### Runtime examples
+
+#### A) Claude Code / Claude Agent SDK
+
+Docs:
+
+- [Claude API Docs](https://platform.claude.com/docs/en/home)
+
+Install to Claude runtime paths:
+
+```bash
+./bin/skills-hub install \
+  --module agents \
+  --entry marketing/weekly-performance-supervisor@latest \
+  --runtime claude
+./bin/skills-hub install \
+  adtech/dashboard-generator@latest \
+  --runtime claude
+./bin/skills-hub install \
+  --module tools \
+  --entry analytics/ga4-mcp-connector@latest \
+  --runtime claude
+```
+
+Then map MCP servers in your Claude environment and add project constraints
+for approval gates before live actions.
+
+#### B) OpenAI Codex
+
+Docs:
+
+- [OpenAI Codex Docs](https://developers.openai.com/codex/)
+
+Install to Codex runtime paths:
+
+```bash
+./bin/skills-hub install \
+  --module agents \
+  --entry adtech/bi-insights-orchestrator@latest \
+  --runtime codex
+./bin/skills-hub install \
+  adtech/analyst-copilot-bigquery-redshift@latest \
+  --runtime codex
+./bin/skills-hub install \
+  --module tools \
+  --entry warehouse/bigquery-mcp-query-runner@latest \
+  --runtime codex
+```
+
+Add an `AGENTS.md` with role, goals, boundaries, and preferred tools.
+
+#### C) OpenClaw or other generic agent runtimes
+
+Source:
+
+- [OpenClaw](https://github.com/openclaw/openclaw)
+
+Install with explicit targets:
+
+```bash
+./bin/skills-hub install \
+  --module agents \
+  --entry marketing/weekly-performance-supervisor@latest \
+  --runtime generic \
+  --target ./openclaw-workspace/agents
+./bin/skills-hub install \
+  adtech/dashboard-generator@latest \
+  --runtime generic \
+  --target ./openclaw-workspace/skills
+./bin/skills-hub install \
+  --module tools \
+  --entry analytics/ga4-mcp-connector@latest \
+  --runtime generic \
+  --target ./openclaw-workspace/tools-mcp
+```
+
+Mount those folders into your runtime workspace and reference them in your
+agent onboarding/config flow.
+
 ## CLI Scaffold (Go)
 
 This repo now includes a starter CLI at `cmd/skills-hub`
@@ -208,13 +378,31 @@ Example usage:
   --entry analytics/ga4-mcp-connector@latest \
   --runtime generic \
   --target ./my-agent/tools-mcp
+./bin/skills-hub run-agent \
+  --agent marketing/weekly-performance-supervisor \
+  --bindings agents/marketing/weekly-performance-supervisor/config/\
+tool-bindings.example.json \
+  --memory agents/marketing/weekly-performance-supervisor/config/\
+memory-profile.example.json \
+  --governance agents/marketing/weekly-performance-supervisor/config/\
+governance.example.json \
+  --approve-live \
+  --audit-log ./tmp/weekly-performance-supervisor-run.json
 ```
 
 Runtime target defaults:
 
-- `--runtime codex` -> `$CODEX_HOME/skills` (or `~/.codex/skills`)
-- `--runtime claude` -> `$CLAUDE_HOME/skills` (or `$CLAUDE_CODE_HOME/skills`,
-  or `~/.claude/skills`)
+- `--runtime codex`:
+  - skills -> `$CODEX_HOME/skills` (or `~/.codex/skills`)
+  - agents -> `$CODEX_HOME/agents` (or `~/.codex/agents`)
+  - tools -> `$CODEX_HOME/tools-mcp` (or `~/.codex/tools-mcp`)
+- `--runtime claude`:
+  - skills -> `$CLAUDE_HOME/skills` (or `$CLAUDE_CODE_HOME/skills`,
+    or `~/.claude/skills`)
+  - agents -> `$CLAUDE_HOME/agents` (or `$CLAUDE_CODE_HOME/agents`,
+    or `~/.claude/agents`)
+  - tools -> `$CLAUDE_HOME/tools-mcp` (or `$CLAUDE_CODE_HOME/tools-mcp`,
+    or `~/.claude/tools-mcp`)
 - `--runtime generic` -> requires explicit `--target`
 
 ## Contributing

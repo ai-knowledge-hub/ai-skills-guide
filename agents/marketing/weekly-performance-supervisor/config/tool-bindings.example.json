@@ -1,0 +1,12 @@
+{
+  "tools": {
+    "ga4_query": {
+      "endpoint": "mcp://ga4",
+      "mode": "read_only"
+    },
+    "warehouse_query": {
+      "endpoint": "mcp://warehouse",
+      "mode": "read_only"
+    }
+  }
+}

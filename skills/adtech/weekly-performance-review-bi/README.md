@@ -1,17 +1,43 @@
 # Weekly Performance Review BI
 
-Orchestrates three BI skills in one deterministic weekly reporting run.
+Use this skill to orchestrate deterministic weekly BI reporting with a
+hard QA gate before publication.
 
-## Skill chain
-1. dashboard-generator
-2. dashboard-qa-checker
-3. executive-narrative-writer (only if QA approved)
+## What this skill does
 
-## Outputs
-- publish decision
-- dashboard package
-- QA package
-- executive narrative (conditional on QA pass)
+- Runs dashboard generation.
+- Runs dashboard QA checks.
+- Runs executive narrative only when QA passes.
 
-## Starter prompt
-- See [examples/starter-prompt.md](examples/starter-prompt.md) for a copy/paste weekly run template with fixed BI contract and QA thresholds.
+## Before you start
+
+1. Prepare normalized performance data.
+2. Prepare source totals and freshness timestamps.
+3. Define QA thresholds and audience.
+
+## Install
+
+```bash
+./bin/skills-hub install \
+  adtech/weekly-performance-review-bi@latest \
+  --runtime codex
+```
+
+## First run prompt
+
+Use the starter template:
+
+- [examples/starter-prompt.md](examples/starter-prompt.md)
+
+## What good output looks like
+
+- Publish decision is explicit.
+- Dashboard section order is deterministic.
+- QA package includes evidence values.
+- Narrative appears only when QA approved.
+
+## Beginner safety checklist
+
+- Never bypass critical QA failures.
+- Keep metric dictionary fixed across runs.
+- Require alerting on blocked publish.

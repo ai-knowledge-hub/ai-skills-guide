@@ -1,17 +1,45 @@
 # Dashboard QA Checker
 
-Runs a fixed set of pre-publish QA validations for marketing dashboard data and returns a clear publish decision.
+Use this skill to run pre-publish QA checks and decide whether dashboard
+publishing should be approved or blocked.
 
-## Checks
-- freshness
-- completeness
-- reconciliation
-- anomaly thresholds
-- schema drift
+## What this skill does
 
-## Outputs
-- QA summary
-- check-level evidence
-- blocking reasons
-- alert payload
-- publish decision
+- Checks freshness, completeness, reconciliation, anomalies, and drift.
+- Returns pass/warn/fail evidence by rule.
+- Produces blocking reasons and alert payloads.
+
+## Before you start
+
+1. Gather source totals and dashboard totals.
+2. Set thresholds and criticality rules.
+3. Confirm expected data freshness SLA.
+
+## Install
+
+```bash
+./bin/skills-hub install \
+  adtech/dashboard-qa-checker@latest \
+  --runtime codex
+```
+
+## First run prompt
+
+```text
+Use Dashboard QA Checker for run weekly-2026-03-01.
+Apply checks: freshness, completeness, reconciliation,
+anomaly detection, schema drift.
+Return publish decision and alert payload if blocked.
+```
+
+## What good output looks like
+
+- Each failed check includes evidence values.
+- Critical blockers are clearly separated from warnings.
+- Publish decision is explicit.
+
+## Beginner safety checklist
+
+- Do not downgrade critical failures.
+- Do not publish on critical reconciliation mismatch.
+- Require explicit override to proceed after block.

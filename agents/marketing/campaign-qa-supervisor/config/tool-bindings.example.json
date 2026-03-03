@@ -1,0 +1,12 @@
+{
+  "tools": {
+    "campaign_config_reader": {
+      "endpoint": "mcp://campaign-config",
+      "mode": "read_only"
+    },
+    "slack_post": {
+      "endpoint": "mcp://slack",
+      "mode": "read_only"
+    }
+  }
+}

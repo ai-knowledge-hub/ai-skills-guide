@@ -1,0 +1,7 @@
+{
+  "context_files": [
+    "shared/policies/severity-taxonomy.md"
+  ],
+  "state_store": "local-json",
+  "retention_days": 14
+}

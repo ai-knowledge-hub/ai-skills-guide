@@ -38,9 +38,9 @@ Implement one repository with three route modules and three registry indexes:
 - [x] Update homepage/navigation to expose all three modules.
 
 ### Phase 5: Validation and CI
-- [ ] Generalize `scripts/validate-skills.sh` to support all modules.
+- [x] Generalize `scripts/validate-skills.sh` to support all modules.
 - [x] Extend `scripts/validate-manifests.sh` for agent/tool manifests.
-- [ ] Add unit tests for parsers/builders.
+- [x] Add unit tests for parsers/builders.
 - [x] Update web smoke tests for new routes.
 
 ### Phase 6: Seed Content

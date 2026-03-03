@@ -1,0 +1,12 @@
+{
+  "tools": {
+    "bigquery_sql": {
+      "endpoint": "mcp://bigquery",
+      "mode": "read_only"
+    },
+    "ga4_query": {
+      "endpoint": "mcp://ga4",
+      "mode": "read_only"
+    }
+  }
+}

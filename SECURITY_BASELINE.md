@@ -112,4 +112,4 @@ Before production rollout, confirm:
 Use GitHub Discussions to propose controls, threat scenarios, or
 compliance requirements:
 
-https://github.com/ai-knowledge-hub/ai-skills-guide/discussions
+[GitHub Discussions](https://github.com/ai-knowledge-hub/ai-skills-guide/discussions)

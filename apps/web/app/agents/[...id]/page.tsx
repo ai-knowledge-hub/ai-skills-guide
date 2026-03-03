@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getEntryById, loadAgentsRegistry } from "@/lib/registry";
+import InstallCommands from "@/components/InstallCommands";
+import { buildModuleInstallSnippet, getEntryById, loadAgentsRegistry } from "@/lib/registry";
 
 export async function generateStaticParams() {
   const registry = await loadAgentsRegistry();
@@ -55,6 +56,11 @@ export default async function AgentDetailPage({ params }: { params: { id: string
             {latestVersion ? <a href={latestVersion.artifact_url}>{latestVersion.artifact_url}</a> : "n/a"}
           </p>
         </article>
+        <InstallCommands
+          codex={buildModuleInstallSnippet("agents", entry, "codex")}
+          claude={buildModuleInstallSnippet("agents", entry, "claude")}
+          generic={buildModuleInstallSnippet("agents", entry, "generic")}
+        />
       </section>
     </main>
   );

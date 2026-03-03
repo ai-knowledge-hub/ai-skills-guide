@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/ai-knowledge-hub/ai-skills-guide/internal/agents"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/installer"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/skills"
@@ -35,6 +36,8 @@ func main() {
 		err = runValidate(args)
 	case "install":
 		err = runInstall(args)
+	case "run-agent":
+		err = runAgent(args)
 	case "help", "-h", "--help":
 		printUsage()
 		return
@@ -305,6 +308,7 @@ func printUsage() {
 		"  info      Show details for one entry",
 		"  validate  Validate local skill structure and prompt coverage",
 		"  install   Install a local module entry resolved from registry metadata",
+		"  run-agent Run production preflight checks for an installed agent package",
 		"",
 		"Examples:",
 		"  skills-hub list",
@@ -315,8 +319,66 @@ func printUsage() {
 		"  skills-hub install marketing/meta-google-weekly-performance-review@latest --runtime codex",
 		"  skills-hub install --module agents --entry marketing/weekly-performance-supervisor@latest --runtime codex",
 		"  skills-hub install --skill marketing/meta-google-weekly-performance-review@0.1.0 --runtime generic --target ./my-agent/skills",
+		"  skills-hub run-agent --agent marketing/weekly-performance-supervisor --bindings agents/marketing/weekly-performance-supervisor/config/tool-bindings.example.json --approve-live",
 	}
 	fmt.Println(strings.Join(lines, "\n"))
+}
+
+func runAgent(args []string) error {
+	fs := flag.NewFlagSet("run-agent", flag.ContinueOnError)
+	agentID := fs.String("agent", "", "agent id in <domain>/<slug> format")
+	agentsRoot := fs.String("agents-root", "agents", "agents root directory")
+	skillsRoot := fs.String("skills-root", "skills", "skills root directory")
+	toolsRoot := fs.String("tools-root", "tools-mcp", "tools root directory")
+	bindingsPath := fs.String("bindings", "", "path to JSON tool bindings")
+	memoryPath := fs.String("memory", "", "path to JSON memory profile")
+	governancePath := fs.String("governance", "", "path to JSON governance profile")
+	auditPath := fs.String("audit-log", "", "path to output JSON audit report")
+	approveLive := fs.Bool("approve-live", false, "approve live actions for this run")
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+	if strings.TrimSpace(*agentID) == "" {
+		return errors.New("--agent is required")
+	}
+
+	report, err := agents.RunPreflight(agents.RunOptions{
+		AgentsRoot:     *agentsRoot,
+		SkillsRoot:     *skillsRoot,
+		ToolsRoot:      *toolsRoot,
+		AgentID:        strings.TrimSpace(*agentID),
+		BindingsPath:   strings.TrimSpace(*bindingsPath),
+		MemoryPath:     strings.TrimSpace(*memoryPath),
+		GovernancePath: strings.TrimSpace(*governancePath),
+		ApproveLive:    *approveLive,
+		AuditPath:      strings.TrimSpace(*auditPath),
+	})
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("agent: %s\n", report.AgentID)
+	fmt.Printf("status: %s\n", report.Status)
+	if len(report.WorkflowSteps) > 0 {
+		fmt.Printf("workflow_steps: %d\n", len(report.WorkflowSteps))
+	}
+	if len(report.Warnings) > 0 {
+		fmt.Println("warnings:")
+		for _, w := range report.Warnings {
+			fmt.Printf("  - %s\n", w)
+		}
+	}
+	if len(report.BlockingReasons) > 0 {
+		fmt.Println("blocking_reasons:")
+		for _, b := range report.BlockingReasons {
+			fmt.Printf("  - %s\n", b)
+		}
+	}
+
+	if report.Status != "ready" {
+		return fmt.Errorf("agent preflight not ready: %s", report.Status)
+	}
+	return nil
 }
 
 func normalizeModule(raw string) (string, error) {

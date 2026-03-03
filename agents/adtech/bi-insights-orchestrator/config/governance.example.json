@@ -1,0 +1,5 @@
+{
+  "require_approval_for_live": true,
+  "allow_write_tools": false,
+  "max_tool_calls": 120
+}

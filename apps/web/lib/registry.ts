@@ -90,6 +90,25 @@ export function buildInstallSnippet(skill: RegistryEntry, runtime: "codex" | "cl
   return `${base} --runtime ${runtime}`;
 }
 
+export function buildModuleInstallSnippet(
+  module: ModuleKey,
+  entry: RegistryEntry,
+  runtime: "codex" | "claude" | "generic"
+) {
+  const moduleFlag = module === "tools" ? "tools" : module;
+  const base = `./bin/skills-hub install --module ${moduleFlag} --entry ${entry.id}@${entry.latest}`;
+  if (runtime === "generic") {
+    const targetDir =
+      module === "agents"
+        ? "./my-agent/agents"
+        : module === "tools"
+          ? "./my-agent/tools-mcp"
+          : "./my-agent/skills";
+    return `${base} --runtime generic --target ${targetDir}`;
+  }
+  return `${base} --runtime ${runtime}`;
+}
+
 export function uniqueValues(values: string[]) {
   return [...new Set(values)].sort((a, b) => a.localeCompare(b));
 }

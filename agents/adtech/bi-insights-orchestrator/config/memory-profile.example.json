@@ -1,0 +1,7 @@
+{
+  "context_files": [
+    "shared/metrics/core-metrics.md"
+  ],
+  "state_store": "local-json",
+  "retention_days": 30
+}

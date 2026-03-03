@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getEntryById, loadToolsRegistry } from "@/lib/registry";
+import InstallCommands from "@/components/InstallCommands";
+import { buildModuleInstallSnippet, getEntryById, loadToolsRegistry } from "@/lib/registry";
 
 export async function generateStaticParams() {
   const registry = await loadToolsRegistry();
@@ -55,6 +56,11 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
             {latestVersion ? <a href={latestVersion.artifact_url}>{latestVersion.artifact_url}</a> : "n/a"}
           </p>
         </article>
+        <InstallCommands
+          codex={buildModuleInstallSnippet("tools", entry, "codex")}
+          claude={buildModuleInstallSnippet("tools", entry, "claude")}
+          generic={buildModuleInstallSnippet("tools", entry, "generic")}
+        />
       </section>
     </main>
   );

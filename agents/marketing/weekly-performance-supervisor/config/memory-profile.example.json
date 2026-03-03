@@ -1,0 +1,8 @@
+{
+  "context_files": [
+    "shared/metrics/core-metrics.md",
+    "shared/policies/severity-taxonomy.md"
+  ],
+  "state_store": "local-json",
+  "retention_days": 30
+}

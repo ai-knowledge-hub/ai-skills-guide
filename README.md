@@ -409,6 +409,7 @@ Runtime target defaults:
 
 See `CONTRIBUTING.md` and `docs/how-to-contribute-a-skill.md`.
 For local toolchain setup, see `docs/dev-setup.md`.
+For security expectations, see `SECURITY_BASELINE.md`.
 
 ## Hub Website (MVP Scaffold)
 

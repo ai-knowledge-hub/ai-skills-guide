@@ -14,7 +14,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/ads/meta-ads-mcp-connector/tool.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/ads/meta-ads-mcp-connector/0.1.0.tar.gz",
-          "sha256": "8d6f3f0a74b78e168934bc2fe05fab084324cc59df0afdf8e1d338f902a0fe94"
+          "sha256": "ff1ade3ce21346ebebb2470e075528519b4173aca32225bbd7831e2122520d37"
         }
       ],
       "runtimes": [
@@ -41,7 +41,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/analytics/ga4-mcp-connector/tool.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/analytics/ga4-mcp-connector/0.1.0.tar.gz",
-          "sha256": "da4f0c3cb7f8b0a9c1ae8049fb00d700e6e505d8d3394ebdb29723a22d5f33c2"
+          "sha256": "7eb4e30ea92d68a580afe63ceaf1c24cea5f60b60ecac0de53d733af293faae1"
         }
       ],
       "runtimes": [
@@ -68,7 +68,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/warehouse/bigquery-mcp-query-runner/tool.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/warehouse/bigquery-mcp-query-runner/0.1.0.tar.gz",
-          "sha256": "10b572e64c8e30fdb6c53920f55375ed4e605be2edcf2325baf19691f62c88bc"
+          "sha256": "8cbdafb2f2aa032e8cf36c3ea5db03b2c76a21857c5d06a5cdc59a4a1b29d14f"
         }
       ],
       "runtimes": [

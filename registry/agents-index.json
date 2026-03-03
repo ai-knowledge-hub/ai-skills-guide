@@ -14,7 +14,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/agents/adtech/bi-insights-orchestrator/agent.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/bi-insights-orchestrator/0.1.0.tar.gz",
-          "sha256": "dfe8275313e50fe7ca6044946e56a722e9201f640e19e6a254d85cbb6fb98336"
+          "sha256": "87084e1dfb9321ffae095eaf851a3b13415c8320323fb6772a655d13099eadca"
         }
       ],
       "runtimes": [
@@ -41,7 +41,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/agents/marketing/campaign-qa-supervisor/agent.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/campaign-qa-supervisor/0.1.0.tar.gz",
-          "sha256": "2ce4cba13aa763f3e4443c8b2781853fc0fc15dac3f42c27cb9067a64b8dbcdc"
+          "sha256": "322d35a70c0913c992bd065d2791758616dea462d847b73598ef6639ce327e66"
         }
       ],
       "runtimes": [
@@ -68,7 +68,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/agents/marketing/weekly-performance-supervisor/agent.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/weekly-performance-supervisor/0.1.0.tar.gz",
-          "sha256": "16de9fb13df6dd4864a4b51d0706a7846c1fc048b22d7ff9b1ebe082da3d33af"
+          "sha256": "40dad67f9624f7c238542a22943b8ee391e3df9f2c9a876102bfc63f4c5f8da5"
         }
       ],
       "runtimes": [

@@ -155,6 +155,7 @@ This follows the agent model from our article:
 ### 1. Pick an agent package
 
 Example:
+
 - `marketing/weekly-performance-supervisor`
 - `adtech/bi-insights-orchestrator`
 
@@ -207,6 +208,7 @@ Install tools/MCP connectors:
 ### 3. Configure Role and Memory
 
 Use project-level instructions:
+
 - role and goals
 - constraints (read-only, approval gates)
 - response style
@@ -218,6 +220,7 @@ For Claude projects, use your project guidance file/workspace instructions.
 ### 4. Connect Tools via MCP
 
 Map your installed tool connectors to real MCP servers and credentials:
+
 - GA4
 - warehouse (BigQuery/Redshift)
 - ads platforms
@@ -228,6 +231,7 @@ Keep tool permissions scoped. Start read-only, then expand.
 ### 5. Run and validate
 
 Run your workflow request and verify:
+
 - deterministic section ordering
 - QA block behavior on critical failures
 - explicit evidence values in failures
@@ -238,6 +242,7 @@ Run your workflow request and verify:
 #### A) Claude Code / Claude Agent SDK
 
 Docs:
+
 - [Claude API Docs](https://platform.claude.com/docs/en/home)
 
 Install to Claude runtime paths:
@@ -262,6 +267,7 @@ for approval gates before live actions.
 #### B) OpenAI Codex
 
 Docs:
+
 - [OpenAI Codex Docs](https://developers.openai.com/codex/)
 
 Install to Codex runtime paths:
@@ -285,6 +291,7 @@ Add an `AGENTS.md` with role, goals, boundaries, and preferred tools.
 #### C) OpenClaw or other generic agent runtimes
 
 Source:
+
 - [OpenClaw](https://github.com/openclaw/openclaw)
 
 Install with explicit targets:

@@ -14,7 +14,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/analyst-copilot-bigquery-redshift/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/analyst-copilot-bigquery-redshift/0.1.0.tar.gz",
-          "sha256": "5f71bceb61e489bb69104d690ec0eb863056b8bdd6b886587306f99d5cba58ca"
+          "sha256": "8ba663e9403a1c5e18a8b95500f4080dff3e480447cb8ae3814b19f55b652687"
         }
       ],
       "runtimes": [
@@ -42,7 +42,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/brand-rag-memory-bootstrap/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/brand-rag-memory-bootstrap/0.1.0.tar.gz",
-          "sha256": "05de3932e35bfd3b52a58332624d69502847f1a2c2f71d74eb0427fcc3f125be"
+          "sha256": "64c1551dfb816cbb4eacd7f5bae1a45dd322dcf0a9bdcd771ecc9ecbed44188d"
         }
       ],
       "runtimes": [
@@ -71,7 +71,7 @@
           "released_at": "2026-02-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/dashboard-generator/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/dashboard-generator/0.1.0.tar.gz",
-          "sha256": "e08ba5c6eeeea0093bac7600b4c386b39e2ccbb361984718a70adb2f67bcc660"
+          "sha256": "e0b5283ce8bb3d2d5c5d149dc164d9095e8535c8c52840fc0c8d73311c4aa665"
         }
       ],
       "runtimes": [
@@ -99,7 +99,7 @@
           "released_at": "2026-02-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/dashboard-qa-checker/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/dashboard-qa-checker/0.1.0.tar.gz",
-          "sha256": "af17084525dc6ac7c29cf2f3fbab3882841b1d9cf6415230f06082aa908a807f"
+          "sha256": "6503483b9c90ceb17a964954f9cbd35c4103915512e4f415cdb553975f6e14e5"
         }
       ],
       "runtimes": [
@@ -127,7 +127,7 @@
           "released_at": "2026-02-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/executive-narrative-writer/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/executive-narrative-writer/0.1.0.tar.gz",
-          "sha256": "6f9676ad4b76dc9884ac554a4033eb56dab805eeeefc729513cac35831fd2240"
+          "sha256": "9645db97cf9337f29ee41217d03e887e41abd763739340930014c41f58403bc6"
         }
       ],
       "runtimes": [
@@ -155,7 +155,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/playwright-agentic-e2e/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/playwright-agentic-e2e/0.1.0.tar.gz",
-          "sha256": "d3d52ad5a6aab365b24dfdaf99dac9e40ae8758b83c6b577ac97bc57c3d2d6fa"
+          "sha256": "fe21689cd37baa5e7a0d3adf9809f6d0d40004e525d553893d6357b19b942252"
         }
       ],
       "runtimes": [
@@ -184,7 +184,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/playwright-vscode-loop-codex/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/playwright-vscode-loop-codex/0.1.0.tar.gz",
-          "sha256": "93ef3df77fd46d685ae4f49524807bc350e7dd954c57c4306760f3a98e76dba4"
+          "sha256": "8659f15552be13c06cee94710e4bbe3b62031cdd37ad207ab1eb8825f007c617"
         }
       ],
       "runtimes": [
@@ -213,7 +213,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/policy-brand-compliance-checker/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/policy-brand-compliance-checker/0.1.0.tar.gz",
-          "sha256": "288d5795725c8348d2ff02a553d00142a88ef9027e4244d7d86354645b52d9ac"
+          "sha256": "0298e115ffc9c6a1d1fefb1dd91c946d12fe6d7b54023fc96dddce56be767b48"
         }
       ],
       "runtimes": [
@@ -241,7 +241,7 @@
           "released_at": "2026-02-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/weekly-performance-review-bi/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/weekly-performance-review-bi/0.1.0.tar.gz",
-          "sha256": "4c45ca487b0ef4167c6be77d57e89037c63238b7c4b602b57001ff7f57baa6a2"
+          "sha256": "836587a6370e8284cccd4b3633aacf12c948367863bef840019314ef485f82e8"
         }
       ],
       "runtimes": [
@@ -270,7 +270,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/ab-test-planner-analyzer/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/ab-test-planner-analyzer/0.1.0.tar.gz",
-          "sha256": "774114da87c62eac1cda68ca379c2d87241287cfdadcfafee968358d222f0e3c"
+          "sha256": "51d6bdeb5261331cdcb7b23da8c8a7c926cec32796747670b53863b044ff8623"
         }
       ],
       "runtimes": [
@@ -299,7 +299,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/ai-output-eval-scorecard/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/ai-output-eval-scorecard/0.1.0.tar.gz",
-          "sha256": "5a1b8950e7914ebdfeb6864f137d5b117c1fddb3a68b8093e7569e363c2ffe05"
+          "sha256": "fd567640fedf2e053392ff2bf85f708595019cb5550d162bee73d340502be507"
         }
       ],
       "runtimes": [
@@ -328,7 +328,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/creative-workshop-pmax-reels/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-workshop-pmax-reels/0.1.0.tar.gz",
-          "sha256": "64e981fc44af92bbb6a6aff0baefc3229771a0a59aa50cc270b1a09535c34a75"
+          "sha256": "dbdcac3bb53a412349f5e83f1d6e7a0144dbc8099863facabf509a26177bfda8"
         }
       ],
       "runtimes": [
@@ -356,7 +356,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/cross-channel-budget-pacing-agent/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/cross-channel-budget-pacing-agent/0.1.0.tar.gz",
-          "sha256": "7ac6b0350925f9c53e875abf8c57d5bbfe9e5721eba2acb2ea58d6079dee04f8"
+          "sha256": "5dea3e1335e309c891e2ea28bfb98c975c47d4812a544f5980608c2bc0f6fd34"
         }
       ],
       "runtimes": [
@@ -385,7 +385,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/dynamic-creative-rules-engine/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/dynamic-creative-rules-engine/0.1.0.tar.gz",
-          "sha256": "e15dfe6bb25335f6061f78222fef48a8bd7c97e571e19d23790fd9c9c057590e"
+          "sha256": "578d6115038f6bbdd3d230ed4f1ffad8941f3556b60747cbac9ccc15e3a3eed0"
         }
       ],
       "runtimes": [
@@ -414,7 +414,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/lifecycle-experiment-planner/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/lifecycle-experiment-planner/0.1.0.tar.gz",
-          "sha256": "a59868da91877823558670707e8f32531bef2c77049dcfaa6e9e3d426d4f91a6"
+          "sha256": "5ff0c3ab6205443cf3ca12b402581ae32d3d1d45aabceb8f047eb383dcdcfd73"
         }
       ],
       "runtimes": [
@@ -442,7 +442,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/lifecycle-journey-trigger-designer/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/lifecycle-journey-trigger-designer/0.1.0.tar.gz",
-          "sha256": "276a554d450d20db68f66116718e7bd9ea73b5e5b8b380587660b981c09151c5"
+          "sha256": "04de39a058fae73fe1ec4c44a05901d6d08054446b1428808d29c1271bb21f0c"
         }
       ],
       "runtimes": [
@@ -471,7 +471,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/meta-google-weekly-performance-review/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/meta-google-weekly-performance-review/0.1.0.tar.gz",
-          "sha256": "b4c90869ffab316f78f9439a1c96c021921249de5eb974a4e595c632ef8da057"
+          "sha256": "ffb2174126c35ce575ce2dbfa90f42425fba849e9cac2dea816114ce14fa680d"
         }
       ],
       "runtimes": [
@@ -499,7 +499,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/seo-paid-search-synergy/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/seo-paid-search-synergy/0.1.0.tar.gz",
-          "sha256": "b4496217276d81c17ace07a41f1f526388cae5b51192ea7bc7bd5f28cd16b9f7"
+          "sha256": "ce3f88909c5ffbd907efd28e1f5f18cc76d9a35827435131e7e5276f70183327"
         }
       ],
       "runtimes": [

@@ -1,0 +1,7 @@
+{
+  "proposed_harness_change": "Add a policy rule requiring code-change-verification after runtime edits.",
+  "target_artifacts": [
+    "AGENTS.md"
+  ],
+  "approval_notes": "Harness-only change; no production code edits proposed."
+}

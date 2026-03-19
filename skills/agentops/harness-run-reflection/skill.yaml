@@ -1,0 +1,32 @@
+id: agentops/harness-run-reflection
+name: Harness Run Reflection
+description: Review recent agent run logs to identify repeated misses,
+  skipped skills, and inefficient loops in the harness.
+version: 0.1.0
+released_at: "2026-03-19T00:00:00Z"
+category: agentops/harness-evolution
+tags:
+  - reflection
+  - harness
+  - logs
+  - improvement
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  scripts_dir: scripts
+  examples_dir: examples
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

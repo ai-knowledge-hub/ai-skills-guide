@@ -1,10 +1,12 @@
 # Module Architecture: Skills, Agents, Tools & MCP
 
 ## Purpose
-Define the target architecture for a single codebase with separate product modules and registries.
+Define the target architecture for a single codebase with separate product
+modules and registries.
 
 ## Product Surfaces
-- Skills: reusable task-level expertise packages.
+- Skills: reusable task-level expertise packages across marketing, adtech,
+  engineering, security, and agent operations.
 - Agents: orchestrated templates that compose role, memory, skills, and tools.
 - Tools & MCP: integration connectors, adapters, and MCP server definitions.
 
@@ -61,3 +63,9 @@ Each index entry must contain:
 - Separate repositories
 - Separate deployment pipelines per module
 - Breaking changes to existing skills manifests
+
+## Current Expansion Areas
+
+- `engineering/*` skills for code maintenance and verification
+- `security/*` skills for prompt safety and supply-chain defense
+- `agentops/*` skills for harness reflection and controlled evolution

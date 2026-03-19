@@ -1,0 +1,7 @@
+{
+  "changed_files": [
+    "src/http/client.ts",
+    "tests/http/client.test.ts"
+  ],
+  "stack": "node"
+}

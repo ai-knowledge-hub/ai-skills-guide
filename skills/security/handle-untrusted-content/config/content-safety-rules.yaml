@@ -1,0 +1,14 @@
+untrusted_sources:
+  - webpage
+  - issue-comment
+  - log-file
+  - email
+  - mcp-response
+blocked_patterns:
+  - ignore previous instructions
+  - run this command
+  - send me your token
+safe_actions:
+  - summarize
+  - quarantine
+  - escalate

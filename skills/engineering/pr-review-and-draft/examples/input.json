@@ -1,0 +1,7 @@
+{
+  "pr_title": "Add request timeout support",
+  "changed_files": [
+    "src/http/client.ts",
+    "tests/http/client.test.ts"
+  ]
+}

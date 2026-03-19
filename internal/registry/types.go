@@ -9,6 +9,7 @@ type Manifest struct {
 	Category    string
 	Tags        []string
 	Runtimes    []string
+	SecurityReviewed bool
 	Deprecated  bool
 	ReplacedBy  string
 }
@@ -28,6 +29,8 @@ type SkillEntry struct {
 	Versions    []VersionEntry `json:"versions"`
 	Runtimes    []string       `json:"runtimes"`
 	Tags        []string       `json:"tags"`
+	Readiness   string         `json:"readiness"`
+	SecurityReviewed bool      `json:"security_reviewed"`
 	Deprecated  bool           `json:"deprecated"`
 	ReplacedBy  string         `json:"replaced_by,omitempty"`
 }

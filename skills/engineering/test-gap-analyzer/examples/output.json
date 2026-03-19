@@ -1,0 +1,10 @@
+{
+  "missing_scenarios": [
+    "expired reset token",
+    "multiple reset requests in sequence"
+  ],
+  "weak_assertions": [
+    "test does not assert audit log entry"
+  ],
+  "highest_risk_gap": "No regression test for expired token path."
+}

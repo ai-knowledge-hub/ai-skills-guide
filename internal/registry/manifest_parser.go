@@ -19,6 +19,7 @@ func ParseManifest(path string) (Manifest, error) {
 	currentScalarKey := ""
 	currentListKey := ""
 	inNestedMap := false
+	nestedMapKey := ""
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -43,6 +44,16 @@ func ParseManifest(path string) (Manifest, error) {
 		}
 
 		if strings.HasPrefix(line, "  ") {
+			if inNestedMap {
+				nestedParts := strings.SplitN(strings.TrimSpace(line), ":", 2)
+				if len(nestedParts) == 2 {
+					nestedKey := strings.TrimSpace(nestedParts[0])
+					nestedValue := unquote(strings.TrimSpace(nestedParts[1]))
+					if nestedMapKey == "verification" && nestedKey == "security_reviewed" {
+						out.SecurityReviewed = strings.EqualFold(nestedValue, "true")
+					}
+				}
+			}
 			if currentScalarKey != "" && !strings.Contains(strings.TrimSpace(line), ":") {
 				appendText := strings.TrimSpace(line)
 				switch currentScalarKey {
@@ -71,6 +82,7 @@ func ParseManifest(path string) (Manifest, error) {
 		currentScalarKey = ""
 		currentListKey = ""
 		inNestedMap = false
+		nestedMapKey = ""
 
 		switch key {
 		case "id":
@@ -96,6 +108,7 @@ func ParseManifest(path string) (Manifest, error) {
 			out.ReplacedBy = value
 		case "author", "entrypoints", "dependencies", "verification":
 			inNestedMap = true
+			nestedMapKey = key
 		}
 	}
 	if err := scanner.Err(); err != nil {

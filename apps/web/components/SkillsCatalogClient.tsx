@@ -1,32 +1,33 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import type { SkillEntry } from "@/lib/registry";
-import FilterSelect from "@/components/FilterSelect";
+import FilterSelect, { type FilterOption } from "@/components/FilterSelect";
+import type { CatalogInitialFilters } from "@/lib/catalogFilters";
+import { formatCategoryLabel } from "@/lib/categoryLabels";
 
 type SkillsCatalogClientProps = {
   skills: SkillEntry[];
   categories: string[];
   tags: string[];
-  initial: {
-    q: string;
-    tag: string;
-    category: string;
-    runtime: string;
-  };
+  initial: CatalogInitialFilters;
 };
 
 export default function SkillsCatalogClient({ skills, categories, tags, initial }: SkillsCatalogClientProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [draftQ, setDraftQ] = useState(initial.q);
-  const [draftTag, setDraftTag] = useState(initial.tag);
-  const [draftCategory, setDraftCategory] = useState(initial.category);
-  const [draftRuntime, setDraftRuntime] = useState(initial.runtime);
+  const [draftTags, setDraftTags] = useState(initial.tags);
+  const [draftCategories, setDraftCategories] = useState(initial.categories);
+  const [draftRuntimes, setDraftRuntimes] = useState(initial.runtimes);
 
   const [q, setQ] = useState(initial.q);
-  const [tag, setTag] = useState(initial.tag);
-  const [category, setCategory] = useState(initial.category);
-  const [runtime, setRuntime] = useState(initial.runtime);
+  const [selectedTags, setSelectedTags] = useState(initial.tags);
+  const [selectedCategories, setSelectedCategories] = useState(initial.categories);
+  const [selectedRuntimes, setSelectedRuntimes] = useState(initial.runtimes);
 
   const filtered = useMemo(() => {
     const qLower = q.toLowerCase();
@@ -37,24 +38,89 @@ export default function SkillsCatalogClient({ skills, categories, tags, initial 
           return false;
         }
       }
-      if (tag && !skill.tags.includes(tag)) {
+      if (selectedTags.length > 0 && !selectedTags.some((tag) => skill.tags.includes(tag))) {
         return false;
       }
-      if (category && skill.category !== category) {
+      if (selectedCategories.length > 0 && !selectedCategories.includes(skill.category)) {
         return false;
       }
-      if (runtime && !skill.runtimes.includes(runtime)) {
+      if (selectedRuntimes.length > 0 && !selectedRuntimes.some((runtime) => skill.runtimes.includes(runtime))) {
         return false;
       }
       return true;
     });
-  }, [skills, q, tag, category, runtime]);
+  }, [skills, q, selectedCategories, selectedRuntimes, selectedTags]);
+
+  const categoryOptions = useMemo<FilterOption[]>(
+    () =>
+      categories.map((category) => ({
+        value: category,
+        label: formatCategoryLabel(category),
+        count: skills.filter((skill) => skill.category === category).length,
+        group: groupCategory(category)
+      })),
+    [categories, skills]
+  );
+
+  const tagOptions = useMemo<FilterOption[]>(
+    () =>
+      tags.map((tag) => ({
+        value: tag,
+        label: tag,
+        count: skills.filter((skill) => skill.tags.includes(tag)).length
+      })),
+    [skills, tags]
+  );
+
+  const runtimeOptions = useMemo<FilterOption[]>(
+    () =>
+      ["codex", "claude", "generic"].map((runtime) => ({
+        value: runtime,
+        label: runtime,
+        count: skills.filter((skill) => skill.runtimes.includes(runtime)).length
+      })),
+    [skills]
+  );
 
   function applyFilters() {
     setQ(draftQ);
-    setTag(draftTag);
-    setCategory(draftCategory);
-    setRuntime(draftRuntime);
+    setSelectedTags(draftTags);
+    setSelectedCategories(draftCategories);
+    setSelectedRuntimes(draftRuntimes);
+
+    const nextParams = new URLSearchParams(searchParams.toString());
+    nextParams.delete("q");
+    nextParams.delete("tag");
+    nextParams.delete("category");
+    nextParams.delete("runtime");
+
+    if (draftQ.trim()) {
+      nextParams.set("q", draftQ.trim());
+    }
+    for (const tag of draftTags) {
+      nextParams.append("tag", tag);
+    }
+    for (const category of draftCategories) {
+      nextParams.append("category", category);
+    }
+    for (const runtime of draftRuntimes) {
+      nextParams.append("runtime", runtime);
+    }
+
+    const query = nextParams.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname);
+  }
+
+  function resetFilters() {
+    setDraftQ("");
+    setDraftTags([]);
+    setDraftCategories([]);
+    setDraftRuntimes([]);
+    setQ("");
+    setSelectedTags([]);
+    setSelectedCategories([]);
+    setSelectedRuntimes([]);
+    router.replace(pathname);
   }
 
   return (
@@ -69,30 +135,34 @@ export default function SkillsCatalogClient({ skills, categories, tags, initial 
 
         <FilterSelect
           label="Category"
-          value={draftCategory}
-          options={categories}
+          values={draftCategories}
+          options={categoryOptions}
           placeholder="All categories"
-          onChange={setDraftCategory}
+          onChange={setDraftCategories}
         />
 
         <FilterSelect
           label="Tag"
-          value={draftTag}
-          options={tags}
+          values={draftTags}
+          options={tagOptions}
           placeholder="All tags"
-          onChange={setDraftTag}
+          onChange={setDraftTags}
         />
 
         <FilterSelect
           label="Runtime"
-          value={draftRuntime}
-          options={["codex", "claude", "generic"]}
+          values={draftRuntimes}
+          options={runtimeOptions}
           placeholder="All runtimes"
-          onChange={setDraftRuntime}
+          onChange={setDraftRuntimes}
         />
 
         <button className="button button--accent" type="button" onClick={applyFilters}>
           Apply Filters
+        </button>
+
+        <button className="button button--secondary" type="button" onClick={resetFilters}>
+          Reset Filters
         </button>
       </div>
 
@@ -103,6 +173,7 @@ export default function SkillsCatalogClient({ skills, categories, tags, initial 
           <Link key={skill.id} href={`/skills/${skill.id}`} className="card">
             <p className="meta">{skill.id}</p>
             <h2>{skill.name}</h2>
+            <p className="meta">{formatCategoryLabel(skill.category)}</p>
             <p>{skill.description}</p>
             <div className="tags">
               {skill.tags.map((entry) => (
@@ -114,4 +185,14 @@ export default function SkillsCatalogClient({ skills, categories, tags, initial 
       </section>
     </>
   );
+}
+
+function groupCategory(category: string) {
+  const [family] = category.split("/");
+  if (family === "marketing-tools") return "Marketing Tools";
+  if (family === "adtech") return "Adtech";
+  if (family === "engineering") return "Engineering";
+  if (family === "security") return "Security";
+  if (family === "agentops") return "AgentOps";
+  return "Other";
 }

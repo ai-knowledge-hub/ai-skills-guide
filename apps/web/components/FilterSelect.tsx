@@ -2,15 +2,28 @@
 
 import { useEffect, useRef, useState } from "react";
 
-type FilterSelectProps = {
-  label: string;
+export type FilterOption = {
   value: string;
-  options: string[];
-  placeholder: string;
-  onChange: (value: string) => void;
+  label: string;
+  count?: number;
+  group?: string;
 };
 
-export default function FilterSelect({ label, value, options, placeholder, onChange }: FilterSelectProps) {
+type FilterSelectProps = {
+  label: string;
+  values: string[];
+  options: FilterOption[];
+  placeholder: string;
+  onChange: (values: string[]) => void;
+};
+
+export default function FilterSelect({
+  label,
+  values,
+  options,
+  placeholder,
+  onChange
+}: FilterSelectProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
 
@@ -26,6 +39,22 @@ export default function FilterSelect({ label, value, options, placeholder, onCha
     return () => document.removeEventListener("mousedown", onPointerDown);
   }, []);
 
+  const summary =
+    values.length === 0
+      ? placeholder
+      : values.length === 1
+        ? options.find((option) => option.value === values[0])?.label ?? values[0]
+        : `${values.length} selected`;
+  const groupedOptions = options.reduce<Record<string, FilterOption[]>>((acc, option) => {
+    const key = option.group ?? "";
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(option);
+    return acc;
+  }, {});
+  const orderedGroups = Object.entries(groupedOptions);
+
   return (
     <div className="filter-select" ref={rootRef}>
       <button
@@ -36,38 +65,63 @@ export default function FilterSelect({ label, value, options, placeholder, onCha
         aria-label={label}
         onClick={() => setOpen((prev) => !prev)}
       >
-        <span>{value || placeholder}</span>
+        <span>{summary}</span>
         <span className="caret" aria-hidden>
           {open ? "▴" : "▾"}
         </span>
       </button>
 
       {open ? (
-        <ul className="filter-menu" role="listbox" aria-label={label}>
+        <ul
+          className="filter-menu"
+          role="listbox"
+          aria-label={label}
+          aria-multiselectable="true"
+        >
           <li>
             <button
               type="button"
-              className={`filter-option ${value === "" ? "is-selected" : ""}`}
+              className={`filter-option ${values.length === 0 ? "is-selected" : ""}`}
               onClick={() => {
-                onChange("");
-                setOpen(false);
+                onChange([]);
               }}
             >
-              {placeholder}
+              <span className="filter-option-text">{placeholder}</span>
+              <span className="filter-option-mark" aria-hidden>
+                {values.length === 0 ? "✓" : ""}
+              </span>
             </button>
           </li>
-          {options.map((option) => (
-            <li key={option}>
-              <button
-                type="button"
-                className={`filter-option ${value === option ? "is-selected" : ""}`}
-                onClick={() => {
-                  onChange(option);
-                  setOpen(false);
-                }}
-              >
-                {option}
-              </button>
+          {orderedGroups.map(([group, groupOptions]) => (
+            <li key={group || "ungrouped"} className="filter-group">
+              {group ? <p className="filter-group-label">{group}</p> : null}
+              <ul className="filter-group-list">
+                {groupOptions.map((option) => (
+                  <li key={option.value}>
+                    <button
+                      type="button"
+                      className={`filter-option ${values.includes(option.value) ? "is-selected" : ""}`}
+                      onClick={() => {
+                        if (values.includes(option.value)) {
+                          onChange(values.filter((entry) => entry !== option.value));
+                          return;
+                        }
+                        onChange([...values, option.value]);
+                      }}
+                    >
+                      <span className="filter-option-text">{option.label}</span>
+                      <span className="filter-option-side">
+                        {typeof option.count === "number" ? (
+                          <span className="filter-option-count">{option.count}</span>
+                        ) : null}
+                        <span className="filter-option-mark" aria-hidden>
+                          {values.includes(option.value) ? "✓" : ""}
+                        </span>
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
             </li>
           ))}
         </ul>

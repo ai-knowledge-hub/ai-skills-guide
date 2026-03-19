@@ -1,0 +1,7 @@
+{
+  "problem": "Verification skill was skipped after runtime edits in 4 of 10 runs.",
+  "target_candidates": [
+    "AGENTS.md",
+    "skills/engineering/code-change-verification"
+  ]
+}

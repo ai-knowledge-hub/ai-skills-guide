@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import InstallCommands from "@/components/InstallCommands";
 import { buildModuleInstallSnippet, getEntryById, loadAgentsRegistry } from "@/lib/registry";
+import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
 
 export async function generateStaticParams() {
   const registry = await loadAgentsRegistry();
@@ -19,13 +19,13 @@ export default async function AgentDetailPage({ params }: { params: { id: string
   return (
     <main>
       <div className="nav">
-        <Link href="/" className="pill">Home</Link>
-        <Link href="/agents" className="pill">Agents</Link>
+        <a href="/" className="pill">Home</a>
+        <a href="/agents" className="pill">Agents</a>
         <span className="pill">{entry.id}</span>
       </div>
 
       <article className="card">
-        <p className="meta">{entry.category}</p>
+        <p className="meta">{formatCategoryLabel(entry.category)}</p>
         <h1>{entry.name}</h1>
         <p>{entry.description}</p>
         <div className="tags">
@@ -33,15 +33,29 @@ export default async function AgentDetailPage({ params }: { params: { id: string
             <span key={tag} className="tag">{tag}</span>
           ))}
         </div>
+        <div className="detail-install-lead">
+          <p className="meta">Install this agent</p>
+          <InstallCommands
+            compact
+            codex={buildModuleInstallSnippet("agents", entry, "codex")}
+            claude={buildModuleInstallSnippet("agents", entry, "claude")}
+            generic={buildModuleInstallSnippet("agents", entry, "generic")}
+          />
+        </div>
       </article>
 
       <section className="detail-grid">
+        <article className="card detail-panel">
+          <h2>Status</h2>
+          <p><span className={`catalog-status-badge is-${entry.readiness}`}>{formatReadinessLabel(entry.readiness)}</span></p>
+          <p><span className="meta">Security reviewed:</span> {entry.security_reviewed ? "yes" : "no"}</p>
+          <p><span className="meta">Lifecycle:</span> {entry.deprecated ? "Deprecated" : "Active"}</p>
+        </article>
         <article className="card detail-panel">
           <h2>Metadata</h2>
           <p><span className="meta">ID:</span> {entry.id}</p>
           <p><span className="meta">Latest:</span> {entry.latest}</p>
           <p><span className="meta">Runtimes:</span> {entry.runtimes.join(", ")}</p>
-          <p><span className="meta">Deprecated:</span> {String(entry.deprecated)}</p>
           {entry.replaced_by ? <p><span className="meta">Replaced by:</span> {entry.replaced_by}</p> : null}
         </article>
         <article className="card detail-panel">
@@ -56,11 +70,6 @@ export default async function AgentDetailPage({ params }: { params: { id: string
             {latestVersion ? <a href={latestVersion.artifact_url}>{latestVersion.artifact_url}</a> : "n/a"}
           </p>
         </article>
-        <InstallCommands
-          codex={buildModuleInstallSnippet("agents", entry, "codex")}
-          claude={buildModuleInstallSnippet("agents", entry, "claude")}
-          generic={buildModuleInstallSnippet("agents", entry, "generic")}
-        />
       </section>
     </main>
   );

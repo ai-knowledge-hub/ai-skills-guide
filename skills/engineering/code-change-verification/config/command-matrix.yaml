@@ -1,0 +1,28 @@
+python:
+  lint:
+    - make lint
+    - ruff check .
+  typecheck:
+    - make typecheck
+    - mypy .
+  tests:
+    - make test
+    - pytest
+node:
+  lint:
+    - pnpm lint
+    - npm run lint
+  typecheck:
+    - pnpm typecheck
+    - tsc --noEmit
+  tests:
+    - pnpm test
+    - npm test
+go:
+  lint:
+    - golangci-lint run
+  tests:
+    - go test ./...
+generic:
+  verify:
+    - consult README.md and project scripts

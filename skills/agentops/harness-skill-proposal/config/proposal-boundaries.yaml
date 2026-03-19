@@ -1,0 +1,11 @@
+allowed_targets:
+  - AGENTS.md
+  - AGENTS-SECURITY.md
+  - skills/
+  - benchmarks/
+blocked_targets:
+  - apps/
+  - .github/
+  - tools-mcp/
+  - infra/
+  - secrets/

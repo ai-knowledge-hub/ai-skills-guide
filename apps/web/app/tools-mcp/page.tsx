@@ -1,30 +1,30 @@
-import Link from "next/link";
 import { loadToolsRegistry, uniqueValues } from "@/lib/registry";
 import CatalogClient from "@/components/CatalogClient";
+import { parseMultiValue, type SearchParamValue } from "@/lib/catalogFilters";
 
 type SearchParams = {
-  q?: string;
-  tag?: string;
-  category?: string;
-  runtime?: string;
+  q?: SearchParamValue;
+  tag?: SearchParamValue;
+  category?: SearchParamValue;
+  runtime?: SearchParamValue;
 };
 
-export default async function ToolsMcpPage({ searchParams }: { searchParams: SearchParams }) {
+export default async function ToolsMcpPage({ searchParams = {} }: { searchParams?: SearchParams }) {
   const registry = await loadToolsRegistry();
-  const q = searchParams.q ?? "";
-  const tag = searchParams.tag ?? "";
-  const category = searchParams.category ?? "";
-  const runtime = searchParams.runtime ?? "";
+  const q = typeof searchParams.q === "string" ? searchParams.q : "";
+  const tags = parseMultiValue(searchParams.tag);
+  const categoriesSelected = parseMultiValue(searchParams.category);
+  const runtimes = parseMultiValue(searchParams.runtime);
 
   const categories = uniqueValues(registry.skills.map((s) => s.category));
-  const tags = uniqueValues(registry.skills.flatMap((s) => s.tags));
+  const availableTags = uniqueValues(registry.skills.flatMap((s) => s.tags));
 
   return (
     <main>
       <div className="nav">
-        <Link href="/" className="pill">Home</Link>
-        <Link href="/skills" className="pill">Skills</Link>
-        <Link href="/agents" className="pill">Agents</Link>
+        <a href="/" className="pill">Home</a>
+        <a href="/skills" className="pill">Skills</a>
+        <a href="/agents" className="pill">Agents</a>
         <span className="pill">Tools &amp; MCP</span>
       </div>
 
@@ -34,9 +34,9 @@ export default async function ToolsMcpPage({ searchParams }: { searchParams: Sea
       <CatalogClient
         entries={registry.skills}
         categories={categories}
-        tags={tags}
+        tags={availableTags}
         basePath="/tools-mcp"
-        initial={{ q, tag, category, runtime }}
+        initial={{ q, tags, categories: categoriesSelected, runtimes }}
       />
     </main>
   );

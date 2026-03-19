@@ -1,6 +1,10 @@
-import Link from "next/link";
 import { loadAgentsRegistry, loadSkillsRegistry, loadToolsRegistry, uniqueValues } from "@/lib/registry";
 import { FEATURED_SKILL_IDS } from "@/lib/home";
+import {
+  formatCategoryFamily,
+  formatCategoryLabel,
+  formatReadinessLabel
+} from "@/lib/categoryLabels";
 
 export default async function HomePage() {
   const [skillsRegistry, agentsRegistry, toolsRegistry] = await Promise.all([
@@ -37,9 +41,9 @@ export default async function HomePage() {
     <main>
       <div className="nav">
         <span className="pill">AI Knowledge Hub</span>
-        <Link href="/skills" className="pill">Skills</Link>
-        <Link href="/agents" className="pill">Agents</Link>
-        <Link href="/tools-mcp" className="pill">Tools &amp; MCP</Link>
+        <a href="/skills" className="pill">Skills</a>
+        <a href="/agents" className="pill">Agents</a>
+        <a href="/tools-mcp" className="pill">Tools &amp; MCP</a>
       </div>
 
       <section className="hero">
@@ -54,12 +58,12 @@ export default async function HomePage() {
           </h1>
           <p>
             AI Knowledge Hub is an open, runtime-agnostic skills platform for
-            marketing and adtech teams.
+            marketing, adtech, engineering, security, and agent operations.
           </p>
           <p>
             We publish reusable skill packages with guardrails, tests, and
-            install paths so teams can stop rebuilding the same automations in
-            silos.
+            install paths so teams can stop rebuilding the same automations,
+            review loops, and harness policies in silos.
           </p>
         </article>
         <article className="card">
@@ -68,15 +72,15 @@ export default async function HomePage() {
           <p><span className="meta">Skills tags:</span> {tags.length}</p>
           <p><span className="meta">Runtimes:</span> codex, claude, generic</p>
           <div className="actions snapshot-actions">
-            <Link href="/skills" className="button button--accent">
+            <a href="/skills" className="button button--accent">
               Explore skills
-            </Link>
-            <Link href="/agents" className="button button--secondary">
+            </a>
+            <a href="/agents" className="button button--secondary">
               Browse agents
-            </Link>
-            <Link href="/tools-mcp" className="button button--secondary">
+            </a>
+            <a href="/tools-mcp" className="button button--secondary">
               Browse tools
-            </Link>
+            </a>
             <a
               href="https://github.com/ai-knowledge-hub/ai-skills-guide"
               className="button button--secondary"
@@ -96,7 +100,7 @@ export default async function HomePage() {
             <ul>
               {newestSkills.map((skill) => (
                 <li key={skill.id}>
-                  <Link href={`/skills/${skill.id}`}>{skill.name}</Link>
+                  <a href={`/skills/${skill.id}`}>{skill.name}</a>
                 </li>
               ))}
             </ul>
@@ -108,24 +112,38 @@ export default async function HomePage() {
         <div className="section-head">
           <h2>Featured Skills</h2>
           <p className="meta">Sample cards from the full catalog.</p>
-          <Link href="/skills" className="button button--secondary">
+          <a href="/skills" className="button button--secondary">
             View all {skills.length} skills
-          </Link>
+          </a>
         </div>
       </section>
 
       <section className="grid featured-grid">
         {featuredSkills.map((skill) => (
-          <Link key={skill.id} href={`/skills/${skill.id}`} className="card">
-            <p className="meta">{skill.category}</p>
+          <a key={skill.id} href={`/skills/${skill.id}`} className="card catalog-card">
+            <div className="catalog-card-head">
+              <span className="catalog-pack-badge">{formatCategoryFamily(skill.category)}</span>
+              <div className="catalog-status-badges">
+                <span className={`catalog-status-badge is-${skill.readiness}`}>
+                  {formatReadinessLabel(skill.readiness)}
+                </span>
+                {skill.security_reviewed ? (
+                  <span className="catalog-status-badge is-reviewed-detail">Security</span>
+                ) : null}
+              </div>
+            </div>
             <h3>{skill.name}</h3>
+            <p className="meta catalog-card-category">{formatCategoryLabel(skill.category)}</p>
             <p>{skill.description}</p>
             <div className="tags">
-              {skill.tags.slice(0, 3).map((tag) => (
+              {skill.tags.slice(0, 2).map((tag) => (
                 <span key={tag} className="tag">{tag}</span>
               ))}
+              {skill.tags.length > 2 ? (
+                <span className="tag tag--muted">+{skill.tags.length - 2}</span>
+              ) : null}
             </div>
-          </Link>
+          </a>
         ))}
       </section>
     </main>

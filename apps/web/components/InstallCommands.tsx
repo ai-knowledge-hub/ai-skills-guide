@@ -6,11 +6,12 @@ type InstallCommandsProps = {
   codex: string;
   claude: string;
   generic: string;
+  compact?: boolean;
 };
 
 type RuntimeKey = "codex" | "claude" | "generic";
 
-export default function InstallCommands({ codex, claude, generic }: InstallCommandsProps) {
+export default function InstallCommands({ codex, claude, generic, compact = false }: InstallCommandsProps) {
   const [copied, setCopied] = useState<RuntimeKey | null>(null);
 
   async function copy(runtime: RuntimeKey, value: string) {
@@ -30,11 +31,11 @@ export default function InstallCommands({ codex, claude, generic }: InstallComma
   ];
 
   return (
-    <article className="card detail-panel install-card">
+    <article className={compact ? "install-inline" : "card detail-panel install-card"}>
       {rows.map((row) => (
         <section key={row.key} className="install-item">
           <div className="install-head">
-            <h2>{row.title}</h2>
+            {compact ? <h3>{row.title}</h3> : <h2>{row.title}</h2>}
             <button
               type="button"
               className="button button--secondary copy-button"

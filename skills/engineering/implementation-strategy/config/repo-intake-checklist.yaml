@@ -1,0 +1,13 @@
+required_reads:
+  - AGENTS.md
+  - CONTRIBUTING.md
+  - README.md
+impact_questions:
+  - Which modules change?
+  - Which tests are likely affected?
+  - Which commands verify the touched paths?
+approval_triggers:
+  - api-surface-change
+  - infra-change
+  - dependency-upgrade
+  - deploy-action

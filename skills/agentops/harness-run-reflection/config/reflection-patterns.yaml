@@ -1,0 +1,11 @@
+patterns:
+  - skipped-required-skill
+  - repeated-retry-loop
+  - verification-after-completion
+  - policy-conflict
+  - unnecessary-broad-search
+severity_order:
+  - critical
+  - high
+  - medium
+  - low

@@ -53,7 +53,16 @@
         "adtech/analytics-engineering",
         "adtech/compliance",
         "adtech/activation",
-        "adtech/other"
+        "adtech/other",
+        "engineering/code-maintenance",
+        "engineering/testing-quality",
+        "engineering/pr-review",
+        "security/prompt-safety",
+        "security/supply-chain",
+        "security/runtime-hardening",
+        "agentops/harness-evolution",
+        "agentops/harness-governance",
+        "agentops/harness-evaluation"
       ]
     },
     "tags": {

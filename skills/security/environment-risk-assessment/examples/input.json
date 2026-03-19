@@ -1,0 +1,11 @@
+{
+  "runtime": "developer-laptop",
+  "credentials": [
+    "prod-aws-profile",
+    "dev-github-token"
+  ],
+  "mounts": [
+    "/Users/alex/.ssh",
+    "/repo"
+  ]
+}

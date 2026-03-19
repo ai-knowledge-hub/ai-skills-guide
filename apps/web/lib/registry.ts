@@ -20,6 +20,8 @@ export type RegistryEntry = {
   versions: VersionEntry[];
   runtimes: string[];
   tags: string[];
+  readiness: "experimental" | "reviewed" | "deprecated";
+  security_reviewed: boolean;
   deprecated: boolean;
   replaced_by?: string;
 };

@@ -1,0 +1,12 @@
+{
+  "changed_file_coverage": [
+    {
+      "file": "src/payments/reconcile.go",
+      "coverage_percent": 64
+    }
+  ],
+  "uncovered_risk_areas": [
+    "refund error branch",
+    "partial settlement path"
+  ]
+}

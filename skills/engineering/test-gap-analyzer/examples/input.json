@@ -1,0 +1,8 @@
+{
+  "changed_files": [
+    "src/auth/reset_password.py"
+  ],
+  "existing_tests": [
+    "tests/auth/test_reset_password.py"
+  ]
+}

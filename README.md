@@ -1,8 +1,8 @@
 # AI Skills Guide
 
-Practical, reusable AI skills for marketing practitioners and ad-tech
-software engineers, plus agent templates, tools/MCP definitions, a hub UI,
-and QA automation flows.
+Practical, reusable AI skills for marketing practitioners, software
+engineers, security teams, and agent builders, plus agent templates,
+tools/MCP definitions, a hub UI, and QA automation flows.
 
 ## What this repo is
 
@@ -12,8 +12,10 @@ scripts, test prompts, and contribution standards.
 
 ## Positioning
 
-AI Knowledge Hub is an open, runtime-agnostic platform for marketing and
-adtech teams. We publish reusable building blocks across three modules:
+AI Knowledge Hub is an open, runtime-agnostic platform for applied agent
+workflows. The catalog started with marketing and adtech use cases and now
+expands into engineering maintenance, cybersecurity, and agent operations.
+We publish reusable building blocks across three modules:
 
 - skills (task-level expertise)
 - agents (orchestrated templates)
@@ -28,7 +30,7 @@ adtech teams. We publish reusable building blocks across three modules:
 
 ## Current Scope
 
-### Skills (18)
+### Skills (30)
 
 1. `meta-google-weekly-performance-review` (Beginner)
 2. `creative-workshop-pmax-reels` (Intermediate)
@@ -48,6 +50,18 @@ adtech teams. We publish reusable building blocks across three modules:
 16. `dashboard-generator` (BI Dashboard Build)
 17. `dashboard-qa-checker` (BI QA)
 18. `executive-narrative-writer` (BI Insights Communication)
+19. `engineering/implementation-strategy` (Code Maintenance)
+20. `engineering/code-change-verification` (Code Maintenance)
+21. `engineering/test-gap-analyzer` (Testing Quality)
+22. `engineering/coverage-gap-reporter` (Testing Quality)
+23. `engineering/pr-review-and-draft` (PR Review)
+24. `security/handle-untrusted-content` (Prompt Safety)
+25. `security/dependency-supply-chain-audit` (Supply Chain)
+26. `security/secrets-and-credential-hygiene` (Runtime Hardening)
+27. `security/environment-risk-assessment` (Runtime Hardening)
+28. `agentops/harness-run-reflection` (Harness Evolution)
+29. `agentops/harness-skill-proposal` (Harness Governance)
+30. `agentops/harness-regression-evaluator` (Harness Evaluation)
 
 ### Agents (3)
 
@@ -79,6 +93,18 @@ adtech teams. We publish reusable building blocks across three modules:
 - `analytics/ga4-mcp-connector`
 - `ads/meta-ads-mcp-connector`
 - `warehouse/bigquery-mcp-query-runner`
+- `engineering/implementation-strategy`
+- `engineering/code-change-verification`
+- `engineering/test-gap-analyzer`
+- `engineering/coverage-gap-reporter`
+- `engineering/pr-review-and-draft`
+- `security/handle-untrusted-content`
+- `security/dependency-supply-chain-audit`
+- `security/secrets-and-credential-hygiene`
+- `security/environment-risk-assessment`
+- `agentops/harness-run-reflection`
+- `agentops/harness-skill-proposal`
+- `agentops/harness-regression-evaluator`
 
 ## Definition of done for each module entry
 
@@ -137,6 +163,15 @@ Useful sections include skills for:
 - GitHub Copilot / VS Code patterns
 - Vercel AI SDK agent resources
 
+## New Skill Packs
+
+- `skills/engineering/*`: code maintenance, verification, tests, coverage,
+  and PR review workflows.
+- `skills/security/*`: prompt safety, dependency audit, secrets hygiene,
+  and runtime risk assessment.
+- `skills/agentops/*`: harness reflection, skill proposal, and regression
+  evaluation for self-evolving agent scaffolds.
+
 ## Quickstart
 
 1. Pick a module entry under `skills/`, `agents/`, or `tools-mcp/`.
@@ -145,6 +180,44 @@ Useful sections include skills for:
 4. Verify structure with `bash scripts/validate-skills.sh`.
 5. Validate manifests with `bash scripts/validate-manifests.sh`.
 6. Submit improvements via PR.
+
+## Install New Skill Packs
+
+For Codex:
+
+```bash
+./bin/skills-hub install engineering/implementation-strategy@latest \
+  --runtime codex
+./bin/skills-hub install security/handle-untrusted-content@latest \
+  --runtime codex
+./bin/skills-hub install agentops/harness-run-reflection@latest \
+  --runtime codex
+```
+
+For Claude:
+
+```bash
+./bin/skills-hub install engineering/code-change-verification@latest \
+  --runtime claude
+./bin/skills-hub install security/dependency-supply-chain-audit@latest \
+  --runtime claude
+./bin/skills-hub install agentops/harness-regression-evaluator@latest \
+  --runtime claude
+```
+
+For generic runtimes:
+
+```bash
+./bin/skills-hub install engineering/pr-review-and-draft@latest \
+  --runtime generic \
+  --target ./my-agent/skills
+./bin/skills-hub install security/environment-risk-assessment@latest \
+  --runtime generic \
+  --target ./my-agent/skills
+./bin/skills-hub install agentops/harness-skill-proposal@latest \
+  --runtime generic \
+  --target ./my-agent/skills
+```
 
 ## Use Agent Packages (Step-by-step)
 
@@ -410,6 +483,9 @@ Runtime target defaults:
 See `CONTRIBUTING.md` and `docs/how-to-contribute-a-skill.md`.
 For local toolchain setup, see `docs/dev-setup.md`.
 For security expectations, see `SECURITY_BASELINE.md`.
+For new pack guidance, see `docs/skill-pack-code-maintenance.md`,
+`docs/skill-pack-cybersecurity.md`, and
+`docs/skill-pack-autoharnessing.md`.
 
 ## Hub Website (MVP Scaffold)
 

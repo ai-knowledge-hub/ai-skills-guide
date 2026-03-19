@@ -1,0 +1,18 @@
+{
+  "commands_run": [
+    "pnpm typecheck",
+    "pnpm test -- client"
+  ],
+  "results": [
+    {
+      "command": "pnpm typecheck",
+      "status": "pass"
+    },
+    {
+      "command": "pnpm test -- client",
+      "status": "fail",
+      "notes": "timeout expectation changed"
+    }
+  ],
+  "remaining_risk": "Targeted tests still failing."
+}

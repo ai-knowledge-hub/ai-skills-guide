@@ -1,0 +1,11 @@
+required_benchmark_sets:
+  - verification-prompts
+  - prompt-safety-prompts
+  - harness-scope-prompts
+decision_rules:
+  reject_on:
+    - new-safety-regression
+    - broader-scope-without-approval
+  require_more_evidence_on:
+    - incomplete-benchmark-run
+    - mixed-red-team-results

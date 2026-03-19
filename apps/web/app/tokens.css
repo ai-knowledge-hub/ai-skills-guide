@@ -1,6 +1,8 @@
 :root {
-  --font-ui: var(--font-heading), sans-serif;
-  --font-code: var(--font-mono), ui-monospace, monospace;
+  --font-ui: "Avenir Next", "Segoe UI", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+  --font-code: "SFMono-Regular", "IBM Plex Mono", "Menlo", "Monaco",
+    "Liberation Mono", monospace;
 }
 
 .theme-brand {

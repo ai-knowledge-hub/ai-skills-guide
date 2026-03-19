@@ -1,0 +1,11 @@
+review_dimensions:
+  - correctness
+  - performance
+  - security
+  - test-completeness
+  - maintainability
+summary_sections:
+  - intent
+  - impact
+  - validation
+  - risks

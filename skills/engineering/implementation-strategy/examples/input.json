@@ -1,0 +1,7 @@
+{
+  "task": "Add a timeout option to the HTTP client and update tests.",
+  "repo_context": {
+    "stack": "typescript",
+    "paths": ["src/http", "tests/http"]
+  }
+}

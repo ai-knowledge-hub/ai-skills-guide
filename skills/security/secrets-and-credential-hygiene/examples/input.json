@@ -1,0 +1,7 @@
+{
+  "changed_files": [
+    ".env.example",
+    "src/config.ts"
+  ],
+  "scanner_output": "gitleaks-report.json"
+}

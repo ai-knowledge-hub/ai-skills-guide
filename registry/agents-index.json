@@ -27,6 +27,8 @@
         "analytics",
         "orchestration"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -54,6 +56,8 @@
         "policy",
         "governance"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -81,6 +85,8 @@
         "orchestration",
         "qa-gating"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     }
   ]

@@ -7,8 +7,15 @@ AGENT_SCHEMA="$ROOT/shared/schemas/agent.schema.json"
 TOOL_SCHEMA="$ROOT/shared/schemas/tool.schema.json"
 REGISTRY_SCHEMA="$ROOT/shared/schemas/registry-index.schema.json"
 
-if ! command -v check-jsonschema >/dev/null 2>&1; then
-  echo "[ERROR] check-jsonschema is required. Install via: pip install check-jsonschema"
+CHECK_JSONSCHEMA=""
+if command -v check-jsonschema >/dev/null 2>&1; then
+  CHECK_JSONSCHEMA="$(command -v check-jsonschema)"
+elif [[ -x "$ROOT/.venv/bin/check-jsonschema" ]]; then
+  CHECK_JSONSCHEMA="$ROOT/.venv/bin/check-jsonschema"
+fi
+
+if [[ -z "$CHECK_JSONSCHEMA" ]]; then
+  echo "[ERROR] check-jsonschema is required. Install via: python3 -m venv .venv && .venv/bin/pip install check-jsonschema"
   exit 1
 fi
 
@@ -23,14 +30,17 @@ validate_module_manifests() {
     return 0
   fi
 
-  mapfile -t manifests < <(find "$module_dir" -mindepth 3 -maxdepth 3 -name "$manifest_name" | sort)
+  manifests=()
+  while IFS= read -r manifest_path; do
+    manifests+=("$manifest_path")
+  done < <(find "$module_dir" -mindepth 3 -maxdepth 3 -name "$manifest_name" | sort)
   if [[ "${#manifests[@]}" -eq 0 ]]; then
     echo "[WARN] No $manifest_name manifests found under ${module_dir#$ROOT/}/. Skipping $label manifest validation."
     return 0
   fi
 
   echo "[check] validating ${#manifests[@]} $label manifest(s)"
-  check-jsonschema --schemafile "$schema_path" "${manifests[@]}"
+  "$CHECK_JSONSCHEMA" --schemafile "$schema_path" "${manifests[@]}"
 }
 
 validate_module_manifests "$ROOT/skills" "skill.yaml" "$SKILL_SCHEMA" "skill"
@@ -45,7 +55,7 @@ for index_path in \
 do
   if [[ -f "$index_path" ]]; then
     echo "[check] validating ${index_path#$ROOT/}"
-    check-jsonschema --schemafile "$REGISTRY_SCHEMA" "$index_path"
+    "$CHECK_JSONSCHEMA" --schemafile "$REGISTRY_SCHEMA" "$index_path"
   fi
 done
 

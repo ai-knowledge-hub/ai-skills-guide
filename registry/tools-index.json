@@ -27,6 +27,8 @@
         "mcp",
         "paid-social"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -54,6 +56,8 @@
         "mcp",
         "analytics"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -81,6 +85,8 @@
         "mcp",
         "sql"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     }
   ]

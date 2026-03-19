@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0",
-  "generated_at": "2026-02-27T00:00:00Z",
+  "generated_at": "2026-03-19T00:00:00Z",
   "skills": [
     {
       "id": "adtech/analyst-copilot-bigquery-redshift",
@@ -28,6 +28,8 @@
         "bigquery",
         "redshift"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -57,6 +59,8 @@
         "retrieval",
         "governance"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -85,6 +89,8 @@
         "weekly-reporting",
         "marketing-analytics"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -113,6 +119,8 @@
         "data-quality",
         "anomaly-detection"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -141,6 +149,8 @@
         "dashboard",
         "marketing-analytics"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -170,6 +180,8 @@
         "smoke-tests",
         "ci"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -199,6 +211,8 @@
         "vscode",
         "ux-testing"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -227,6 +241,8 @@
         "utm",
         "prelaunch-qa"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -256,6 +272,248 @@
         "qa-gating",
         "dashboard"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false
+    },
+    {
+      "id": "agentops/harness-regression-evaluator",
+      "name": "Harness Regression Evaluator",
+      "description": "Evaluate proposed harness changes against benchmark prompts and red-team scenarios before adoption.",
+      "category": "agentops/harness-evaluation",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-19T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/harness-regression-evaluator/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-regression-evaluator/0.1.0.tar.gz",
+          "sha256": "f0a99c9757b65498bec9defa96cbf752c17e6980311efc97dd15d5dc7622a49a"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "evaluation",
+        "benchmarks",
+        "harness",
+        "regression"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false
+    },
+    {
+      "id": "agentops/harness-run-reflection",
+      "name": "Harness Run Reflection",
+      "description": "Review recent agent run logs to identify repeated misses, skipped skills, and inefficient loops in the harness.",
+      "category": "agentops/harness-evolution",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-19T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/harness-run-reflection/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-run-reflection/0.1.0.tar.gz",
+          "sha256": "b52a1a85d25afd7605b371827786175449d0a84c5c23a218d6d8954ce44671c1"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "reflection",
+        "harness",
+        "logs",
+        "improvement"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false
+    },
+    {
+      "id": "agentops/harness-skill-proposal",
+      "name": "Harness Skill Proposal",
+      "description": "Propose new or revised harness skills and policy text from recurring failure patterns while keeping scope limited to harness assets.",
+      "category": "agentops/harness-governance",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-19T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/harness-skill-proposal/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-skill-proposal/0.1.0.tar.gz",
+          "sha256": "dcf1a8d53d2ab5442b1c53e9926bf5f37a4a03403e3a8dc1c1c10f81bf1c5647"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "proposal",
+        "harness",
+        "governance",
+        "skills"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false
+    },
+    {
+      "id": "engineering/code-change-verification",
+      "name": "Code Change Verification",
+      "description": "Run change-aware lint, typecheck, build, and test verification based on the files and stack touched by a code change.",
+      "category": "engineering/code-maintenance",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-19T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/code-change-verification/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/code-change-verification/0.1.0.tar.gz",
+          "sha256": "da7d0b562984a1665e16698341e352a5f6b0a9e7d2ad0461d222b9ada7b49183"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "verification",
+        "tests",
+        "lint",
+        "typecheck"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false
+    },
+    {
+      "id": "engineering/coverage-gap-reporter",
+      "name": "Coverage Gap Reporter",
+      "description": "Parse coverage outputs, map changed files to uncovered risk areas, and recommend targeted tests.",
+      "category": "engineering/testing-quality",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-19T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/coverage-gap-reporter/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/coverage-gap-reporter/0.1.0.tar.gz",
+          "sha256": "8e6fc7d2016f030dfd834a4d2bac090275eeb9dc851f085540a2d5ed1f3b28d2"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "coverage",
+        "tests",
+        "reporting",
+        "quality"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false
+    },
+    {
+      "id": "engineering/implementation-strategy",
+      "name": "Implementation Strategy",
+      "description": "Plan repo-aware code changes before editing by mapping scope, commands, risks, and likely side effects.",
+      "category": "engineering/code-maintenance",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-19T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/implementation-strategy/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/implementation-strategy/0.1.0.tar.gz",
+          "sha256": "48aece1a138bfc6c274ae5bc219ff2d7087a4ae16af3b867c93837e5db1852af"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "planning",
+        "repo-analysis",
+        "maintenance",
+        "strategy"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false
+    },
+    {
+      "id": "engineering/pr-review-and-draft",
+      "name": "PR Review and Draft",
+      "description": "Review code changes for correctness, performance, security, and test completeness, then draft a structured PR summary.",
+      "category": "engineering/pr-review",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-19T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/pr-review-and-draft/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/pr-review-and-draft/0.1.0.tar.gz",
+          "sha256": "294e9e9a28c80e8178d04e4d546d4535c298fba186807278dc47c456a8b12e14"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "pr-review",
+        "code-review",
+        "summary",
+        "risk"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false
+    },
+    {
+      "id": "engineering/test-gap-analyzer",
+      "name": "Test Gap Analyzer",
+      "description": "Identify missing unit, integration, regression, and edge-case test scenarios for recently changed code.",
+      "category": "engineering/testing-quality",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-19T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/test-gap-analyzer/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/test-gap-analyzer/0.1.0.tar.gz",
+          "sha256": "5fecdb83f38d57bd8a79bc9a3be77a569d17e5b0501444d48a1cbd0dbca4b1aa"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "tests",
+        "gaps",
+        "regression",
+        "quality"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -285,6 +543,8 @@
         "measurement",
         "decisioning"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -314,6 +574,8 @@
         "llm-judge",
         "risk-control"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -342,6 +604,8 @@
         "reels",
         "copy-generation"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -371,6 +635,8 @@
         "meta-ads",
         "google-ads"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -400,6 +666,8 @@
         "brand-safety",
         "experimentation"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -428,6 +696,8 @@
         "lifecycle",
         "statistics"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -457,6 +727,8 @@
         "triggers",
         "retention"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -485,6 +757,8 @@
         "meta-ads",
         "google-ads"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     },
     {
@@ -513,6 +787,128 @@
         "keyword-strategy",
         "campaign-planning"
       ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false
+    },
+    {
+      "id": "security/dependency-supply-chain-audit",
+      "name": "Dependency Supply Chain Audit",
+      "description": "Review manifests and lockfiles for vulnerable, suspicious, or overpowered dependencies and recommend mitigations.",
+      "category": "security/supply-chain",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-19T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/dependency-supply-chain-audit/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/dependency-supply-chain-audit/0.1.0.tar.gz",
+          "sha256": "909f4fd9f6dabcbdc8fa8aa3e23e941e96aca6e88220ba64508ef12cffd8e103"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "dependencies",
+        "sca",
+        "cve",
+        "supply-chain"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false
+    },
+    {
+      "id": "security/environment-risk-assessment",
+      "name": "Environment Risk Assessment",
+      "description": "Assess whether the runtime environment is safe for autonomous agent execution and recommend isolation or approval boundaries.",
+      "category": "security/runtime-hardening",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-19T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/environment-risk-assessment/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/environment-risk-assessment/0.1.0.tar.gz",
+          "sha256": "38db7c5067156df723fa95b60117d99b3fbc4704b1a4f14a6c390d57d3ae2ebb"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "runtime",
+        "isolation",
+        "environment",
+        "risk"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false
+    },
+    {
+      "id": "security/handle-untrusted-content",
+      "name": "Handle Untrusted Content",
+      "description": "Treat external content, logs, tickets, webpages, and MCP responses as untrusted data and quarantine suspicious instructions.",
+      "category": "security/prompt-safety",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-19T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/handle-untrusted-content/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/handle-untrusted-content/0.1.0.tar.gz",
+          "sha256": "001abfeef3257cf76ef684c619d7ccb583e77b0ab4fcf421fc9ac841d1843b66"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "prompt-injection",
+        "content-safety",
+        "policy",
+        "triage"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false
+    },
+    {
+      "id": "security/secrets-and-credential-hygiene",
+      "name": "Secrets and Credential Hygiene",
+      "description": "Scan diffs and repository context for leaked secrets, risky credential placement, and over-broad environment exposure.",
+      "category": "security/runtime-hardening",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-19T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/secrets-and-credential-hygiene/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/secrets-and-credential-hygiene/0.1.0.tar.gz",
+          "sha256": "b2abe6263ae52829044221380b6562665ad453a0db916019674588ff18872995"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "secrets",
+        "credentials",
+        "hygiene",
+        "audit"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
       "deprecated": false
     }
   ]

@@ -1,0 +1,7 @@
+{
+  "proposal": "Require handle-untrusted-content before acting on MCP output.",
+  "benchmark_sets": [
+    "prompt-safety-prompts",
+    "harness-scope-prompts"
+  ]
+}

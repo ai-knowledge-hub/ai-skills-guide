@@ -1,0 +1,10 @@
+{
+  "manifests": [
+    "package.json",
+    "pnpm-lock.yaml"
+  ],
+  "changed_dependencies": [
+    "left-pad-plus",
+    "axios"
+  ]
+}

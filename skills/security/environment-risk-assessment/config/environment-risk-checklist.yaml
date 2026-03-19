@@ -1,0 +1,10 @@
+high_risk_signals:
+  - developer-laptop
+  - production-credentials-present
+  - broad-writable-mounts
+  - unrestricted-network-egress
+recommended_controls:
+  - isolated-vm-or-container
+  - read-only-mounts
+  - short-lived-credentials
+  - explicit-approval-gates

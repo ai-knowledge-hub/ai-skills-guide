@@ -1,0 +1,13 @@
+signals:
+  - known-cve
+  - typosquat-risk
+  - abandoned-maintainer
+  - shell-exec-capability
+  - recent-major-version-jump
+severity_bands:
+  critical:
+    - remote-code-execution
+    - secret-exfiltration
+  high:
+    - unpatched-auth-bypass
+    - dependency-confusion-risk

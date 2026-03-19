@@ -37,6 +37,8 @@
           "versions",
           "runtimes",
           "tags",
+          "readiness",
+          "security_reviewed",
           "deprecated"
         ],
         "properties": {
@@ -87,6 +89,17 @@
               "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
             },
             "uniqueItems": true
+          },
+          "readiness": {
+            "type": "string",
+            "enum": [
+              "experimental",
+              "reviewed",
+              "deprecated"
+            ]
+          },
+          "security_reviewed": {
+            "type": "boolean"
           },
           "deprecated": {
             "type": "boolean"

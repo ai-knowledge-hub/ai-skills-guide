@@ -1,0 +1,11 @@
+{
+  "recurring_failure_patterns": [
+    {
+      "pattern": "skipped-required-skill",
+      "frequency": 3
+    }
+  ],
+  "candidate_harness_improvements": [
+    "Require code-change-verification after runtime file edits."
+  ]
+}

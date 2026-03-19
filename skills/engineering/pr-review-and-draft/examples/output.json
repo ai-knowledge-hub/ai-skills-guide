@@ -1,0 +1,11 @@
+{
+  "findings": [
+    "Default timeout behavior changed for existing callers."
+  ],
+  "pr_summary": {
+    "intent": "Add configurable request timeout support.",
+    "impact": "HTTP client callers can now override timeout per request.",
+    "validation": "pnpm typecheck, targeted client tests",
+    "risks": "Potential behavior change if default timeout is not preserved."
+  }
+}

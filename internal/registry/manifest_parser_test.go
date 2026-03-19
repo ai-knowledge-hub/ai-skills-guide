@@ -25,6 +25,8 @@ author:
 runtimes:
   - codex
   - generic
+verification:
+  security_reviewed: true
 deprecated: false
 `
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
@@ -49,5 +51,8 @@ deprecated: false
 	}
 	if len(m.Runtimes) != 2 || m.Runtimes[0] != "codex" {
 		t.Fatalf("unexpected runtimes: %#v", m.Runtimes)
+	}
+	if !m.SecurityReviewed {
+		t.Fatal("expected security reviewed to be true")
 	}
 }

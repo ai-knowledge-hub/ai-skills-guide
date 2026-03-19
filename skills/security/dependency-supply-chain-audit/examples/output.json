@@ -1,0 +1,9 @@
+{
+  "high_risk_findings": [
+    {
+      "package": "left-pad-plus",
+      "reason": "New package with low trust signals and no clear business need."
+    }
+  ],
+  "approval_recommendation": "Human review required before merge."
+}

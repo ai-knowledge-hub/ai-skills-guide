@@ -4,6 +4,9 @@
 
 - Marketing practitioners creating reusable workflows
 - Ad-tech engineers hardening workflows with scripts/tools
+- Software engineers building maintenance and QA automations
+- Security teams defining safe agent behaviors and review packs
+- Agent builders maintaining evolving harnesses and guardrails
 
 ## Pull request requirements
 
@@ -18,6 +21,8 @@
 5. Document assumptions (APIs, data sources, required tools).
 6. Include risk notes if shell commands, writes, or publishing actions are
    involved.
+7. For security or agentops entries, document approval boundaries and
+   paths that remain read-only by default.
 
 ## Module folder standard
 
@@ -41,6 +46,9 @@
 - Deterministic logic is scripted, not only prompt-based.
 - Failures and fallback paths are documented.
 - Output shape is consistent and testable.
+- Risky skills default to analyze, halt, or escalate before write actions.
+- Agentops entries only target harness-owned artifacts unless a human
+  explicitly approves broader scope.
 
 ## Quality gates
 

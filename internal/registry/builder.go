@@ -67,10 +67,12 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 				ArtifactURL: fmt.Sprintf("%s/artifacts/%s/%s.tar.gz", baseURL, m.ID, m.Version),
 				SHA256:      sha,
 			}},
-			Runtimes:   append([]string{}, m.Runtimes...),
-			Tags:       append([]string{}, m.Tags...),
-			Deprecated: m.Deprecated,
-			ReplacedBy: m.ReplacedBy,
+			Runtimes:         append([]string{}, m.Runtimes...),
+			Tags:             append([]string{}, m.Tags...),
+			Readiness:        readinessFor(m),
+			SecurityReviewed: m.SecurityReviewed,
+			Deprecated:       m.Deprecated,
+			ReplacedBy:       m.ReplacedBy,
 		}
 		skills = append(skills, entry)
 	}
@@ -93,6 +95,16 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 		GeneratedAt:     generatedAt,
 		Skills:          skills,
 	}, nil
+}
+
+func readinessFor(m Manifest) string {
+	if m.Deprecated {
+		return "deprecated"
+	}
+	if m.SecurityReviewed {
+		return "reviewed"
+	}
+	return "experimental"
 }
 
 func WriteIndex(path string, index Index) error {

@@ -1,0 +1,14 @@
+{
+  "task_summary": "Add a client timeout option without changing default behavior.",
+  "impacted_areas": [
+    "src/http/client.ts",
+    "tests/http/client.test.ts"
+  ],
+  "verification_commands": [
+    "pnpm test -- client",
+    "pnpm typecheck"
+  ],
+  "approval_gates": [
+    "none"
+  ]
+}

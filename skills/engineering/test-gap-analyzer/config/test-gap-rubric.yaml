@@ -1,0 +1,11 @@
+scenario_types:
+  - unit
+  - integration
+  - regression
+  - edge-case
+  - negative-path
+prioritization:
+  - user-visible-failure
+  - data-loss-risk
+  - auth-or-permission-risk
+  - flaky-branching-logic

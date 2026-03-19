@@ -1,0 +1,7 @@
+{
+  "high_risk_conditions": [
+    "production credentials detected on a shared workstation",
+    "sensitive home-directory mounts available"
+  ],
+  "approval_recommendation": "Do not enable autonomous execution."
+}

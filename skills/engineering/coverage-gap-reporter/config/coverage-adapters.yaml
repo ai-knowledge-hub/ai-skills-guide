@@ -1,0 +1,13 @@
+adapters:
+  - name: coverage-py-json
+    signals:
+      - totals
+      - files
+  - name: jest-lcov
+    signals:
+      - LF
+      - LH
+  - name: generic-summary
+    signals:
+      - file
+      - coverage_percent

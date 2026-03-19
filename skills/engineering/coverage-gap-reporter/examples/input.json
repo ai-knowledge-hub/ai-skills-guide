@@ -1,0 +1,6 @@
+{
+  "changed_files": [
+    "src/payments/reconcile.go"
+  ],
+  "coverage_report": "coverage-summary.json"
+}

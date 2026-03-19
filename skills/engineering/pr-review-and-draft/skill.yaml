@@ -1,0 +1,32 @@
+id: engineering/pr-review-and-draft
+name: PR Review and Draft
+description: Review code changes for correctness, performance, security, and
+  test completeness, then draft a structured PR summary.
+version: 0.1.0
+released_at: "2026-03-19T00:00:00Z"
+category: engineering/pr-review
+tags:
+  - pr-review
+  - code-review
+  - summary
+  - risk
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  scripts_dir: scripts
+  examples_dir: examples
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

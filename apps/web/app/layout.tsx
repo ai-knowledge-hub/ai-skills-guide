@@ -1,20 +1,7 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, IBM_Plex_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import "./tokens.css";
 import "./globals.css";
-
-const heading = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-heading",
-  weight: ["400", "600", "700"]
-});
-
-const mono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  weight: ["400", "500"]
-});
 
 export const metadata: Metadata = {
   title: "AI Knowledge Hub",
@@ -23,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${heading.variable} ${mono.variable}`}>
+    <html lang="en">
       <body className="theme-hybrid">
         <div className="strip">
           AI KNOWLEDGE HUB • SUPER EARLY BUILD • OPEN SOURCE SKILLS •

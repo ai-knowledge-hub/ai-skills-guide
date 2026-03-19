@@ -1,0 +1,9 @@
+{
+  "findings": [
+    {
+      "severity": "critical",
+      "summary": "Suspected production API key committed in src/config.ts"
+    }
+  ],
+  "escalation_status": "Immediate human review required."
+}

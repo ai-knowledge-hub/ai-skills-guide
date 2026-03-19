@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import InstallCommands from "@/components/InstallCommands";
 import { buildModuleInstallSnippet, getEntryById, loadAgentsRegistry } from "@/lib/registry";
 import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
@@ -20,8 +19,8 @@ export default async function AgentDetailPage({ params }: { params: { id: string
   return (
     <main>
       <div className="nav">
-        <Link href="/" className="pill">Home</Link>
-        <Link href="/agents" className="pill">Agents</Link>
+        <a href="/" className="pill">Home</a>
+        <a href="/agents" className="pill">Agents</a>
         <span className="pill">{entry.id}</span>
       </div>
 

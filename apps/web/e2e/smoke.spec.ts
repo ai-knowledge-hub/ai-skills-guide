@@ -41,7 +41,7 @@ test("agents route and detail smoke", async ({ page }) => {
 
   await page.goto(sampleAgentPath);
   await expect(page.getByRole("heading", { name: "Weekly Performance Supervisor" })).toBeVisible();
-  await expect(page.getByText("marketing-agents/performance")).toBeVisible();
+  await expect(page.getByText("Marketing Agents / Performance")).toBeVisible();
 });
 
 test("tools route and detail smoke", async ({ page }) => {

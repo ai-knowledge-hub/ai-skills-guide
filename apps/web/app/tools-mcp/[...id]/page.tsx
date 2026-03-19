@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import InstallCommands from "@/components/InstallCommands";
 import { buildModuleInstallSnippet, getEntryById, loadToolsRegistry } from "@/lib/registry";
 import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
@@ -20,8 +19,8 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
   return (
     <main>
       <div className="nav">
-        <Link href="/" className="pill">Home</Link>
-        <Link href="/tools-mcp" className="pill">Tools &amp; MCP</Link>
+        <a href="/" className="pill">Home</a>
+        <a href="/tools-mcp" className="pill">Tools &amp; MCP</a>
         <span className="pill">{entry.id}</span>
       </div>
 

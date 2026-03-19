@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { buildInstallSnippet, getSkillById, loadSkillsRegistry } from "@/lib/registry";
 import InstallCommands from "@/components/InstallCommands";
 import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
@@ -19,10 +18,10 @@ export default async function SkillDetailPage({ params }: { params: { id: string
   return (
     <main>
       <div className="nav">
-        <Link href="/" className="pill">Home</Link>
-        <Link href="/skills" className="pill">Catalog</Link>
-        <Link href="/agents" className="pill">Agents</Link>
-        <Link href="/tools-mcp" className="pill">Tools &amp; MCP</Link>
+        <a href="/" className="pill">Home</a>
+        <a href="/skills" className="pill">Catalog</a>
+        <a href="/agents" className="pill">Agents</a>
+        <a href="/tools-mcp" className="pill">Tools &amp; MCP</a>
         <span className="pill">{skill.id}</span>
       </div>
 

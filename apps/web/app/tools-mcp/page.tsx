@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { loadToolsRegistry, uniqueValues } from "@/lib/registry";
 import CatalogClient from "@/components/CatalogClient";
 import { parseMultiValue, type SearchParamValue } from "@/lib/catalogFilters";
@@ -10,7 +9,7 @@ type SearchParams = {
   runtime?: SearchParamValue;
 };
 
-export default async function ToolsMcpPage({ searchParams }: { searchParams: SearchParams }) {
+export default async function ToolsMcpPage({ searchParams = {} }: { searchParams?: SearchParams }) {
   const registry = await loadToolsRegistry();
   const q = typeof searchParams.q === "string" ? searchParams.q : "";
   const tags = parseMultiValue(searchParams.tag);
@@ -23,9 +22,9 @@ export default async function ToolsMcpPage({ searchParams }: { searchParams: Sea
   return (
     <main>
       <div className="nav">
-        <Link href="/" className="pill">Home</Link>
-        <Link href="/skills" className="pill">Skills</Link>
-        <Link href="/agents" className="pill">Agents</Link>
+        <a href="/" className="pill">Home</a>
+        <a href="/skills" className="pill">Skills</a>
+        <a href="/agents" className="pill">Agents</a>
         <span className="pill">Tools &amp; MCP</span>
       </div>
 

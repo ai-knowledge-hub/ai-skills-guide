@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { loadSkillsRegistry, uniqueValues } from "@/lib/registry";
 import CatalogClient from "@/components/CatalogClient";
 import { parseMultiValue, type SearchParamValue } from "@/lib/catalogFilters";
@@ -10,7 +9,7 @@ type SearchParams = {
   runtime?: SearchParamValue;
 };
 
-export default async function SkillsPage({ searchParams }: { searchParams: SearchParams }) {
+export default async function SkillsPage({ searchParams = {} }: { searchParams?: SearchParams }) {
   const registry = await loadSkillsRegistry();
   const q = typeof searchParams.q === "string" ? searchParams.q : "";
   const tags = parseMultiValue(searchParams.tag);
@@ -23,9 +22,9 @@ export default async function SkillsPage({ searchParams }: { searchParams: Searc
   return (
     <main>
       <div className="nav">
-        <Link href="/" className="pill">Home</Link>
-        <Link href="/agents" className="pill">Agents</Link>
-        <Link href="/tools-mcp" className="pill">Tools &amp; MCP</Link>
+        <a href="/" className="pill">Home</a>
+        <a href="/agents" className="pill">Agents</a>
+        <a href="/tools-mcp" className="pill">Tools &amp; MCP</a>
         <span className="pill">Catalog</span>
       </div>
 

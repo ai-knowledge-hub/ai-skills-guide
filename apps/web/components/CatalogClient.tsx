@@ -7,8 +7,10 @@ import type { RegistryEntry } from "@/lib/registry";
 import FilterSelect, { type FilterOption } from "@/components/FilterSelect";
 import type { CatalogInitialFilters } from "@/lib/catalogFilters";
 import {
+  formatDomainLabel,
   formatCategoryFamily,
-  formatCategoryLabel,
+  getDomainKey,
+  normalizeDomainFilterValues,
   formatReadinessLabel
 } from "@/lib/categoryLabels";
 
@@ -26,7 +28,9 @@ export default function CatalogClient({ entries, categories, tags, basePath, ini
   const searchParams = useSearchParams();
   const [q, setQ] = useState(initial.q);
   const [selectedTags, setSelectedTags] = useState(initial.tags);
-  const [selectedCategories, setSelectedCategories] = useState(initial.categories);
+  const [selectedCategories, setSelectedCategories] = useState(
+    normalizeDomainFilterValues(initial.categories, basePath)
+  );
   const [selectedRuntimes, setSelectedRuntimes] = useState(initial.runtimes);
   const deferredQ = useDeferredValue(q);
 
@@ -42,7 +46,7 @@ export default function CatalogClient({ entries, categories, tags, basePath, ini
       if (selectedTags.length > 0 && !selectedTags.some((tag) => entry.tags.includes(tag))) {
         return false;
       }
-      if (selectedCategories.length > 0 && !selectedCategories.includes(entry.category)) {
+      if (selectedCategories.length > 0 && !selectedCategories.includes(getDomainKey(entry.category, basePath))) {
         return false;
       }
       if (selectedRuntimes.length > 0 && !selectedRuntimes.some((runtime) => entry.runtimes.includes(runtime))) {
@@ -50,17 +54,16 @@ export default function CatalogClient({ entries, categories, tags, basePath, ini
       }
       return true;
     });
-  }, [deferredQ, entries, selectedCategories, selectedRuntimes, selectedTags]);
+  }, [basePath, deferredQ, entries, selectedCategories, selectedRuntimes, selectedTags]);
 
   const categoryOptions = useMemo<FilterOption[]>(
     () =>
       categories.map((category) => ({
         value: category,
-        label: formatCategoryLabel(category),
-        count: entries.filter((entry) => entry.category === category).length,
-        group: groupCategory(category)
+        label: formatDomainLabel(category, basePath),
+        count: entries.filter((entry) => getDomainKey(entry.category, basePath) === category).length
       })),
-    [categories, entries]
+    [basePath, categories, entries]
   );
 
   const tagOptions = useMemo<FilterOption[]>(
@@ -146,10 +149,10 @@ export default function CatalogClient({ entries, categories, tags, basePath, ini
         />
 
         <FilterSelect
-          label="Category"
+          label="Domain"
           values={selectedCategories}
           options={categoryOptions}
-          placeholder="All categories"
+          placeholder="All domains"
           onChange={setSelectedCategories}
         />
 
@@ -184,7 +187,7 @@ export default function CatalogClient({ entries, categories, tags, basePath, ini
               onClick={() => removeFilter(filter.kind as "category" | "tag" | "runtime", filter.value)}
             >
               <span className="meta">{filter.kind}</span>
-              <span>{filter.kind === "category" ? formatCategoryLabel(filter.value) : filter.value}</span>
+              <span>{filter.kind === "category" ? formatDomainLabel(filter.value, basePath) : filter.value}</span>
               <span aria-hidden>×</span>
             </button>
           ))}
@@ -209,7 +212,6 @@ export default function CatalogClient({ entries, categories, tags, basePath, ini
             </div>
             <p className="meta catalog-card-id">{entry.id}</p>
             <h2>{entry.name}</h2>
-            <p className="meta catalog-card-category">{formatCategoryLabel(entry.category)}</p>
             <p>{entry.description}</p>
             <div className="tags">
               {entry.tags.slice(0, 2).map((tagEntry) => (
@@ -224,17 +226,4 @@ export default function CatalogClient({ entries, categories, tags, basePath, ini
       </section>
     </>
   );
-}
-
-function groupCategory(category: string) {
-  const [family] = category.split("/");
-  if (family === "marketing-tools") return "Marketing Tools";
-  if (family === "adtech") return "Adtech";
-  if (family === "engineering") return "Engineering";
-  if (family === "security") return "Security";
-  if (family === "agentops") return "AgentOps";
-  if (family === "marketing-agents") return "Marketing Agents";
-  if (family === "adtech-agents") return "Adtech Agents";
-  if (family === "tools-mcp") return "Tools & MCP";
-  return "Other";
 }

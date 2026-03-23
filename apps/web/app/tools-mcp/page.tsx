@@ -1,6 +1,7 @@
 import { loadToolsRegistry, uniqueValues } from "@/lib/registry";
 import CatalogClient from "@/components/CatalogClient";
 import { parseMultiValue, type SearchParamValue } from "@/lib/catalogFilters";
+import { getDomainKey } from "@/lib/categoryLabels";
 
 type SearchParams = {
   q?: SearchParamValue;
@@ -16,7 +17,7 @@ export default async function ToolsMcpPage({ searchParams = {} }: { searchParams
   const categoriesSelected = parseMultiValue(searchParams.category);
   const runtimes = parseMultiValue(searchParams.runtime);
 
-  const categories = uniqueValues(registry.skills.map((s) => s.category));
+  const categories = uniqueValues(registry.skills.map((s) => getDomainKey(s.category, "/tools-mcp")));
   const availableTags = uniqueValues(registry.skills.flatMap((s) => s.tags));
 
   return (

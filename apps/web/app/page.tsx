@@ -2,7 +2,7 @@ import { loadAgentsRegistry, loadSkillsRegistry, loadToolsRegistry, uniqueValues
 import { FEATURED_SKILL_IDS } from "@/lib/home";
 import {
   formatCategoryFamily,
-  formatCategoryLabel,
+  getCategoryFamilyKey,
   formatReadinessLabel
 } from "@/lib/categoryLabels";
 
@@ -15,7 +15,7 @@ export default async function HomePage() {
   const skills = skillsRegistry.skills;
   const agents = agentsRegistry.skills;
   const tools = toolsRegistry.skills;
-  const categories = uniqueValues(skills.map((s) => s.category));
+  const categoryGroups = uniqueValues(skills.map((s) => getCategoryFamilyKey(s.category)));
   const tags = uniqueValues(skills.flatMap((s) => s.tags));
   const featuredSkills = FEATURED_SKILL_IDS
     .map((id) => skills.find((skill) => skill.id === id))
@@ -68,7 +68,7 @@ export default async function HomePage() {
         </article>
         <article className="card">
           <h2>Catalog Snapshot</h2>
-          <p><span className="meta">Skills categories:</span> {categories.length}</p>
+          <p><span className="meta">Category groups:</span> {categoryGroups.length}</p>
           <p><span className="meta">Skills tags:</span> {tags.length}</p>
           <p><span className="meta">Runtimes:</span> codex, claude, generic</p>
           <div className="actions snapshot-actions">
@@ -133,7 +133,6 @@ export default async function HomePage() {
               </div>
             </div>
             <h3>{skill.name}</h3>
-            <p className="meta catalog-card-category">{formatCategoryLabel(skill.category)}</p>
             <p>{skill.description}</p>
             <div className="tags">
               {skill.tags.slice(0, 2).map((tag) => (

@@ -55,6 +55,39 @@ export function formatCategoryFamily(category: string) {
   return "Other";
 }
 
+export function getCategoryFamilyKey(category: string) {
+  return category.split("/")[0] ?? category;
+}
+
+export function normalizeCategoryFilterValues(categories: string[]) {
+  return [...new Set(categories.map((category) => getCategoryFamilyKey(category)))];
+}
+
+export function getDomainKey(category: string, basePath: "/skills" | "/agents" | "/tools-mcp") {
+  const [family, domain] = category.split("/");
+  if (basePath === "/tools-mcp") {
+    return domain ?? family ?? category;
+  }
+  return family ?? category;
+}
+
+export function formatDomainLabel(domain: string, basePath: "/skills" | "/agents" | "/tools-mcp") {
+  if (basePath === "/tools-mcp") {
+    return domain
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+  return formatCategoryFamily(domain);
+}
+
+export function normalizeDomainFilterValues(
+  categories: string[],
+  basePath: "/skills" | "/agents" | "/tools-mcp"
+) {
+  return [...new Set(categories.map((category) => getDomainKey(category, basePath)))];
+}
+
 export function formatReadinessLabel(readiness: "experimental" | "reviewed" | "deprecated") {
   if (readiness === "reviewed") return "Reviewed";
   if (readiness === "deprecated") return "Deprecated";

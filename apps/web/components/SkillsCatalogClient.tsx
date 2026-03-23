@@ -134,10 +134,10 @@ export default function SkillsCatalogClient({ skills, categories, tags, initial 
         />
 
         <FilterSelect
-          label="Category"
+          label="Domain"
           values={draftCategories}
           options={categoryOptions}
-          placeholder="All categories"
+          placeholder="All domains"
           onChange={setDraftCategories}
         />
 

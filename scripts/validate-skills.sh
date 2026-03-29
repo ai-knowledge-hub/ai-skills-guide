@@ -38,7 +38,7 @@ validate_module_structure() {
         echo "[ERROR] Missing 'When to use' section in ${entry_dir#$ROOT/}/$spec_file"
         FAIL=1
       fi
-      if ! grep -qi "## Guardrails" "$entry_dir/$spec_file"; then
+      if [[ "$spec_file" != "plugin.json" ]] && ! grep -qi "## Guardrails" "$entry_dir/$spec_file"; then
         echo "[ERROR] Missing 'Guardrails' section in ${entry_dir#$ROOT/}/$spec_file"
         FAIL=1
       fi
@@ -58,6 +58,11 @@ validate_module_structure() {
 validate_module_structure "$ROOT/skills" "skills" "SKILL.md" "skill.yaml"
 validate_module_structure "$ROOT/agents" "agents" "AGENT.md" "agent.yaml"
 validate_module_structure "$ROOT/tools-mcp" "tools-mcp" "TOOL.md" "tool.yaml"
+validate_module_structure "$ROOT/plugins" "plugins" "plugin.json" "plugin.yaml"
+
+if ! GOCACHE=/tmp/go-build GOTMPDIR=/tmp go run ./cmd/skills-hub validate --module plugins --root "$ROOT/plugins" --skills-root "$ROOT/skills" --agents-root "$ROOT/agents" --tools-root "$ROOT/tools-mcp"; then
+  FAIL=1
+fi
 
 if [[ "$FAIL" -eq 0 ]]; then
   echo "All module entries passed structural validation."

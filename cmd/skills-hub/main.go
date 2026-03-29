@@ -12,6 +12,7 @@ import (
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/agents"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/installer"
+	pluginvalidate "github.com/ai-knowledge-hub/ai-skills-guide/internal/plugins"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/skills"
 )
@@ -178,24 +179,69 @@ func runInfo(args []string) error {
 
 func runValidate(args []string) error {
 	fs := flag.NewFlagSet("validate", flag.ContinueOnError)
-	root := fs.String("root", "skills", "skills root directory")
+	module := fs.String("module", "skills", "module to validate: skills|plugins|all")
+	root := fs.String("root", "skills", "module root directory")
+	skillsRoot := fs.String("skills-root", "skills", "skills root directory for plugin validation")
+	agentsRoot := fs.String("agents-root", "agents", "agents root directory for plugin validation")
+	toolsRoot := fs.String("tools-root", "tools-mcp", "tools root directory for plugin validation")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
 
-	issues, err := skills.Validate(*root)
+	moduleName, err := normalizeValidateModule(*module)
 	if err != nil {
 		return err
 	}
-	if len(issues) == 0 {
-		fmt.Println("All skills passed validation.")
-		return nil
+
+	totalIssues := 0
+	if moduleName == "skills" || moduleName == "all" {
+		skillRoot := *root
+		if moduleName == "all" {
+			skillRoot = "skills"
+		}
+		issues, err := skills.Validate(skillRoot)
+		if err != nil {
+			return err
+		}
+		for _, issue := range issues {
+			fmt.Printf("[ERROR] %s: %s\n", issue.SkillID, issue.Message)
+		}
+		totalIssues += len(issues)
+		if len(issues) == 0 && moduleName == "skills" {
+			fmt.Println("All skills passed validation.")
+		}
 	}
 
-	for _, issue := range issues {
-		fmt.Printf("[ERROR] %s: %s\n", issue.SkillID, issue.Message)
+	if moduleName == "plugins" || moduleName == "all" {
+		pluginsRoot := *root
+		if moduleName == "all" {
+			pluginsRoot = "plugins"
+		}
+		issues, err := pluginvalidate.Validate(pluginvalidate.ValidateOptions{
+			PluginsRoot: pluginsRoot,
+			SkillsRoot:  *skillsRoot,
+			AgentsRoot:  *agentsRoot,
+			ToolsRoot:   *toolsRoot,
+		})
+		if err != nil {
+			return err
+		}
+		for _, issue := range issues {
+			fmt.Printf("[ERROR] %s: %s\n", issue.PluginID, issue.Message)
+		}
+		totalIssues += len(issues)
+		if len(issues) == 0 && moduleName == "plugins" {
+			fmt.Println("All plugins passed validation.")
+		}
 	}
-	return fmt.Errorf("validation failed with %d issue(s)", len(issues))
+
+	if totalIssues == 0 {
+		if moduleName == "all" {
+			fmt.Println("All skills and plugins passed validation.")
+		}
+		return nil
+	}
+	return fmt.Errorf("validation failed with %d issue(s)", totalIssues)
 }
 
 func runInstall(args []string) error {
@@ -275,8 +321,28 @@ func runInstall(args []string) error {
 	}
 
 	var runtimeArtifacts []string
+	var dependencyResult installer.DependencyInstallResult
 	if moduleName == "plugins" {
 		runtimeArtifacts, err = installer.PreparePluginRuntimeArtifacts(destination, rt.Runtime)
+		if err != nil {
+			return err
+		}
+		dependencyResult, err = installer.InstallPluginDependencies(
+			skill,
+			rt.Runtime,
+			rt.TargetPath,
+			map[string]string{
+				"skills": resolveModuleRoot("", "skills"),
+				"agents": resolveModuleRoot("", "agents"),
+				"tools":  resolveModuleRoot("", "tools"),
+			},
+			map[string]string{
+				"skills": resolveRegistryPath("", "skills"),
+				"agents": resolveRegistryPath("", "agents"),
+				"tools":  resolveRegistryPath("", "tools"),
+			},
+			*force,
+		)
 		if err != nil {
 			return err
 		}
@@ -284,7 +350,7 @@ func runInstall(args []string) error {
 
 	fmt.Printf("Installed %s@%s to %s (runtime=%s)\n", skill.ID, resolvedVersion.Version, destination, rt.Runtime)
 	if moduleName == "plugins" {
-		printPluginInstallNotes(os.Stdout, os.Stderr, skill, rt.Runtime, destination, runtimeArtifacts)
+		printPluginInstallNotes(os.Stdout, os.Stderr, skill, rt.Runtime, destination, runtimeArtifacts, dependencyResult)
 	}
 	return nil
 }
@@ -321,7 +387,13 @@ func printPluginSummary(w io.Writer, entry registry.SkillEntry) {
 	}
 }
 
-func printPluginInstallNotes(stdout, stderr io.Writer, entry registry.SkillEntry, runtime, destination string, runtimeArtifacts []string) {
+func printPluginInstallNotes(
+	stdout, stderr io.Writer,
+	entry registry.SkillEntry,
+	runtime, destination string,
+	runtimeArtifacts []string,
+	deps installer.DependencyInstallResult,
+) {
 	if !entry.SecurityReviewed {
 		fmt.Fprintf(stderr, "warning: %s is not security reviewed; inspect bundled components and setup before use\n", entry.ID)
 	}
@@ -336,7 +408,36 @@ func printPluginInstallNotes(stdout, stderr io.Writer, entry registry.SkillEntry
 	} else if runtime != "" {
 		fmt.Fprintf(stdout, "install.next_step: connect this plugin directory to your runtime manually and verify required secrets before use\n")
 	}
+	printPluginDependencySummary(stdout, deps)
 	printPluginSummary(stdout, entry)
+}
+
+func printPluginDependencySummary(stdout io.Writer, deps installer.DependencyInstallResult) {
+	fmt.Fprintf(stdout, "deps.skills.installed: %d\n", len(deps.InstalledSkills))
+	if len(deps.InstalledSkills) > 0 {
+		fmt.Fprintf(stdout, "deps.skills.installed.list: %s\n", strings.Join(deps.InstalledSkills, ", "))
+	}
+	if len(deps.SkippedSkills) > 0 {
+		fmt.Fprintf(stdout, "deps.skills.skipped.list: %s\n", strings.Join(deps.SkippedSkills, ", "))
+	}
+	fmt.Fprintf(stdout, "deps.agents.installed: %d\n", len(deps.InstalledAgents))
+	if len(deps.InstalledAgents) > 0 {
+		fmt.Fprintf(stdout, "deps.agents.installed.list: %s\n", strings.Join(deps.InstalledAgents, ", "))
+	}
+	if len(deps.SkippedAgents) > 0 {
+		fmt.Fprintf(stdout, "deps.agents.skipped.list: %s\n", strings.Join(deps.SkippedAgents, ", "))
+	}
+	fmt.Fprintf(stdout, "deps.tools.installed: %d\n", len(deps.InstalledTools))
+	if len(deps.InstalledTools) > 0 {
+		fmt.Fprintf(stdout, "deps.tools.installed.list: %s\n", strings.Join(deps.InstalledTools, ", "))
+	}
+	if len(deps.SkippedTools) > 0 {
+		fmt.Fprintf(stdout, "deps.tools.skipped.list: %s\n", strings.Join(deps.SkippedTools, ", "))
+	}
+	fmt.Fprintf(stdout, "deps.hooks.packaged: %d\n", len(deps.HookPaths))
+	if len(deps.HookPaths) > 0 {
+		fmt.Fprintf(stdout, "deps.hooks.packaged.list: %s\n", strings.Join(deps.HookPaths, ", "))
+	}
 }
 
 func optionalList[T any](set *T, field string) []string {
@@ -491,6 +592,23 @@ func normalizeModule(raw string) (string, error) {
 		return "plugins", nil
 	default:
 		return "", fmt.Errorf("unsupported module: %s (supported: skills, agents, tools, plugins)", raw)
+	}
+}
+
+func normalizeValidateModule(raw string) (string, error) {
+	value := strings.ToLower(strings.TrimSpace(raw))
+	if value == "" {
+		value = "skills"
+	}
+	switch value {
+	case "skills", "skill":
+		return "skills", nil
+	case "plugins", "plugin":
+		return "plugins", nil
+	case "all":
+		return "all", nil
+	default:
+		return "", fmt.Errorf("unsupported validate module: %s (supported: skills, plugins, all)", raw)
 	}
 }
 

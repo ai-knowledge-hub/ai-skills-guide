@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/ai-knowledge-hub/ai-skills-guide/internal/installer"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
 )
 
@@ -62,6 +63,10 @@ func TestPrintPluginInstallNotesWarnsWhenNotSecurityReviewed(t *testing.T) {
 		"codex",
 		"/tmp/plugins/marketing/performance-reporting-plugin",
 		[]string{"/tmp/plugins/marketing/performance-reporting-plugin/.codex-plugin/plugin.json"},
+		installer.DependencyInstallResult{
+			InstalledSkills: []string{"/tmp/codex/skills/marketing/meta-google-weekly-performance-review"},
+			HookPaths:       []string{"/tmp/plugins/marketing/performance-reporting-plugin/hooks/post-analysis-slack-summary.md"},
+		},
 	)
 
 	if !strings.Contains(errOut.String(), "is not security reviewed") {
@@ -78,5 +83,11 @@ func TestPrintPluginInstallNotesWarnsWhenNotSecurityReviewed(t *testing.T) {
 	}
 	if !strings.Contains(out.String(), "install.next_step: review the generated codex runtime manifest before enabling the plugin") {
 		t.Fatalf("expected next step guidance in stdout, got: %s", out.String())
+	}
+	if !strings.Contains(out.String(), "deps.skills.installed: 1") {
+		t.Fatalf("expected dependency summary in stdout, got: %s", out.String())
+	}
+	if !strings.Contains(out.String(), "deps.hooks.packaged.list: /tmp/plugins/marketing/performance-reporting-plugin/hooks/post-analysis-slack-summary.md") {
+		t.Fatalf("expected packaged hook path in stdout, got: %s", out.String())
 	}
 }

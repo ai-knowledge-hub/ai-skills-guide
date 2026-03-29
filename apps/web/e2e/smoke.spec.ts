@@ -57,8 +57,6 @@ test("plugins route and detail smoke", async ({ page }) => {
     "href",
     "https://github.com/ai-knowledge-hub/ai-skills-guide/blob/main/plugins/marketing/performance-reporting-plugin/plugin.yaml"
   );
-  await page.getByRole("button", { name: "Domain" }).click();
-  await page.getByRole("menuitemcheckbox", { name: /Marketing Plugins/ }).click();
   await expect(page.getByText("Performance Reporting Plugin")).toBeVisible();
 
   await page.goto(samplePluginPath);

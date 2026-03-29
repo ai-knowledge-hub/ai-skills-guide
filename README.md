@@ -253,6 +253,7 @@ For Codex:
 ```
 
 Expected result:
+
 - plugin files copied into your Codex plugins directory
 - generated `.codex-plugin/plugin.json`
 - CLI output listing bundled component IDs, required secrets, and approvals
@@ -266,6 +267,7 @@ For Claude:
 ```
 
 Expected result:
+
 - plugin files copied into your Claude plugins directory
 - generated `.claude-plugin/plugin.json`
 - CLI output warning when the plugin is not security reviewed
@@ -280,6 +282,7 @@ For generic runtimes:
 ```
 
 Expected result:
+
 - plugin files copied into `./my-agent/plugins`
 - no runtime-specific manifest generated automatically
 - you wire the plugin into your runtime manually

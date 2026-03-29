@@ -50,7 +50,8 @@ test("plugins route and detail smoke", async ({ page }) => {
   await page.goto("/plugins");
   await expect(page.getByRole("heading", { name: "Plugins Catalog" })).toBeVisible();
   await expect(page.getByText(/\d+ result\(s\)/)).toBeVisible();
-  const packageFileLink = page.getByRole("link", { name: "View package file" }).first();
+  const performancePluginCard = page.locator(".catalog-card").filter({ hasText: "Performance Reporting Plugin" }).first();
+  const packageFileLink = performancePluginCard.getByRole("link", { name: "View package file" });
   await expect(packageFileLink).toBeVisible();
   await expect(packageFileLink).toHaveAttribute(
     "href",

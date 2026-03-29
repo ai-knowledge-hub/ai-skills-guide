@@ -20,6 +20,7 @@ func ParseManifest(path string) (Manifest, error) {
 	currentListKey := ""
 	inNestedMap := false
 	nestedMapKey := ""
+	currentNestedListKey := ""
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -43,8 +44,39 @@ func ParseManifest(path string) (Manifest, error) {
 			continue
 		}
 
+		if strings.HasPrefix(line, "    - ") && inNestedMap && currentNestedListKey != "" {
+			item := strings.TrimSpace(strings.TrimPrefix(line, "    - "))
+			item = unquote(item)
+			switch nestedMapKey {
+			case "includes":
+				switch currentNestedListKey {
+				case "skills":
+					out.Includes.Skills = append(out.Includes.Skills, item)
+				case "agents":
+					out.Includes.Agents = append(out.Includes.Agents, item)
+				case "tools":
+					out.Includes.Tools = append(out.Includes.Tools, item)
+				case "hooks":
+					out.Includes.Hooks = append(out.Includes.Hooks, item)
+				}
+			case "requires":
+				switch currentNestedListKey {
+				case "secrets":
+					out.Requires.Secrets = append(out.Requires.Secrets, item)
+				case "approvals":
+					out.Requires.Approvals = append(out.Requires.Approvals, item)
+				}
+			}
+			continue
+		}
+
 		if strings.HasPrefix(line, "  ") {
 			if inNestedMap {
+				if strings.HasSuffix(strings.TrimSpace(line), ":") {
+					nestedParts := strings.SplitN(strings.TrimSpace(line), ":", 2)
+					currentNestedListKey = strings.TrimSpace(nestedParts[0])
+					continue
+				}
 				nestedParts := strings.SplitN(strings.TrimSpace(line), ":", 2)
 				if len(nestedParts) == 2 {
 					nestedKey := strings.TrimSpace(nestedParts[0])
@@ -52,6 +84,7 @@ func ParseManifest(path string) (Manifest, error) {
 					if nestedMapKey == "verification" && nestedKey == "security_reviewed" {
 						out.SecurityReviewed = strings.EqualFold(nestedValue, "true")
 					}
+					currentNestedListKey = ""
 				}
 			}
 			if currentScalarKey != "" && !strings.Contains(strings.TrimSpace(line), ":") {
@@ -83,6 +116,7 @@ func ParseManifest(path string) (Manifest, error) {
 		currentListKey = ""
 		inNestedMap = false
 		nestedMapKey = ""
+		currentNestedListKey = ""
 
 		switch key {
 		case "id":
@@ -106,7 +140,7 @@ func ParseManifest(path string) (Manifest, error) {
 			out.Deprecated = strings.EqualFold(value, "true")
 		case "replaced_by":
 			out.ReplacedBy = value
-		case "author", "entrypoints", "dependencies", "verification":
+		case "author", "entrypoints", "dependencies", "verification", "includes", "requires", "install":
 			inNestedMap = true
 			nestedMapKey = key
 		}

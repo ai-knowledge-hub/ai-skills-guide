@@ -7,6 +7,7 @@ export default function NotFoundPage() {
         <a href="/" className="button button--secondary">Home</a>
         <a href="/skills" className="button button--secondary">Skills</a>
         <a href="/agents" className="button button--secondary">Agents</a>
+        <a href="/plugins" className="button button--secondary">Plugins</a>
         <a href="/tools-mcp" className="button button--secondary">Tools &amp; MCP</a>
       </div>
     </main>

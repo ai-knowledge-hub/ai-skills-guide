@@ -107,6 +107,66 @@
           "replaced_by": {
             "type": "string",
             "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+          },
+          "includes": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "skills": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+                },
+                "uniqueItems": true
+              },
+              "agents": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+                },
+                "uniqueItems": true
+              },
+              "tools": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+                },
+                "uniqueItems": true
+              },
+              "hooks": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              }
+            }
+          },
+          "requires": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "secrets": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "approvals": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              }
+            }
           }
         },
         "allOf": [

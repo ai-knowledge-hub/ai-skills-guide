@@ -8,14 +8,15 @@ const publicRoot = path.resolve(process.cwd(), "public");
 const modules = [
   { dir: "skills", manifest: "skill.yaml" },
   { dir: "agents", manifest: "agent.yaml" },
-  { dir: "tools-mcp", manifest: "tool.yaml" }
+  { dir: "tools-mcp", manifest: "tool.yaml" },
+  { dir: "plugins", manifest: "plugin.yaml" }
 ];
 
 async function main() {
   await fs.mkdir(publicRoot, { recursive: true });
 
   // Rebuild generated static directories so manifest/artifact URLs stay in sync.
-  for (const generatedDir of ["skills", "agents", "tools-mcp", "artifacts", "registry"]) {
+  for (const generatedDir of ["skills", "agents", "tools-mcp", "plugins", "artifacts", "registry"]) {
     await fs.rm(path.join(publicRoot, generatedDir), { recursive: true, force: true });
   }
 
@@ -66,7 +67,7 @@ async function publishRegistryIndexes() {
   const outRegistryRoot = path.join(publicRoot, "registry");
   await fs.mkdir(outRegistryRoot, { recursive: true });
 
-  for (const fileName of ["index.json", "skills-index.json", "agents-index.json", "tools-index.json"]) {
+  for (const fileName of ["index.json", "skills-index.json", "agents-index.json", "tools-index.json", "plugins-index.json"]) {
     const inPath = path.join(registryRoot, fileName);
     try {
       await fs.access(inPath);

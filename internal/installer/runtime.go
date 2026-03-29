@@ -84,7 +84,9 @@ func normalizeModuleDir(moduleName string) (string, error) {
 		return "agents", nil
 	case "tools", "tool", "tools-mcp":
 		return "tools-mcp", nil
+	case "plugins", "plugin":
+		return "plugins", nil
 	default:
-		return "", fmt.Errorf("unsupported module: %s (supported: skills, agents, tools)", moduleName)
+		return "", fmt.Errorf("unsupported module: %s (supported: skills, agents, tools, plugins)", moduleName)
 	}
 }

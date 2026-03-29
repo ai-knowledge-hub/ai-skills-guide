@@ -22,6 +22,12 @@ node_modules/
 pnpm-debug.log*
 .vercel/
 *.tsbuildinfo
+apps/web/public/agents/
+apps/web/public/artifacts/
+apps/web/public/plugins/
+apps/web/public/registry/
+apps/web/public/skills/
+apps/web/public/tools-mcp/
 
 # Logs
 *.log

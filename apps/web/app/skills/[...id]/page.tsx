@@ -21,6 +21,7 @@ export default async function SkillDetailPage({ params }: { params: { id: string
         <a href="/" className="pill">Home</a>
         <a href="/skills" className="pill">Catalog</a>
         <a href="/agents" className="pill">Agents</a>
+        <a href="/plugins" className="pill">Plugins</a>
         <a href="/tools-mcp" className="pill">Tools &amp; MCP</a>
         <span className="pill">{skill.id}</span>
       </div>

@@ -104,3 +104,61 @@ deprecated: false
 		t.Fatalf("unexpected artifact url: %s", entry.Versions[0].ArtifactURL)
 	}
 }
+
+func TestBuildPluginsIndex(t *testing.T) {
+	root := t.TempDir()
+	entryDir := filepath.Join(root, "plugins", "marketing", "demo-plugin")
+	if err := os.MkdirAll(filepath.Join(entryDir, "examples"), 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	mf := `id: marketing/demo-plugin
+name: Demo Plugin
+description: Demo plugin manifest used for index generation tests.
+version: 0.1.0
+released_at: "2026-03-28T00:00:00Z"
+category: marketing-plugins/reporting
+tags:
+  - demo
+license: MIT
+author:
+  name: Tests
+runtimes:
+  - codex
+entrypoints:
+  spec: plugin.json
+includes:
+  skills:
+    - marketing/meta-google-weekly-performance-review
+requires:
+  secrets:
+    - GA4_PROPERTY_ID
+deprecated: false
+`
+	if err := os.WriteFile(filepath.Join(entryDir, "plugin.yaml"), []byte(mf), 0o644); err != nil {
+		t.Fatalf("write manifest: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(entryDir, "plugin.json"), []byte("{\"name\":\"demo\"}\n"), 0o644); err != nil {
+		t.Fatalf("write spec: %v", err)
+	}
+
+	idx, err := BuildPluginsIndex(root)
+	if err != nil {
+		t.Fatalf("build index: %v", err)
+	}
+	if len(idx.Skills) != 1 {
+		t.Fatalf("expected 1 entry, got %d", len(idx.Skills))
+	}
+	entry := idx.Skills[0]
+	if entry.ID != "marketing/demo-plugin" {
+		t.Fatalf("unexpected id: %s", entry.ID)
+	}
+	if entry.Includes == nil || len(entry.Includes.Skills) != 1 {
+		t.Fatalf("expected included skills in index, got %#v", entry.Includes)
+	}
+	if entry.Requires == nil || len(entry.Requires.Secrets) != 1 {
+		t.Fatalf("expected required secrets in index, got %#v", entry.Requires)
+	}
+	if !strings.Contains(entry.Versions[0].ManifestURL, "/plugins/marketing/demo-plugin/plugin.yaml") {
+		t.Fatalf("unexpected manifest url: %s", entry.Versions[0].ManifestURL)
+	}
+}

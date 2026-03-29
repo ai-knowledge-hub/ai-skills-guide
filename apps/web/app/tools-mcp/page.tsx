@@ -26,6 +26,7 @@ export default async function ToolsMcpPage({ searchParams = {} }: { searchParams
         <a href="/" className="pill">Home</a>
         <a href="/skills" className="pill">Skills</a>
         <a href="/agents" className="pill">Agents</a>
+        <a href="/plugins" className="pill">Plugins</a>
         <span className="pill">Tools &amp; MCP</span>
       </div>
 

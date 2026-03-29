@@ -31,6 +31,10 @@ func BuildToolsIndex(root string) (Index, error) {
 	return buildIndexFor(root, "tools-mcp", "tool.yaml")
 }
 
+func BuildPluginsIndex(root string) (Index, error) {
+	return buildIndexFor(root, "plugins", "plugin.yaml")
+}
+
 func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 	manifests, err := findManifests(filepath.Join(root, moduleDir), manifestName)
 	if err != nil {
@@ -74,6 +78,14 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 			Deprecated:       m.Deprecated,
 			ReplacedBy:       m.ReplacedBy,
 		}
+		if hasIncludes(m.Includes) {
+			includes := m.Includes
+			entry.Includes = &includes
+		}
+		if hasRequirements(m.Requires) {
+			requires := m.Requires
+			entry.Requires = &requires
+		}
 		skills = append(skills, entry)
 	}
 
@@ -95,6 +107,14 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 		GeneratedAt:     generatedAt,
 		Skills:          skills,
 	}, nil
+}
+
+func hasIncludes(includes IncludeSet) bool {
+	return len(includes.Skills) > 0 || len(includes.Agents) > 0 || len(includes.Tools) > 0 || len(includes.Hooks) > 0
+}
+
+func hasRequirements(requires RequirementSet) bool {
+	return len(requires.Secrets) > 0 || len(requires.Approvals) > 0
 }
 
 func readinessFor(m Manifest) string {

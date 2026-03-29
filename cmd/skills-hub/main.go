@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"sort"
@@ -53,7 +54,7 @@ func main() {
 
 func runList(args []string) error {
 	fs := flag.NewFlagSet("list", flag.ContinueOnError)
-	module := fs.String("module", "skills", "module: skills|agents|tools")
+	module := fs.String("module", "skills", "module: skills|agents|tools|plugins")
 	registryPath := fs.String("registry", "", "registry index path (defaults by module)")
 	if err := fs.Parse(args); err != nil {
 		return err
@@ -79,7 +80,7 @@ func runList(args []string) error {
 
 func runSearch(args []string) error {
 	fs := flag.NewFlagSet("search", flag.ContinueOnError)
-	module := fs.String("module", "skills", "module: skills|agents|tools")
+	module := fs.String("module", "skills", "module: skills|agents|tools|plugins")
 	registryPath := fs.String("registry", "", "registry index path (defaults by module)")
 	text := fs.String("q", "", "free text search against id/name/description")
 	tag := fs.String("tag", "", "filter by tag")
@@ -112,7 +113,7 @@ func runSearch(args []string) error {
 
 func runInfo(args []string) error {
 	fs := flag.NewFlagSet("info", flag.ContinueOnError)
-	module := fs.String("module", "skills", "module: skills|agents|tools")
+	module := fs.String("module", "skills", "module: skills|agents|tools|plugins")
 	registryPath := fs.String("registry", "", "registry index path (defaults by module)")
 	entriesRoot := fs.String("root", "", "module root directory (defaults by module)")
 	skillSpec := fs.String("skill", "", "skill id, optionally with @version")
@@ -169,6 +170,9 @@ func runInfo(args []string) error {
 	if skill.ReplacedBy != "" {
 		fmt.Printf("replaced_by: %s\n", skill.ReplacedBy)
 	}
+	if moduleName == "plugins" {
+		printPluginSummary(os.Stdout, skill)
+	}
 	return nil
 }
 
@@ -203,7 +207,7 @@ func runInstall(args []string) error {
 	}
 
 	fs := flag.NewFlagSet("install", flag.ContinueOnError)
-	module := fs.String("module", "skills", "module: skills|agents|tools")
+	module := fs.String("module", "skills", "module: skills|agents|tools|plugins")
 	entriesRoot := fs.String("root", "", "module root directory (defaults by module)")
 	registryPath := fs.String("registry", "", "registry index path (defaults by module)")
 	runtimeName := fs.String("runtime", "generic", "runtime adapter: codex|claude|generic")
@@ -270,7 +274,95 @@ func runInstall(args []string) error {
 		return err
 	}
 
+	var runtimeArtifacts []string
+	if moduleName == "plugins" {
+		runtimeArtifacts, err = installer.PreparePluginRuntimeArtifacts(destination, rt.Runtime)
+		if err != nil {
+			return err
+		}
+	}
+
 	fmt.Printf("Installed %s@%s to %s (runtime=%s)\n", skill.ID, resolvedVersion.Version, destination, rt.Runtime)
+	if moduleName == "plugins" {
+		printPluginInstallNotes(os.Stdout, os.Stderr, skill, rt.Runtime, destination, runtimeArtifacts)
+	}
+	return nil
+}
+
+func printPluginSummary(w io.Writer, entry registry.SkillEntry) {
+	skills := optionalList(entry.Includes, "skills")
+	agents := optionalList(entry.Includes, "agents")
+	tools := optionalList(entry.Includes, "tools")
+	hooks := optionalList(entry.Includes, "hooks")
+	secrets := optionalList(entry.Requires, "secrets")
+	approvals := optionalList(entry.Requires, "approvals")
+
+	fmt.Fprintf(w, "includes.skills: %d\n", len(skills))
+	if len(skills) > 0 {
+		fmt.Fprintf(w, "includes.skills.list: %s\n", strings.Join(skills, ", "))
+	}
+	fmt.Fprintf(w, "includes.agents: %d\n", len(agents))
+	if len(agents) > 0 {
+		fmt.Fprintf(w, "includes.agents.list: %s\n", strings.Join(agents, ", "))
+	}
+	fmt.Fprintf(w, "includes.tools: %d\n", len(tools))
+	if len(tools) > 0 {
+		fmt.Fprintf(w, "includes.tools.list: %s\n", strings.Join(tools, ", "))
+	}
+	fmt.Fprintf(w, "includes.hooks: %d\n", len(hooks))
+	if len(hooks) > 0 {
+		fmt.Fprintf(w, "includes.hooks.list: %s\n", strings.Join(hooks, ", "))
+	}
+	if len(secrets) > 0 {
+		fmt.Fprintf(w, "requires.secrets: %s\n", strings.Join(secrets, ", "))
+	}
+	if len(approvals) > 0 {
+		fmt.Fprintf(w, "requires.approvals: %s\n", strings.Join(approvals, ", "))
+	}
+}
+
+func printPluginInstallNotes(stdout, stderr io.Writer, entry registry.SkillEntry, runtime, destination string, runtimeArtifacts []string) {
+	if !entry.SecurityReviewed {
+		fmt.Fprintf(stderr, "warning: %s is not security reviewed; inspect bundled components and setup before use\n", entry.ID)
+	}
+	if destination != "" {
+		fmt.Fprintf(stdout, "install.root: %s\n", destination)
+	}
+	if len(runtimeArtifacts) > 0 {
+		fmt.Fprintf(stdout, "install.runtime_artifacts: %s\n", strings.Join(runtimeArtifacts, ", "))
+	}
+	if runtime == "codex" || runtime == "claude" {
+		fmt.Fprintf(stdout, "install.next_step: review the generated %s runtime manifest before enabling the plugin\n", runtime)
+	} else if runtime != "" {
+		fmt.Fprintf(stdout, "install.next_step: connect this plugin directory to your runtime manually and verify required secrets before use\n")
+	}
+	printPluginSummary(stdout, entry)
+}
+
+func optionalList[T any](set *T, field string) []string {
+	if set == nil {
+		return nil
+	}
+	switch v := any(set).(type) {
+	case *registry.IncludeSet:
+		switch field {
+		case "skills":
+			return v.Skills
+		case "agents":
+			return v.Agents
+		case "tools":
+			return v.Tools
+		case "hooks":
+			return v.Hooks
+		}
+	case *registry.RequirementSet:
+		switch field {
+		case "secrets":
+			return v.Secrets
+		case "approvals":
+			return v.Approvals
+		}
+	}
 	return nil
 }
 
@@ -297,7 +389,7 @@ func parseSkillSpec(spec string) (string, string, error) {
 
 func printUsage() {
 	lines := []string{
-		"skills-hub: manage local marketing/adtech skill, agent, and tool packages",
+		"skills-hub: manage local skill, agent, tool, and plugin packages",
 		"",
 		"Usage:",
 		"  skills-hub <command> [flags]",
@@ -315,9 +407,11 @@ func printUsage() {
 		"  skills-hub search --tag paid-media --runtime codex",
 		"  skills-hub info --skill marketing/meta-google-weekly-performance-review@latest",
 		"  skills-hub info --module agents --entry marketing/weekly-performance-supervisor@latest",
+		"  skills-hub info --module plugins --entry marketing/performance-reporting-plugin@latest",
 		"  skills-hub validate",
 		"  skills-hub install marketing/meta-google-weekly-performance-review@latest --runtime codex",
 		"  skills-hub install --module agents --entry marketing/weekly-performance-supervisor@latest --runtime codex",
+		"  skills-hub install --module plugins --entry marketing/performance-reporting-plugin@latest --runtime codex",
 		"  skills-hub install --skill marketing/meta-google-weekly-performance-review@0.1.0 --runtime generic --target ./my-agent/skills",
 		"  skills-hub run-agent --agent marketing/weekly-performance-supervisor --bindings agents/marketing/weekly-performance-supervisor/config/tool-bindings.example.json --approve-live",
 	}
@@ -393,8 +487,10 @@ func normalizeModule(raw string) (string, error) {
 		return "agents", nil
 	case "tools", "tool", "tools-mcp":
 		return "tools", nil
+	case "plugins", "plugin":
+		return "plugins", nil
 	default:
-		return "", fmt.Errorf("unsupported module: %s (supported: skills, agents, tools)", raw)
+		return "", fmt.Errorf("unsupported module: %s (supported: skills, agents, tools, plugins)", raw)
 	}
 }
 
@@ -409,6 +505,8 @@ func resolveRegistryPath(explicit, module string) string {
 		return "registry/agents-index.json"
 	case "tools":
 		return "registry/tools-index.json"
+	case "plugins":
+		return "registry/plugins-index.json"
 	default:
 		return "registry/index.json"
 	}
@@ -425,6 +523,8 @@ func resolveModuleRoot(explicit, module string) string {
 		return "agents"
 	case "tools":
 		return "tools-mcp"
+	case "plugins":
+		return "plugins"
 	default:
 		return "skills"
 	}

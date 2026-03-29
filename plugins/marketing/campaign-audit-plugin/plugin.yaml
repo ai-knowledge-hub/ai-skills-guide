@@ -1,0 +1,46 @@
+id: marketing/campaign-audit-plugin
+name: Campaign Audit Plugin
+description: Package campaign QA, compliance checks, and audit supervision into a reusable plugin for pre-launch and in-flight campaign reviews.
+version: 0.1.0
+released_at: "2026-03-28T00:00:00Z"
+category: marketing-plugins/audit
+tags:
+  - audit
+  - qa
+  - policy
+  - governance
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  spec: plugin.json
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+includes:
+  skills:
+    - adtech/policy-brand-compliance-checker
+    - security/handle-untrusted-content
+    - security/secrets-and-credential-hygiene
+  agents:
+    - marketing/campaign-qa-supervisor
+  tools:
+    - analytics/ga4-mcp-connector
+    - ads/meta-ads-mcp-connector
+  hooks:
+    - block-publish-on-critical-failure
+requires:
+  secrets:
+    - META_ACCESS_TOKEN
+  approvals:
+    - human-approval-for-live-changes
+verification:
+  tests_min_prompts: 5
+  security_reviewed: false
+deprecated: false

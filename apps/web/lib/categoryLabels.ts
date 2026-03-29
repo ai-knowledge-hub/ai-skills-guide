@@ -18,6 +18,12 @@ const CATEGORY_LABELS: Record<string, string> = {
   "agentops/harness-evolution": "AgentOps / Harness Evolution",
   "agentops/harness-governance": "AgentOps / Harness Governance",
   "agentops/harness-evaluation": "AgentOps / Harness Evaluation",
+  "marketing-plugins/reporting": "Marketing Plugins / Reporting",
+  "marketing-plugins/audit": "Marketing Plugins / Audit",
+  "marketing-plugins/seo": "Marketing Plugins / SEO",
+  "marketing-plugins/content": "Marketing Plugins / Content",
+  "marketing-plugins/intelligence": "Marketing Plugins / Intelligence",
+  "marketing-plugins/creative": "Marketing Plugins / Creative",
   "marketing-agents/performance": "Marketing Agents / Performance",
   "marketing-agents/governance": "Marketing Agents / Governance",
   "adtech-agents/analytics": "Adtech Agents / Analytics",
@@ -49,6 +55,7 @@ export function formatCategoryFamily(category: string) {
   if (family === "engineering") return "Engineering";
   if (family === "security") return "Security";
   if (family === "agentops") return "AgentOps";
+  if (family === "marketing-plugins") return "Marketing Plugins";
   if (family === "marketing-agents") return "Marketing Agents";
   if (family === "adtech-agents") return "Adtech Agents";
   if (family === "tools-mcp") return "Tools & MCP";
@@ -63,16 +70,16 @@ export function normalizeCategoryFilterValues(categories: string[]) {
   return [...new Set(categories.map((category) => getCategoryFamilyKey(category)))];
 }
 
-export function getDomainKey(category: string, basePath: "/skills" | "/agents" | "/tools-mcp") {
+export function getDomainKey(category: string, basePath: "/skills" | "/agents" | "/tools-mcp" | "/plugins") {
   const [family, domain] = category.split("/");
-  if (basePath === "/tools-mcp") {
+  if (basePath === "/tools-mcp" || basePath === "/plugins") {
     return domain ?? family ?? category;
   }
   return family ?? category;
 }
 
-export function formatDomainLabel(domain: string, basePath: "/skills" | "/agents" | "/tools-mcp") {
-  if (basePath === "/tools-mcp") {
+export function formatDomainLabel(domain: string, basePath: "/skills" | "/agents" | "/tools-mcp" | "/plugins") {
+  if (basePath === "/tools-mcp" || basePath === "/plugins") {
     return domain
       .split("-")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -83,7 +90,7 @@ export function formatDomainLabel(domain: string, basePath: "/skills" | "/agents
 
 export function normalizeDomainFilterValues(
   categories: string[],
-  basePath: "/skills" | "/agents" | "/tools-mcp"
+  basePath: "/skills" | "/agents" | "/tools-mcp" | "/plugins"
 ) {
   return [...new Set(categories.map((category) => getDomainKey(category, basePath)))];
 }

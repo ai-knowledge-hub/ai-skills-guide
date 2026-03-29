@@ -15,10 +15,11 @@ scripts, test prompts, and contribution standards.
 AI Knowledge Hub is an open, runtime-agnostic platform for applied agent
 workflows. The catalog started with marketing and adtech use cases and now
 expands into engineering maintenance, cybersecurity, and agent operations.
-We publish reusable building blocks across three modules:
+We publish reusable building blocks across four modules:
 
 - skills (task-level expertise)
 - agents (orchestrated templates)
+- plugins (installable composition layer)
 - tools & MCP connectors (integration layer)
 
 - Guide article site:
@@ -75,6 +76,12 @@ We publish reusable building blocks across three modules:
 2. `ads/meta-ads-mcp-connector`
 3. `warehouse/bigquery-mcp-query-runner`
 
+### Plugins (3)
+
+1. `marketing/performance-reporting-plugin`
+2. `marketing/campaign-audit-plugin`
+3. `marketing/content-repurposing-plugin`
+
 ## Recent Additions
 
 - `ai-output-eval-scorecard`
@@ -93,6 +100,9 @@ We publish reusable building blocks across three modules:
 - `analytics/ga4-mcp-connector`
 - `ads/meta-ads-mcp-connector`
 - `warehouse/bigquery-mcp-query-runner`
+- `marketing/performance-reporting-plugin`
+- `marketing/campaign-audit-plugin`
+- `marketing/content-repurposing-plugin`
 - `engineering/implementation-strategy`
 - `engineering/code-change-verification`
 - `engineering/test-gap-analyzer`
@@ -111,12 +121,14 @@ We publish reusable building blocks across three modules:
 - Has a module spec file:
   - skills: `SKILL.md`
   - agents: `AGENT.md`
+  - plugins: `plugin.json`
   - tools-mcp: `TOOL.md`
 - Has `tests/test-prompts.md` (>= 5 realistic prompts)
 - Has `examples/` with sample input/output shape
 - Has a valid manifest:
   - skills: `skill.yaml`
   - agents: `agent.yaml`
+  - plugins: `plugin.yaml`
   - tools-mcp: `tool.yaml`
 - Documents runtime assumptions and dependencies
 - Uses scripts/config for deterministic logic where relevant
@@ -130,6 +142,8 @@ skills/
 agents/
   marketing/
   adtech/
+plugins/
+  marketing/
 tools-mcp/
   analytics/
   ads/
@@ -171,11 +185,13 @@ Useful sections include skills for:
   and runtime risk assessment.
 - `skills/agentops/*`: harness reflection, skill proposal, and regression
   evaluation for self-evolving agent scaffolds.
+- `plugins/marketing/*`: installable bundles that package existing
+  skills, agents, tools, hooks, and setup guidance.
 
 ## Quickstart
 
-1. Pick a module entry under `skills/`, `agents/`, or `tools-mcp/`.
-2. Read `README.md` and the module spec file (`SKILL.md`/`AGENT.md`/`TOOL.md`).
+1. Pick a module entry under `skills/`, `agents/`, `plugins/`, or `tools-mcp/`.
+2. Read `README.md` and the module spec file (`SKILL.md`/`AGENT.md`/`plugin.json`/`TOOL.md`).
 3. Run prompts in `tests/test-prompts.md`.
 4. Verify structure with `bash scripts/validate-skills.sh`.
 5. Validate manifests with `bash scripts/validate-manifests.sh`.
@@ -218,6 +234,66 @@ For generic runtimes:
   --runtime generic \
   --target ./my-agent/skills
 ```
+
+## Install Plugins
+
+Plugins bundle existing skills, agents, tools, hooks, and setup guidance into
+one installable package. For `codex` and `claude`, the installer also generates
+a runtime-specific manifest inside the installed plugin directory:
+
+- `codex` -> `.codex-plugin/plugin.json`
+- `claude` -> `.claude-plugin/plugin.json`
+
+For Codex:
+
+```bash
+./bin/skills-hub install --module plugins \
+  --entry marketing/performance-reporting-plugin@latest \
+  --runtime codex
+```
+
+Expected result:
+
+- plugin files copied into your Codex plugins directory
+- generated `.codex-plugin/plugin.json`
+- CLI output listing bundled component IDs, required secrets, and approvals
+
+For Claude:
+
+```bash
+./bin/skills-hub install --module plugins \
+  --entry marketing/competitive-intelligence-plugin@latest \
+  --runtime claude
+```
+
+Expected result:
+
+- plugin files copied into your Claude plugins directory
+- generated `.claude-plugin/plugin.json`
+- CLI output warning when the plugin is not security reviewed
+
+For generic runtimes:
+
+```bash
+./bin/skills-hub install --module plugins \
+  --entry marketing/ad-creative-plugin@latest \
+  --runtime generic \
+  --target ./my-agent/plugins
+```
+
+Expected result:
+
+- plugin files copied into `./my-agent/plugins`
+- no runtime-specific manifest generated automatically
+- you wire the plugin into your runtime manually
+
+Before enabling any plugin in a live environment:
+
+- review bundled skills, agents, and tool references
+- confirm required secrets are scoped correctly
+- confirm approval rules are compatible with your runtime
+- inspect generated runtime manifests before activation
+- treat `security_reviewed: false` as review-required, not install-ready
 
 ## Use Agent Packages (Step-by-step)
 
@@ -486,6 +562,9 @@ For security expectations, see `SECURITY_BASELINE.md`.
 For new pack guidance, see `docs/skill-pack-code-maintenance.md`,
 `docs/skill-pack-cybersecurity.md`, and
 `docs/skill-pack-autoharnessing.md`.
+For plugin guidance, see `docs/plugin-architecture.md`,
+`docs/plugin-authoring-guide.md`, and
+`docs/plugin-security-and-review.md`.
 
 ## Hub Website (MVP Scaffold)
 
@@ -505,9 +584,11 @@ Core routes:
 - `/` overview
 - `/skills` searchable catalog
 - `/agents` searchable catalog
+- `/plugins` searchable catalog
 - `/tools-mcp` searchable catalog
 - `/skills/<category>/<slug>` skill details and install snippets
 - `/agents/<category>/<slug>` agent details
+- `/plugins/<category>/<slug>` plugin details
 - `/tools-mcp/<category>/<slug>` tool/MCP details
 
 Smoke E2E tests:
@@ -526,5 +607,6 @@ Static manifest/artifact URLs:
   production routes like:
   - `/skills/.../skill.yaml`
   - `/agents/.../agent.yaml`
+  - `/plugins/.../plugin.yaml`
   - `/tools-mcp/.../tool.yaml`
   - `/artifacts/<id>/<version>.tar.gz`

@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-export type ModuleKey = "skills" | "agents" | "tools";
+export type ModuleKey = "skills" | "agents" | "tools" | "plugins";
 
 export type VersionEntry = {
   version: string;
@@ -24,6 +24,16 @@ export type RegistryEntry = {
   security_reviewed: boolean;
   deprecated: boolean;
   replaced_by?: string;
+  includes?: {
+    skills?: string[];
+    agents?: string[];
+    tools?: string[];
+    hooks?: string[];
+  };
+  requires?: {
+    secrets?: string[];
+    approvals?: string[];
+  };
 };
 
 export type RegistryIndex = {
@@ -41,6 +51,9 @@ function moduleIndexPath(module: ModuleKey) {
   }
   if (module === "agents") {
     return path.join(base, "agents-index.json");
+  }
+  if (module === "plugins") {
+    return path.join(base, "plugins-index.json");
   }
   return path.join(base, "tools-index.json");
 }
@@ -75,6 +88,10 @@ export async function loadToolsRegistry() {
   return loadRegistry("tools");
 }
 
+export async function loadPluginsRegistry() {
+  return loadRegistry("plugins");
+}
+
 export async function getEntryById(module: ModuleKey, id: string): Promise<RegistryEntry | undefined> {
   const registry = await loadRegistry(module);
   return registry.skills.find((s) => s.id === id);
@@ -103,6 +120,8 @@ export function buildModuleInstallSnippet(
     const targetDir =
       module === "agents"
         ? "./my-agent/agents"
+        : module === "plugins"
+          ? "./my-agent/plugins"
         : module === "tools"
           ? "./my-agent/tools-mcp"
           : "./my-agent/skills";

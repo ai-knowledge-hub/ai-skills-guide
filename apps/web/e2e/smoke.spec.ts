@@ -2,12 +2,14 @@ import { expect, test } from "@playwright/test";
 
 const sampleSkillPath = "/skills/marketing/meta-google-weekly-performance-review";
 const sampleAgentPath = "/agents/marketing/weekly-performance-supervisor";
+const samplePluginPath = "/plugins/marketing/performance-reporting-plugin";
 const sampleToolPath = "/tools-mcp/analytics/ga4-mcp-connector";
 
 test("home route smoke", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("link", { name: "Skills", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Agents", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Plugins", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Tools & MCP" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Explore skills" })).toBeVisible();
 });
@@ -42,6 +44,26 @@ test("agents route and detail smoke", async ({ page }) => {
   await page.goto(sampleAgentPath);
   await expect(page.getByRole("heading", { name: "Weekly Performance Supervisor" })).toBeVisible();
   await expect(page.getByText("Marketing Agents / Performance")).toBeVisible();
+});
+
+test("plugins route and detail smoke", async ({ page }) => {
+  await page.goto("/plugins");
+  await expect(page.getByRole("heading", { name: "Plugins Catalog" })).toBeVisible();
+  await expect(page.getByText(/\d+ result\(s\)/)).toBeVisible();
+  const performancePluginCard = page.locator(".catalog-card").filter({ hasText: "Performance Reporting Plugin" }).first();
+  const packageFileLink = performancePluginCard.getByRole("link", { name: "View package file" });
+  await expect(packageFileLink).toBeVisible();
+  await expect(packageFileLink).toHaveAttribute(
+    "href",
+    "https://github.com/ai-knowledge-hub/ai-skills-guide/blob/main/plugins/marketing/performance-reporting-plugin/plugin.yaml"
+  );
+  await expect(page.getByText("Performance Reporting Plugin")).toBeVisible();
+
+  await page.goto(samplePluginPath);
+  await expect(page.getByRole("heading", { name: "Performance Reporting Plugin" })).toBeVisible();
+  await expect(page.getByText("Marketing Plugins / Reporting")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Included Components" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "marketing/meta-google-weekly-performance-review" })).toBeVisible();
 });
 
 test("tools route and detail smoke", async ({ page }) => {

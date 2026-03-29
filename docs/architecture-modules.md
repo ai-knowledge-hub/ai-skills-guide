@@ -1,4 +1,4 @@
-# Module Architecture: Skills, Agents, Tools & MCP
+# Module Architecture: Skills, Agents, Plugins, Tools & MCP
 
 ## Purpose
 Define the target architecture for a single codebase with separate product
@@ -8,6 +8,8 @@ modules and registries.
 - Skills: reusable task-level expertise packages across marketing, adtech,
   engineering, security, and agent operations.
 - Agents: orchestrated templates that compose role, memory, skills, and tools.
+- Plugins: installable bundles that package skills, agents, tools, hooks, and
+  setup guidance into portable team capabilities.
 - Tools & MCP: integration connectors, adapters, and MCP server definitions.
 
 ## Repository Structure
@@ -18,32 +20,39 @@ agents/
   <domain>/<slug>/
 tools-mcp/
   <domain>/<slug>/
+plugins/
+  <domain>/<slug>/
 
 registry/
   skills-index.json
   agents-index.json
+  plugins-index.json
   tools-index.json
 ```
 
 ## Route Structure
 - `/skills`
 - `/agents`
+- `/plugins`
 - `/tools-mcp`
 
 Detail routes:
 - `/skills/<domain>/<slug>`
 - `/agents/<domain>/<slug>`
+- `/plugins/<domain>/<slug>`
 - `/tools-mcp/<domain>/<slug>`
 
 ## Manifest Contracts
 - Skills: `skill.yaml` validated by `shared/schemas/skill.schema.json`
 - Agents: `agent.yaml` validated by `shared/schemas/agent.schema.json`
+- Plugins: `plugin.yaml` validated by `shared/schemas/plugin.schema.json`
 - Tools: `tool.yaml` validated by `shared/schemas/tool.schema.json`
 
 ## Registry Generation
 Build separate indexes from each top-level folder:
 - `skills/` -> `registry/skills-index.json`
 - `agents/` -> `registry/agents-index.json`
+- `plugins/` -> `registry/plugins-index.json`
 - `tools-mcp/` -> `registry/tools-index.json`
 
 Each index entry must contain:
@@ -53,6 +62,7 @@ Each index entry must contain:
 ## Domain Routing Strategy
 - `skills.ai-knowledge-hub.org` serves `/skills`
 - `agents.ai-knowledge-hub.org` serves `/agents`
+- plugins remain on `/plugins` initially, with optional future domain split
 - tools & MCP remains on `/tools-mcp` initially, with optional future domain split
 
 ## Backward Compatibility

@@ -1,0 +1,313 @@
+{
+  "registry_version": "1.0",
+  "generated_at": "2026-03-29T00:00:00Z",
+  "skills": [
+    {
+      "id": "marketing/ad-creative-plugin",
+      "name": "Ad Creative Plugin",
+      "description": "Package creative ideation, rules-based review, experiment planning, and delivery guidance into one plugin for paid-media creative teams.",
+      "category": "marketing-plugins/creative",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-29T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/ad-creative-plugin/plugin.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/ad-creative-plugin/0.1.0.tar.gz",
+          "sha256": "f15ea5b54661627dc08eee056debe9ab8a4da6302a29db5dfe0cff7ec390950c"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "creative",
+        "paid-media",
+        "experiments",
+        "ads"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "includes": {
+        "skills": [
+          "marketing/creative-workshop-pmax-reels",
+          "marketing/dynamic-creative-rules-engine",
+          "marketing/ab-test-planner-analyzer",
+          "marketing/ai-output-eval-scorecard"
+        ],
+        "tools": [
+          "ads/meta-ads-mcp-connector"
+        ],
+        "hooks": [
+          "creative-review-before-publish"
+        ]
+      },
+      "requires": {
+        "secrets": [
+          "META_ACCESS_TOKEN"
+        ],
+        "approvals": [
+          "human-review-before-publish"
+        ]
+      }
+    },
+    {
+      "id": "marketing/campaign-audit-plugin",
+      "name": "Campaign Audit Plugin",
+      "description": "Package campaign QA, compliance checks, and audit supervision into a reusable plugin for pre-launch and in-flight campaign reviews.",
+      "category": "marketing-plugins/audit",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-28T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/campaign-audit-plugin/plugin.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/campaign-audit-plugin/0.1.0.tar.gz",
+          "sha256": "e8488d1d50f88005217e5e8bad4aded3ff6da3b30301750419f6e0a02bd936c4"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "audit",
+        "qa",
+        "policy",
+        "governance"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "includes": {
+        "skills": [
+          "adtech/policy-brand-compliance-checker",
+          "security/handle-untrusted-content",
+          "security/secrets-and-credential-hygiene"
+        ],
+        "agents": [
+          "marketing/campaign-qa-supervisor"
+        ],
+        "tools": [
+          "analytics/ga4-mcp-connector",
+          "ads/meta-ads-mcp-connector"
+        ],
+        "hooks": [
+          "block-publish-on-critical-failure"
+        ]
+      },
+      "requires": {
+        "secrets": [
+          "META_ACCESS_TOKEN"
+        ],
+        "approvals": [
+          "human-approval-for-live-changes"
+        ]
+      }
+    },
+    {
+      "id": "marketing/competitive-intelligence-plugin",
+      "name": "Competitive Intelligence Plugin",
+      "description": "Bundle competitor signal collection, evidence review, and insight packaging into a reusable plugin for marketing strategy teams.",
+      "category": "marketing-plugins/intelligence",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-29T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/competitive-intelligence-plugin/plugin.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/competitive-intelligence-plugin/0.1.0.tar.gz",
+          "sha256": "be8ff413f5cef3c931065a282140fd2483cb51245b5629655753b98221ffec37"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "competitive-intelligence",
+        "research",
+        "strategy",
+        "insight"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "includes": {
+        "skills": [
+          "adtech/brand-rag-memory-bootstrap",
+          "marketing/ai-output-eval-scorecard",
+          "security/handle-untrusted-content"
+        ],
+        "hooks": [
+          "weekly-competitor-signal-digest"
+        ]
+      },
+      "requires": {
+        "approvals": [
+          "human-review-for-external-claims"
+        ]
+      }
+    },
+    {
+      "id": "marketing/content-repurposing-plugin",
+      "name": "Content Repurposing Plugin",
+      "description": "Bundle content transformation, review guidance, and publishing-oriented workflow references into a portable plugin for multi-channel reuse.",
+      "category": "marketing-plugins/content",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-28T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/content-repurposing-plugin/plugin.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/content-repurposing-plugin/0.1.0.tar.gz",
+          "sha256": "a2b861cf98463e6f489bb5825d13335918ef38cea75dc31281a9f93d60bac6ec"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "content",
+        "repurposing",
+        "publishing",
+        "workflow"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "includes": {
+        "skills": [
+          "marketing/creative-workshop-pmax-reels",
+          "marketing/ai-output-eval-scorecard",
+          "marketing/dynamic-creative-rules-engine"
+        ],
+        "hooks": [
+          "content-review-before-publish"
+        ]
+      },
+      "requires": {
+        "approvals": [
+          "human-review-for-publish"
+        ]
+      }
+    },
+    {
+      "id": "marketing/page-speed-technical-seo-plugin",
+      "name": "Page Speed \u0026 Technical SEO Plugin",
+      "description": "Package technical SEO diagnostics, page experience checks, and reporting guidance into one installable plugin for search and landing-page teams.",
+      "category": "marketing-plugins/seo",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-29T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/page-speed-technical-seo-plugin/plugin.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/page-speed-technical-seo-plugin/0.1.0.tar.gz",
+          "sha256": "32db07958d5bd344b006a6a22c5de5fcc853db49e3c3dbefec39c939e3d32f96"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "seo",
+        "technical-seo",
+        "performance",
+        "page-speed"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "includes": {
+        "skills": [
+          "marketing/seo-paid-search-synergy",
+          "adtech/playwright-agentic-e2e",
+          "security/environment-risk-assessment"
+        ],
+        "tools": [
+          "analytics/ga4-mcp-connector"
+        ],
+        "hooks": [
+          "lighthouse-and-landing-page-review"
+        ]
+      },
+      "requires": {
+        "secrets": [
+          "GA4_PROPERTY_ID"
+        ],
+        "approvals": [
+          "human-review-before-site-change"
+        ]
+      }
+    },
+    {
+      "id": "marketing/performance-reporting-plugin",
+      "name": "Performance Reporting Plugin",
+      "description": "Bundle weekly reporting skills, agent templates, connector references, and delivery hooks into one portable analytics workflow package.",
+      "category": "marketing-plugins/reporting",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-28T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/performance-reporting-plugin/plugin.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/performance-reporting-plugin/0.1.0.tar.gz",
+          "sha256": "0977d9f0a96f114d1ed82e827ef64727ca8daed000191cea9b7aba6142581c5a"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "reporting",
+        "ga4",
+        "dashboard",
+        "slack"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "includes": {
+        "skills": [
+          "marketing/meta-google-weekly-performance-review",
+          "adtech/dashboard-generator",
+          "adtech/dashboard-qa-checker",
+          "adtech/executive-narrative-writer"
+        ],
+        "agents": [
+          "marketing/weekly-performance-supervisor"
+        ],
+        "tools": [
+          "analytics/ga4-mcp-connector",
+          "ads/meta-ads-mcp-connector",
+          "warehouse/bigquery-mcp-query-runner"
+        ],
+        "hooks": [
+          "post-analysis-slack-summary"
+        ]
+      },
+      "requires": {
+        "secrets": [
+          "GA4_PROPERTY_ID",
+          "META_ACCESS_TOKEN",
+          "SLACK_WEBHOOK_URL"
+        ],
+        "approvals": [
+          "human-review-for-write-actions"
+        ]
+      }
+    }
+  ]
+}

@@ -13,24 +13,27 @@
 1. Add/update one entry under one module:
    - `skills/<domain>/<slug>`
    - `agents/<domain>/<slug>`
+   - `plugins/<domain>/<slug>`
    - `tools-mcp/<domain>/<slug>`
-2. Include spec file (`SKILL.md` or `AGENT.md` or `TOOL.md`),
+2. Include spec file (`SKILL.md` or `AGENT.md` or `plugin.json` or `TOOL.md`),
    `README.md`, `tests/test-prompts.md`, and `examples/`.
-3. Include correct manifest (`skill.yaml`, `agent.yaml`, or `tool.yaml`).
+3. Include correct manifest (`skill.yaml`, `agent.yaml`, `plugin.yaml`, or `tool.yaml`).
 4. Ensure at least 5 realistic prompts with expected behavior.
 5. Document assumptions (APIs, data sources, required tools).
 6. Include risk notes if shell commands, writes, or publishing actions are
    involved.
 7. For security or agentops entries, document approval boundaries and
    paths that remain read-only by default.
+8. For plugins, disclose bundled skills/agents/tools/hooks and any required
+   secrets or approval gates.
 
 ## Module folder standard
 
 ```text
 <entry-slug>/
   README.md
-  SKILL.md | AGENT.md | TOOL.md
-  skill.yaml | agent.yaml | tool.yaml
+  SKILL.md | AGENT.md | plugin.json | TOOL.md
+  skill.yaml | agent.yaml | plugin.yaml | tool.yaml
   scripts/        # deterministic logic
   references/     # optional deep docs
   config/         # optional rules

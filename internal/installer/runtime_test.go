@@ -153,3 +153,14 @@ func TestPreparePluginRuntimeArtifactsForGenericSkips(t *testing.T) {
 		t.Fatalf("expected no artifacts for generic runtime, got %d", len(artifacts))
 	}
 }
+
+func TestResolvePluginDependencyTargetGeneric(t *testing.T) {
+	target, err := ResolvePluginDependencyTarget("generic", "skills", "/tmp/my-agent/plugins")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	expected := filepath.Join("/tmp/my-agent", "skills")
+	if target.TargetPath != expected {
+		t.Fatalf("expected %s, got %s", expected, target.TargetPath)
+	}
+}

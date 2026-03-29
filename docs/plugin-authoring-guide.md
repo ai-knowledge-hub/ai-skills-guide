@@ -18,6 +18,7 @@ Good plugin candidates:
   README.md
   plugin.yaml
   plugin.json
+  hooks/
   examples/
   tests/
     test-prompts.md
@@ -36,6 +37,9 @@ Good plugin candidates:
    that still remain after generation.
 4. Treat hooks as risk-bearing.
    Any automatic action should be explained in `README.md`.
+5. Keep hooks packaged locally.
+   Declared hooks should exist under `hooks/` in the plugin package instead of
+   being modeled as a separate catalog dependency.
 
 ## Required manifest sections
 
@@ -52,5 +56,6 @@ Good plugin candidates:
 - at least 5 prompts in `tests/test-prompts.md`
 - one example flow in `examples/`
 - included component references resolve to real registry entries
+- declared hooks resolve to packaged files under `hooks/`
 - required secrets and approvals are documented
 - generated runtime manifests are safe to inspect before enablement

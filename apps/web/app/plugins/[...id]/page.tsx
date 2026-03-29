@@ -44,6 +44,7 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
             claude={buildModuleInstallSnippet("plugins", entry, "claude")}
             generic={buildModuleInstallSnippet("plugins", entry, "generic")}
           />
+          <p className="meta">Plugin installs also resolve bundled skills, agents, and tools into their native runtime directories. Packaged hooks stay inside the plugin directory.</p>
           <p className="meta">Codex and Claude installs also generate a runtime-specific plugin manifest inside the installed plugin directory.</p>
           {!entry.security_reviewed ? (
             <p className="meta">This plugin is still experimental. Review bundled components, required secrets, and approval rules before enabling it in a live runtime.</p>

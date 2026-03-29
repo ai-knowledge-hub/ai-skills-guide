@@ -244,6 +244,13 @@ a runtime-specific manifest inside the installed plugin directory:
 - `codex` -> `.codex-plugin/plugin.json`
 - `claude` -> `.claude-plugin/plugin.json`
 
+Plugin installs also resolve bundled dependencies automatically:
+
+- referenced `skills` install into the runtime skills directory
+- referenced `agents` install into the runtime agents directory
+- referenced `tools-mcp` install into the runtime tools directory
+- packaged `hooks/` remain inside the installed plugin directory
+
 For Codex:
 
 ```bash
@@ -256,6 +263,7 @@ Expected result:
 
 - plugin files copied into your Codex plugins directory
 - generated `.codex-plugin/plugin.json`
+- bundled skills, agents, and tools installed into sibling Codex runtime directories
 - CLI output listing bundled component IDs, required secrets, and approvals
 
 For Claude:
@@ -270,6 +278,7 @@ Expected result:
 
 - plugin files copied into your Claude plugins directory
 - generated `.claude-plugin/plugin.json`
+- bundled skills, agents, and tools installed into sibling Claude runtime directories
 - CLI output warning when the plugin is not security reviewed
 
 For generic runtimes:
@@ -284,6 +293,7 @@ For generic runtimes:
 Expected result:
 
 - plugin files copied into `./my-agent/plugins`
+- bundled skills, agents, and tools installed into sibling directories under `./my-agent/`
 - no runtime-specific manifest generated automatically
 - you wire the plugin into your runtime manually
 

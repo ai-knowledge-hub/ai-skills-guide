@@ -9,5 +9,19 @@ Portable bundle for technical SEO and landing-page diagnostics.
 - GA4 connector reference for landing-page and engagement validation
 - Example hook for Lighthouse-style review handoff
 
+## Install Behavior
+
+This plugin is a packaging layer.
+
+On install:
+
+- the plugin package itself is installed under `plugins/...`
+- bundled skills are installed into the runtime `skills/...` directory
+- bundled tools are installed into the runtime `tools-mcp/...` directory
+- packaged hooks remain inside this plugin's `hooks/` directory
+
+Bundled skills and tools do not live inside the plugin directory itself. That
+avoids duplication while still making the plugin install materially usable.
+
 ## Use Case
 Install when a team needs a repeatable workflow for reviewing slow landing pages, technical SEO regressions, and page-experience issues before escalating changes to engineering.

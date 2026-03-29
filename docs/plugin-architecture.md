@@ -48,11 +48,20 @@ The registry index exposes plugin metadata plus composition fields:
 
 ## Runtime install behavior
 
-Plugin installs now preserve the package directory and, for supported runtimes,
-also generate a runtime-specific manifest inside the installed plugin folder:
+Plugin installs preserve the package directory, resolve referenced
+dependencies into their native runtime directories, and, for supported
+runtimes, also generate a runtime-specific manifest inside the installed
+plugin folder:
 
 - `codex` -> `.codex-plugin/plugin.json`
 - `claude` -> `.claude-plugin/plugin.json`
+
+Dependency behavior:
+
+- `includes.skills` -> runtime `skills/`
+- `includes.agents` -> runtime `agents/`
+- `includes.tools` -> runtime `tools-mcp/`
+- `includes.hooks` -> packaged under the plugin's own `hooks/`
 
 These generated files are derived from the package `plugin.json` and stamped
 with the target runtime. They are scaffolding artifacts, not proof that the

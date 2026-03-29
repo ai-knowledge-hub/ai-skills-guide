@@ -5,6 +5,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SKILL_SCHEMA="$ROOT/shared/schemas/skill.schema.json"
 AGENT_SCHEMA="$ROOT/shared/schemas/agent.schema.json"
 TOOL_SCHEMA="$ROOT/shared/schemas/tool.schema.json"
+PLUGIN_SCHEMA="$ROOT/shared/schemas/plugin.schema.json"
 REGISTRY_SCHEMA="$ROOT/shared/schemas/registry-index.schema.json"
 
 CHECK_JSONSCHEMA=""
@@ -46,12 +47,14 @@ validate_module_manifests() {
 validate_module_manifests "$ROOT/skills" "skill.yaml" "$SKILL_SCHEMA" "skill"
 validate_module_manifests "$ROOT/agents" "agent.yaml" "$AGENT_SCHEMA" "agent"
 validate_module_manifests "$ROOT/tools-mcp" "tool.yaml" "$TOOL_SCHEMA" "tool"
+validate_module_manifests "$ROOT/plugins" "plugin.yaml" "$PLUGIN_SCHEMA" "plugin"
 
 for index_path in \
   "$ROOT/registry/index.json" \
   "$ROOT/registry/skills-index.json" \
   "$ROOT/registry/agents-index.json" \
-  "$ROOT/registry/tools-index.json"
+  "$ROOT/registry/tools-index.json" \
+  "$ROOT/registry/plugins-index.json"
 do
   if [[ -f "$index_path" ]]; then
     echo "[check] validating ${index_path#$ROOT/}"

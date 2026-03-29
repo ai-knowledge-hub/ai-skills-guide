@@ -151,6 +151,18 @@ p {
   gap: 0.45rem;
 }
 
+.catalog-card-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  flex: 1;
+}
+
+.catalog-card-link:hover h2,
+.catalog-card-link:focus-visible h2 {
+  text-decoration: underline;
+}
+
 .catalog-card-head {
   display: flex;
   align-items: flex-start;
@@ -243,6 +255,24 @@ p {
 .catalog-card-category {
   margin: -0.15rem 0 0.05rem;
   font-size: 0.74rem;
+}
+
+.catalog-card-actions {
+  margin-top: auto;
+  padding-top: 0.35rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.catalog-card-secondary-link {
+  font-family: var(--font-code);
+  font-size: 0.76rem;
+  color: #b6e5c9;
+}
+
+.catalog-card-secondary-link:hover,
+.catalog-card-secondary-link:focus-visible {
+  color: #dcffe9;
+  text-decoration: underline;
 }
 
 .install {

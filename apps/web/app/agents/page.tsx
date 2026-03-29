@@ -25,6 +25,7 @@ export default async function AgentsPage({ searchParams = {} }: { searchParams?:
       <div className="nav">
         <a href="/" className="pill">Home</a>
         <a href="/skills" className="pill">Skills</a>
+        <a href="/plugins" className="pill">Plugins</a>
         <a href="/tools-mcp" className="pill">Tools &amp; MCP</a>
         <span className="pill">Agents</span>
       </div>

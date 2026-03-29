@@ -18,11 +18,12 @@ type CatalogClientProps = {
   entries: RegistryEntry[];
   categories: string[];
   tags: string[];
-  basePath: "/skills" | "/agents" | "/tools-mcp";
+  basePath: "/skills" | "/agents" | "/tools-mcp" | "/plugins";
   initial: CatalogInitialFilters;
 };
 
 export default function CatalogClient({ entries, categories, tags, basePath, initial }: CatalogClientProps) {
+  const isPluginCatalog = basePath === "/plugins";
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -198,30 +199,44 @@ export default function CatalogClient({ entries, categories, tags, basePath, ini
 
       <section className="grid">
         {filtered.map((entry) => (
-          <Link key={entry.id} href={`${basePath}/${entry.id}`} className="card catalog-card">
-            <div className="catalog-card-head">
-              <span className="catalog-pack-badge">{formatCategoryFamily(entry.category)}</span>
-              <div className="catalog-status-badges">
-                <span className={`catalog-status-badge is-${entry.readiness}`}>
-                  {formatReadinessLabel(entry.readiness)}
-                </span>
-                {entry.security_reviewed ? (
-                  <span className="catalog-status-badge is-reviewed-detail">Security</span>
+          <article key={entry.id} className="card catalog-card">
+            <Link href={`${basePath}/${entry.id}`} className="catalog-card-link">
+              <div className="catalog-card-head">
+                <span className="catalog-pack-badge">{formatCategoryFamily(entry.category)}</span>
+                <div className="catalog-status-badges">
+                  <span className={`catalog-status-badge is-${entry.readiness}`}>
+                    {formatReadinessLabel(entry.readiness)}
+                  </span>
+                  {entry.security_reviewed ? (
+                    <span className="catalog-status-badge is-reviewed-detail">Security</span>
+                  ) : null}
+                </div>
+              </div>
+              <p className="meta catalog-card-id">{entry.id}</p>
+              <h2>{entry.name}</h2>
+              <p>{entry.description}</p>
+              <div className="tags">
+                {entry.tags.slice(0, 2).map((tagEntry) => (
+                  <span key={tagEntry} className="tag">{tagEntry}</span>
+                ))}
+                {entry.tags.length > 2 ? (
+                  <span className="tag tag--muted">+{entry.tags.length - 2}</span>
                 ) : null}
               </div>
-            </div>
-            <p className="meta catalog-card-id">{entry.id}</p>
-            <h2>{entry.name}</h2>
-            <p>{entry.description}</p>
-            <div className="tags">
-              {entry.tags.slice(0, 2).map((tagEntry) => (
-                <span key={tagEntry} className="tag">{tagEntry}</span>
-              ))}
-              {entry.tags.length > 2 ? (
-                <span className="tag tag--muted">+{entry.tags.length - 2}</span>
-              ) : null}
-            </div>
-          </Link>
+            </Link>
+            {isPluginCatalog ? (
+              <div className="catalog-card-actions">
+                <a
+                  href={`https://github.com/ai-knowledge-hub/ai-skills-guide/blob/main/plugins/${entry.id}/plugin.yaml`}
+                  className="catalog-card-secondary-link"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View package file
+                </a>
+              </div>
+            ) : null}
+          </article>
         ))}
       </section>
     </>

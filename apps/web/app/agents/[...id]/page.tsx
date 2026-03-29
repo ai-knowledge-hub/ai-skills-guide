@@ -21,6 +21,7 @@ export default async function AgentDetailPage({ params }: { params: { id: string
       <div className="nav">
         <a href="/" className="pill">Home</a>
         <a href="/agents" className="pill">Agents</a>
+        <a href="/plugins" className="pill">Plugins</a>
         <span className="pill">{entry.id}</span>
       </div>
 

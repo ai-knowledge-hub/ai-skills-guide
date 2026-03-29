@@ -1,4 +1,4 @@
-import { loadAgentsRegistry, loadSkillsRegistry, loadToolsRegistry, uniqueValues } from "@/lib/registry";
+import { loadAgentsRegistry, loadPluginsRegistry, loadSkillsRegistry, loadToolsRegistry, uniqueValues } from "@/lib/registry";
 import { FEATURED_SKILL_IDS } from "@/lib/home";
 import {
   formatCategoryFamily,
@@ -12,9 +12,11 @@ export default async function HomePage() {
     loadAgentsRegistry(),
     loadToolsRegistry()
   ]);
+  const pluginsRegistry = await loadPluginsRegistry();
   const skills = skillsRegistry.skills;
   const agents = agentsRegistry.skills;
   const tools = toolsRegistry.skills;
+  const plugins = pluginsRegistry.skills;
   const categoryGroups = uniqueValues(skills.map((s) => getCategoryFamilyKey(s.category)));
   const tags = uniqueValues(skills.flatMap((s) => s.tags));
   const featuredSkills = FEATURED_SKILL_IDS
@@ -43,6 +45,7 @@ export default async function HomePage() {
         <span className="pill">AI Knowledge Hub</span>
         <a href="/skills" className="pill">Skills</a>
         <a href="/agents" className="pill">Agents</a>
+        <a href="/plugins" className="pill">Plugins</a>
         <a href="/tools-mcp" className="pill">Tools &amp; MCP</a>
       </div>
 
@@ -78,6 +81,9 @@ export default async function HomePage() {
             <a href="/agents" className="button button--secondary">
               Browse agents
             </a>
+            <a href="/plugins" className="button button--secondary">
+              Browse plugins
+            </a>
             <a href="/tools-mcp" className="button button--secondary">
               Browse tools
             </a>
@@ -91,6 +97,7 @@ export default async function HomePage() {
           <div className="tags">
             <span className="tag">{skills.length} skills</span>
             <span className="tag">{agents.length} agents</span>
+            <span className="tag">{plugins.length} plugins</span>
             <span className="tag">{tools.length} tools</span>
             <span className="tag">Skills registry v{skillsRegistry.registry_version}</span>
             <span className="tag">Generated {skillsRegistry.generated_at.slice(0, 10)}</span>

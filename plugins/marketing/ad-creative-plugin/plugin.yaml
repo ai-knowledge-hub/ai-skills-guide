@@ -1,0 +1,44 @@
+id: marketing/ad-creative-plugin
+name: Ad Creative Plugin
+description: Package creative ideation, rules-based review, experiment planning, and delivery guidance into one plugin for paid-media creative teams.
+version: 0.1.0
+released_at: "2026-03-29T00:00:00Z"
+category: marketing-plugins/creative
+tags:
+  - creative
+  - paid-media
+  - experiments
+  - ads
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  spec: plugin.json
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+includes:
+  skills:
+    - marketing/creative-workshop-pmax-reels
+    - marketing/dynamic-creative-rules-engine
+    - marketing/ab-test-planner-analyzer
+    - marketing/ai-output-eval-scorecard
+  tools:
+    - ads/meta-ads-mcp-connector
+  hooks:
+    - creative-review-before-publish
+requires:
+  secrets:
+    - META_ACCESS_TOKEN
+  approvals:
+    - human-review-before-publish
+verification:
+  tests_min_prompts: 5
+  security_reviewed: false
+deprecated: false

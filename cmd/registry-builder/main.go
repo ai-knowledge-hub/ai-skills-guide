@@ -12,7 +12,7 @@ import (
 func main() {
 	fs := flag.NewFlagSet("registry-builder", flag.ExitOnError)
 	root := fs.String("root", ".", "repository root")
-	module := fs.String("module", "all", "module to build: skills|agents|tools|all")
+	module := fs.String("module", "all", "module to build: skills|agents|tools|plugins|all")
 	out := fs.String("out", "", "output path relative to root (single-module mode only)")
 	outDir := fs.String("out-dir", "registry", "output directory relative to root")
 	_ = fs.Parse(os.Args[1:])
@@ -29,10 +29,12 @@ func main() {
 		writeSingle(absRoot, *outDir, defaultOut(*out, "agents-index.json"), registry.BuildAgentsIndex)
 	case "tools":
 		writeSingle(absRoot, *outDir, defaultOut(*out, "tools-index.json"), registry.BuildToolsIndex)
+	case "plugins":
+		writeSingle(absRoot, *outDir, defaultOut(*out, "plugins-index.json"), registry.BuildPluginsIndex)
 	case "all":
 		writeAll(absRoot, *outDir)
 	default:
-		fatal(fmt.Errorf("invalid --module %q (use skills|agents|tools|all)", *module))
+		fatal(fmt.Errorf("invalid --module %q (use skills|agents|tools|plugins|all)", *module))
 	}
 }
 
@@ -63,6 +65,7 @@ func writeAll(absRoot, outDir string) {
 	writeSingle(absRoot, outDir, "skills-index.json", registry.BuildSkillsIndex)
 	writeSingle(absRoot, outDir, "agents-index.json", registry.BuildAgentsIndex)
 	writeSingle(absRoot, outDir, "tools-index.json", registry.BuildToolsIndex)
+	writeSingle(absRoot, outDir, "plugins-index.json", registry.BuildPluginsIndex)
 	// Backward compatibility: keep legacy skills index path.
 	writeSingle(absRoot, outDir, "index.json", registry.BuildSkillsIndex)
 }

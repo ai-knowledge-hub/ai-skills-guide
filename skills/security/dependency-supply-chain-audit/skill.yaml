@@ -29,6 +29,14 @@ dependencies:
   tools:
     - trivy
     - osv-scanner
+operational:
+  use_when: Use when manifests and lockfiles need vulnerability, provenance, and package risk review before trust is granted.
+  execution_mode: may-run-local-verification
+  outputs:
+    - Dependency findings
+    - Risk ranking
+    - Mitigation recommendations
+  approval_boundary: May run local scanners and review package risk; require human approval before removing dependencies or changing production lockfiles.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

@@ -28,6 +28,14 @@ entrypoints:
 dependencies:
   tools:
     - rg
+operational:
+  use_when: Use when a repository needs scope analysis, impact mapping, and change planning before edits begin.
+  execution_mode: read-only-local-inspection
+  outputs:
+    - Change strategy
+    - Impacted files
+    - Verification command list
+  approval_boundary: Safe for repo inspection and planning; does not require write access and should precede code edits.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

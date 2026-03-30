@@ -14,7 +14,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/agents/adtech/bi-insights-orchestrator/agent.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/bi-insights-orchestrator/0.1.0.tar.gz",
-          "sha256": "87084e1dfb9321ffae095eaf851a3b13415c8320323fb6772a655d13099eadca"
+          "sha256": "d5be1ccaca95295c2e516aad05b7b3a40531ba298cde3c49c9410ae8db556517"
         }
       ],
       "runtimes": [
@@ -29,7 +29,34 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "May coordinate read-only data analysis and draft reporting outputs; require human approval before any publish or stakeholder-distribution decision.",
+        "role": "Analytics orchestration agent for warehouse-backed BI reporting.",
+        "coordinates": [
+          "Warehouse and platform metric collection",
+          "KPI normalization across sources",
+          "Dashboard and insight generation"
+        ],
+        "autonomy_level": "semi-autonomous",
+        "outputs": [
+          "Normalized KPI table",
+          "Anomaly summary with evidence",
+          "Publish recommendation",
+          "Risks and data limitations"
+        ]
+      },
+      "dependencies": {
+        "skills": [
+          "adtech/analyst-copilot-bigquery-redshift",
+          "adtech/dashboard-generator",
+          "adtech/dashboard-qa-checker"
+        ],
+        "tools": [
+          "bigquery_sql",
+          "ga4_query"
+        ]
+      }
     },
     {
       "id": "marketing/campaign-qa-supervisor",
@@ -43,7 +70,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/agents/marketing/campaign-qa-supervisor/agent.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/campaign-qa-supervisor/0.1.0.tar.gz",
-          "sha256": "322d35a70c0913c992bd065d2791758616dea462d847b73598ef6639ce327e66"
+          "sha256": "30b75a2f94f47727bfa59cb80965555edad853f9e28c55147a7268616bb9c32e"
         }
       ],
       "runtimes": [
@@ -58,7 +85,32 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "May assess launch readiness and draft remediation alerts; require human approval before overriding critical failures or taking live launch actions.",
+        "role": "Governance agent for campaign QA, tracking integrity, and launch readiness.",
+        "coordinates": [
+          "Campaign payload validation",
+          "Policy and naming checks",
+          "Severity assessment and remediation routing"
+        ],
+        "autonomy_level": "execution-capable-with-approval",
+        "outputs": [
+          "Pass, warn, or fail decision",
+          "Critical blocker list",
+          "Remediation action list",
+          "Alert summary for escalation"
+        ]
+      },
+      "dependencies": {
+        "skills": [
+          "adtech/policy-brand-compliance-checker"
+        ],
+        "tools": [
+          "campaign_config_reader",
+          "slack_post"
+        ]
+      }
     },
     {
       "id": "marketing/weekly-performance-supervisor",
@@ -72,7 +124,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/agents/marketing/weekly-performance-supervisor/agent.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/weekly-performance-supervisor/0.1.0.tar.gz",
-          "sha256": "40dad67f9624f7c238542a22943b8ee391e3df9f2c9a876102bfc63f4c5f8da5"
+          "sha256": "7c1381b204cc9fe23d9e5c75e2304d91833bb1c571f7727cec7eb2ac7906542c"
         }
       ],
       "runtimes": [
@@ -87,7 +139,34 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "May coordinate reporting workflows and draft narratives after QA approval; require human approval before any external publish or stakeholder send.",
+        "role": "Weekly reporting supervisor for QA-gated performance review workflows.",
+        "coordinates": [
+          "Dashboard generation",
+          "QA gating and blocking decisions",
+          "Executive narrative drafting after approval"
+        ],
+        "autonomy_level": "semi-autonomous",
+        "outputs": [
+          "Publish decision",
+          "Dashboard package",
+          "QA package",
+          "Executive narrative"
+        ]
+      },
+      "dependencies": {
+        "skills": [
+          "adtech/dashboard-generator",
+          "adtech/dashboard-qa-checker",
+          "adtech/executive-narrative-writer"
+        ],
+        "tools": [
+          "ga4_query",
+          "warehouse_query"
+        ]
+      }
     }
   ]
 }

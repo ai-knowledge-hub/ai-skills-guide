@@ -48,6 +48,42 @@ Detail routes:
 - Plugins: `plugin.yaml` validated by `shared/schemas/plugin.schema.json`
 - Tools: `tool.yaml` validated by `shared/schemas/tool.schema.json`
 
+## Operational Metadata Rollout
+
+The catalog is moving toward a shared operational metadata model so detail
+pages answer practical questions quickly:
+
+- what this entry touches
+- what permissions it needs
+- what trust boundary it crosses
+- what approval boundary applies
+
+The first implemented slices are `tools-mcp` and `agents`.
+
+`tools-mcp` now documents:
+
+- `connected_system`
+- `capabilities`
+- `auth_required`
+- `access_level`
+- `trust_boundary`
+- `approval_boundary`
+
+`agents` now documents:
+
+- `role`
+- `coordinates`
+- `autonomy_level`
+- `approval_boundary`
+- `outputs`
+
+`skills` now documents:
+
+- `use_when`
+- `execution_mode`
+- `outputs`
+- `approval_boundary`
+
 ## Registry Generation
 Build separate indexes from each top-level folder:
 - `skills/` -> `registry/skills-index.json`

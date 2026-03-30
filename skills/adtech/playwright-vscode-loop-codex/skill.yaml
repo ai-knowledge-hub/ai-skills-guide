@@ -30,6 +30,14 @@ dependencies:
     - node
     - npx
     - playwright
+operational:
+  use_when: Use when Codex is orchestrating a VS Code-compatible Playwright planner, generator, and healer loop.
+  execution_mode: may-run-local-verification
+  outputs:
+    - Test plan
+    - Generated spec
+    - Healing notes
+  approval_boundary: May run local QA workflows and propose test updates; require human approval before accepting broad healing changes.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

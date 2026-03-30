@@ -30,6 +30,14 @@ dependencies:
     - node
     - pnpm
     - npx
+operational:
+  use_when: Use when a web app needs Playwright smoke coverage, failure diagnosis, and minimal healing suggestions.
+  execution_mode: may-run-local-verification
+  outputs:
+    - Playwright spec
+    - Run summary
+    - Healing suggestions
+  approval_boundary: May run local test commands and propose fixes; require human approval before deleting tests or broadening coverage scope.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

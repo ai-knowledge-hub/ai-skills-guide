@@ -10,6 +10,17 @@ QA-gated publish control.
 - Runs QA checks before publish.
 - Generates executive narrative only when QA passes.
 
+## Operational metadata
+
+- Role: weekly reporting supervisor for QA-gated performance review workflows
+- Autonomy level: semi-autonomous
+- Approval boundary: may coordinate reporting workflows and draft narratives after QA approval; require human approval before any external publish or stakeholder send
+- Outputs:
+  - publish decision
+  - dashboard package
+  - QA package
+  - executive narrative
+
 ## Before you start
 
 1. Install this agent package.

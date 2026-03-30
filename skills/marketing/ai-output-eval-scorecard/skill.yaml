@@ -27,6 +27,14 @@ entrypoints:
 dependencies:
   tools:
     - python3
+operational:
+  use_when: Use when AI-generated marketing outputs need repeatable scoring across quality, compliance, and actionability.
+  execution_mode: analysis-only
+  outputs:
+    - Scorecard
+    - Verdict
+    - Rewrite recommendations
+  approval_boundary: Safe for evaluation and recommendation; require human approval before approving externally visible copy.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

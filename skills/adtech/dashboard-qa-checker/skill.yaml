@@ -27,6 +27,14 @@ entrypoints:
 dependencies:
   tools:
     - python3
+operational:
+  use_when: Use when a dashboard or BI package needs freshness, completeness, reconciliation, and anomaly checks before publish.
+  execution_mode: may-run-local-verification
+  outputs:
+    - QA result
+    - Blocking reasons
+    - Alert payload
+  approval_boundary: Safe for read-only QA evaluation; require human approval before overriding critical failures.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

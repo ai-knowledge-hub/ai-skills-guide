@@ -18,6 +18,14 @@ analysis and reporting.
 - Returns spend, impressions, clicks, and conversions.
 - Preserves source timestamps for QA checks.
 
+## Operational metadata
+
+- Connected system: Meta Ads
+- Access level: read-only
+- Trust boundary: remote MCP server
+- Auth required: authenticated Meta Ads account scope in your MCP runtime
+- Approval boundary: safe for reporting queries only; require human approval before pairing this connector with workflows that can modify campaigns, budgets, or creative state
+
 ## Before you start
 
 1. Confirm Meta ad account ID scope.

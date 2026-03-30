@@ -152,6 +152,50 @@
         }
       }
     },
+    "operational": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 160
+        },
+        "coordinates": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "autonomy_level": {
+          "type": "string",
+          "enum": [
+            "advisory",
+            "semi-autonomous",
+            "execution-capable-with-approval"
+          ]
+        },
+        "approval_boundary": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 240
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
     "verification": {
       "type": "object",
       "additionalProperties": false,

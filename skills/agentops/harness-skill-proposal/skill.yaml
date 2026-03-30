@@ -25,6 +25,14 @@ entrypoints:
   tests: tests/test-prompts.md
   scripts_dir: scripts
   examples_dir: examples
+operational:
+  use_when: Use when repeated harness failures justify drafting new or revised harness skills and policy text.
+  execution_mode: analysis-only
+  outputs:
+    - Proposed skill changes
+    - Boundary notes
+    - Rationale summary
+  approval_boundary: Safe for proposal drafting inside harness-owned assets; require human approval before any change outside harness scope.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

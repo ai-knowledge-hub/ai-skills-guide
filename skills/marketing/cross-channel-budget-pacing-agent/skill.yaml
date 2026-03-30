@@ -27,6 +27,14 @@ entrypoints:
 dependencies:
   tools:
     - python3
+operational:
+  use_when: Use when pacing and efficiency signals across channels need bounded reallocation recommendations.
+  execution_mode: analysis-only
+  outputs:
+    - Pacing summary
+    - Anomaly list
+    - Reallocation plan
+  approval_boundary: Safe for analysis and recommendation; require human approval before changing live budgets.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

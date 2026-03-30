@@ -10,6 +10,17 @@ marketing analytics.
 - Surfaces anomalies and insight candidates.
 - Routes approved outputs into dashboard-ready reporting flows.
 
+## Operational metadata
+
+- Role: analytics orchestration agent for warehouse-backed BI reporting
+- Autonomy level: semi-autonomous
+- Approval boundary: may coordinate read-only analysis and draft reporting outputs; require human approval before any publish or stakeholder-distribution decision
+- Outputs:
+  - normalized KPI table
+  - anomaly summary with evidence
+  - publish recommendation
+  - risks and data limitations
+
 ## Before you start
 
 1. Install this agent package.

@@ -27,6 +27,14 @@ entrypoints:
 dependencies:
   tools:
     - python3
+operational:
+  use_when: Use when you need to structure approved brand, campaign, and policy documents into a retrieval-ready memory layer.
+  execution_mode: analysis-only
+  outputs:
+    - Source inventory
+    - Metadata schema
+    - Refresh plan
+  approval_boundary: Safe for planning and document classification; require human approval before indexing sensitive or unapproved source material.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

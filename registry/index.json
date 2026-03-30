@@ -14,7 +14,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/analyst-copilot-bigquery-redshift/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/analyst-copilot-bigquery-redshift/0.1.0.tar.gz",
-          "sha256": "8ba663e9403a1c5e18a8b95500f4080dff3e480447cb8ae3814b19f55b652687"
+          "sha256": "b6dae5254cd078ab30415f00de3c12c920becf640f76196fa7f6c6cdb866afde"
         }
       ],
       "runtimes": [
@@ -30,7 +30,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for read-only analysis and SQL drafting; require human approval before executing queries against production warehouses.",
+        "outputs": [
+          "SQL draft",
+          "Metric logic notes",
+          "Stakeholder summary"
+        ],
+        "use_when": "Use when an analyst question needs safe SQL drafting, metric validation, and stakeholder-ready findings across BigQuery or Redshift.",
+        "execution_mode": "read-only-local-inspection"
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ]
+      }
     },
     {
       "id": "adtech/brand-rag-memory-bootstrap",
@@ -44,7 +59,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/brand-rag-memory-bootstrap/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/brand-rag-memory-bootstrap/0.1.0.tar.gz",
-          "sha256": "64c1551dfb816cbb4eacd7f5bae1a45dd322dcf0a9bdcd771ecc9ecbed44188d"
+          "sha256": "4004d705d2ff3099cac2a367806a933e31b6a6aefe8640526dd6ccca955c193d"
         }
       ],
       "runtimes": [
@@ -61,7 +76,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for planning and document classification; require human approval before indexing sensitive or unapproved source material.",
+        "outputs": [
+          "Source inventory",
+          "Metadata schema",
+          "Refresh plan"
+        ],
+        "use_when": "Use when you need to structure approved brand, campaign, and policy documents into a retrieval-ready memory layer.",
+        "execution_mode": "analysis-only"
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ]
+      }
     },
     {
       "id": "adtech/dashboard-generator",
@@ -75,7 +105,7 @@
           "released_at": "2026-02-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/dashboard-generator/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/dashboard-generator/0.1.0.tar.gz",
-          "sha256": "e0b5283ce8bb3d2d5c5d149dc164d9095e8535c8c52840fc0c8d73311c4aa665"
+          "sha256": "8a7f83d626d0fd42583db59076a313c68e290ea1067776d3af3988abf7fa5b27"
         }
       ],
       "runtimes": [
@@ -91,7 +121,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for report generation from validated inputs; require human approval before publishing external dashboard outputs.",
+        "outputs": [
+          "Dashboard package",
+          "KPI table",
+          "Action panel"
+        ],
+        "use_when": "Use when normalized performance tables need to be turned into deterministic weekly dashboard sections.",
+        "execution_mode": "may-run-local-verification"
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ]
+      }
     },
     {
       "id": "adtech/dashboard-qa-checker",
@@ -105,7 +150,7 @@
           "released_at": "2026-02-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/dashboard-qa-checker/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/dashboard-qa-checker/0.1.0.tar.gz",
-          "sha256": "6503483b9c90ceb17a964954f9cbd35c4103915512e4f415cdb553975f6e14e5"
+          "sha256": "83fb0b6eba1f6a909147d32ac7db3bdaf4e22875c2d1314f34a970b169a02f2a"
         }
       ],
       "runtimes": [
@@ -121,7 +166,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for read-only QA evaluation; require human approval before overriding critical failures.",
+        "outputs": [
+          "QA result",
+          "Blocking reasons",
+          "Alert payload"
+        ],
+        "use_when": "Use when a dashboard or BI package needs freshness, completeness, reconciliation, and anomaly checks before publish.",
+        "execution_mode": "may-run-local-verification"
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ]
+      }
     },
     {
       "id": "adtech/executive-narrative-writer",
@@ -135,7 +195,7 @@
           "released_at": "2026-02-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/executive-narrative-writer/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/executive-narrative-writer/0.1.0.tar.gz",
-          "sha256": "9645db97cf9337f29ee41217d03e887e41abd763739340930014c41f58403bc6"
+          "sha256": "cebf9b90a68f2e96261ca7d2d4eb40dc0044484f6a8e2d63182ce5d8e02132b1"
         }
       ],
       "runtimes": [
@@ -151,7 +211,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for drafting narrative from approved inputs; require human approval before stakeholder distribution.",
+        "outputs": [
+          "Executive summary",
+          "Risk notes",
+          "Action recommendations"
+        ],
+        "use_when": "Use when QA-approved BI outputs need to be converted into concise executive narrative and action framing.",
+        "execution_mode": "analysis-only"
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ]
+      }
     },
     {
       "id": "adtech/playwright-agentic-e2e",
@@ -165,7 +240,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/playwright-agentic-e2e/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/playwright-agentic-e2e/0.1.0.tar.gz",
-          "sha256": "fe21689cd37baa5e7a0d3adf9809f6d0d40004e525d553893d6357b19b942252"
+          "sha256": "ac7a119e98ba6e42005d74c3a2080242113beb737e9cf7ce0afa6e3bb8b37c70"
         }
       ],
       "runtimes": [
@@ -182,7 +257,24 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "May run local test commands and propose fixes; require human approval before deleting tests or broadening coverage scope.",
+        "outputs": [
+          "Playwright spec",
+          "Run summary",
+          "Healing suggestions"
+        ],
+        "use_when": "Use when a web app needs Playwright smoke coverage, failure diagnosis, and minimal healing suggestions.",
+        "execution_mode": "may-run-local-verification"
+      },
+      "dependencies": {
+        "tools": [
+          "node",
+          "pnpm",
+          "npx"
+        ]
+      }
     },
     {
       "id": "adtech/playwright-vscode-loop-codex",
@@ -196,7 +288,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/playwright-vscode-loop-codex/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/playwright-vscode-loop-codex/0.1.0.tar.gz",
-          "sha256": "8659f15552be13c06cee94710e4bbe3b62031cdd37ad207ab1eb8825f007c617"
+          "sha256": "3109b45ce75ed42ace064148db29e9c4cd1ff711a223268f598512829414c40b"
         }
       ],
       "runtimes": [
@@ -213,7 +305,24 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "May run local QA workflows and propose test updates; require human approval before accepting broad healing changes.",
+        "outputs": [
+          "Test plan",
+          "Generated spec",
+          "Healing notes"
+        ],
+        "use_when": "Use when Codex is orchestrating a VS Code-compatible Playwright planner, generator, and healer loop.",
+        "execution_mode": "may-run-local-verification"
+      },
+      "dependencies": {
+        "tools": [
+          "node",
+          "npx",
+          "playwright"
+        ]
+      }
     },
     {
       "id": "adtech/policy-brand-compliance-checker",
@@ -227,7 +336,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/policy-brand-compliance-checker/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/policy-brand-compliance-checker/0.1.0.tar.gz",
-          "sha256": "0298e115ffc9c6a1d1fefb1dd91c946d12fe6d7b54023fc96dddce56be767b48"
+          "sha256": "9d084f5643ff4bd200caeacb597fb43bc299a77747bb6a54c01232e2bc9ed7c1"
         }
       ],
       "runtimes": [
@@ -243,7 +352,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for analysis and recommendation; require human approval before changing live assets or overriding blocked findings.",
+        "outputs": [
+          "Findings table",
+          "Severity ranking",
+          "Launch recommendation"
+        ],
+        "use_when": "Use when ad copy, URLs, or tracking conventions need policy and brand validation before launch.",
+        "execution_mode": "may-run-local-verification"
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ]
+      }
     },
     {
       "id": "adtech/weekly-performance-review-bi",
@@ -257,7 +381,7 @@
           "released_at": "2026-02-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/weekly-performance-review-bi/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/weekly-performance-review-bi/0.1.0.tar.gz",
-          "sha256": "836587a6370e8284cccd4b3633aacf12c948367863bef840019314ef485f82e8"
+          "sha256": "6b4fb369f7dae082276eb6aae757c1368eb4a88bac6c250490f8c37110ef0378"
         }
       ],
       "runtimes": [
@@ -274,7 +398,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for orchestrating read-only reporting steps; require human approval before external publication.",
+        "outputs": [
+          "Publish decision",
+          "QA package",
+          "Narrative package"
+        ],
+        "use_when": "Use when weekly BI reporting needs deterministic orchestration across dashboard generation, QA, and narrative drafting.",
+        "execution_mode": "analysis-only"
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ]
+      }
     },
     {
       "id": "agentops/harness-regression-evaluator",
@@ -288,7 +427,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/harness-regression-evaluator/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-regression-evaluator/0.1.0.tar.gz",
-          "sha256": "f0a99c9757b65498bec9defa96cbf752c17e6980311efc97dd15d5dc7622a49a"
+          "sha256": "564251d06db3f5f5b3f611e4b94d57ff05e6e965d0f230d1bcc9726129f7b6d4"
         }
       ],
       "runtimes": [
@@ -304,7 +443,17 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for harness evaluation; require human approval before applying accepted harness changes.",
+        "outputs": [
+          "Evaluation summary",
+          "Regression findings",
+          "Adopt or reject recommendation"
+        ],
+        "use_when": "Use when proposed harness changes need benchmark and red-team evaluation before adoption.",
+        "execution_mode": "may-run-local-verification"
+      }
     },
     {
       "id": "agentops/harness-run-reflection",
@@ -318,7 +467,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/harness-run-reflection/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-run-reflection/0.1.0.tar.gz",
-          "sha256": "b52a1a85d25afd7605b371827786175449d0a84c5c23a218d6d8954ce44671c1"
+          "sha256": "943057c634d65a4c2636f33e896d678f1825879543843878099a840639b179ef"
         }
       ],
       "runtimes": [
@@ -334,7 +483,17 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for harness analysis; must not widen scope into production code changes on its own.",
+        "outputs": [
+          "Reflection report",
+          "Failure patterns",
+          "Improvement candidates"
+        ],
+        "use_when": "Use when recent agent run logs need review for repeated misses, skipped skills, and inefficient loops.",
+        "execution_mode": "analysis-only"
+      }
     },
     {
       "id": "agentops/harness-skill-proposal",
@@ -348,7 +507,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/harness-skill-proposal/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-skill-proposal/0.1.0.tar.gz",
-          "sha256": "dcf1a8d53d2ab5442b1c53e9926bf5f37a4a03403e3a8dc1c1c10f81bf1c5647"
+          "sha256": "c4fc626488ff0e8d477fa486451109c446f803bafc11e95031d52b912e620587"
         }
       ],
       "runtimes": [
@@ -364,7 +523,17 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for proposal drafting inside harness-owned assets; require human approval before any change outside harness scope.",
+        "outputs": [
+          "Proposed skill changes",
+          "Boundary notes",
+          "Rationale summary"
+        ],
+        "use_when": "Use when repeated harness failures justify drafting new or revised harness skills and policy text.",
+        "execution_mode": "analysis-only"
+      }
     },
     {
       "id": "engineering/code-change-verification",
@@ -378,7 +547,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/code-change-verification/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/code-change-verification/0.1.0.tar.gz",
-          "sha256": "da7d0b562984a1665e16698341e352a5f6b0a9e7d2ad0461d222b9ada7b49183"
+          "sha256": "22f665578aab9a2b0a1bdb0c251a8bf2b3aba0d4e1543941ebcf47163528befd"
         }
       ],
       "runtimes": [
@@ -394,7 +563,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "May run local verification commands; require human approval before retrying destructive setup or environment-changing commands.",
+        "outputs": [
+          "Verification report",
+          "Failed command summary",
+          "Residual risk note"
+        ],
+        "use_when": "Use when a code change needs stack-aware lint, typecheck, build, and test verification based on touched files.",
+        "execution_mode": "may-run-local-verification"
+      },
+      "dependencies": {
+        "tools": [
+          "bash"
+        ]
+      }
     },
     {
       "id": "engineering/coverage-gap-reporter",
@@ -408,7 +592,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/coverage-gap-reporter/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/coverage-gap-reporter/0.1.0.tar.gz",
-          "sha256": "8e6fc7d2016f030dfd834a4d2bac090275eeb9dc851f085540a2d5ed1f3b28d2"
+          "sha256": "48024d23ebcf530d80a34ff330b45e0143be4956e0d73a4dbc1fe8aa737b086d"
         }
       ],
       "runtimes": [
@@ -424,7 +608,17 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for coverage analysis and recommendation; require human approval before modifying CI coverage gates.",
+        "outputs": [
+          "Coverage gap report",
+          "Risk-ranked files",
+          "Suggested tests"
+        ],
+        "use_when": "Use when coverage artifacts need to be mapped to changed files and uncovered regression risk.",
+        "execution_mode": "analysis-only"
+      }
     },
     {
       "id": "engineering/implementation-strategy",
@@ -438,7 +632,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/implementation-strategy/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/implementation-strategy/0.1.0.tar.gz",
-          "sha256": "48aece1a138bfc6c274ae5bc219ff2d7087a4ae16af3b867c93837e5db1852af"
+          "sha256": "1e5403e7862a995a518ee44d6e30b5d0c2ce154e7e7ade99834fe60a1000f500"
         }
       ],
       "runtimes": [
@@ -454,7 +648,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for repo inspection and planning; does not require write access and should precede code edits.",
+        "outputs": [
+          "Change strategy",
+          "Impacted files",
+          "Verification command list"
+        ],
+        "use_when": "Use when a repository needs scope analysis, impact mapping, and change planning before edits begin.",
+        "execution_mode": "read-only-local-inspection"
+      },
+      "dependencies": {
+        "tools": [
+          "rg"
+        ]
+      }
     },
     {
       "id": "engineering/pr-review-and-draft",
@@ -468,7 +677,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/pr-review-and-draft/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/pr-review-and-draft/0.1.0.tar.gz",
-          "sha256": "294e9e9a28c80e8178d04e4d546d4535c298fba186807278dc47c456a8b12e14"
+          "sha256": "cd62e89ef3a9319f10297ee8bd7ad2bc097ed6c8d8b49a58eb3a6d961df5ae27"
         }
       ],
       "runtimes": [
@@ -484,7 +693,17 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for review and drafting; require human approval before applying code changes based on review findings.",
+        "outputs": [
+          "Review findings",
+          "Risk summary",
+          "PR draft"
+        ],
+        "use_when": "Use when code changes need correctness, performance, security, and test review plus a structured PR draft.",
+        "execution_mode": "read-only-local-inspection"
+      }
     },
     {
       "id": "engineering/test-gap-analyzer",
@@ -498,7 +717,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/test-gap-analyzer/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/test-gap-analyzer/0.1.0.tar.gz",
-          "sha256": "5fecdb83f38d57bd8a79bc9a3be77a569d17e5b0501444d48a1cbd0dbca4b1aa"
+          "sha256": "69aea5860b143dd7636c8669022bd55ac7639bbdc6f557139b3ba9c48f4dba33"
         }
       ],
       "runtimes": [
@@ -514,7 +733,17 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for inspection and recommendation; require human approval before broadening test scope or changing suites.",
+        "outputs": [
+          "Missing test scenarios",
+          "Risk ranking",
+          "Suggested next tests"
+        ],
+        "use_when": "Use when changed code needs missing unit, integration, regression, and edge-case scenarios identified.",
+        "execution_mode": "read-only-local-inspection"
+      }
     },
     {
       "id": "marketing/ab-test-planner-analyzer",
@@ -528,7 +757,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/ab-test-planner-analyzer/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/ab-test-planner-analyzer/0.1.0.tar.gz",
-          "sha256": "51d6bdeb5261331cdcb7b23da8c8a7c926cec32796747670b53863b044ff8623"
+          "sha256": "085db550c13d2719092a7f5d939e28d1a184bd353c2b2f75f567156a61d7cd3b"
         }
       ],
       "runtimes": [
@@ -545,7 +774,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for planning and analysis; require human approval before launching experiments or changing traffic allocation.",
+        "outputs": [
+          "Experiment plan",
+          "Decision framework",
+          "Analysis summary"
+        ],
+        "use_when": "Use when an A/B test needs explicit hypotheses, sample-size assumptions, and decision rules.",
+        "execution_mode": "analysis-only"
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ]
+      }
     },
     {
       "id": "marketing/ai-output-eval-scorecard",
@@ -559,7 +803,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/ai-output-eval-scorecard/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/ai-output-eval-scorecard/0.1.0.tar.gz",
-          "sha256": "fd567640fedf2e053392ff2bf85f708595019cb5550d162bee73d340502be507"
+          "sha256": "2ede4bad097be375886cbbf1a15a44403f63aa425e52ecd0a02c3880c6a9a2c9"
         }
       ],
       "runtimes": [
@@ -576,7 +820,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for evaluation and recommendation; require human approval before approving externally visible copy.",
+        "outputs": [
+          "Scorecard",
+          "Verdict",
+          "Rewrite recommendations"
+        ],
+        "use_when": "Use when AI-generated marketing outputs need repeatable scoring across quality, compliance, and actionability.",
+        "execution_mode": "analysis-only"
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ]
+      }
     },
     {
       "id": "marketing/creative-workshop-pmax-reels",
@@ -590,7 +849,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/creative-workshop-pmax-reels/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-workshop-pmax-reels/0.1.0.tar.gz",
-          "sha256": "dbdcac3bb53a412349f5e83f1d6e7a0144dbc8099863facabf509a26177bfda8"
+          "sha256": "527becb3b9f86eafd6641e27441336e3cc498a297d41e167747de4cdcedb93c3"
         }
       ],
       "runtimes": [
@@ -606,7 +865,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for draft creative generation; require human approval before publishing or trafficking assets.",
+        "outputs": [
+          "Creative variants",
+          "Angle summary",
+          "Compliance notes"
+        ],
+        "use_when": "Use when you need platform-ready creative variants for Google PMax and Meta Reels with bounded formatting checks.",
+        "execution_mode": "may-run-local-verification"
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ]
+      }
     },
     {
       "id": "marketing/cross-channel-budget-pacing-agent",
@@ -620,7 +894,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/cross-channel-budget-pacing-agent/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/cross-channel-budget-pacing-agent/0.1.0.tar.gz",
-          "sha256": "5dea3e1335e309c891e2ea28bfb98c975c47d4812a544f5980608c2bc0f6fd34"
+          "sha256": "638f68e3024a2c7404cf05fdcd6f5b10fc2a0a36567c1c8b8ea998c600617e27"
         }
       ],
       "runtimes": [
@@ -637,7 +911,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for analysis and recommendation; require human approval before changing live budgets.",
+        "outputs": [
+          "Pacing summary",
+          "Anomaly list",
+          "Reallocation plan"
+        ],
+        "use_when": "Use when pacing and efficiency signals across channels need bounded reallocation recommendations.",
+        "execution_mode": "analysis-only"
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ]
+      }
     },
     {
       "id": "marketing/dynamic-creative-rules-engine",
@@ -651,7 +940,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/dynamic-creative-rules-engine/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/dynamic-creative-rules-engine/0.1.0.tar.gz",
-          "sha256": "578d6115038f6bbdd3d230ed4f1ffad8941f3556b60747cbac9ccc15e3a3eed0"
+          "sha256": "74c348cd7bc68f525acb112a33ad784e1ea1ba047cd4a39f9444bcf6f1899e2f"
         }
       ],
       "runtimes": [
@@ -668,7 +957,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for rule design and evaluation; require human approval before deploying personalization logic.",
+        "outputs": [
+          "Ruleset",
+          "Blocked combinations",
+          "Test matrix"
+        ],
+        "use_when": "Use when audience-aware creative assembly rules need to be defined under brand and policy constraints.",
+        "execution_mode": "analysis-only"
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ]
+      }
     },
     {
       "id": "marketing/lifecycle-experiment-planner",
@@ -682,7 +986,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/lifecycle-experiment-planner/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/lifecycle-experiment-planner/0.1.0.tar.gz",
-          "sha256": "5ff0c3ab6205443cf3ca12b402581ae32d3d1d45aabceb8f047eb383dcdcfd73"
+          "sha256": "4ea9b15b727772214ebf952fdf4532388b8c49e4494f84c04504bbcd62a4c73d"
         }
       ],
       "runtimes": [
@@ -698,7 +1002,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for planning; require human approval before launching lifecycle experiments or changing user journeys.",
+        "outputs": [
+          "Hypothesis plan",
+          "Sample-size guidance",
+          "Stop criteria"
+        ],
+        "use_when": "Use when a lifecycle experiment needs statistical assumptions, stop rules, and guardrail metrics defined clearly.",
+        "execution_mode": "may-run-local-verification"
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ]
+      }
     },
     {
       "id": "marketing/lifecycle-journey-trigger-designer",
@@ -712,7 +1031,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/lifecycle-journey-trigger-designer/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/lifecycle-journey-trigger-designer/0.1.0.tar.gz",
-          "sha256": "04de39a058fae73fe1ec4c44a05901d6d08054446b1428808d29c1271bb21f0c"
+          "sha256": "67da9be48bc1901c1b0f8e10f9f4d5d782216277fde770a1c6e2b3642751cbd7"
         }
       ],
       "runtimes": [
@@ -729,7 +1048,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for planning and design; require human approval before activating live messaging journeys.",
+        "outputs": [
+          "Journey blueprint",
+          "Trigger rules",
+          "Measurement plan"
+        ],
+        "use_when": "Use when lifecycle entry, progression, and suppression rules need to be designed with measurement plans.",
+        "execution_mode": "analysis-only"
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ]
+      }
     },
     {
       "id": "marketing/meta-google-weekly-performance-review",
@@ -743,7 +1077,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/meta-google-weekly-performance-review/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/meta-google-weekly-performance-review/0.1.0.tar.gz",
-          "sha256": "ffb2174126c35ce575ce2dbfa90f42425fba849e9cac2dea816114ce14fa680d"
+          "sha256": "9b274e77aaf6b68c40bc37541109f5093128fa38bba9923b3f57e508e7b6a6a5"
         }
       ],
       "runtimes": [
@@ -759,7 +1093,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for read-only analysis and reporting; require human approval before using outputs to make live media changes.",
+        "outputs": [
+          "KPI summary",
+          "Insight list",
+          "Recommended actions"
+        ],
+        "use_when": "Use when weekly performance across Meta and Google Ads needs KPI comparison and prioritized actions.",
+        "execution_mode": "may-run-local-verification"
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ]
+      }
     },
     {
       "id": "marketing/seo-paid-search-synergy",
@@ -773,7 +1122,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/seo-paid-search-synergy/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/seo-paid-search-synergy/0.1.0.tar.gz",
-          "sha256": "ce3f88909c5ffbd907efd28e1f5f18cc76d9a35827435131e7e5276f70183327"
+          "sha256": "2447b75b96b39bf3a71c36626d9321e8e0f220b31ddbf413df55155951dbbcc4"
         }
       ],
       "runtimes": [
@@ -789,7 +1138,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for planning and opportunity analysis; require human approval before launching paid search changes.",
+        "outputs": [
+          "Keyword clusters",
+          "Ad group recommendations",
+          "Experiment plan"
+        ],
+        "use_when": "Use when SEO winners need to be translated into paid search opportunities and test-ready keyword structures.",
+        "execution_mode": "may-run-local-verification"
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ]
+      }
     },
     {
       "id": "security/dependency-supply-chain-audit",
@@ -803,7 +1167,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/dependency-supply-chain-audit/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/dependency-supply-chain-audit/0.1.0.tar.gz",
-          "sha256": "909f4fd9f6dabcbdc8fa8aa3e23e941e96aca6e88220ba64508ef12cffd8e103"
+          "sha256": "4d7d1c41be650480a044e806fb8ab4984a54298e76cf6245f55745bba51ae962"
         }
       ],
       "runtimes": [
@@ -819,7 +1183,23 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "May run local scanners and review package risk; require human approval before removing dependencies or changing production lockfiles.",
+        "outputs": [
+          "Dependency findings",
+          "Risk ranking",
+          "Mitigation recommendations"
+        ],
+        "use_when": "Use when manifests and lockfiles need vulnerability, provenance, and package risk review before trust is granted.",
+        "execution_mode": "may-run-local-verification"
+      },
+      "dependencies": {
+        "tools": [
+          "trivy",
+          "osv-scanner"
+        ]
+      }
     },
     {
       "id": "security/environment-risk-assessment",
@@ -833,7 +1213,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/environment-risk-assessment/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/environment-risk-assessment/0.1.0.tar.gz",
-          "sha256": "38db7c5067156df723fa95b60117d99b3fbc4704b1a4f14a6c390d57d3ae2ebb"
+          "sha256": "4199db513316791a71e37d87e95447ef5d334f20e3f1dabc320612b916a6d36f"
         }
       ],
       "runtimes": [
@@ -849,7 +1229,17 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for inspection and recommendation; require human approval before changing runtime isolation or credential policies.",
+        "outputs": [
+          "Environment risk review",
+          "Escalation reasons",
+          "Isolation recommendations"
+        ],
+        "use_when": "Use when you need to assess whether the current runtime is safe for autonomous agent execution.",
+        "execution_mode": "read-only-local-inspection"
+      }
     },
     {
       "id": "security/handle-untrusted-content",
@@ -863,7 +1253,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/handle-untrusted-content/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/handle-untrusted-content/0.1.0.tar.gz",
-          "sha256": "001abfeef3257cf76ef684c619d7ccb583e77b0ab4fcf421fc9ac841d1843b66"
+          "sha256": "eabef3c1bff3ab9df17f03e8c32e324d60fec96ae667583134d9d41df368d6d4"
         }
       ],
       "runtimes": [
@@ -879,7 +1269,17 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for analysis and escalation only; must not trigger shell, network, or write actions on its own.",
+        "outputs": [
+          "Risk triage",
+          "Quarantined instructions",
+          "Escalation recommendation"
+        ],
+        "use_when": "Use when logs, tickets, webpages, or MCP outputs may contain prompt injection or unsafe instructions.",
+        "execution_mode": "analysis-only"
+      }
     },
     {
       "id": "security/secrets-and-credential-hygiene",
@@ -893,7 +1293,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/secrets-and-credential-hygiene/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/secrets-and-credential-hygiene/0.1.0.tar.gz",
-          "sha256": "b2abe6263ae52829044221380b6562665ad453a0db916019674588ff18872995"
+          "sha256": "7ed458691a13d3c69a68ebf16e15687235db192d1cfae1d33c206d7d8771f790"
         }
       ],
       "runtimes": [
@@ -909,7 +1309,22 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "May run local secret scanners and redact findings; require human approval before revocation or rotation actions.",
+        "outputs": [
+          "Secret findings",
+          "Severity matrix",
+          "Remediation steps"
+        ],
+        "use_when": "Use when diffs or repository context need secret scanning and credential exposure review.",
+        "execution_mode": "may-run-local-verification"
+      },
+      "dependencies": {
+        "tools": [
+          "gitleaks"
+        ]
+      }
     }
   ]
 }

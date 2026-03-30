@@ -28,6 +28,14 @@ entrypoints:
 dependencies:
   tools:
     - python3
+operational:
+  use_when: Use when SEO winners need to be translated into paid search opportunities and test-ready keyword structures.
+  execution_mode: may-run-local-verification
+  outputs:
+    - Keyword clusters
+    - Ad group recommendations
+    - Experiment plan
+  approval_boundary: Safe for planning and opportunity analysis; require human approval before launching paid search changes.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: true

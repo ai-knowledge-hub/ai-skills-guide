@@ -48,6 +48,28 @@ func ParseManifest(path string) (Manifest, error) {
 			item := strings.TrimSpace(strings.TrimPrefix(line, "    - "))
 			item = unquote(item)
 			switch nestedMapKey {
+			case "dependencies":
+				switch currentNestedListKey {
+				case "skills":
+					out.Dependencies.Skills = append(out.Dependencies.Skills, item)
+				case "tools":
+					out.Dependencies.Tools = append(out.Dependencies.Tools, item)
+				case "apis":
+					out.Dependencies.APIs = append(out.Dependencies.APIs, item)
+				case "mcp_servers":
+					out.Dependencies.MCPServers = append(out.Dependencies.MCPServers, item)
+				}
+			case "operational":
+				switch currentNestedListKey {
+				case "capabilities":
+					out.Operational.Capabilities = append(out.Operational.Capabilities, item)
+				case "auth_required":
+					out.Operational.AuthRequired = append(out.Operational.AuthRequired, item)
+				case "coordinates":
+					out.Operational.Coordinates = append(out.Operational.Coordinates, item)
+				case "outputs":
+					out.Operational.Outputs = append(out.Operational.Outputs, item)
+				}
 			case "includes":
 				switch currentNestedListKey {
 				case "skills":
@@ -81,8 +103,30 @@ func ParseManifest(path string) (Manifest, error) {
 				if len(nestedParts) == 2 {
 					nestedKey := strings.TrimSpace(nestedParts[0])
 					nestedValue := unquote(strings.TrimSpace(nestedParts[1]))
-					if nestedMapKey == "verification" && nestedKey == "security_reviewed" {
-						out.SecurityReviewed = strings.EqualFold(nestedValue, "true")
+					switch nestedMapKey {
+					case "verification":
+						if nestedKey == "security_reviewed" {
+							out.SecurityReviewed = strings.EqualFold(nestedValue, "true")
+						}
+					case "operational":
+						switch nestedKey {
+						case "connected_system":
+							out.Operational.ConnectedSystem = nestedValue
+						case "access_level":
+							out.Operational.AccessLevel = nestedValue
+						case "trust_boundary":
+							out.Operational.TrustBoundary = nestedValue
+						case "approval_boundary":
+							out.Operational.ApprovalBoundary = nestedValue
+						case "role":
+							out.Operational.Role = nestedValue
+						case "autonomy_level":
+							out.Operational.AutonomyLevel = nestedValue
+						case "use_when":
+							out.Operational.UseWhen = nestedValue
+						case "execution_mode":
+							out.Operational.ExecutionMode = nestedValue
+						}
 					}
 					currentNestedListKey = ""
 				}
@@ -140,7 +184,7 @@ func ParseManifest(path string) (Manifest, error) {
 			out.Deprecated = strings.EqualFold(value, "true")
 		case "replaced_by":
 			out.ReplacedBy = value
-		case "author", "entrypoints", "dependencies", "verification", "includes", "requires", "install":
+		case "author", "entrypoints", "dependencies", "verification", "includes", "requires", "install", "operational":
 			inNestedMap = true
 			nestedMapKey = key
 		}

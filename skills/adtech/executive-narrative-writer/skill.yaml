@@ -27,6 +27,14 @@ entrypoints:
 dependencies:
   tools:
     - python3
+operational:
+  use_when: Use when QA-approved BI outputs need to be converted into concise executive narrative and action framing.
+  execution_mode: analysis-only
+  outputs:
+    - Executive summary
+    - Risk notes
+    - Action recommendations
+  approval_boundary: Safe for drafting narrative from approved inputs; require human approval before stakeholder distribution.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

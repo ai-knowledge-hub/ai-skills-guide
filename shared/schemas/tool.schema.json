@@ -156,6 +156,58 @@
         }
       }
     },
+    "operational": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "connected_system": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "auth_required": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "access_level": {
+          "type": "string",
+          "enum": [
+            "read-only",
+            "read-write",
+            "admin-sensitive"
+          ]
+        },
+        "trust_boundary": {
+          "type": "string",
+          "enum": [
+            "local-tool",
+            "remote-mcp-server",
+            "third-party-hosted"
+          ]
+        },
+        "approval_boundary": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 240
+        }
+      }
+    },
     "verification": {
       "type": "object",
       "additionalProperties": false,

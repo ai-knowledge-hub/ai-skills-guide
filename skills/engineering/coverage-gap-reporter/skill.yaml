@@ -25,6 +25,14 @@ entrypoints:
   tests: tests/test-prompts.md
   scripts_dir: scripts
   examples_dir: examples
+operational:
+  use_when: Use when coverage artifacts need to be mapped to changed files and uncovered regression risk.
+  execution_mode: analysis-only
+  outputs:
+    - Coverage gap report
+    - Risk-ranked files
+    - Suggested tests
+  approval_boundary: Safe for coverage analysis and recommendation; require human approval before modifying CI coverage gates.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

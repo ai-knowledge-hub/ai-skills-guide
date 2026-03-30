@@ -25,6 +25,14 @@ entrypoints:
   tests: tests/test-prompts.md
   scripts_dir: scripts
   examples_dir: examples
+operational:
+  use_when: Use when you need to assess whether the current runtime is safe for autonomous agent execution.
+  execution_mode: read-only-local-inspection
+  outputs:
+    - Environment risk review
+    - Escalation reasons
+    - Isolation recommendations
+  approval_boundary: Safe for inspection and recommendation; require human approval before changing runtime isolation or credential policies.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

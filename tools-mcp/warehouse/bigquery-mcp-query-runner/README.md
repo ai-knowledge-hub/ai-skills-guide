@@ -18,6 +18,14 @@ through MCP.
 - Enforces read-only query behavior.
 - Returns typed rows for analytics skills and agents.
 
+## Operational metadata
+
+- Connected system: Google BigQuery
+- Access level: read-only
+- Trust boundary: remote MCP server
+- Auth required: authenticated dataset access in your MCP runtime
+- Approval boundary: safe for parameterized read-only queries; require human approval before broadening dataset scope or enabling any non-read-only SQL path
+
 ## Before you start
 
 1. Confirm dataset/table access.

@@ -47,20 +47,46 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
 
       <section className="detail-grid">
         <article className="card detail-panel">
+          <h2>Operational Summary</h2>
+          <p><span className="meta">Connected system:</span> {entry.operational?.connected_system ?? "Not documented"}</p>
+          <p><span className="meta">Access level:</span> {entry.operational?.access_level ?? "Not documented"}</p>
+          <p><span className="meta">Trust boundary:</span> {entry.operational?.trust_boundary ?? "Not documented"}</p>
+          <p><span className="meta">Approval boundary:</span> {entry.operational?.approval_boundary ?? "Not documented"}</p>
+        </article>
+        <article className="card detail-panel">
           <h2>Status</h2>
           <p><span className={`catalog-status-badge is-${entry.readiness}`}>{formatReadinessLabel(entry.readiness)}</span></p>
           <p><span className="meta">Security reviewed:</span> {entry.security_reviewed ? "yes" : "no"}</p>
           <p><span className="meta">Lifecycle:</span> {entry.deprecated ? "Deprecated" : "Active"}</p>
         </article>
         <article className="card detail-panel">
-          <h2>Metadata</h2>
+          <h2>Runtime &amp; Dependencies</h2>
           <p><span className="meta">ID:</span> {entry.id}</p>
-          <p><span className="meta">Latest:</span> {entry.latest}</p>
           <p><span className="meta">Runtimes:</span> {entry.runtimes.join(", ")}</p>
+          <p><span className="meta">Auth required:</span> {entry.operational?.auth_required?.length ? entry.operational.auth_required.join(", ") : "Not documented"}</p>
           {entry.replaced_by ? <p><span className="meta">Replaced by:</span> {entry.replaced_by}</p> : null}
         </article>
         <article className="card detail-panel">
+          <h2>Dependencies &amp; Setup</h2>
+          <p><span className="meta">MCP servers:</span> {entry.dependencies?.mcp_servers?.length ? entry.dependencies.mcp_servers.join(", ") : "Not documented"}</p>
+          <p><span className="meta">APIs:</span> {entry.dependencies?.apis?.length ? entry.dependencies.apis.join(", ") : "Not documented"}</p>
+          <p><span className="meta">Local tools:</span> {entry.dependencies?.tools?.length ? entry.dependencies.tools.join(", ") : "Not documented"}</p>
+        </article>
+        <article className="card detail-panel">
+          <h2>Capabilities</h2>
+          {entry.operational?.capabilities?.length ? (
+            <ul>
+              {entry.operational.capabilities.map((capability) => (
+                <li key={capability}>{capability}</li>
+              ))}
+            </ul>
+          ) : (
+            <p>Not documented.</p>
+          )}
+        </article>
+        <article className="card detail-panel">
           <h2>Latest Version</h2>
+          <p><span className="meta">Latest:</span> {entry.latest}</p>
           <p><span className="meta">Released:</span> {latestVersion?.released_at.slice(0, 10) ?? "n/a"}</p>
           <p>
             <span className="meta">Manifest:</span>{" "}

@@ -27,6 +27,14 @@ entrypoints:
 dependencies:
   tools:
     - python3
+operational:
+  use_when: Use when lifecycle entry, progression, and suppression rules need to be designed with measurement plans.
+  execution_mode: analysis-only
+  outputs:
+    - Journey blueprint
+    - Trigger rules
+    - Measurement plan
+  approval_boundary: Safe for planning and design; require human approval before activating live messaging journeys.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

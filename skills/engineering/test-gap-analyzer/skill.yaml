@@ -25,6 +25,14 @@ entrypoints:
   tests: tests/test-prompts.md
   scripts_dir: scripts
   examples_dir: examples
+operational:
+  use_when: Use when changed code needs missing unit, integration, regression, and edge-case scenarios identified.
+  execution_mode: read-only-local-inspection
+  outputs:
+    - Missing test scenarios
+    - Risk ranking
+    - Suggested next tests
+  approval_boundary: Safe for inspection and recommendation; require human approval before broadening test scope or changing suites.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

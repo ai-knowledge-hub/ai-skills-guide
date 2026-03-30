@@ -27,6 +27,14 @@ entrypoints:
 dependencies:
   tools:
     - python3
+operational:
+  use_when: Use when audience-aware creative assembly rules need to be defined under brand and policy constraints.
+  execution_mode: analysis-only
+  outputs:
+    - Ruleset
+    - Blocked combinations
+    - Test matrix
+  approval_boundary: Safe for rule design and evaluation; require human approval before deploying personalization logic.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

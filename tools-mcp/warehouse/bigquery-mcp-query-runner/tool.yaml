@@ -25,6 +25,17 @@ entrypoints:
 dependencies:
   mcp_servers:
     - bigquery
+operational:
+  connected_system: Google BigQuery
+  capabilities:
+    - Execute parameterized read-only SQL templates for analytics workflows.
+    - Return typed warehouse rows for BI transformations and reporting.
+    - Enforce query guardrails such as timeout, limits, and statement restrictions.
+  auth_required:
+    - BigQuery dataset access via authenticated MCP runtime
+  access_level: read-only
+  trust_boundary: remote-mcp-server
+  approval_boundary: Safe for parameterized read-only queries; require human approval before broadening dataset scope or enabling any non-read-only SQL path.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

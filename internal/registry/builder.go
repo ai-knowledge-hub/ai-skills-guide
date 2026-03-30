@@ -78,6 +78,14 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 			Deprecated:       m.Deprecated,
 			ReplacedBy:       m.ReplacedBy,
 		}
+		if hasOperational(m.Operational) {
+			operational := m.Operational
+			entry.Operational = &operational
+		}
+		if hasDependencies(m.Dependencies) {
+			dependencies := m.Dependencies
+			entry.Dependencies = &dependencies
+		}
 		if hasIncludes(m.Includes) {
 			includes := m.Includes
 			entry.Includes = &includes
@@ -111,6 +119,25 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 
 func hasIncludes(includes IncludeSet) bool {
 	return len(includes.Skills) > 0 || len(includes.Agents) > 0 || len(includes.Tools) > 0 || len(includes.Hooks) > 0
+}
+
+func hasOperational(operational OperationalMetadata) bool {
+	return operational.ConnectedSystem != "" ||
+		len(operational.Capabilities) > 0 ||
+		len(operational.AuthRequired) > 0 ||
+		operational.AccessLevel != "" ||
+		operational.TrustBoundary != "" ||
+		operational.ApprovalBoundary != "" ||
+		operational.Role != "" ||
+		len(operational.Coordinates) > 0 ||
+		operational.AutonomyLevel != "" ||
+		len(operational.Outputs) > 0 ||
+		operational.UseWhen != "" ||
+		operational.ExecutionMode != ""
+}
+
+func hasDependencies(dependencies DependencySet) bool {
+	return len(dependencies.Skills) > 0 || len(dependencies.Tools) > 0 || len(dependencies.APIs) > 0 || len(dependencies.MCPServers) > 0
 }
 
 func hasRequirements(requires RequirementSet) bool {

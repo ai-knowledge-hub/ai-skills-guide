@@ -28,6 +28,19 @@ dependencies:
   tools:
     - campaign_config_reader
     - slack_post
+operational:
+  role: Governance agent for campaign QA, tracking integrity, and launch readiness.
+  coordinates:
+    - Campaign payload validation
+    - Policy and naming checks
+    - Severity assessment and remediation routing
+  autonomy_level: execution-capable-with-approval
+  approval_boundary: May assess launch readiness and draft remediation alerts; require human approval before overriding critical failures or taking live launch actions.
+  outputs:
+    - Pass, warn, or fail decision
+    - Critical blocker list
+    - Remediation action list
+    - Alert summary for escalation
 verification:
   tests_min_prompts: 5
   security_reviewed: false

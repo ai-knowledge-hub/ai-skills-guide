@@ -169,6 +169,41 @@
         }
       }
     },
+    "operational": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "use_when": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 240
+        },
+        "execution_mode": {
+          "type": "string",
+          "enum": [
+            "analysis-only",
+            "read-only-local-inspection",
+            "may-run-local-verification",
+            "may-propose-edits"
+          ]
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 160
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "approval_boundary": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 240
+        }
+      }
+    },
     "verification": {
       "type": "object",
       "additionalProperties": false,

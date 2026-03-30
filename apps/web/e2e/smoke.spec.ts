@@ -30,6 +30,9 @@ test("skill detail copy-button smoke", async ({ page }) => {
   });
 
   await page.goto(sampleSkillPath);
+  await expect(page.getByRole("heading", { name: "Operational Summary" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Outputs" })).toBeVisible();
+  await expect(page.getByText("may-run-local-verification")).toBeVisible();
   const copyButtons = page.locator(".copy-button");
 
   await expect(copyButtons).toHaveCount(3);
@@ -44,6 +47,9 @@ test("agents route and detail smoke", async ({ page }) => {
   await page.goto(sampleAgentPath);
   await expect(page.getByRole("heading", { name: "Weekly Performance Supervisor" })).toBeVisible();
   await expect(page.getByText("Marketing Agents / Performance")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Operational Summary" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Coordinates" })).toBeVisible();
+  await expect(page.getByText("semi-autonomous")).toBeVisible();
 });
 
 test("plugins route and detail smoke", async ({ page }) => {
@@ -76,4 +82,7 @@ test("tools route and detail smoke", async ({ page }) => {
   await page.goto(sampleToolPath);
   await expect(page.getByRole("heading", { name: "GA4 MCP Connector" })).toBeVisible();
   await expect(page.getByText("tools-mcp/analytics").first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Operational Summary" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Capabilities" })).toBeVisible();
+  await expect(page.getByText("remote-mcp-server")).toBeVisible();
 });

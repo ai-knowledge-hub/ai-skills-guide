@@ -25,6 +25,17 @@ entrypoints:
 dependencies:
   mcp_servers:
     - meta-ads
+operational:
+  connected_system: Meta Ads
+  capabilities:
+    - Pull campaign, ad set, and ad metrics for fixed reporting windows.
+    - Return spend, delivery, click, and conversion fields in normalized rows.
+    - Preserve source timestamps for QA and freshness validation.
+  auth_required:
+    - Meta Ads account scope via authenticated MCP runtime
+  access_level: read-only
+  trust_boundary: remote-mcp-server
+  approval_boundary: Safe for reporting queries only; require human approval before pairing with any workflow that can modify campaigns, budgets, or creative state.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

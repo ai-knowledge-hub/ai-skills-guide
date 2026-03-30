@@ -24,6 +24,26 @@ export type RegistryEntry = {
   security_reviewed: boolean;
   deprecated: boolean;
   replaced_by?: string;
+  operational?: {
+    connected_system?: string;
+    capabilities?: string[];
+    auth_required?: string[];
+    access_level?: string;
+    trust_boundary?: string;
+    approval_boundary?: string;
+    role?: string;
+    coordinates?: string[];
+    autonomy_level?: string;
+    outputs?: string[];
+    use_when?: string;
+    execution_mode?: string;
+  };
+  dependencies?: {
+    skills?: string[];
+    tools?: string[];
+    apis?: string[];
+    mcp_servers?: string[];
+  };
   includes?: {
     skills?: string[];
     agents?: string[];

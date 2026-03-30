@@ -30,6 +30,19 @@ dependencies:
   tools:
     - bigquery_sql
     - ga4_query
+operational:
+  role: Analytics orchestration agent for warehouse-backed BI reporting.
+  coordinates:
+    - Warehouse and platform metric collection
+    - KPI normalization across sources
+    - Dashboard and insight generation
+  autonomy_level: semi-autonomous
+  approval_boundary: May coordinate read-only data analysis and draft reporting outputs; require human approval before any publish or stakeholder-distribution decision.
+  outputs:
+    - Normalized KPI table
+    - Anomaly summary with evidence
+    - Publish recommendation
+    - Risks and data limitations
 verification:
   tests_min_prompts: 5
   security_reviewed: false

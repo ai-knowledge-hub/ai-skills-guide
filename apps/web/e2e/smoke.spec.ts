@@ -62,7 +62,9 @@ test("plugins route and detail smoke", async ({ page }) => {
   await page.goto(samplePluginPath);
   await expect(page.getByRole("heading", { name: "Performance Reporting Plugin" })).toBeVisible();
   await expect(page.getByText("Marketing Plugins / Reporting")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Included Components" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Install Summary" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Installed Skills" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Packaged Hooks" })).toBeVisible();
   await expect(page.getByRole("link", { name: "marketing/meta-google-weekly-performance-review" })).toBeVisible();
 });
 

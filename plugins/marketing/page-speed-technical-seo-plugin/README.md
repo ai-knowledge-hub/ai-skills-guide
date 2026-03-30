@@ -23,5 +23,26 @@ On install:
 Bundled skills and tools do not live inside the plugin directory itself. That
 avoids duplication while still making the plugin install materially usable.
 
+## Install Command
+
+```bash
+./bin/skills-hub install --module plugins --entry marketing/page-speed-technical-seo-plugin@0.1.0 --runtime codex
+```
+
+## Installed Dependencies
+
+Skills installed into `skills/...`:
+- `marketing/seo-paid-search-synergy`
+- `adtech/playwright-agentic-e2e`
+- `security/environment-risk-assessment`
+
+Tools installed into `tools-mcp/...`:
+- `analytics/ga4-mcp-connector`
+
+## Packaged Hooks
+
+Hooks kept inside this plugin package:
+- `lighthouse-and-landing-page-review`
+
 ## Use Case
 Install when a team needs a repeatable workflow for reviewing slow landing pages, technical SEO regressions, and page-experience issues before escalating changes to engineering.

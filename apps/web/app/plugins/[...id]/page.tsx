@@ -70,14 +70,14 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
           <p><span className="meta">Lifecycle:</span> {entry.deprecated ? "Deprecated" : "Active"}</p>
         </article>
         <article className="card detail-panel">
-          <h2>Included Components</h2>
-          <p><span className="meta">Skills:</span> {entry.includes?.skills?.length ?? 0}</p>
-          <p><span className="meta">Agents:</span> {entry.includes?.agents?.length ?? 0}</p>
-          <p><span className="meta">Tools:</span> {entry.includes?.tools?.length ?? 0}</p>
-          <p><span className="meta">Hooks:</span> {entry.includes?.hooks?.length ?? 0}</p>
+          <h2>Install Summary</h2>
+          <p><span className="meta">Installed skills:</span> {entry.includes?.skills?.length ?? 0}</p>
+          <p><span className="meta">Installed agents:</span> {entry.includes?.agents?.length ?? 0}</p>
+          <p><span className="meta">Installed tools:</span> {entry.includes?.tools?.length ?? 0}</p>
+          <p><span className="meta">Packaged hooks:</span> {entry.includes?.hooks?.length ?? 0}</p>
         </article>
         <article className="card detail-panel">
-          <h2>Bundled Skills</h2>
+          <h2>Installed Skills</h2>
           {entry.includes?.skills?.length ? (
             <ul>
               {entry.includes.skills.map((skillId) => (
@@ -91,7 +91,7 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
           )}
         </article>
         <article className="card detail-panel">
-          <h2>Bundled Agents</h2>
+          <h2>Installed Agents</h2>
           {entry.includes?.agents?.length ? (
             <ul>
               {entry.includes.agents.map((agentId) => (
@@ -105,7 +105,7 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
           )}
         </article>
         <article className="card detail-panel">
-          <h2>Bundled Tools</h2>
+          <h2>Installed Tools</h2>
           {entry.includes?.tools?.length ? (
             <ul>
               {entry.includes.tools.map((toolId) => (
@@ -116,6 +116,20 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
             </ul>
           ) : (
             <p>No bundled tools declared.</p>
+          )}
+        </article>
+        <article className="card detail-panel">
+          <h2>Packaged Hooks</h2>
+          {entry.includes?.hooks?.length ? (
+            <ul>
+              {entry.includes.hooks.map((hookId) => (
+                <li key={hookId}>
+                  <a href={`${REPO_BLOB_BASE}/${packageBasePath}/hooks/${hookId}.md`}>{hookId}</a>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No packaged hooks declared.</p>
           )}
         </article>
         <article className="card detail-panel">

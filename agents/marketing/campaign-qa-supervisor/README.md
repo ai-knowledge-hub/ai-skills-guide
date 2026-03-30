@@ -9,6 +9,17 @@ Agent template for campaign QA gating with clear remediation outputs.
 - Returns pass/warn/fail with remediation actions.
 - Blocks launch recommendations on critical failures.
 
+## Operational metadata
+
+- Role: governance agent for campaign QA, tracking integrity, and launch readiness
+- Autonomy level: execution-capable-with-approval
+- Approval boundary: may assess launch readiness and draft remediation alerts; require human approval before overriding critical failures or taking live launch actions
+- Outputs:
+  - pass, warn, or fail decision
+  - critical blocker list
+  - remediation action list
+  - alert summary for escalation
+
 ## Before you start
 
 1. Install this agent package.

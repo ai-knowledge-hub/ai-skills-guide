@@ -14,7 +14,7 @@
           "released_at": "2026-03-29T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/ad-creative-plugin/plugin.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/ad-creative-plugin/0.1.0.tar.gz",
-          "sha256": "f2498bf8a018b038d78175a096d4b9bfbf7c2591817e2cce0842ac3f5f83d11b"
+          "sha256": "2e0ac40d1b124f095b7197b471f9e10e1ef27d412456ce639f49c43cbb767a5a"
         }
       ],
       "runtimes": [
@@ -66,7 +66,7 @@
           "released_at": "2026-03-28T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/campaign-audit-plugin/plugin.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/campaign-audit-plugin/0.1.0.tar.gz",
-          "sha256": "3e3c99ccd02a9ec054a0b2f565ef049a54ba40e0cf2b6545a1c20f093344147f"
+          "sha256": "e9142087f217444e7fcd1037d54bc690d99e1ae2702867b1fa36282d20172d8c"
         }
       ],
       "runtimes": [
@@ -121,7 +121,7 @@
           "released_at": "2026-03-29T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/competitive-intelligence-plugin/plugin.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/competitive-intelligence-plugin/0.1.0.tar.gz",
-          "sha256": "31e12e863d8c988e3cf36bc98895fbe248e08058d47cb018ba4ba105745ff893"
+          "sha256": "a09c2a682364ceec1a89b33ff31a7cff9b0ee1a68e6228cc340ba007136897a9"
         }
       ],
       "runtimes": [
@@ -166,7 +166,7 @@
           "released_at": "2026-03-28T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/content-repurposing-plugin/plugin.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/content-repurposing-plugin/0.1.0.tar.gz",
-          "sha256": "ed0ed17b6bb3abe25cbf01c1003553fb041d989fb21360aa05cb79bba6f8799c"
+          "sha256": "04ab2636ccf8bdd3bfc5972773bad09dd4b4c5e007291eb3d582300cfc9652c6"
         }
       ],
       "runtimes": [
@@ -211,7 +211,7 @@
           "released_at": "2026-03-29T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/page-speed-technical-seo-plugin/plugin.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/page-speed-technical-seo-plugin/0.1.0.tar.gz",
-          "sha256": "248cf0b00e3119ffadb97203b95f36334f459aebe0278bb1690b352c55fa7df3"
+          "sha256": "55137c2907b0e8e84772b2e1b960484887b883a8469ff9d564336bb2a2a18cd1"
         }
       ],
       "runtimes": [
@@ -262,7 +262,7 @@
           "released_at": "2026-03-28T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/performance-reporting-plugin/plugin.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/performance-reporting-plugin/0.1.0.tar.gz",
-          "sha256": "bdd1b6df0636227b1378ec301a09b2cab3ede7689e5b1743d706b44b4e6a539f"
+          "sha256": "d6d9e93b3f7bed4f44888ad99ad1619ebba54535c4703b6378a3a5e35a33d449"
         }
       ],
       "runtimes": [

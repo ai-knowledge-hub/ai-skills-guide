@@ -22,6 +22,43 @@ We publish reusable building blocks across four modules:
 - plugins (installable composition layer)
 - tools & MCP connectors (integration layer)
 
+## Operational Metadata Standard
+
+The catalog is being normalized around a shared operational metadata model so
+users can answer the same practical questions across modules:
+
+- what this entry does
+- what systems it touches
+- what it needs to authenticate
+- what permissions it can exercise
+- what approval boundary applies
+
+The first rollouts are on `tools-mcp` and `agents`.
+
+`tools-mcp` now exposes:
+
+- connected system
+- capabilities
+- auth required
+- access level
+- trust boundary
+- approval boundary
+
+`agents` now exposes:
+
+- role
+- coordinates
+- autonomy level
+- approval boundary
+- outputs
+
+`skills` now exposes:
+
+- use when
+- execution mode
+- outputs
+- approval boundary
+
 - Guide article site:
   [ai-news-hub.performics-labs.com](https://ai-news-hub.performics-labs.com)
   (article title: The Agent Architect’s Playbook: Building AI Skills

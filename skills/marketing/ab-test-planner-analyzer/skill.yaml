@@ -27,6 +27,14 @@ entrypoints:
 dependencies:
   tools:
     - python3
+operational:
+  use_when: Use when an A/B test needs explicit hypotheses, sample-size assumptions, and decision rules.
+  execution_mode: analysis-only
+  outputs:
+    - Experiment plan
+    - Decision framework
+    - Analysis summary
+  approval_boundary: Safe for planning and analysis; require human approval before launching experiments or changing traffic allocation.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

@@ -27,6 +27,14 @@ entrypoints:
 dependencies:
   tools:
     - python3
+operational:
+  use_when: Use when weekly BI reporting needs deterministic orchestration across dashboard generation, QA, and narrative drafting.
+  execution_mode: analysis-only
+  outputs:
+    - Publish decision
+    - QA package
+    - Narrative package
+  approval_boundary: Safe for orchestrating read-only reporting steps; require human approval before external publication.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

@@ -14,7 +14,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/ads/meta-ads-mcp-connector/tool.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/ads/meta-ads-mcp-connector/0.1.0.tar.gz",
-          "sha256": "ff1ade3ce21346ebebb2470e075528519b4173aca32225bbd7831e2122520d37"
+          "sha256": "207ef9c8569ef7dcb036c97829030ec3decb129cd3a17acb0d50478a588072e9"
         }
       ],
       "runtimes": [
@@ -29,7 +29,26 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "connected_system": "Meta Ads",
+        "capabilities": [
+          "Pull campaign, ad set, and ad metrics for fixed reporting windows.",
+          "Return spend, delivery, click, and conversion fields in normalized rows.",
+          "Preserve source timestamps for QA and freshness validation."
+        ],
+        "auth_required": [
+          "Meta Ads account scope via authenticated MCP runtime"
+        ],
+        "access_level": "read-only",
+        "trust_boundary": "remote-mcp-server",
+        "approval_boundary": "Safe for reporting queries only; require human approval before pairing with any workflow that can modify campaigns, budgets, or creative state."
+      },
+      "dependencies": {
+        "mcp_servers": [
+          "meta-ads"
+        ]
+      }
     },
     {
       "id": "analytics/ga4-mcp-connector",
@@ -43,7 +62,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/analytics/ga4-mcp-connector/tool.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/analytics/ga4-mcp-connector/0.1.0.tar.gz",
-          "sha256": "7eb4e30ea92d68a580afe63ceaf1c24cea5f60b60ecac0de53d733af293faae1"
+          "sha256": "cba19f8f653c7ae47277f74df3167ed6f13d14a6994febc42e3a1d4623298cd5"
         }
       ],
       "runtimes": [
@@ -58,7 +77,26 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "connected_system": "Google Analytics 4",
+        "capabilities": [
+          "Pull sessions, users, conversions, and revenue by allowed dimensions.",
+          "Query fixed date windows for period comparisons and dashboard inputs.",
+          "Return normalized analytics payloads for downstream skills and agents."
+        ],
+        "auth_required": [
+          "GA4 property access via authenticated MCP runtime"
+        ],
+        "access_level": "read-only",
+        "trust_boundary": "remote-mcp-server",
+        "approval_boundary": "Safe for read-only analytics retrieval; require human approval before combining with any workflow that writes back to ad platforms or reporting systems."
+      },
+      "dependencies": {
+        "mcp_servers": [
+          "ga4"
+        ]
+      }
     },
     {
       "id": "warehouse/bigquery-mcp-query-runner",
@@ -72,7 +110,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/warehouse/bigquery-mcp-query-runner/tool.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/warehouse/bigquery-mcp-query-runner/0.1.0.tar.gz",
-          "sha256": "8cbdafb2f2aa032e8cf36c3ea5db03b2c76a21857c5d06a5cdc59a4a1b29d14f"
+          "sha256": "909e25c4ee2cc2b29a3393e31f5a6d26443af0b7cc08e29ffe0ae38fcc192be5"
         }
       ],
       "runtimes": [
@@ -87,7 +125,26 @@
       ],
       "readiness": "experimental",
       "security_reviewed": false,
-      "deprecated": false
+      "deprecated": false,
+      "operational": {
+        "connected_system": "Google BigQuery",
+        "capabilities": [
+          "Execute parameterized read-only SQL templates for analytics workflows.",
+          "Return typed warehouse rows for BI transformations and reporting.",
+          "Enforce query guardrails such as timeout, limits, and statement restrictions."
+        ],
+        "auth_required": [
+          "BigQuery dataset access via authenticated MCP runtime"
+        ],
+        "access_level": "read-only",
+        "trust_boundary": "remote-mcp-server",
+        "approval_boundary": "Safe for parameterized read-only queries; require human approval before broadening dataset scope or enabling any non-read-only SQL path."
+      },
+      "dependencies": {
+        "mcp_servers": [
+          "bigquery"
+        ]
+      }
     }
   ]
 }

@@ -28,6 +28,14 @@ entrypoints:
 dependencies:
   tools:
     - python3
+operational:
+  use_when: Use when ad copy, URLs, or tracking conventions need policy and brand validation before launch.
+  execution_mode: may-run-local-verification
+  outputs:
+    - Findings table
+    - Severity ranking
+    - Launch recommendation
+  approval_boundary: Safe for analysis and recommendation; require human approval before changing live assets or overriding blocked findings.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: true

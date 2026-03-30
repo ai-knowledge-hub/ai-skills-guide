@@ -25,6 +25,14 @@ entrypoints:
   tests: tests/test-prompts.md
   scripts_dir: scripts
   examples_dir: examples
+operational:
+  use_when: Use when proposed harness changes need benchmark and red-team evaluation before adoption.
+  execution_mode: may-run-local-verification
+  outputs:
+    - Evaluation summary
+    - Regression findings
+    - Adopt or reject recommendation
+  approval_boundary: Safe for harness evaluation; require human approval before applying accepted harness changes.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

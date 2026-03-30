@@ -47,20 +47,68 @@ export default async function AgentDetailPage({ params }: { params: { id: string
 
       <section className="detail-grid">
         <article className="card detail-panel">
+          <h2>Operational Summary</h2>
+          <p><span className="meta">Role:</span> {entry.operational?.role ?? "Not documented"}</p>
+          <p><span className="meta">Autonomy level:</span> {entry.operational?.autonomy_level ?? "Not documented"}</p>
+          <p><span className="meta">Approval boundary:</span> {entry.operational?.approval_boundary ?? "Not documented"}</p>
+        </article>
+        <article className="card detail-panel">
           <h2>Status</h2>
           <p><span className={`catalog-status-badge is-${entry.readiness}`}>{formatReadinessLabel(entry.readiness)}</span></p>
           <p><span className="meta">Security reviewed:</span> {entry.security_reviewed ? "yes" : "no"}</p>
           <p><span className="meta">Lifecycle:</span> {entry.deprecated ? "Deprecated" : "Active"}</p>
         </article>
         <article className="card detail-panel">
-          <h2>Metadata</h2>
+          <h2>Runtime &amp; Dependencies</h2>
           <p><span className="meta">ID:</span> {entry.id}</p>
-          <p><span className="meta">Latest:</span> {entry.latest}</p>
           <p><span className="meta">Runtimes:</span> {entry.runtimes.join(", ")}</p>
+          <p><span className="meta">Skill dependencies:</span> {entry.dependencies?.skills?.length ?? 0}</p>
+          <p><span className="meta">Tool dependencies:</span> {entry.dependencies?.tools?.length ?? 0}</p>
           {entry.replaced_by ? <p><span className="meta">Replaced by:</span> {entry.replaced_by}</p> : null}
         </article>
         <article className="card detail-panel">
+          <h2>Coordinates</h2>
+          {entry.operational?.coordinates?.length ? (
+            <ul>
+              {entry.operational.coordinates.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          ) : (
+            <p>Not documented.</p>
+          )}
+        </article>
+        <article className="card detail-panel">
+          <h2>Outputs</h2>
+          {entry.operational?.outputs?.length ? (
+            <ul>
+              {entry.operational.outputs.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          ) : (
+            <p>Not documented.</p>
+          )}
+        </article>
+        <article className="card detail-panel">
+          <h2>Dependencies</h2>
+          {entry.dependencies?.skills?.length ? (
+            <p><span className="meta">Skills:</span> {entry.dependencies.skills.join(", ")}</p>
+          ) : (
+            <p><span className="meta">Skills:</span> Not documented</p>
+          )}
+          {entry.dependencies?.tools?.length ? (
+            <p><span className="meta">Tools:</span> {entry.dependencies.tools.join(", ")}</p>
+          ) : (
+            <p><span className="meta">Tools:</span> Not documented</p>
+          )}
+          {entry.dependencies?.apis?.length ? (
+            <p><span className="meta">APIs:</span> {entry.dependencies.apis.join(", ")}</p>
+          ) : null}
+        </article>
+        <article className="card detail-panel">
           <h2>Latest Version</h2>
+          <p><span className="meta">Latest:</span> {entry.latest}</p>
           <p><span className="meta">Released:</span> {latestVersion?.released_at.slice(0, 10) ?? "n/a"}</p>
           <p>
             <span className="meta">Manifest:</span>{" "}

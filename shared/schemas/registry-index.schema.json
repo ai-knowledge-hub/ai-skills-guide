@@ -108,6 +108,110 @@
             "type": "string",
             "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
           },
+          "operational": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "connected_system": {
+                "type": "string",
+                "minLength": 2
+              },
+              "capabilities": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 3
+                },
+                "uniqueItems": true
+              },
+              "auth_required": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 2
+                },
+                "uniqueItems": true
+              },
+              "access_level": {
+                "type": "string"
+              },
+              "trust_boundary": {
+                "type": "string"
+              },
+              "approval_boundary": {
+                "type": "string",
+                "minLength": 5
+              },
+              "role": {
+                "type": "string",
+                "minLength": 3
+              },
+              "coordinates": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 3
+                },
+                "uniqueItems": true
+              },
+              "autonomy_level": {
+                "type": "string"
+              },
+              "outputs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 3
+                },
+                "uniqueItems": true
+              },
+              "use_when": {
+                "type": "string",
+                "minLength": 5
+              },
+              "execution_mode": {
+                "type": "string"
+              }
+            }
+          },
+          "dependencies": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "skills": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+                },
+                "uniqueItems": true
+              },
+              "tools": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "apis": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "mcp_servers": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              }
+            }
+          },
           "includes": {
             "type": "object",
             "additionalProperties": false,

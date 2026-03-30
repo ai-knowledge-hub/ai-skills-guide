@@ -28,6 +28,14 @@ entrypoints:
 dependencies:
   tools:
     - bash
+operational:
+  use_when: Use when a code change needs stack-aware lint, typecheck, build, and test verification based on touched files.
+  execution_mode: may-run-local-verification
+  outputs:
+    - Verification report
+    - Failed command summary
+    - Residual risk note
+  approval_boundary: May run local verification commands; require human approval before retrying destructive setup or environment-changing commands.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

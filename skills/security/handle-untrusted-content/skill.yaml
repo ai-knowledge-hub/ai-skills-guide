@@ -25,6 +25,14 @@ entrypoints:
   tests: tests/test-prompts.md
   scripts_dir: scripts
   examples_dir: examples
+operational:
+  use_when: Use when logs, tickets, webpages, or MCP outputs may contain prompt injection or unsafe instructions.
+  execution_mode: analysis-only
+  outputs:
+    - Risk triage
+    - Quarantined instructions
+    - Escalation recommendation
+  approval_boundary: Safe for analysis and escalation only; must not trigger shell, network, or write actions on its own.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

@@ -25,6 +25,14 @@ entrypoints:
   tests: tests/test-prompts.md
   scripts_dir: scripts
   examples_dir: examples
+operational:
+  use_when: Use when recent agent run logs need review for repeated misses, skipped skills, and inefficient loops.
+  execution_mode: analysis-only
+  outputs:
+    - Reflection report
+    - Failure patterns
+    - Improvement candidates
+  approval_boundary: Safe for harness analysis; must not widen scope into production code changes on its own.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

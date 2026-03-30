@@ -28,6 +28,14 @@ entrypoints:
 dependencies:
   tools:
     - python3
+operational:
+  use_when: Use when a lifecycle experiment needs statistical assumptions, stop rules, and guardrail metrics defined clearly.
+  execution_mode: may-run-local-verification
+  outputs:
+    - Hypothesis plan
+    - Sample-size guidance
+    - Stop criteria
+  approval_boundary: Safe for planning; require human approval before launching lifecycle experiments or changing user journeys.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: true

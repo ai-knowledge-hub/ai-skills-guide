@@ -27,6 +27,14 @@ entrypoints:
 dependencies:
   tools:
     - python3
+operational:
+  use_when: Use when weekly performance across Meta and Google Ads needs KPI comparison and prioritized actions.
+  execution_mode: may-run-local-verification
+  outputs:
+    - KPI summary
+    - Insight list
+    - Recommended actions
+  approval_boundary: Safe for read-only analysis and reporting; require human approval before using outputs to make live media changes.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: true

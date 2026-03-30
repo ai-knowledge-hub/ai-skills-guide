@@ -30,6 +30,19 @@ dependencies:
   tools:
     - ga4_query
     - warehouse_query
+operational:
+  role: Weekly reporting supervisor for QA-gated performance review workflows.
+  coordinates:
+    - Dashboard generation
+    - QA gating and blocking decisions
+    - Executive narrative drafting after approval
+  autonomy_level: semi-autonomous
+  approval_boundary: May coordinate reporting workflows and draft narratives after QA approval; require human approval before any external publish or stakeholder send.
+  outputs:
+    - Publish decision
+    - Dashboard package
+    - QA package
+    - Executive narrative
 verification:
   tests_min_prompts: 5
   security_reviewed: false

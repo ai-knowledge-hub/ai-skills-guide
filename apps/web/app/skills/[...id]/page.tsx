@@ -48,17 +48,41 @@ export default async function SkillDetailPage({ params }: { params: { id: string
 
       <section className="detail-grid">
         <article className="card detail-panel">
+          <h2>Operational Summary</h2>
+          <p><span className="meta">Use when:</span> {skill.operational?.use_when ?? "Not documented"}</p>
+          <p><span className="meta">Execution mode:</span> {skill.operational?.execution_mode ?? "Not documented"}</p>
+          <p><span className="meta">Approval boundary:</span> {skill.operational?.approval_boundary ?? "Not documented"}</p>
+        </article>
+        <article className="card detail-panel">
           <h2>Status</h2>
           <p><span className={`catalog-status-badge is-${skill.readiness}`}>{formatReadinessLabel(skill.readiness)}</span></p>
           <p><span className="meta">Security reviewed:</span> {skill.security_reviewed ? "yes" : "no"}</p>
           <p><span className="meta">Lifecycle:</span> {skill.deprecated ? "Deprecated" : "Active"}</p>
         </article>
         <article className="card detail-panel">
-          <h2>Metadata</h2>
+          <h2>Runtime &amp; Dependencies</h2>
           <p><span className="meta">ID:</span> {skill.id}</p>
-          <p><span className="meta">Latest:</span> {skill.latest}</p>
           <p><span className="meta">Runtimes:</span> {skill.runtimes.join(", ")}</p>
+          <p><span className="meta">Tool dependencies:</span> {skill.dependencies?.tools?.length ?? 0}</p>
+          <p><span className="meta">API dependencies:</span> {skill.dependencies?.apis?.length ?? 0}</p>
           {skill.replaced_by ? <p><span className="meta">Replaced by:</span> {skill.replaced_by}</p> : null}
+        </article>
+        <article className="card detail-panel">
+          <h2>Dependencies</h2>
+          <p><span className="meta">Tools:</span> {skill.dependencies?.tools?.length ? skill.dependencies.tools.join(", ") : "Not documented"}</p>
+          <p><span className="meta">APIs:</span> {skill.dependencies?.apis?.length ? skill.dependencies.apis.join(", ") : "Not documented"}</p>
+        </article>
+        <article className="card detail-panel">
+          <h2>Outputs</h2>
+          {skill.operational?.outputs?.length ? (
+            <ul>
+              {skill.operational.outputs.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          ) : (
+            <p>Not documented.</p>
+          )}
         </article>
       </section>
     </main>

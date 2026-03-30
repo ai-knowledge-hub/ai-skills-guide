@@ -28,6 +28,14 @@ entrypoints:
 dependencies:
   tools:
     - gitleaks
+operational:
+  use_when: Use when diffs or repository context need secret scanning and credential exposure review.
+  execution_mode: may-run-local-verification
+  outputs:
+    - Secret findings
+    - Severity matrix
+    - Remediation steps
+  approval_boundary: May run local secret scanners and redact findings; require human approval before revocation or rotation actions.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

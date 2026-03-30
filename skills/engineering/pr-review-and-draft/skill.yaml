@@ -25,6 +25,14 @@ entrypoints:
   tests: tests/test-prompts.md
   scripts_dir: scripts
   examples_dir: examples
+operational:
+  use_when: Use when code changes need correctness, performance, security, and test review plus a structured PR draft.
+  execution_mode: read-only-local-inspection
+  outputs:
+    - Review findings
+    - Risk summary
+    - PR draft
+  approval_boundary: Safe for review and drafting; require human approval before applying code changes based on review findings.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

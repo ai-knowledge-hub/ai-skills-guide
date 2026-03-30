@@ -28,6 +28,14 @@ entrypoints:
 dependencies:
   tools:
     - python3
+operational:
+  use_when: Use when an analyst question needs safe SQL drafting, metric validation, and stakeholder-ready findings across BigQuery or Redshift.
+  execution_mode: read-only-local-inspection
+  outputs:
+    - SQL draft
+    - Metric logic notes
+    - Stakeholder summary
+  approval_boundary: Safe for read-only analysis and SQL drafting; require human approval before executing queries against production warehouses.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: true

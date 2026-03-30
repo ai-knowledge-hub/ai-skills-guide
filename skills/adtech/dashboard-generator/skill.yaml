@@ -27,6 +27,14 @@ entrypoints:
 dependencies:
   tools:
     - python3
+operational:
+  use_when: Use when normalized performance tables need to be turned into deterministic weekly dashboard sections.
+  execution_mode: may-run-local-verification
+  outputs:
+    - Dashboard package
+    - KPI table
+    - Action panel
+  approval_boundary: Safe for report generation from validated inputs; require human approval before publishing external dashboard outputs.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

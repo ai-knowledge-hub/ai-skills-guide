@@ -28,6 +28,14 @@ entrypoints:
 dependencies:
   tools:
     - python3
+operational:
+  use_when: Use when you need platform-ready creative variants for Google PMax and Meta Reels with bounded formatting checks.
+  execution_mode: may-run-local-verification
+  outputs:
+    - Creative variants
+    - Angle summary
+    - Compliance notes
+  approval_boundary: Safe for draft creative generation; require human approval before publishing or trafficking assets.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: true

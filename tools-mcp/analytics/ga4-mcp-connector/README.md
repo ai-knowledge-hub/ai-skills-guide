@@ -17,6 +17,14 @@ structured format.
 - Supports fixed date windows for period comparison.
 - Returns normalized output for skills and agents.
 
+## Operational metadata
+
+- Connected system: Google Analytics 4
+- Access level: read-only
+- Trust boundary: remote MCP server
+- Auth required: authenticated GA4 property access in your MCP runtime
+- Approval boundary: safe for read-only analytics retrieval; require human approval before combining this connector with workflows that write to external systems
+
 ## Before you start
 
 1. Confirm GA4 property ID.

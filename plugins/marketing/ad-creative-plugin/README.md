@@ -23,5 +23,27 @@ On install:
 Bundled skills and tools do not live inside the plugin directory itself. That
 avoids duplication and keeps each component in its native runtime location.
 
+## Install Command
+
+```bash
+./bin/skills-hub install --module plugins --entry marketing/ad-creative-plugin@0.1.0 --runtime codex
+```
+
+## Installed Dependencies
+
+Skills installed into `skills/...`:
+- `marketing/creative-workshop-pmax-reels`
+- `marketing/dynamic-creative-rules-engine`
+- `marketing/ab-test-planner-analyzer`
+- `marketing/ai-output-eval-scorecard`
+
+Tools installed into `tools-mcp/...`:
+- `ads/meta-ads-mcp-connector`
+
+## Packaged Hooks
+
+Hooks kept inside this plugin package:
+- `creative-review-before-publish`
+
 ## Use Case
 Install when a team wants one reusable package for developing ad concepts, evaluating them against rules and hypotheses, and handing approved variants into production workflows.

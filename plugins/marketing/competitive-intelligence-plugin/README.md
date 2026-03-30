@@ -21,5 +21,23 @@ On install:
 Bundled skills do not live inside the plugin directory itself. That keeps the
 plugin lightweight and avoids duplicating the source component packages.
 
+## Install Command
+
+```bash
+./bin/skills-hub install --module plugins --entry marketing/competitive-intelligence-plugin@0.1.0 --runtime claude
+```
+
+## Installed Dependencies
+
+Skills installed into `skills/...`:
+- `adtech/brand-rag-memory-bootstrap`
+- `marketing/ai-output-eval-scorecard`
+- `security/handle-untrusted-content`
+
+## Packaged Hooks
+
+Hooks kept inside this plugin package:
+- `weekly-competitor-signal-digest`
+
 ## Use Case
 Install when a team needs a repeatable, safer workflow for collecting competitor signals, structuring observations, and sharing evidence-backed summaries without treating external content as trusted instructions.

@@ -25,5 +25,32 @@ Bundled skills, agents, and tools do not live inside the plugin directory
 itself. That avoids duplication and reflects the plugin's role as an
 installable composition package.
 
+## Install Command
+
+```bash
+./bin/skills-hub install --module plugins --entry marketing/performance-reporting-plugin@0.1.0 --runtime codex
+```
+
+## Installed Dependencies
+
+Skills installed into `skills/...`:
+- `marketing/meta-google-weekly-performance-review`
+- `adtech/dashboard-generator`
+- `adtech/dashboard-qa-checker`
+- `adtech/executive-narrative-writer`
+
+Agents installed into `agents/...`:
+- `marketing/weekly-performance-supervisor`
+
+Tools installed into `tools-mcp/...`:
+- `analytics/ga4-mcp-connector`
+- `ads/meta-ads-mcp-connector`
+- `warehouse/bigquery-mcp-query-runner`
+
+## Packaged Hooks
+
+Hooks kept inside this plugin package:
+- `post-analysis-slack-summary`
+
 ## Use Case
 Install when a team needs one shared reporting package instead of manually wiring separate skills, tools, and review steps.

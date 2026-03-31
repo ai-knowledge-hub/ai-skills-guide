@@ -29,11 +29,7 @@ export default async function AgentDetailPage({ params }: { params: { id: string
         <p className="meta">{formatCategoryLabel(entry.category)}</p>
         <h1>{entry.name}</h1>
         <p>{entry.description}</p>
-        <div className="tags">
-          {entry.tags.map((tag) => (
-            <span key={tag} className="tag">{tag}</span>
-          ))}
-        </div>
+        <p className="meta">{entry.tags.join(", ")}</p>
         <div className="detail-install-lead">
           <p className="meta">Install this agent</p>
           <InstallCommands
@@ -54,7 +50,7 @@ export default async function AgentDetailPage({ params }: { params: { id: string
         </article>
         <article className="card detail-panel">
           <h2>Status</h2>
-          <p><span className={`catalog-status-badge is-${entry.readiness}`}>{formatReadinessLabel(entry.readiness)}</span></p>
+          <p><span className="meta">Readiness:</span> {formatReadinessLabel(entry.readiness)}</p>
           <p><span className="meta">Security reviewed:</span> {entry.security_reviewed ? "yes" : "no"}</p>
           <p><span className="meta">Lifecycle:</span> {entry.deprecated ? "Deprecated" : "Active"}</p>
         </article>

@@ -1,10 +1,6 @@
-import { loadAgentsRegistry, loadPluginsRegistry, loadSkillsRegistry, loadToolsRegistry, uniqueValues } from "@/lib/registry";
+import { loadAgentsRegistry, loadPluginsRegistry, loadSkillsRegistry, loadToolsRegistry } from "@/lib/registry";
 import { FEATURED_PLUGIN_IDS, FEATURED_SKILL_IDS } from "@/lib/home";
-import {
-  formatCategoryFamily,
-  getCategoryFamilyKey,
-  formatReadinessLabel
-} from "@/lib/categoryLabels";
+import { formatCategoryFamily } from "@/lib/categoryLabels";
 
 export default async function HomePage() {
   const [skillsRegistry, agentsRegistry, toolsRegistry] = await Promise.all([
@@ -17,8 +13,6 @@ export default async function HomePage() {
   const agents = agentsRegistry.skills;
   const tools = toolsRegistry.skills;
   const plugins = pluginsRegistry.skills;
-  const categoryGroups = uniqueValues(skills.map((s) => getCategoryFamilyKey(s.category)));
-  const tags = uniqueValues(skills.flatMap((s) => s.tags));
   const featuredSkills = FEATURED_SKILL_IDS
     .map((id) => skills.find((skill) => skill.id === id))
     .filter((skill): skill is (typeof skills)[number] => Boolean(skill));
@@ -73,10 +67,8 @@ export default async function HomePage() {
           </p>
         </article>
         <article className="card">
-          <h2>Catalog Snapshot</h2>
-          <p><span className="meta">Category groups:</span> {categoryGroups.length}</p>
-          <p><span className="meta">Skills tags:</span> {tags.length}</p>
-          <p><span className="meta">Runtimes:</span> codex, claude, generic</p>
+          <h2>Catalog</h2>
+          <p className="meta catalog-counts">{skills.length} skills &middot; {agents.length} agents &middot; {plugins.length} plugins &middot; {tools.length} tools</p>
           <div className="actions snapshot-actions">
             <a href="/skills" className="button button--accent">
               Explore skills
@@ -90,23 +82,9 @@ export default async function HomePage() {
             <a href="/tools-mcp" className="button button--secondary">
               Browse tools
             </a>
-            <a
-              href="https://github.com/ai-knowledge-hub/ai-skills-guide"
-              className="button button--secondary"
-            >
-              View repository
-            </a>
-          </div>
-          <div className="tags">
-            <span className="tag">{skills.length} skills</span>
-            <span className="tag">{agents.length} agents</span>
-            <span className="tag">{plugins.length} plugins</span>
-            <span className="tag">{tools.length} tools</span>
-            <span className="tag">Skills registry v{skillsRegistry.registry_version}</span>
-            <span className="tag">Generated {skillsRegistry.generated_at.slice(0, 10)}</span>
           </div>
           <div className="new-alpha">
-            <p className="meta">Newest skills</p>
+            <p className="meta">Recently added</p>
             <ul>
               {newestSkills.map((skill) => (
                 <li key={skill.id}>
@@ -131,27 +109,9 @@ export default async function HomePage() {
       <section className="grid featured-grid">
         {featuredSkills.map((skill) => (
           <a key={skill.id} href={`/skills/${skill.id}`} className="card catalog-card">
-            <div className="catalog-card-head">
-              <span className="catalog-pack-badge">{formatCategoryFamily(skill.category)}</span>
-              <div className="catalog-status-badges">
-                <span className={`catalog-status-badge is-${skill.readiness}`}>
-                  {formatReadinessLabel(skill.readiness)}
-                </span>
-                {skill.security_reviewed ? (
-                  <span className="catalog-status-badge is-reviewed-detail">Security</span>
-                ) : null}
-              </div>
-            </div>
+            <p className="meta catalog-card-domain">{formatCategoryFamily(skill.category)}</p>
             <h3>{skill.name}</h3>
             <p>{skill.description}</p>
-            <div className="tags">
-              {skill.tags.slice(0, 2).map((tag) => (
-                <span key={tag} className="tag">{tag}</span>
-              ))}
-              {skill.tags.length > 2 ? (
-                <span className="tag tag--muted">+{skill.tags.length - 2}</span>
-              ) : null}
-            </div>
           </a>
         ))}
       </section>
@@ -169,27 +129,9 @@ export default async function HomePage() {
       <section className="grid featured-grid">
         {featuredPlugins.map((plugin) => (
           <a key={plugin.id} href={`/plugins/${plugin.id}`} className="card catalog-card">
-            <div className="catalog-card-head">
-              <span className="catalog-pack-badge">{formatCategoryFamily(plugin.category)}</span>
-              <div className="catalog-status-badges">
-                <span className={`catalog-status-badge is-${plugin.readiness}`}>
-                  {formatReadinessLabel(plugin.readiness)}
-                </span>
-                {plugin.security_reviewed ? (
-                  <span className="catalog-status-badge is-reviewed-detail">Security</span>
-                ) : null}
-              </div>
-            </div>
+            <p className="meta catalog-card-domain">{formatCategoryFamily(plugin.category)}</p>
             <h3>{plugin.name}</h3>
             <p>{plugin.description}</p>
-            <div className="tags">
-              {plugin.tags.slice(0, 2).map((tag) => (
-                <span key={tag} className="tag">{tag}</span>
-              ))}
-              {plugin.tags.length > 2 ? (
-                <span className="tag tag--muted">+{plugin.tags.length - 2}</span>
-              ) : null}
-            </div>
           </a>
         ))}
       </section>

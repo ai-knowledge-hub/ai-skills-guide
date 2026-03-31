@@ -135,9 +135,8 @@ p {
 .card {
   background: var(--paper);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 10px;
   padding: 1rem;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
 }
 
 .theme-hybrid .card {
@@ -250,6 +249,18 @@ p {
 .catalog-card-id {
   margin: 0;
   opacity: 0.88;
+}
+
+.catalog-card-domain {
+  margin: 0 0 0.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+}
+
+.catalog-counts {
+  font-size: 0.85rem;
+  margin-top: 0.15rem;
 }
 
 .catalog-card-category {

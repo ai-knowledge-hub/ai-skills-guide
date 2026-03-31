@@ -30,11 +30,7 @@ export default async function SkillDetailPage({ params }: { params: { id: string
         <p className="meta">{formatCategoryLabel(skill.category)}</p>
         <h1>{skill.name}</h1>
         <p>{skill.description}</p>
-        <div className="tags">
-          {skill.tags.map((tag) => (
-            <span key={tag} className="tag">{tag}</span>
-          ))}
-        </div>
+        <p className="meta">{skill.tags.join(", ")}</p>
         <div className="detail-install-lead">
           <p className="meta">Install this skill</p>
           <InstallCommands
@@ -55,7 +51,7 @@ export default async function SkillDetailPage({ params }: { params: { id: string
         </article>
         <article className="card detail-panel">
           <h2>Status</h2>
-          <p><span className={`catalog-status-badge is-${skill.readiness}`}>{formatReadinessLabel(skill.readiness)}</span></p>
+          <p><span className="meta">Readiness:</span> {formatReadinessLabel(skill.readiness)}</p>
           <p><span className="meta">Security reviewed:</span> {skill.security_reviewed ? "yes" : "no"}</p>
           <p><span className="meta">Lifecycle:</span> {skill.deprecated ? "Deprecated" : "Active"}</p>
         </article>

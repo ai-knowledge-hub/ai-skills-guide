@@ -1,7 +1,99 @@
 {
   "registry_version": "1.0",
-  "generated_at": "2026-03-29T00:00:00Z",
+  "generated_at": "2026-03-31T00:00:00Z",
   "skills": [
+    {
+      "id": "agentops/harness-governance-plugin",
+      "name": "Harness Governance Plugin",
+      "description": "Package harness reflection, proposal drafting, and regression evaluation into one governed harness-improvement plugin with explicit human gates.",
+      "category": "agentops-plugins/governance",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-31T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/agentops/harness-governance-plugin/plugin.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-governance-plugin/0.1.0.tar.gz",
+          "sha256": "7a67a9f53a583ee0054236b867f845b9fd77d15c7195a3642c8da83d9a0665be"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "harness",
+        "governance",
+        "evaluation",
+        "reflection"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "includes": {
+        "skills": [
+          "agentops/harness-run-reflection",
+          "agentops/harness-skill-proposal",
+          "agentops/harness-regression-evaluator"
+        ],
+        "hooks": [
+          "require-human-approval-for-harness-adoption"
+        ]
+      },
+      "requires": {
+        "approvals": [
+          "human-approval-for-harness-update"
+        ]
+      }
+    },
+    {
+      "id": "engineering/code-maintenance-plugin",
+      "name": "Code Maintenance Plugin",
+      "description": "Package repo planning, verification, test-gap analysis, coverage review, and PR drafting into one governed maintenance workflow plugin.",
+      "category": "engineering-plugins/maintenance",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-31T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/engineering/code-maintenance-plugin/plugin.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/code-maintenance-plugin/0.1.0.tar.gz",
+          "sha256": "66520979d381b13cf6bf9b0d6eb6376bd985027fb0097da3eebb4fba5acc7555"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "engineering",
+        "maintenance",
+        "verification",
+        "pr-review"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "includes": {
+        "skills": [
+          "engineering/implementation-strategy",
+          "engineering/code-change-verification",
+          "engineering/test-gap-analyzer",
+          "engineering/coverage-gap-reporter",
+          "engineering/pr-review-and-draft"
+        ],
+        "hooks": [
+          "verification-before-complete"
+        ]
+      },
+      "requires": {
+        "approvals": [
+          "human-review-before-merge"
+        ]
+      }
+    },
     {
       "id": "marketing/ad-creative-plugin",
       "name": "Ad Creative Plugin",
@@ -306,6 +398,52 @@
         ],
         "approvals": [
           "human-review-for-write-actions"
+        ]
+      }
+    },
+    {
+      "id": "security/runtime-safety-plugin",
+      "name": "Runtime Safety Plugin",
+      "description": "Package untrusted-content handling, dependency audit, secret hygiene, and environment-risk assessment into one conservative security review workflow plugin.",
+      "category": "security-plugins/runtime-safety",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-03-31T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/security/runtime-safety-plugin/plugin.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/runtime-safety-plugin/0.1.0.tar.gz",
+          "sha256": "18eb91d8c9e7bb1defc1af7528a5f1e14fa38eaa691d0326fc71e760cc493b11"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "security",
+        "runtime-safety",
+        "secrets",
+        "supply-chain"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "includes": {
+        "skills": [
+          "security/handle-untrusted-content",
+          "security/dependency-supply-chain-audit",
+          "security/secrets-and-credential-hygiene",
+          "security/environment-risk-assessment"
+        ],
+        "hooks": [
+          "quarantine-suspicious-instructions"
+        ]
+      },
+      "requires": {
+        "approvals": [
+          "human-review-for-live-remediation"
         ]
       }
     }

@@ -4,3 +4,9 @@ export const FEATURED_SKILL_IDS = [
   "marketing/ab-test-planner-analyzer",
   "marketing/meta-google-weekly-performance-review"
 ];
+
+export const FEATURED_PLUGIN_IDS = [
+  "engineering/code-maintenance-plugin",
+  "security/runtime-safety-plugin",
+  "agentops/harness-governance-plugin"
+];

@@ -113,11 +113,17 @@ The first rollouts are on `tools-mcp` and `agents`.
 2. `ads/meta-ads-mcp-connector`
 3. `warehouse/bigquery-mcp-query-runner`
 
-### Plugins (3)
+### Plugins (9)
 
 1. `marketing/performance-reporting-plugin`
 2. `marketing/campaign-audit-plugin`
 3. `marketing/content-repurposing-plugin`
+4. `marketing/page-speed-technical-seo-plugin`
+5. `marketing/competitive-intelligence-plugin`
+6. `marketing/ad-creative-plugin`
+7. `engineering/code-maintenance-plugin`
+8. `security/runtime-safety-plugin`
+9. `agentops/harness-governance-plugin`
 
 ## Recent Additions
 
@@ -140,6 +146,12 @@ The first rollouts are on `tools-mcp` and `agents`.
 - `marketing/performance-reporting-plugin`
 - `marketing/campaign-audit-plugin`
 - `marketing/content-repurposing-plugin`
+- `marketing/page-speed-technical-seo-plugin`
+- `marketing/competitive-intelligence-plugin`
+- `marketing/ad-creative-plugin`
+- `engineering/code-maintenance-plugin`
+- `security/runtime-safety-plugin`
+- `agentops/harness-governance-plugin`
 - `engineering/implementation-strategy`
 - `engineering/code-change-verification`
 - `engineering/test-gap-analyzer`

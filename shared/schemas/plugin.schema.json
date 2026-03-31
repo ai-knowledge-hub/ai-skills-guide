@@ -49,7 +49,10 @@
         "marketing-plugins/seo",
         "marketing-plugins/content",
         "marketing-plugins/intelligence",
-        "marketing-plugins/creative"
+        "marketing-plugins/creative",
+        "engineering-plugins/maintenance",
+        "security-plugins/runtime-safety",
+        "agentops-plugins/governance"
       ]
     },
     "tags": {

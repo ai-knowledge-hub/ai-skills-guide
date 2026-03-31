@@ -10,8 +10,7 @@ import {
   formatDomainLabel,
   formatCategoryFamily,
   getDomainKey,
-  normalizeDomainFilterValues,
-  formatReadinessLabel
+  normalizeDomainFilterValues
 } from "@/lib/categoryLabels";
 
 type CatalogClientProps = {
@@ -201,28 +200,9 @@ export default function CatalogClient({ entries, categories, tags, basePath, ini
         {filtered.map((entry) => (
           <article key={entry.id} className="card catalog-card">
             <Link href={`${basePath}/${entry.id}`} className="catalog-card-link">
-              <div className="catalog-card-head">
-                <span className="catalog-pack-badge">{formatCategoryFamily(entry.category)}</span>
-                <div className="catalog-status-badges">
-                  <span className={`catalog-status-badge is-${entry.readiness}`}>
-                    {formatReadinessLabel(entry.readiness)}
-                  </span>
-                  {entry.security_reviewed ? (
-                    <span className="catalog-status-badge is-reviewed-detail">Security</span>
-                  ) : null}
-                </div>
-              </div>
-              <p className="meta catalog-card-id">{entry.id}</p>
+              <p className="meta catalog-card-domain">{formatCategoryFamily(entry.category)}</p>
               <h2>{entry.name}</h2>
               <p>{entry.description}</p>
-              <div className="tags">
-                {entry.tags.slice(0, 2).map((tagEntry) => (
-                  <span key={tagEntry} className="tag">{tagEntry}</span>
-                ))}
-                {entry.tags.length > 2 ? (
-                  <span className="tag tag--muted">+{entry.tags.length - 2}</span>
-                ) : null}
-              </div>
             </Link>
             {isPluginCatalog ? (
               <div className="catalog-card-actions">

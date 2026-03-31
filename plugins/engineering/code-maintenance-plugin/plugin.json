@@ -1,0 +1,5 @@
+{
+  "name": "code-maintenance-plugin",
+  "version": "0.1.0",
+  "description": "Portable engineering maintenance workflow bundle for repo planning, verification, test analysis, and PR review."
+}

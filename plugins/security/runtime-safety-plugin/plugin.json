@@ -1,0 +1,5 @@
+{
+  "name": "runtime-safety-plugin",
+  "version": "0.1.0",
+  "description": "Portable security workflow bundle for untrusted-content triage, dependency review, secret hygiene, and environment risk assessment."
+}

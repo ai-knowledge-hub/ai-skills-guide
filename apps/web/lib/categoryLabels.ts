@@ -24,6 +24,9 @@ const CATEGORY_LABELS: Record<string, string> = {
   "marketing-plugins/content": "Marketing Plugins / Content",
   "marketing-plugins/intelligence": "Marketing Plugins / Intelligence",
   "marketing-plugins/creative": "Marketing Plugins / Creative",
+  "engineering-plugins/maintenance": "Engineering Plugins / Maintenance",
+  "security-plugins/runtime-safety": "Security Plugins / Runtime Safety",
+  "agentops-plugins/governance": "AgentOps Plugins / Governance",
   "marketing-agents/performance": "Marketing Agents / Performance",
   "marketing-agents/governance": "Marketing Agents / Governance",
   "adtech-agents/analytics": "Adtech Agents / Analytics",
@@ -56,6 +59,9 @@ export function formatCategoryFamily(category: string) {
   if (family === "security") return "Security";
   if (family === "agentops") return "AgentOps";
   if (family === "marketing-plugins") return "Marketing Plugins";
+  if (family === "engineering-plugins") return "Engineering Plugins";
+  if (family === "security-plugins") return "Security Plugins";
+  if (family === "agentops-plugins") return "AgentOps Plugins";
   if (family === "marketing-agents") return "Marketing Agents";
   if (family === "adtech-agents") return "Adtech Agents";
   if (family === "tools-mcp") return "Tools & MCP";

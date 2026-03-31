@@ -1,5 +1,5 @@
 import { loadAgentsRegistry, loadPluginsRegistry, loadSkillsRegistry, loadToolsRegistry, uniqueValues } from "@/lib/registry";
-import { FEATURED_SKILL_IDS } from "@/lib/home";
+import { FEATURED_PLUGIN_IDS, FEATURED_SKILL_IDS } from "@/lib/home";
 import {
   formatCategoryFamily,
   getCategoryFamilyKey,
@@ -22,6 +22,9 @@ export default async function HomePage() {
   const featuredSkills = FEATURED_SKILL_IDS
     .map((id) => skills.find((skill) => skill.id === id))
     .filter((skill): skill is (typeof skills)[number] => Boolean(skill));
+  const featuredPlugins = FEATURED_PLUGIN_IDS
+    .map((id) => plugins.find((plugin) => plugin.id === id))
+    .filter((plugin): plugin is (typeof plugins)[number] => Boolean(plugin));
   const newestSkills = [...skills]
     .sort((a, b) => {
       const aDate = new Date(
@@ -147,6 +150,44 @@ export default async function HomePage() {
               ))}
               {skill.tags.length > 2 ? (
                 <span className="tag tag--muted">+{skill.tags.length - 2}</span>
+              ) : null}
+            </div>
+          </a>
+        ))}
+      </section>
+
+      <section className="featured-section">
+        <div className="section-head">
+          <h2>Featured Plugins</h2>
+          <p className="meta">New non-marketing plugin packs for maintenance, security, and governed harness improvement.</p>
+          <a href="/plugins" className="button button--secondary">
+            View all {plugins.length} plugins
+          </a>
+        </div>
+      </section>
+
+      <section className="grid featured-grid">
+        {featuredPlugins.map((plugin) => (
+          <a key={plugin.id} href={`/plugins/${plugin.id}`} className="card catalog-card">
+            <div className="catalog-card-head">
+              <span className="catalog-pack-badge">{formatCategoryFamily(plugin.category)}</span>
+              <div className="catalog-status-badges">
+                <span className={`catalog-status-badge is-${plugin.readiness}`}>
+                  {formatReadinessLabel(plugin.readiness)}
+                </span>
+                {plugin.security_reviewed ? (
+                  <span className="catalog-status-badge is-reviewed-detail">Security</span>
+                ) : null}
+              </div>
+            </div>
+            <h3>{plugin.name}</h3>
+            <p>{plugin.description}</p>
+            <div className="tags">
+              {plugin.tags.slice(0, 2).map((tag) => (
+                <span key={tag} className="tag">{tag}</span>
+              ))}
+              {plugin.tags.length > 2 ? (
+                <span className="tag tag--muted">+{plugin.tags.length - 2}</span>
               ) : null}
             </div>
           </a>

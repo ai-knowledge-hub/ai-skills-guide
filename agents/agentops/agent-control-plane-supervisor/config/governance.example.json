@@ -1,0 +1,18 @@
+{
+  "run_modes": ["advisory", "plan_only", "approval_gated_execution"],
+  "default_run_mode": "plan_only",
+  "blocked_without": [
+    "agent_identity",
+    "policy_enforcement",
+    "audit_log",
+    "approval_gates_for_high_risk_actions"
+  ],
+  "high_risk_actions": [
+    "change_budget",
+    "publish_content",
+    "export_customer_data",
+    "modify_permissions",
+    "change_tracking",
+    "deploy_to_production"
+  ]
+}

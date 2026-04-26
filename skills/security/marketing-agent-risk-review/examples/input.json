@@ -1,0 +1,16 @@
+{
+  "agent_name": "lifecycle-campaign-agent",
+  "objective": "Generate and schedule CRM journey updates based on recent purchase and churn signals.",
+  "channels": ["email", "push", "CRM"],
+  "data_categories": ["customer_id", "purchase_history", "churn_score", "email_engagement"],
+  "actions": ["summarize_segments", "draft_message", "update_journey", "schedule_send"],
+  "permissions": {
+    "crm": "write",
+    "warehouse": "read customer-level tables"
+  },
+  "current_controls": {
+    "approval": "manager approval before schedule_send",
+    "logging": "basic tool call logs",
+    "rollback": "manual journey revert"
+  }
+}

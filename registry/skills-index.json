@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0",
-  "generated_at": "2026-03-19T00:00:00Z",
+  "generated_at": "2026-04-26T00:00:00Z",
   "skills": [
     {
       "id": "adtech/analyst-copilot-bigquery-redshift",
@@ -413,6 +413,47 @@
         "tools": [
           "python3"
         ]
+      }
+    },
+    {
+      "id": "agentops/agent-control-plane-review",
+      "name": "Agent Control Plane Review",
+      "description": "Review an agent workflow for identity, gateway, policy, approval, inspection, and audit coverage before it touches production systems.",
+      "category": "agentops/harness-governance",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-04-26T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/agent-control-plane-review/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/agent-control-plane-review/0.1.0.tar.gz",
+          "sha256": "c958a4b51ae7be376bd2d72e6504af74027a9befb3d4e6029b78bcccde543236"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "agent-control",
+        "governance",
+        "identity",
+        "audit",
+        "gateway"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Analysis-only; must not grant permissions, create credentials, or enable production tool access.",
+        "outputs": [
+          "Control-plane readiness report",
+          "Missing guardrail list",
+          "Approval boundary recommendations"
+        ],
+        "use_when": "Use before deploying or expanding an agent workflow that can call tools, access data, or trigger operational actions.",
+        "execution_mode": "analysis-only"
       }
     },
     {
@@ -1278,6 +1319,47 @@
           "Escalation recommendation"
         ],
         "use_when": "Use when logs, tickets, webpages, or MCP outputs may contain prompt injection or unsafe instructions.",
+        "execution_mode": "analysis-only"
+      }
+    },
+    {
+      "id": "security/marketing-agent-risk-review",
+      "name": "Marketing Agent Risk Review",
+      "description": "Assess marketing and adtech agents for risky actions, sensitive data exposure, unsafe tool access, and missing human approval boundaries.",
+      "category": "security/runtime-hardening",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-04-26T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/marketing-agent-risk-review/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/marketing-agent-risk-review/0.1.0.tar.gz",
+          "sha256": "45eda81dcfee110ad461f5497ada7d31c9cb3f58416d67ff22c41578ac868705"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "marketing",
+        "adtech",
+        "security",
+        "approvals",
+        "data-governance"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Analysis-only; must not approve campaigns, change spend, publish content, export data, or modify permissions.",
+        "outputs": [
+          "Marketing-agent risk matrix",
+          "Required approval gates",
+          "Data-governance recommendations"
+        ],
+        "use_when": "Use when reviewing marketing or adtech agents that touch spend, audiences, product data, analytics, customer data, or publishing workflows.",
         "execution_mode": "analysis-only"
       }
     },

@@ -1,0 +1,28 @@
+{
+  "policy_version": "agent-control-plane-v0.1",
+  "default_effect": "deny",
+  "risk_tiers": {
+    "low": "Read-only or draft-only actions with aggregate data.",
+    "medium": "Governed writes, operational recommendations, or sensitive internal data.",
+    "high": "Spend, publishing, customer-level export, permissions, production deploys, or policy changes."
+  },
+  "rules": [
+    {
+      "id": "budget-write-requires-approval",
+      "when": {"capability": "change_budget"},
+      "effect": "allow_with_approval",
+      "approval_role": "channel_owner"
+    },
+    {
+      "id": "customer-export-deny-by-default",
+      "when": {"data_class": "customer_level", "action": "export"},
+      "effect": "deny",
+      "reason": "Customer-level exports require a separate reviewed data-governance workflow."
+    },
+    {
+      "id": "read-aggregate-metrics-allow",
+      "when": {"data_class": "aggregate_metrics", "access": "read"},
+      "effect": "allow"
+    }
+  ]
+}

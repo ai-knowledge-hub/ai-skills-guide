@@ -1,0 +1,50 @@
+id: agentops/agent-control-plane-supervisor
+name: Agent Control Plane Supervisor
+description: Advisory supervisor for reviewing, routing, and documenting governed marketing agent workflows before production deployment.
+version: 0.1.0
+released_at: "2026-04-26T00:00:00Z"
+category: agentops/harness-governance
+tags:
+  - governance
+  - control-plane
+  - approvals
+  - audit
+  - agentops
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  spec: AGENT.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  skills:
+    - agentops/agent-control-plane-review
+    - security/marketing-agent-risk-review
+  tools:
+    - agent_control_plane_server
+operational:
+  role: Governance supervisor for agent identity, policy, approval, and audit readiness.
+  coordinates:
+    - Control-plane review
+    - Marketing-agent risk review
+    - Approval-boundary recommendations
+    - Audit-readiness summary
+  autonomy_level: advisory
+  approval_boundary: May recommend policy and approval changes; must not grant access, execute actions, or alter production policy.
+  outputs:
+    - Deployment readiness decision
+    - Missing control list
+    - Policy and approval recommendations
+    - Audit evidence checklist
+verification:
+  tests_min_prompts: 5
+  security_reviewed: false
+deprecated: false

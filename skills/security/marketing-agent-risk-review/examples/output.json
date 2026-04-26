@@ -1,0 +1,33 @@
+{
+  "overall_risk": "high",
+  "safe_starting_mode": "plan-only",
+  "risk_matrix": [
+    {
+      "area": "Customer data",
+      "risk": "high",
+      "evidence": "The agent reads customer-level purchase and churn data.",
+      "required_control": "Limit access to approved fields and prevent exports outside the CRM or warehouse boundary."
+    },
+    {
+      "area": "Publishing",
+      "risk": "high",
+      "evidence": "The agent can update journeys and schedule sends.",
+      "required_control": "Require approval before journey update and before send scheduling."
+    },
+    {
+      "area": "Audit and rollback",
+      "risk": "medium",
+      "evidence": "Tool logs exist, but rollback is manual and not linked to action records.",
+      "required_control": "Record artifact versions and rollback instructions for every journey change."
+    }
+  ],
+  "approval_gates": [
+    "Approve customer segment definitions before use.",
+    "Approve final message copy before journey update.",
+    "Approve schedule_send separately from copy approval."
+  ],
+  "required_changes": [
+    "Move to plan-only until field-level data access and audit logging are implemented.",
+    "Split generation, compliance review, and publishing into separate steps."
+  ]
+}

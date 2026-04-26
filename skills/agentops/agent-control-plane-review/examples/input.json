@@ -1,0 +1,19 @@
+{
+  "agent_name": "campaign-optimization-agent",
+  "objective": "Review campaign performance and propose budget shifts across Google Ads and Meta Ads.",
+  "run_mode": "approval-gated execution",
+  "connected_systems": ["Google Ads", "Meta Ads", "BigQuery", "Slack"],
+  "actions": [
+    {"name": "query_campaign_metrics", "risk": "low"},
+    {"name": "propose_budget_shift", "risk": "medium"},
+    {"name": "apply_budget_shift", "risk": "high"},
+    {"name": "send_slack_summary", "risk": "low"}
+  ],
+  "known_controls": {
+    "agent_identity": "shared analyst OAuth token",
+    "gateway": "none",
+    "policy": "prompt instructions only",
+    "approval": "manual approval before apply_budget_shift",
+    "audit": "tool-call logs without hashes"
+  }
+}

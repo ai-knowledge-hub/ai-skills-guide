@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Agent Action Log Event",
+  "type": "object",
+  "required": [
+    "event_id",
+    "agent_id",
+    "agent_run_id",
+    "capability",
+    "status",
+    "timestamp",
+    "inputs_hash",
+    "policy_decision"
+  ],
+  "properties": {
+    "event_id": {"type": "string"},
+    "agent_id": {"type": "string"},
+    "agent_run_id": {"type": "string"},
+    "capability": {"type": "string"},
+    "capability_version": {"type": "string"},
+    "status": {
+      "type": "string",
+      "enum": ["proposed", "approved", "executing", "executed", "rejected", "failed", "cancelled"]
+    },
+    "risk_tier": {"type": "string", "enum": ["low", "medium", "high"]},
+    "scope": {"type": "object"},
+    "inputs_hash": {"type": "string"},
+    "outputs_hash": {"type": "string"},
+    "policy_decision": {"type": "string"},
+    "approval_id": {"type": "string"},
+    "approver": {"type": "string"},
+    "previous_event_hash": {"type": "string"},
+    "event_hash": {"type": "string"},
+    "timestamp": {"type": "string", "format": "date-time"}
+  },
+  "additionalProperties": true
+}

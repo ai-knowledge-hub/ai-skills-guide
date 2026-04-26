@@ -1,0 +1,20 @@
+{
+  "agent_name": "product-feed-optimization-agent",
+  "objective": "Analyze product visibility and propose feed changes for agentic commerce surfaces.",
+  "connected_systems": ["Merchant Center", "Product catalog", "Analytics warehouse", "Slack"],
+  "run_mode_requested": "approval_gated_execution",
+  "actions": [
+    "read_product_feed",
+    "suggest_schema_changes",
+    "update_product_feed",
+    "notify_channel"
+  ],
+  "data_classes": ["product data", "commercial terms", "aggregate performance metrics"],
+  "controls": {
+    "agent_identity": true,
+    "gateway": false,
+    "policy_enforcement": "partial",
+    "approval_gates": ["update_product_feed"],
+    "audit_log": "basic"
+  }
+}

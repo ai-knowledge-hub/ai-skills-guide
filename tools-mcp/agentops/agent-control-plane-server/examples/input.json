@@ -1,0 +1,13 @@
+{
+  "tool": "check_policy",
+  "arguments": {
+    "agent_id": "campaign-optimization-agent",
+    "capability": "apply_budget_shift",
+    "scope": {
+      "channel": "google_ads",
+      "account_id": "act_123"
+    },
+    "risk_tier": "high",
+    "inputs_hash": "sha256:example-input-hash"
+  }
+}

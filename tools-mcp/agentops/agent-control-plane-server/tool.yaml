@@ -1,0 +1,48 @@
+id: agentops/agent-control-plane-server
+name: Agent Control Plane MCP Server
+description: MCP server template for policy checks, approval requests, agent action logging, and audit-chain verification.
+version: 0.1.0
+released_at: "2026-04-26T00:00:00Z"
+category: tools-mcp/agentops
+tags:
+  - mcp
+  - governance
+  - policy
+  - audit
+  - approvals
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  spec: TOOL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  mcp_servers:
+    - agent-control-plane
+operational:
+  connected_system: Agent control plane runtime
+  capabilities:
+    - Check proposed agent actions against JSON policy rules.
+    - Record agent action events with input and output hashes.
+    - Create approval requests for high-risk actions.
+    - Verify audit hash-chain continuity.
+  auth_required:
+    - Agent runtime identity
+    - Policy store access
+    - Audit log write access
+  access_level: read-write
+  trust_boundary: remote-mcp-server
+  approval_boundary: Safe for policy checks and audit writes; requires human approval before executing high-risk operational actions or changing policy.
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

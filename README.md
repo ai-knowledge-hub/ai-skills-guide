@@ -68,7 +68,7 @@ The first rollouts are on `tools-mcp` and `agents`.
 
 ## Current Scope
 
-### Skills (30)
+### Skills (32)
 
 1. `meta-google-weekly-performance-review` (Beginner)
 2. `creative-workshop-pmax-reels` (Intermediate)
@@ -100,18 +100,22 @@ The first rollouts are on `tools-mcp` and `agents`.
 28. `agentops/harness-run-reflection` (Harness Evolution)
 29. `agentops/harness-skill-proposal` (Harness Governance)
 30. `agentops/harness-regression-evaluator` (Harness Evaluation)
+31. `agentops/agent-control-plane-review` (Harness Governance)
+32. `security/marketing-agent-risk-review` (Runtime Hardening)
 
-### Agents (3)
+### Agents (4)
 
 1. `marketing/weekly-performance-supervisor`
 2. `marketing/campaign-qa-supervisor`
 3. `adtech/bi-insights-orchestrator`
+4. `agentops/agent-control-plane-supervisor`
 
-### Tools & MCP (3)
+### Tools & MCP (4)
 
 1. `analytics/ga4-mcp-connector`
 2. `ads/meta-ads-mcp-connector`
 3. `warehouse/bigquery-mcp-query-runner`
+4. `agentops/agent-control-plane-server`
 
 ### Plugins (9)
 
@@ -164,6 +168,10 @@ The first rollouts are on `tools-mcp` and `agents`.
 - `agentops/harness-run-reflection`
 - `agentops/harness-skill-proposal`
 - `agentops/harness-regression-evaluator`
+- `agentops/agent-control-plane-review`
+- `security/marketing-agent-risk-review`
+- `agentops/agent-control-plane-supervisor`
+- `agentops/agent-control-plane-server`
 
 ## Definition of done for each module entry
 

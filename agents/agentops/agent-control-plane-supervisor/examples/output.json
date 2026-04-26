@@ -1,0 +1,29 @@
+{
+  "decision": "plan-only",
+  "why": "The agent has identity and an approval gate for feed updates, but gateway mediation and full policy enforcement are missing.",
+  "required_controls": [
+    {
+      "control": "Gateway",
+      "required_before": "approval-gated execution",
+      "evidence_needed": "All Merchant Center and catalog writes route through a policy-checking gateway."
+    },
+    {
+      "control": "Policy enforcement",
+      "required_before": "approval-gated execution",
+      "evidence_needed": "Schema-change allow-list, product-scope constraints, and feed-write approval policy."
+    },
+    {
+      "control": "Audit log",
+      "required_before": "approval-gated execution",
+      "evidence_needed": "Action records include input/output hashes, policy decisions, approver, and artifact version."
+    }
+  ],
+  "approval_map": [
+    {
+      "action": "update_product_feed",
+      "risk_tier": "high",
+      "approver": "commerce operations owner",
+      "runtime_enforcement": "required"
+    }
+  ]
+}

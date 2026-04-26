@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0",
-  "generated_at": "2026-03-02T00:00:00Z",
+  "generated_at": "2026-04-26T00:00:00Z",
   "skills": [
     {
       "id": "adtech/bi-insights-orchestrator",
@@ -55,6 +55,63 @@
         "tools": [
           "bigquery_sql",
           "ga4_query"
+        ]
+      }
+    },
+    {
+      "id": "agentops/agent-control-plane-supervisor",
+      "name": "Agent Control Plane Supervisor",
+      "description": "Advisory supervisor for reviewing, routing, and documenting governed marketing agent workflows before production deployment.",
+      "category": "agentops/harness-governance",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-04-26T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/agents/agentops/agent-control-plane-supervisor/agent.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/agent-control-plane-supervisor/0.1.0.tar.gz",
+          "sha256": "c993ff17cf9cdcb9641113b3110d6eb9d920c3c17653e0bf6bc23b9cfdb835ad"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "governance",
+        "control-plane",
+        "approvals",
+        "audit",
+        "agentops"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "May recommend policy and approval changes; must not grant access, execute actions, or alter production policy.",
+        "role": "Governance supervisor for agent identity, policy, approval, and audit readiness.",
+        "coordinates": [
+          "Control-plane review",
+          "Marketing-agent risk review",
+          "Approval-boundary recommendations",
+          "Audit-readiness summary"
+        ],
+        "autonomy_level": "advisory",
+        "outputs": [
+          "Deployment readiness decision",
+          "Missing control list",
+          "Policy and approval recommendations",
+          "Audit evidence checklist"
+        ]
+      },
+      "dependencies": {
+        "skills": [
+          "agentops/agent-control-plane-review",
+          "security/marketing-agent-risk-review"
+        ],
+        "tools": [
+          "agent_control_plane_server"
         ]
       }
     },

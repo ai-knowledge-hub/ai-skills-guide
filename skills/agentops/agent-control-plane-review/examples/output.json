@@ -1,0 +1,41 @@
+{
+  "readiness_decision": "not_ready",
+  "summary": "The workflow has a clear approval gate for budget application, but identity isolation, gateway controls, and policy enforcement are missing.",
+  "control_coverage": [
+    {
+      "control": "Agent identity",
+      "status": "missing",
+      "gap": "The agent inherits a shared analyst OAuth token.",
+      "recommendation": "Create a scoped, revocable service identity for the agent."
+    },
+    {
+      "control": "Gateway",
+      "status": "missing",
+      "gap": "Outbound tool calls are not mediated by a gateway.",
+      "recommendation": "Route Ads, warehouse, and Slack calls through a policy-checking gateway."
+    },
+    {
+      "control": "Policy enforcement",
+      "status": "missing",
+      "gap": "Budget constraints live only in prompt instructions.",
+      "recommendation": "Move budget caps and account allow-lists into deterministic policy checks."
+    },
+    {
+      "control": "Approval gates",
+      "status": "partial",
+      "gap": "Budget application is gated, but policy overrides are not defined.",
+      "recommendation": "Require approval for budget writes, policy changes, and account-scope expansion."
+    },
+    {
+      "control": "Audit log",
+      "status": "partial",
+      "gap": "Logs do not include input/output hashes or policy decisions.",
+      "recommendation": "Record action hashes, policy outcomes, approval decisions, and linked artifacts."
+    }
+  ],
+  "required_changes": [
+    "Replace shared human OAuth with scoped agent identity.",
+    "Add gateway mediation for all outbound tool calls.",
+    "Move budget caps and account permissions to deterministic policy enforcement."
+  ]
+}

@@ -1,0 +1,40 @@
+id: security/ad-platform-agent-auth-review
+name: Ad Platform Agent Auth Review
+description: Review DV360, Google Ads, and similar ad-platform agents for personal OAuth risk, workspace scoping, token storage, read/write separation, and approval readiness.
+version: 0.1.0
+released_at: "2026-05-06T00:00:00Z"
+category: security/runtime-hardening
+tags:
+  - adtech
+  - oauth
+  - google-ads
+  - dv360
+  - auth-review
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+operational:
+  use_when: Use before an agent reads or writes to DV360, Google Ads, Meta Ads, product feeds, or commerce/analytics APIs using OAuth or service credentials.
+  execution_mode: analysis-only
+  outputs:
+    - Authentication risk report
+    - Trust-zone recommendation
+    - Read/write separation checklist
+    - Approval-gated execution recommendation
+  approval_boundary: Analysis-only; must not create tokens, change OAuth scopes, approve access, or execute ad-platform writes.
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

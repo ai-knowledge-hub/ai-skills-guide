@@ -1,0 +1,19 @@
+{
+  "default_mode": "plan_only",
+  "allowed_modes": ["read_only", "plan_only", "approval_gated_writes"],
+  "blocked_without": [
+    "brokered_credentials",
+    "read_write_separation",
+    "policy_engine",
+    "approval_records_for_high_risk_actions",
+    "audit_and_rollback"
+  ],
+  "high_risk_actions": [
+    "budget_increase",
+    "bid_increase_above_threshold",
+    "targeting_broadening",
+    "audience_expansion",
+    "tracking_change",
+    "product_feed_publish"
+  ]
+}

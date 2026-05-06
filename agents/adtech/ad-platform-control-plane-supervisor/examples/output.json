@@ -1,0 +1,14 @@
+{
+  "decision": "plan-only only",
+  "summary": "The workflow has useful planning capability, but approval-gated writes should wait until brokered credentials, executor rollback, and full audit evidence are implemented.",
+  "required_before_production_writes": [
+    "Map user OAuth grants to workspace-scoped internal execution grants.",
+    "Separate read-only campaign analysis tools from write-capable executor tools.",
+    "Add rollback patch generation to the executor.",
+    "Record policy decision, approver, execution grant, API payload, and post-write verification."
+  ],
+  "recommended_policy_gates": [
+    {"action": "budget_increase", "auto_execute": false, "approval_required": "always", "deny_when": "daily delta exceeds configured ceiling"},
+    {"action": "budget_decrease", "auto_execute": "below threshold", "approval_required": "above threshold", "deny_when": "campaign is in protected launch window"}
+  ]
+}

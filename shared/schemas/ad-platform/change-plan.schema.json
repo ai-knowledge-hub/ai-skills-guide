@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Ad Platform Change Plan",
+  "type": "object",
+  "required": ["plan_id", "agent_id", "platform", "workspace_id", "advertiser_id", "entity_type", "entity_id", "action", "proposed_diff", "risk_tier"],
+  "properties": {
+    "plan_id": {"type": "string"},
+    "agent_id": {"type": "string"},
+    "platform": {"type": "string", "enum": ["google_ads", "dv360", "meta_ads", "merchant_center", "other"]},
+    "workspace_id": {"type": "string"},
+    "advertiser_id": {"type": "string"},
+    "entity_type": {"type": "string"},
+    "entity_id": {"type": "string"},
+    "action": {"type": "string"},
+    "current_state_hash": {"type": "string"},
+    "proposed_diff": {"type": "object"},
+    "expected_impact": {"type": "string"},
+    "rationale": {"type": "string"},
+    "risk_tier": {"type": "string", "enum": ["low", "medium", "high", "blocked"]},
+    "requires_approval": {"type": "boolean"}
+  },
+  "additionalProperties": true
+}

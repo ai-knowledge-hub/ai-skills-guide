@@ -1,0 +1,13 @@
+{
+  "risk_model": {
+    "low": "Read-only or small reversible changes inside scoped workspace thresholds.",
+    "medium": "Bounded writes that affect delivery or pacing but have rollback support.",
+    "high": "Budget increases, targeting expansion, tracking changes, publishing, or sensitive categories.",
+    "blocked": "Cross-client writes, unscoped exports, missing rollback for risky writes, or policy overrides."
+  },
+  "thresholds": [
+    {"metric": "bid_delta", "low_risk": "<= 5% decrease or <= 3% increase", "approval": "> low-risk threshold", "block": "> 20%"},
+    {"metric": "budget_increase", "low_risk": "none", "approval": "any increase", "block": "> 20% daily delta"}
+  ],
+  "bounded_grant_required_fields": ["workspace_id", "platform", "advertiser_id", "entity_type", "entity_id", "allowed_action", "max_delta", "expires_at", "approval_id"]
+}

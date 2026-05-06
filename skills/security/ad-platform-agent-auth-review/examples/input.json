@@ -1,0 +1,13 @@
+{
+  "agent_name": "dv360-line-item-optimizer",
+  "platforms": ["DV360", "BigQuery"],
+  "credential_model": "personal_google_oauth",
+  "requested_scopes": ["https://www.googleapis.com/auth/display-video"],
+  "user_access": ["advertiser_uk", "advertiser_fr", "advertiser_de"],
+  "intended_scope": ["advertiser_uk"],
+  "actions": ["read_line_item_state", "propose_bid_delta", "apply_bid_delta"],
+  "token_storage": "backend database, encrypted at rest",
+  "llm_secret_exposure": "no raw token in prompt, tool can call API directly",
+  "approval_flow": "manager approval for budget changes only",
+  "audit": "records API response and user email"
+}

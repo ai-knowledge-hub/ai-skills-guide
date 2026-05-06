@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0",
-  "generated_at": "2026-04-26T00:00:00Z",
+  "generated_at": "2026-05-06T00:00:00Z",
   "skills": [
     {
       "id": "adtech/analyst-copilot-bigquery-redshift",
@@ -413,6 +413,48 @@
         "tools": [
           "python3"
         ]
+      }
+    },
+    {
+      "id": "agentops/ad-platform-policy-gate-designer",
+      "name": "Ad Platform Policy Gate Designer",
+      "description": "Design policy gates, approval thresholds, deny rules, and bounded execution rules for marketing agents that change bids, budgets, targeting, audiences, feeds, or tracking.",
+      "category": "agentops/harness-governance",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-05-06T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/ad-platform-policy-gate-designer/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/ad-platform-policy-gate-designer/0.1.0.tar.gz",
+          "sha256": "21915f623744e408439a1197579920e3d1c47505f177749ebb02a44a5aa4808a"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "adtech",
+        "policy",
+        "approvals",
+        "dv360",
+        "google-ads"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Analysis-only; must not change live policy, approve campaign changes, or execute platform writes.",
+        "outputs": [
+          "Policy gate table",
+          "Approval threshold map",
+          "Deny rule set",
+          "Audit evidence checklist"
+        ],
+        "use_when": "Use when defining what an ad-platform agent may auto-execute, what requires approval, and what must be denied.",
+        "execution_mode": "analysis-only"
       }
     },
     {
@@ -1194,6 +1236,48 @@
         "tools": [
           "python3"
         ]
+      }
+    },
+    {
+      "id": "security/ad-platform-agent-auth-review",
+      "name": "Ad Platform Agent Auth Review",
+      "description": "Review DV360, Google Ads, and similar ad-platform agents for personal OAuth risk, workspace scoping, token storage, read/write separation, and approval readiness.",
+      "category": "security/runtime-hardening",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-05-06T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/ad-platform-agent-auth-review/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/ad-platform-agent-auth-review/0.1.0.tar.gz",
+          "sha256": "bd3088243aefcbfec577a438cf1fbd08d2850f0c4fa9da114b18545b74835f9f"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "adtech",
+        "oauth",
+        "google-ads",
+        "dv360",
+        "auth-review"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Analysis-only; must not create tokens, change OAuth scopes, approve access, or execute ad-platform writes.",
+        "outputs": [
+          "Authentication risk report",
+          "Trust-zone recommendation",
+          "Read/write separation checklist",
+          "Approval-gated execution recommendation"
+        ],
+        "use_when": "Use before an agent reads or writes to DV360, Google Ads, Meta Ads, product feeds, or commerce/analytics APIs using OAuth or service credentials.",
+        "execution_mode": "analysis-only"
       }
     },
     {

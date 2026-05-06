@@ -68,7 +68,7 @@ The first rollouts are on `tools-mcp` and `agents`.
 
 ## Current Scope
 
-### Skills (32)
+### Skills (34)
 
 1. `meta-google-weekly-performance-review` (Beginner)
 2. `creative-workshop-pmax-reels` (Intermediate)
@@ -102,20 +102,24 @@ The first rollouts are on `tools-mcp` and `agents`.
 30. `agentops/harness-regression-evaluator` (Harness Evaluation)
 31. `agentops/agent-control-plane-review` (Harness Governance)
 32. `security/marketing-agent-risk-review` (Runtime Hardening)
+33. `security/ad-platform-agent-auth-review` (Runtime Hardening)
+34. `agentops/ad-platform-policy-gate-designer` (Harness Governance)
 
-### Agents (4)
+### Agents (5)
 
 1. `marketing/weekly-performance-supervisor`
 2. `marketing/campaign-qa-supervisor`
 3. `adtech/bi-insights-orchestrator`
 4. `agentops/agent-control-plane-supervisor`
+5. `adtech/ad-platform-control-plane-supervisor`
 
-### Tools & MCP (4)
+### Tools & MCP (5)
 
 1. `analytics/ga4-mcp-connector`
 2. `ads/meta-ads-mcp-connector`
 3. `warehouse/bigquery-mcp-query-runner`
 4. `agentops/agent-control-plane-server`
+5. `adtech/ad-platform-executor-template`
 
 ### Plugins (9)
 
@@ -172,6 +176,10 @@ The first rollouts are on `tools-mcp` and `agents`.
 - `security/marketing-agent-risk-review`
 - `agentops/agent-control-plane-supervisor`
 - `agentops/agent-control-plane-server`
+- `security/ad-platform-agent-auth-review`
+- `agentops/ad-platform-policy-gate-designer`
+- `adtech/ad-platform-control-plane-supervisor`
+- `adtech/ad-platform-executor-template`
 
 ## Definition of done for each module entry
 

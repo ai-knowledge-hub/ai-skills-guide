@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Ad Platform Audit Event",
+  "type": "object",
+  "required": ["event_id", "plan_id", "agent_id", "platform", "workspace_id", "advertiser_id", "status", "timestamp", "policy_decision"],
+  "properties": {
+    "event_id": {"type": "string"},
+    "plan_id": {"type": "string"},
+    "agent_id": {"type": "string"},
+    "platform": {"type": "string"},
+    "workspace_id": {"type": "string"},
+    "advertiser_id": {"type": "string"},
+    "entity_type": {"type": "string"},
+    "entity_id": {"type": "string"},
+    "status": {"type": "string", "enum": ["proposed", "validated", "approved", "executed", "rejected", "failed", "rolled_back"]},
+    "policy_decision": {"type": "string"},
+    "approval_id": {"type": "string"},
+    "execution_grant_id": {"type": "string"},
+    "api_request_id": {"type": "string"},
+    "pre_image_hash": {"type": "string"},
+    "post_image_hash": {"type": "string"},
+    "rollback_patch_id": {"type": "string"},
+    "timestamp": {"type": "string", "format": "date-time"}
+  },
+  "additionalProperties": true
+}

@@ -1,7 +1,66 @@
 {
   "registry_version": "1.0",
-  "generated_at": "2026-04-26T00:00:00Z",
+  "generated_at": "2026-05-06T00:00:00Z",
   "skills": [
+    {
+      "id": "adtech/ad-platform-control-plane-supervisor",
+      "name": "Ad Platform Control Plane Supervisor",
+      "description": "Advisory supervisor for DV360 and Google Ads agents, coordinating auth review, policy gates, executor readiness, approvals, audit, and rollback planning.",
+      "category": "adtech-agents/governance",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-05-06T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/agents/adtech/ad-platform-control-plane-supervisor/agent.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/ad-platform-control-plane-supervisor/0.1.0.tar.gz",
+          "sha256": "448631cfba43166109009a9860aba98cb5073c0fa4bc714cbd74e93324b4d726"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "adtech",
+        "control-plane",
+        "dv360",
+        "google-ads",
+        "governance"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "May recommend readiness and governance changes; must not approve live writes, grant credentials, or execute ad-platform changes.",
+        "role": "Governance supervisor for ad-platform agents that read, propose, approve, and execute campaign changes.",
+        "coordinates": [
+          "Ad-platform auth review",
+          "Policy gate design",
+          "Executor-readiness review",
+          "Audit and rollback checklist"
+        ],
+        "autonomy_level": "advisory",
+        "outputs": [
+          "Deployment readiness decision",
+          "Auth and policy gap list",
+          "Approval map",
+          "Executor and rollback checklist"
+        ]
+      },
+      "dependencies": {
+        "skills": [
+          "security/ad-platform-agent-auth-review",
+          "agentops/ad-platform-policy-gate-designer",
+          "agentops/agent-control-plane-review"
+        ],
+        "tools": [
+          "ad_platform_executor_template",
+          "agent_control_plane_server"
+        ]
+      }
+    },
     {
       "id": "adtech/bi-insights-orchestrator",
       "name": "BI Insights Orchestrator",

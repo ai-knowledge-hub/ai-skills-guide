@@ -1,0 +1,10 @@
+{
+  "status": "executed",
+  "platform": "dv360",
+  "entity_id": "li_456",
+  "api_request_id": "req_789",
+  "pre_image_hash": "sha256:pre",
+  "post_image_hash": "sha256:post",
+  "rollback_patch_id": "rollback_123",
+  "audit_event_id": "evt_456"
+}

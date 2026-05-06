@@ -1,0 +1,10 @@
+{
+  "agent_name": "google-ads-budget-agent",
+  "platforms": ["Google Ads", "BigQuery"],
+  "credential_model": "user_oauth_via_backend",
+  "actions": ["read_campaign_state", "propose_budget_shift", "apply_budget_shift"],
+  "workspace_scope": "one client, three Google Ads accounts",
+  "approval_flow": "approval required above 10 percent budget increase",
+  "executor": "custom API service, no rollback patch yet",
+  "audit": "records proposed change and API response"
+}

@@ -1,0 +1,21 @@
+{
+  "change_plan_id": "plan_123",
+  "policy_decision": "allow_with_approval",
+  "approval_id": "approval_abc",
+  "execution_grant": {
+    "workspace_id": "client-123",
+    "platform": "dv360",
+    "advertiser_id": "987654",
+    "entity_type": "line_item",
+    "entity_id": "li_456",
+    "allowed_action": "apply_bid_delta",
+    "max_delta_percent": 10,
+    "expires_at": "2026-05-06T18:00:00Z"
+  },
+  "proposed_diff": {
+    "field": "bid",
+    "from": 1.2,
+    "to": 1.08,
+    "delta_percent": -10
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "policy_version": "ad-platform-control-plane-v0.1",
+  "default_effect": "deny",
+  "rules": [
+    {
+      "id": "read-aggregate-state-allow",
+      "when": {"access": "read", "data_class": "aggregate_campaign_state"},
+      "effect": "allow"
+    },
+    {
+      "id": "small-bid-decrease-auto-allow",
+      "when": {"action": "apply_bid_delta", "delta_percent_lte": 5, "direction": "decrease"},
+      "effect": "allow"
+    },
+    {
+      "id": "budget-increase-requires-approval",
+      "when": {"action": "increase_budget"},
+      "effect": "allow_with_approval",
+      "approval_role": "channel_owner"
+    },
+    {
+      "id": "targeting-broadening-requires-approval",
+      "when": {"action": "broaden_targeting"},
+      "effect": "allow_with_approval",
+      "approval_role": "activation_lead"
+    },
+    {
+      "id": "cross-workspace-write-deny",
+      "when": {"scope_violation": "workspace_mismatch"},
+      "effect": "deny"
+    }
+  ]
+}

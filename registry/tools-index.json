@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0",
-  "generated_at": "2026-04-26T00:00:00Z",
+  "generated_at": "2026-05-06T00:00:00Z",
   "skills": [
     {
       "id": "ads/meta-ads-mcp-connector",
@@ -47,6 +47,65 @@
       "dependencies": {
         "mcp_servers": [
           "meta-ads"
+        ]
+      }
+    },
+    {
+      "id": "adtech/ad-platform-executor-template",
+      "name": "Ad Platform Executor Template",
+      "description": "MCP/tool template for a narrow DV360 and Google Ads executor that applies only approved, policy-checked campaign changes and records rollback evidence.",
+      "category": "tools-mcp/adtech",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-05-06T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/adtech/ad-platform-executor-template/tool.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/ad-platform-executor-template/0.1.0.tar.gz",
+          "sha256": "70173ebda5b24505a2635153a2db1b16fe21f724a4945d38c3f846224ca63b0e"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "adtech",
+        "executor",
+        "dv360",
+        "google-ads",
+        "rollback"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "connected_system": "DV360 and Google Ads API execution layer",
+        "capabilities": [
+          "Read current campaign or line item state before execution.",
+          "Validate approved change plans against policy and current platform state.",
+          "Apply bounded bid, budget, targeting, or status changes.",
+          "Verify post-write state and create rollback patches."
+        ],
+        "auth_required": [
+          "Brokered Google API credentials",
+          "Scoped execution grant",
+          "Approval token for medium and high-risk writes"
+        ],
+        "access_level": "read-write",
+        "trust_boundary": "remote-mcp-server",
+        "approval_boundary": "Applies only policy-approved bounded writes; high-risk changes require human approval and rollback evidence."
+      },
+      "dependencies": {
+        "tools": [
+          "authorization_broker",
+          "policy_engine",
+          "audit_log"
+        ],
+        "apis": [
+          "Google Ads API",
+          "Display \u0026 Video 360 API"
         ]
       }
     },

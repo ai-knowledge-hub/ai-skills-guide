@@ -1,0 +1,53 @@
+id: adtech/ad-platform-executor-template
+name: Ad Platform Executor Template
+description: MCP/tool template for a narrow DV360 and Google Ads executor that applies only approved, policy-checked campaign changes and records rollback evidence.
+version: 0.1.0
+released_at: "2026-05-06T00:00:00Z"
+category: tools-mcp/adtech
+tags:
+  - adtech
+  - executor
+  - dv360
+  - google-ads
+  - rollback
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  spec: TOOL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  apis:
+    - Google Ads API
+    - Display & Video 360 API
+  tools:
+    - authorization_broker
+    - policy_engine
+    - audit_log
+operational:
+  connected_system: DV360 and Google Ads API execution layer
+  capabilities:
+    - Read current campaign or line item state before execution.
+    - Validate approved change plans against policy and current platform state.
+    - Apply bounded bid, budget, targeting, or status changes.
+    - Verify post-write state and create rollback patches.
+  auth_required:
+    - Brokered Google API credentials
+    - Scoped execution grant
+    - Approval token for medium and high-risk writes
+  access_level: read-write
+  trust_boundary: remote-mcp-server
+  approval_boundary: Applies only policy-approved bounded writes; high-risk changes require human approval and rollback evidence.
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

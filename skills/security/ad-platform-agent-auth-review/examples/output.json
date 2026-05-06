@@ -1,0 +1,17 @@
+{
+  "decision": "plan-only only",
+  "auth_risk_summary": {
+    "credential_model": "personal OAuth used for write-capable agent flow",
+    "scope_fit": "over-broad for intended advertiser",
+    "workspace_isolation": "missing broker-level mapping",
+    "token_handling": "token stored outside prompt but direct tool access is too broad",
+    "audit_identity": "misleading because writes appear under the human user"
+  },
+  "required_before_write_access": [
+    "Introduce an authorization broker that maps the Google grant to advertiser_uk only.",
+    "Separate read-only tools from write-capable executor tools.",
+    "Require approval for bid deltas above threshold and all targeting expansion.",
+    "Record agent id, proposed diff, policy decision, approver, execution payload, and rollback patch."
+  ],
+  "recommended_mode": "read-only analysis plus structured change proposals until broker and executor are implemented"
+}

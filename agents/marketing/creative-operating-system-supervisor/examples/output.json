@@ -1,0 +1,37 @@
+{
+  "objective": "Build a useful summer travel planning campaign that increases consideration without fear-based messaging.",
+  "operating_system_gaps": [
+    "No reusable brand memory for past disruption messaging.",
+    "No clear approval path for creator claims about coverage."
+  ],
+  "recommended_workflow": [
+    "Run brand memory bootstrap on previous travel disruption campaigns.",
+    "Map quote-flow and confirmation-email surfaces for product-as-media opportunities.",
+    "Design utility-led concepts around trip readiness and claim clarity.",
+    "Triage summer disruption timing weekly.",
+    "Create creator briefs with claims boundaries and disclosure requirements.",
+    "Run final eval scorecard before production."
+  ],
+  "product_as_media_opportunities": [
+    {
+      "surface": "quote flow",
+      "idea": "Trip readiness checklist before policy selection",
+      "approval_needed": "product and legal"
+    }
+  ],
+  "utility_concept_shortlist": [
+    {
+      "concept": "The Trip-Ready Check",
+      "human_value": "Helps families understand disruption risks and required documents before travel.",
+      "risk": "Must avoid implying guaranteed coverage."
+    }
+  ],
+  "cultural_timing_decision": "monitor",
+  "creator_brief_summary": "Invite family travel creators to show practical preparation, not scripted product claims.",
+  "evaluation_scorecard": {
+    "verdict": "revise",
+    "highest_risk": "coverage claim precision"
+  },
+  "approval_requirements": ["legal", "product", "creator partnerships"],
+  "next_actions": ["Build claims evidence file", "Run utility concept designer", "Draft creator brief"]
+}

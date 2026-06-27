@@ -1,0 +1,11 @@
+{
+  "surface_inventory": ["mobile app", "order tracking", "email receipts", "packaging QR", "returns portal"],
+  "top_product_as_media_concepts": [
+    {
+      "surface": "order tracking",
+      "idea": "Turn waiting time into a helpful setup guide",
+      "customer_value": "Reduces post-purchase uncertainty",
+      "score": 82
+    }
+  ]
+}

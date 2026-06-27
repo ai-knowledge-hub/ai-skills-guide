@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0",
-  "generated_at": "2026-05-06T00:00:00Z",
+  "generated_at": "2026-06-27T00:00:00Z",
   "skills": [
     {
       "id": "adtech/analyst-copilot-bigquery-redshift",
@@ -877,7 +877,7 @@
     {
       "id": "marketing/ai-output-eval-scorecard",
       "name": "AI Output Eval Scorecard",
-      "description": "Score AI-generated marketing outputs across accuracy, clarity, brand fit, policy compliance, and actionability.",
+      "description": "Score AI-generated marketing outputs across accuracy, clarity, brand fit, policy compliance, actionability, and creative operating system fit.",
       "category": "marketing-tools/compliance",
       "latest": "0.1.0",
       "versions": [
@@ -886,7 +886,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/ai-output-eval-scorecard/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/ai-output-eval-scorecard/0.1.0.tar.gz",
-          "sha256": "2ede4bad097be375886cbbf1a15a44403f63aa425e52ecd0a02c3880c6a9a2c9"
+          "sha256": "94443958e9a1980b1fd47dc9330ab4a3cd1405f547d3b028ec32d74ed2263160"
         }
       ],
       "runtimes": [
@@ -899,7 +899,9 @@
         "governance",
         "qa",
         "llm-judge",
-        "risk-control"
+        "risk-control",
+        "anti-slop",
+        "creative-operating-system"
       ],
       "readiness": "experimental",
       "security_reviewed": false,
@@ -909,15 +911,58 @@
         "outputs": [
           "Scorecard",
           "Verdict",
-          "Rewrite recommendations"
+          "Rewrite recommendations",
+          "Creative operating system scores"
         ],
-        "use_when": "Use when AI-generated marketing outputs need repeatable scoring across quality, compliance, and actionability.",
+        "use_when": "Use when AI-generated marketing outputs need repeatable scoring across quality, compliance, actionability, and creative operating system fit.",
         "execution_mode": "analysis-only"
       },
       "dependencies": {
         "tools": [
           "python3"
         ]
+      }
+    },
+    {
+      "id": "marketing/creative-operating-system-audit",
+      "name": "Creative Operating System Audit",
+      "description": "Audit whether a marketing team has the memory, context, evaluation, creator, product-as-media, feedback, and governance machinery needed for AI-era creative work.",
+      "category": "marketing-tools/creative-ops",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-06-27T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/creative-operating-system-audit/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-operating-system-audit/0.1.0.tar.gz",
+          "sha256": "a013f24ddf01db8293bba41a4609845650cfa5bcd34ef389ea33073f610692c6"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "creative-operating-system",
+        "cannes-2026",
+        "anti-slop",
+        "brand-memory",
+        "governance"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for analysis and planning; require human approval before changing process, governance, or live campaign workflows.",
+        "outputs": [
+          "Creative operating system maturity score",
+          "Gap analysis",
+          "Prioritized action plan",
+          "Evidence table"
+        ],
+        "use_when": "Use when a brand or team wants to assess whether it can turn AI output into distinctive, useful, governed creative work.",
+        "execution_mode": "analysis-only"
       }
     },
     {
@@ -966,6 +1011,49 @@
       }
     },
     {
+      "id": "marketing/creator-strategy-brief",
+      "name": "Creator Strategy Brief",
+      "description": "Create creator briefs that treat creators as strategic collaborators with audience trust, format expertise, and cultural intelligence.",
+      "category": "marketing-tools/creative-ops",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-06-27T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/creator-strategy-brief/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creator-strategy-brief/0.1.0.tar.gz",
+          "sha256": "9efafc120c4c2a56edfa990c835d9adc9560a5b4080e0c28283e6bc0b73d486d"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "creators",
+        "creator-commerce",
+        "brief",
+        "cultural-intelligence",
+        "governance"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for brief drafting; require human approval before creator outreach, contracting, claims, or publication.",
+        "outputs": [
+          "Creator role definition",
+          "Brief",
+          "Freedom boundaries",
+          "Measurement plan",
+          "Risk notes"
+        ],
+        "use_when": "Use when building creator-led campaigns where creators should shape the idea, not just distribute it.",
+        "execution_mode": "analysis-only"
+      }
+    },
+    {
       "id": "marketing/cross-channel-budget-pacing-agent",
       "name": "Cross-Channel Budget Pacing Agent",
       "description": "Monitor pacing across paid channels, detect anomalies, and recommend budget reallocation actions.",
@@ -1009,6 +1097,47 @@
         "tools": [
           "python3"
         ]
+      }
+    },
+    {
+      "id": "marketing/cultural-timing-signal-triage",
+      "name": "Cultural Timing Signal Triage",
+      "description": "Decide whether a live cultural moment is worth acting on, and define the safe, fast, brand-fit response path.",
+      "category": "marketing-tools/creative-ops",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-06-27T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/cultural-timing-signal-triage/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/cultural-timing-signal-triage/0.1.0.tar.gz",
+          "sha256": "c98eccfc05173a20e6493ca99621ce9817f52bd473177f8a0eab3fdc2694d6eb"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "cultural-timing",
+        "real-time-marketing",
+        "risk-review",
+        "approvals"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for triage; require human approval before public response, paid media activation, creator outreach, or legal-risk claims.",
+        "outputs": [
+          "Go/no-go recommendation",
+          "Timing window",
+          "Brand permission check",
+          "Risk and approval path"
+        ],
+        "use_when": "Use when a brand notices a live moment and needs a fast go/no-go recommendation with guardrails.",
+        "execution_mode": "analysis-only"
       }
     },
     {
@@ -1194,6 +1323,46 @@
       }
     },
     {
+      "id": "marketing/product-as-media-mapper",
+      "name": "Product As Media Mapper",
+      "description": "Identify product, app, commerce, service, packaging, data, and owned-channel surfaces that can become campaign media.",
+      "category": "marketing-tools/creative-ops",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-06-27T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/product-as-media-mapper/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/product-as-media-mapper/0.1.0.tar.gz",
+          "sha256": "0b9bd764bc2fa7d9d03ad919dc37cb3c758ffb3a7436d28c13db4a776e78a8a3"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "product-as-media",
+        "owned-surfaces",
+        "commerce",
+        "cannes-2026"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for planning; require product, engineering, legal, and operations approval before altering product or customer-service surfaces.",
+        "outputs": [
+          "Surface inventory",
+          "Product-as-media concept map",
+          "Feasibility and risk score"
+        ],
+        "use_when": "Use when a campaign should use owned product or service surfaces as the campaign platform.",
+        "execution_mode": "analysis-only"
+      }
+    },
+    {
       "id": "marketing/seo-paid-search-synergy",
       "name": "SEO to Paid Search Synergy",
       "description": "Turn top-performing SEO themes into paid search opportunities with keyword clustering and launch-ready recommendations.",
@@ -1236,6 +1405,48 @@
         "tools": [
           "python3"
         ]
+      }
+    },
+    {
+      "id": "marketing/utility-campaign-concept-designer",
+      "name": "Utility Campaign Concept Designer",
+      "description": "Convert a campaign brief into useful interventions that help people, shift behavior, or solve a real friction before generating messages.",
+      "category": "marketing-tools/creative-ops",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-06-27T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/utility-campaign-concept-designer/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/utility-campaign-concept-designer/0.1.0.tar.gz",
+          "sha256": "513cfb3cacdb18450fd6e082c3e45eb70310fe392dd974eaf73a5e21d8bee53b"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "utility",
+        "creative-concepts",
+        "empowerment",
+        "cannes-2026",
+        "anti-slop"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Safe for concepting; require brand, legal, and operations approval before production or public use.",
+        "outputs": [
+          "Utility-led concept territories",
+          "Behavioral hypothesis",
+          "Proof and feasibility notes",
+          "Risk flags"
+        ],
+        "use_when": "Use when a team wants campaign concepts that do something useful rather than only communicate a message.",
+        "execution_mode": "analysis-only"
       }
     },
     {

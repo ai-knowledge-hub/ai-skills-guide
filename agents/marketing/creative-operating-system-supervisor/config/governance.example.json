@@ -1,0 +1,21 @@
+{
+  "approval_required_for": [
+    "public_activation",
+    "creator_outreach",
+    "regulated_claims",
+    "product_surface_changes",
+    "paid_media_launch"
+  ],
+  "blocked_patterns": [
+    "crisis opportunism",
+    "unsupported superiority claims",
+    "hidden sponsorship",
+    "dark-pattern checkout nudges"
+  ],
+  "default_verdict_thresholds": {
+    "ready": 85,
+    "revise": 65,
+    "hold": 45,
+    "reject": 0
+  }
+}

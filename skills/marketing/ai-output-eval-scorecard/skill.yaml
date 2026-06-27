@@ -1,6 +1,6 @@
 id: marketing/ai-output-eval-scorecard
 name: AI Output Eval Scorecard
-description: Score AI-generated marketing outputs across accuracy, clarity, brand fit, policy compliance, and actionability.
+description: Score AI-generated marketing outputs across accuracy, clarity, brand fit, policy compliance, actionability, and creative operating system fit.
 version: 0.1.0
 released_at: "2026-02-23T00:00:00Z"
 category: marketing-tools/compliance
@@ -10,6 +10,8 @@ tags:
   - qa
   - llm-judge
   - risk-control
+  - anti-slop
+  - creative-operating-system
 license: MIT
 author:
   name: AI Skills Guide Maintainers
@@ -28,12 +30,13 @@ dependencies:
   tools:
     - python3
 operational:
-  use_when: Use when AI-generated marketing outputs need repeatable scoring across quality, compliance, and actionability.
+  use_when: Use when AI-generated marketing outputs need repeatable scoring across quality, compliance, actionability, and creative operating system fit.
   execution_mode: analysis-only
   outputs:
     - Scorecard
     - Verdict
     - Rewrite recommendations
+    - Creative operating system scores
   approval_boundary: Safe for evaluation and recommendation; require human approval before approving externally visible copy.
 verification:
   tests_min_prompts: 5

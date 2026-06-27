@@ -68,7 +68,7 @@ The first rollouts are on `tools-mcp` and `agents`.
 
 ## Current Scope
 
-### Skills (34)
+### Skills (39)
 
 1. `meta-google-weekly-performance-review` (Beginner)
 2. `creative-workshop-pmax-reels` (Intermediate)
@@ -104,14 +104,20 @@ The first rollouts are on `tools-mcp` and `agents`.
 32. `security/marketing-agent-risk-review` (Runtime Hardening)
 33. `security/ad-platform-agent-auth-review` (Runtime Hardening)
 34. `agentops/ad-platform-policy-gate-designer` (Harness Governance)
+35. `marketing/creative-operating-system-audit` (Creative Ops / Anti-Slop)
+36. `marketing/utility-campaign-concept-designer` (Creative Ops / Utility)
+37. `marketing/product-as-media-mapper` (Creative Ops / Owned Surfaces)
+38. `marketing/cultural-timing-signal-triage` (Creative Ops / Cultural Timing)
+39. `marketing/creator-strategy-brief` (Creator Ops)
 
-### Agents (5)
+### Agents (6)
 
 1. `marketing/weekly-performance-supervisor`
 2. `marketing/campaign-qa-supervisor`
 3. `adtech/bi-insights-orchestrator`
 4. `agentops/agent-control-plane-supervisor`
 5. `adtech/ad-platform-control-plane-supervisor`
+6. `marketing/creative-operating-system-supervisor`
 
 ### Tools & MCP (5)
 
@@ -180,6 +186,12 @@ The first rollouts are on `tools-mcp` and `agents`.
 - `agentops/ad-platform-policy-gate-designer`
 - `adtech/ad-platform-control-plane-supervisor`
 - `adtech/ad-platform-executor-template`
+- `marketing/creative-operating-system-audit`
+- `marketing/utility-campaign-concept-designer`
+- `marketing/product-as-media-mapper`
+- `marketing/cultural-timing-signal-triage`
+- `marketing/creator-strategy-brief`
+- `marketing/creative-operating-system-supervisor`
 
 ## Definition of done for each module entry
 
@@ -218,6 +230,8 @@ registry/
   skills-index.json
   agents-index.json
   tools-index.json
+packs/
+  creative-operating-system/
 apps/
   web/
 shared/

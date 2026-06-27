@@ -1,0 +1,40 @@
+id: marketing/product-as-media-mapper
+name: Product As Media Mapper
+description: Identify product, app, commerce, service, packaging, data, and owned-channel surfaces that can become campaign media.
+version: 0.1.0
+released_at: "2026-06-27T00:00:00Z"
+category: marketing-tools/creative-ops
+tags:
+  - product-as-media
+  - owned-surfaces
+  - commerce
+  - cannes-2026
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  tools: []
+operational:
+  use_when: Use when a campaign should use owned product or service surfaces as the campaign platform.
+  execution_mode: analysis-only
+  outputs:
+    - Surface inventory
+    - Product-as-media concept map
+    - Feasibility and risk score
+  approval_boundary: Safe for planning; require product, engineering, legal, and operations approval before altering product or customer-service surfaces.
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

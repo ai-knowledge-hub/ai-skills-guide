@@ -1,0 +1,22 @@
+{
+  "overall_maturity_score": 54,
+  "dimension_scores": {
+    "brand_memory": 60,
+    "cultural_context": 45,
+    "creative_evaluation": 35,
+    "utility_orientation": 50,
+    "product_as_media": 40,
+    "creator_collaboration": 55,
+    "governance": 70
+  },
+  "top_gaps": [
+    "No explicit anti-slop review rubric",
+    "Brand memory is stored as static PDFs, not retrievable examples",
+    "Post-launch learning is not connected back to briefs"
+  ],
+  "next_actions": [
+    "Create a 1-page creative evaluation rubric",
+    "Build a brand memory pack with strong and weak examples",
+    "Tag last 10 campaigns by concept territory and performance signal"
+  ]
+}

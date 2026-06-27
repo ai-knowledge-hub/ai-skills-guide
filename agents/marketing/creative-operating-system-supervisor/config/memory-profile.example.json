@@ -1,0 +1,13 @@
+{
+  "memory_sources": [
+    "brand_positioning",
+    "tone_of_voice",
+    "past_campaigns",
+    "claims_evidence",
+    "creator_learnings",
+    "post_campaign_reviews"
+  ],
+  "refresh_cadence": "monthly",
+  "sensitive_fields": ["customer_data", "unreleased_product_information", "legal_claims"],
+  "retrieval_rule": "Prefer approved brand memory. If memory is missing, ask for evidence instead of inventing brand history."
+}

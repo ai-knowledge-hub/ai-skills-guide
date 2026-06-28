@@ -1,0 +1,159 @@
+name: Cut Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: Version bump to cut from the latest tag
+        required: true
+        type: choice
+        default: minor-alpha
+        options:
+          - patch
+          - minor
+          - major
+          - patch-alpha
+          - minor-alpha
+          - major-alpha
+      dry_run:
+        description: Compute and validate without pushing the tag
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  cut-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: apps/web/pnpm-lock.yaml
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Install check-jsonschema
+        run: python3 -m pip install --upgrade pip check-jsonschema
+
+      - name: Compute next tag
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          latest_tag="$(git tag --list 'v*' --sort=-v:refname | head -n 1)"
+          if [[ -z "$latest_tag" ]]; then
+            latest_tag="v0.0.0"
+          fi
+
+          version="${latest_tag#v}"
+          base="${version%%-*}"
+          prerelease=""
+          if [[ "$version" == *-* ]]; then
+            prerelease="${version#*-}"
+          fi
+
+          IFS=. read -r major minor patch <<< "$base"
+          release_type="${{ inputs.release_type }}"
+
+          case "$release_type" in
+            major|major-alpha)
+              major=$((major + 1))
+              minor=0
+              patch=0
+              ;;
+            minor|minor-alpha)
+              minor=$((minor + 1))
+              patch=0
+              ;;
+            patch|patch-alpha)
+              patch=$((patch + 1))
+              ;;
+            *)
+              echo "Unsupported release type: $release_type" >&2
+              exit 1
+              ;;
+          esac
+
+          next_tag="v${major}.${minor}.${patch}"
+          if [[ "$release_type" == *-alpha ]]; then
+            next_tag="${next_tag}-alpha.1"
+          elif [[ "$prerelease" == alpha.* ]]; then
+            next_tag="v${major}.${minor}.${patch}"
+          fi
+
+          if git rev-parse -q --verify "refs/tags/$next_tag" >/dev/null; then
+            echo "Tag already exists: $next_tag" >&2
+            exit 1
+          fi
+
+          if git ls-remote --exit-code --tags origin "refs/tags/$next_tag" >/dev/null 2>&1; then
+            echo "Tag already exists on origin: $next_tag" >&2
+            exit 1
+          fi
+
+          {
+            echo "latest_tag=$latest_tag"
+            echo "next_tag=$next_tag"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "Latest tag: $latest_tag"
+          echo "Next tag: $next_tag"
+
+      - name: Validate skills
+        run: bash scripts/validate-skills.sh
+
+      - name: Rebuild registry
+        run: make registry
+
+      - name: Validate manifests and registry schemas
+        run: bash scripts/validate-manifests.sh
+
+      - name: Ensure generated registry is committed
+        run: |
+          git diff --exit-code \
+            registry/index.json \
+            registry/skills-index.json \
+            registry/agents-index.json \
+            registry/tools-index.json \
+            registry/plugins-index.json
+
+      - name: Install web dependencies
+        working-directory: apps/web
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint web app
+        working-directory: apps/web
+        run: pnpm lint
+
+      - name: Build web app
+        working-directory: apps/web
+        run: pnpm build
+
+      - name: Push release tag
+        if: ${{ !inputs.dry_run }}
+        run: |
+          git tag "${{ steps.version.outputs.next_tag }}"
+          git push origin "${{ steps.version.outputs.next_tag }}"
+
+      - name: Dry-run summary
+        if: ${{ inputs.dry_run }}
+        run: |
+          echo "Dry run complete. Tag not pushed."
+          echo "Latest tag: ${{ steps.version.outputs.latest_tag }}"
+          echo "Next tag: ${{ steps.version.outputs.next_tag }}"

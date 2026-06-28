@@ -22,6 +22,8 @@ We publish reusable building blocks across four modules:
 - plugins (installable composition layer)
 - tools & MCP connectors (integration layer)
 
+`packs/` contains documentation-only playbooks that curate existing catalog entries. Packs are not installable modules.
+
 ## Operational Metadata Standard
 
 The catalog is being normalized around a shared operational metadata model so

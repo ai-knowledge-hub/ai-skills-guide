@@ -240,7 +240,7 @@
           "released_at": "2026-06-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/agents/marketing/creative-operating-system-supervisor/agent.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-operating-system-supervisor/0.1.0.tar.gz",
-          "sha256": "89598bb9ac8cabf3a3ce0c941c37c1b1be78a651c446e7d681f102608444ec89"
+          "sha256": "1cdbe79bd58c159714186a007cf4a30d26ade383b92f553134526496681ab03b"
         }
       ],
       "runtimes": [
@@ -289,12 +289,6 @@
           "marketing/creator-strategy-brief",
           "marketing/ai-output-eval-scorecard",
           "adtech/brand-rag-memory-bootstrap"
-        ],
-        "tools": [
-          "brand_memory_reader",
-          "campaign_archive_reader",
-          "trend_signal_reader",
-          "approval_workflow"
         ]
       }
     },

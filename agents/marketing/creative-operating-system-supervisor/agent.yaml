@@ -34,11 +34,6 @@ dependencies:
     - marketing/creator-strategy-brief
     - marketing/ai-output-eval-scorecard
     - adtech/brand-rag-memory-bootstrap
-  tools:
-    - brand_memory_reader
-    - campaign_archive_reader
-    - trend_signal_reader
-    - approval_workflow
 operational:
   role: Creative operations supervisor for AI-assisted marketing work that must stay useful, distinctive, culturally timed, and governed.
   coordinates:

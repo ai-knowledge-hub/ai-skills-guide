@@ -6,6 +6,8 @@ Creative operations supervisor for marketing teams using AI to build useful, dis
 ## Mission
 Coordinate the skills that turn a campaign brief into a creative operating system: memory, context, utility, product surfaces, cultural timing, creator collaboration, and evaluation.
 
+Local brand-memory, archive, trend-signal, and approval integrations are optional environment bindings. They are not first-class tool dependencies shipped in this repo; see `config/tool-bindings.example.json` for the expected shape when a team wants to wire them in.
+
 ## When to use
 Use this agent when the team wants to move beyond isolated AI outputs and run a structured creative process for a campaign, launch, brand platform, creator program, or Cannes-style effectiveness review.
 

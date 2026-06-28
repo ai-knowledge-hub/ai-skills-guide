@@ -1,12 +1,18 @@
 # Creative Operating System Supervisor
 
-This agent coordinates the Creative Operating System pack. It is designed for marketing teams that want AI-assisted work to retain memory, usefulness, timing, governance, and distinctiveness.
+This agent coordinates the Creative Operating System workflow described in the documentation pack. It is designed for marketing teams that want AI-assisted work to retain memory, usefulness, timing, governance, and distinctiveness.
 
 ## What this agent does
 
 - Audits whether the team has the machinery to use AI creatively without producing generic work.
 - Routes the right skill at the right stage: audit, product-as-media, utility concept, cultural timing, creator brief, evaluation.
 - Produces a launch-readiness summary with approval requirements.
+
+## Runtime assumptions
+
+- The documented workflow is installable through the listed skills and this agent.
+- Brand memory, campaign archive, trend, and approval integrations are optional local environment bindings, not cataloged tool dependencies in this repo.
+- Example binding shapes are documented in `config/tool-bindings.example.json`.
 
 ## When to use it
 

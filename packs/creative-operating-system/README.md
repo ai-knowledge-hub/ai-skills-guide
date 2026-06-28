@@ -2,6 +2,8 @@
 
 A practical pack for building the machinery behind distinctive AI-assisted marketing work.
 
+This pack is documentation-only. It curates catalog entries and workflow guidance, but it is not an installable module in the hub or CLI.
+
 This pack was created as the implementation companion to the AI Knowledge Hub Cannes Lions 2026 analysis on the Creative Operating System: the shift from isolated AI output generation to memory, utility, product surfaces, cultural timing, creator collaboration, and governed evaluation.
 
 Article link placeholder:

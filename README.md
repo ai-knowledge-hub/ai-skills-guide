@@ -275,11 +275,15 @@ Useful sections include skills for:
 ## Quickstart
 
 1. Pick a module entry under `skills/`, `agents/`, `plugins/`, or `tools-mcp/`.
-2. Read `README.md` and the module spec file (`SKILL.md`/`AGENT.md`/`plugin.json`/`TOOL.md`).
+2. Read `README.md` and the module spec file
+   (`SKILL.md`/`AGENT.md`/`plugin.json`/`TOOL.md`).
 3. Run prompts in `tests/test-prompts.md`.
 4. Verify structure with `bash scripts/validate-skills.sh`.
 5. Validate manifests with `bash scripts/validate-manifests.sh`.
 6. Submit improvements via PR.
+
+Release workflow and version bump definitions are documented in
+[docs/versioning-and-release.md](docs/versioning-and-release.md).
 
 ## Install New Skill Packs
 

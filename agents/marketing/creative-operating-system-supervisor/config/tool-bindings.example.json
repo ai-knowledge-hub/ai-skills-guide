@@ -1,0 +1,22 @@
+{
+  "brand_memory_reader": {
+    "type": "internal_api",
+    "access": "read_only",
+    "description": "Fetches approved brand memory, past campaign summaries, and reusable evidence."
+  },
+  "campaign_archive_reader": {
+    "type": "warehouse_query",
+    "access": "read_only",
+    "description": "Retrieves past campaign performance, creative assets, and post-campaign learnings."
+  },
+  "trend_signal_reader": {
+    "type": "external_monitoring",
+    "access": "read_only",
+    "description": "Reads approved trend, social, search, and cultural moment signals."
+  },
+  "approval_workflow": {
+    "type": "workflow",
+    "access": "approval_only",
+    "description": "Creates approval requests but cannot auto-approve."
+  }
+}

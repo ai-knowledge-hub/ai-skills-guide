@@ -1,0 +1,9 @@
+{
+  "brand": "Example Travel",
+  "category": "travel insurance",
+  "objective": "Increase consideration among families planning summer holidays",
+  "available_surfaces": ["quote flow", "policy confirmation email", "mobile app", "airport partnership screens"],
+  "cultural_window": "summer travel disruption season",
+  "creator_context": "family travel creators with practical planning audiences",
+  "constraints": ["regulated claims", "no fear-mongering", "legal review required for coverage claims"]
+}

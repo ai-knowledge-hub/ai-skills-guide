@@ -22,6 +22,9 @@ We publish reusable building blocks across four modules:
 - plugins (installable composition layer)
 - tools & MCP connectors (integration layer)
 
+`packs/` contains documentation-only playbooks that curate existing catalog
+entries. Packs are not installable modules.
+
 ## Operational Metadata Standard
 
 The catalog is being normalized around a shared operational metadata model so
@@ -68,7 +71,7 @@ The first rollouts are on `tools-mcp` and `agents`.
 
 ## Current Scope
 
-### Skills (34)
+### Skills (39)
 
 1. `meta-google-weekly-performance-review` (Beginner)
 2. `creative-workshop-pmax-reels` (Intermediate)
@@ -104,14 +107,20 @@ The first rollouts are on `tools-mcp` and `agents`.
 32. `security/marketing-agent-risk-review` (Runtime Hardening)
 33. `security/ad-platform-agent-auth-review` (Runtime Hardening)
 34. `agentops/ad-platform-policy-gate-designer` (Harness Governance)
+35. `marketing/creative-operating-system-audit` (Creative Ops / Anti-Slop)
+36. `marketing/utility-campaign-concept-designer` (Creative Ops / Utility)
+37. `marketing/product-as-media-mapper` (Creative Ops / Owned Surfaces)
+38. `marketing/cultural-timing-signal-triage` (Creative Ops / Cultural Timing)
+39. `marketing/creator-strategy-brief` (Creator Ops)
 
-### Agents (5)
+### Agents (6)
 
 1. `marketing/weekly-performance-supervisor`
 2. `marketing/campaign-qa-supervisor`
 3. `adtech/bi-insights-orchestrator`
 4. `agentops/agent-control-plane-supervisor`
 5. `adtech/ad-platform-control-plane-supervisor`
+6. `marketing/creative-operating-system-supervisor`
 
 ### Tools & MCP (5)
 
@@ -121,7 +130,7 @@ The first rollouts are on `tools-mcp` and `agents`.
 4. `agentops/agent-control-plane-server`
 5. `adtech/ad-platform-executor-template`
 
-### Plugins (9)
+### Plugins (10)
 
 1. `marketing/performance-reporting-plugin`
 2. `marketing/campaign-audit-plugin`
@@ -132,6 +141,7 @@ The first rollouts are on `tools-mcp` and `agents`.
 7. `engineering/code-maintenance-plugin`
 8. `security/runtime-safety-plugin`
 9. `agentops/harness-governance-plugin`
+10. `marketing/creative-operating-system-plugin`
 
 ## Recent Additions
 
@@ -180,6 +190,13 @@ The first rollouts are on `tools-mcp` and `agents`.
 - `agentops/ad-platform-policy-gate-designer`
 - `adtech/ad-platform-control-plane-supervisor`
 - `adtech/ad-platform-executor-template`
+- `marketing/creative-operating-system-audit`
+- `marketing/utility-campaign-concept-designer`
+- `marketing/product-as-media-mapper`
+- `marketing/cultural-timing-signal-triage`
+- `marketing/creator-strategy-brief`
+- `marketing/creative-operating-system-supervisor`
+- `marketing/creative-operating-system-plugin`
 
 ## Definition of done for each module entry
 
@@ -218,6 +235,8 @@ registry/
   skills-index.json
   agents-index.json
   tools-index.json
+packs/
+  creative-operating-system/
 apps/
   web/
 shared/
@@ -492,7 +511,7 @@ for approval gates before live actions.
 
 Docs:
 
-- [OpenAI Codex Docs](https://developers.openai.com/codex/)
+- [OpenAI Codex Docs](https://developers.openai.com/codex)
 
 Install to Codex runtime paths:
 

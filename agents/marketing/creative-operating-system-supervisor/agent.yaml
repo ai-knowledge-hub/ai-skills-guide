@@ -1,0 +1,58 @@
+id: marketing/creative-operating-system-supervisor
+name: Creative Operating System Supervisor
+description: Coordinate the Creative Operating System workflow from brand memory and utility concepts to creator briefs, cultural timing, and final quality evaluation.
+version: 0.1.0
+released_at: "2026-06-27T00:00:00Z"
+category: marketing-agents/creative-ops
+tags:
+  - creative-operating-system
+  - cannes-2026
+  - anti-slop
+  - brand-memory
+  - creator-ops
+  - governance
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  spec: AGENT.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  skills:
+    - marketing/creative-operating-system-audit
+    - marketing/utility-campaign-concept-designer
+    - marketing/product-as-media-mapper
+    - marketing/cultural-timing-signal-triage
+    - marketing/creator-strategy-brief
+    - marketing/ai-output-eval-scorecard
+    - adtech/brand-rag-memory-bootstrap
+operational:
+  role: Creative operations supervisor for AI-assisted marketing work that must stay useful, distinctive, culturally timed, and governed.
+  coordinates:
+    - Brand memory and operating-system audit
+    - Utility-led campaign concept design
+    - Product-as-media opportunity mapping
+    - Cultural timing and risk triage
+    - Creator strategy briefing
+    - Final AI output evaluation and launch-readiness summary
+  autonomy_level: semi-autonomous
+  approval_boundary: May create plans, briefs, scorecards, and routing recommendations; require human approval before public activation, creator outreach, product-surface changes, paid launch, or any claim involving regulated categories.
+  outputs:
+    - Creative operating system audit
+    - Recommended workflow sequence
+    - Utility concept shortlist
+    - Product-as-media opportunity map
+    - Creator brief package
+    - Launch-readiness scorecard
+verification:
+  tests_min_prompts: 5
+  security_reviewed: false
+deprecated: false

@@ -1,0 +1,12 @@
+{
+  "human_friction": "Parents need fast reassurance that a product is safe and available before a school trip.",
+  "recommended_concepts": [
+    {
+      "name": "Trip-ready checker",
+      "utility": "Builds a checklist from trip length, weather, and child age.",
+      "behavioral_hypothesis": "Reducing uncertainty increases purchase confidence and sharing between parents.",
+      "score": 87
+    }
+  ],
+  "risk_notes": ["Requires accurate inventory and safety claim review"]
+}

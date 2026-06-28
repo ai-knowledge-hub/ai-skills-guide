@@ -1,0 +1,42 @@
+id: marketing/creative-operating-system-audit
+name: Creative Operating System Audit
+description: Audit whether a marketing team has the memory, context, evaluation, creator, product-as-media, feedback, and governance machinery needed for AI-era creative work.
+version: 0.1.0
+released_at: "2026-06-27T00:00:00Z"
+category: marketing-tools/creative-ops
+tags:
+  - creative-operating-system
+  - cannes-2026
+  - anti-slop
+  - brand-memory
+  - governance
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  tools: []
+operational:
+  use_when: Use when a brand or team wants to assess whether it can turn AI output into distinctive, useful, governed creative work.
+  execution_mode: analysis-only
+  outputs:
+    - Creative operating system maturity score
+    - Gap analysis
+    - Prioritized action plan
+    - Evidence table
+  approval_boundary: Safe for analysis and planning; require human approval before changing process, governance, or live campaign workflows.
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

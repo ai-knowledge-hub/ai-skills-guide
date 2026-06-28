@@ -1,11 +1,12 @@
 # AI Output Eval Scorecard
 
-Use this skill to score AI-generated outputs with a repeatable quality
-and compliance rubric.
+Use this skill to score AI-generated outputs with a repeatable quality,
+compliance, and creative operating system rubric.
 
 ## What this skill does
 
 - Scores accuracy, clarity, brand fit, compliance, and actionability.
+- Adds optional Creative Operating System dimensions for Cannes-style creative review: utility, product-as-media potential, cultural timing, human meaning, brand memory, distinctiveness, and creator fit.
 - Flags high-severity findings with evidence.
 - Returns pass/revise/fail verdict.
 
@@ -27,8 +28,9 @@ and compliance rubric.
 
 ```text
 Use AI Output Eval Scorecard.
-Task type: campaign copy
-Score this output for quality and compliance.
+Task type: campaign concept
+Score this output for quality, compliance, utility, distinctiveness,
+product-as-media potential, cultural timing, and brand memory.
 Return overall score, verdict, critical findings,
 and rewrite recommendations.
 ```
@@ -38,6 +40,7 @@ and rewrite recommendations.
 - Dimension scores are clear.
 - Critical findings include concrete evidence.
 - Verdict is actionable.
+- Creative work is not rewarded for polish alone; usefulness, evidence, and brand permission are scored explicitly.
 
 ## Beginner safety checklist
 

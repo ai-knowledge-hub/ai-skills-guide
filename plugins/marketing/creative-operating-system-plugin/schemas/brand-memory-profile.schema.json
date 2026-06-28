@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Brand Memory Profile",
+  "type": "object",
+  "required": ["brand_name", "value_proposition", "approved_claims", "guardrails"],
+  "properties": {
+    "brand_name": { "type": "string" },
+    "category": { "type": "string" },
+    "core_audience": { "type": "string" },
+    "value_proposition": { "type": "string" },
+    "differentiators": { "type": "array", "items": { "type": "string" } },
+    "approved_claims": { "type": "array", "items": { "type": "string" } },
+    "banned_claims": { "type": "array", "items": { "type": "string" } },
+    "guardrails": { "type": "array", "items": { "type": "string" } }
+  }
+}

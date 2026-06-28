@@ -1,0 +1,42 @@
+id: marketing/utility-campaign-concept-designer
+name: Utility Campaign Concept Designer
+description: Convert a campaign brief into useful interventions that help people, shift behavior, or solve a real friction before generating messages.
+version: 0.1.0
+released_at: "2026-06-27T00:00:00Z"
+category: marketing-tools/creative-ops
+tags:
+  - utility
+  - creative-concepts
+  - empowerment
+  - cannes-2026
+  - anti-slop
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  tools: []
+operational:
+  use_when: Use when a team wants campaign concepts that do something useful rather than only communicate a message.
+  execution_mode: analysis-only
+  outputs:
+    - Utility-led concept territories
+    - Behavioral hypothesis
+    - Proof and feasibility notes
+    - Risk flags
+  approval_boundary: Safe for concepting; require brand, legal, and operations approval before production or public use.
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

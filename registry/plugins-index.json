@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0",
-  "generated_at": "2026-03-31T00:00:00Z",
+  "generated_at": "2026-06-28T00:00:00Z",
   "skills": [
     {
       "id": "agentops/harness-governance-plugin",
@@ -288,6 +288,62 @@
       "requires": {
         "approvals": [
           "human-review-for-publish"
+        ]
+      }
+    },
+    {
+      "id": "marketing/creative-operating-system-plugin",
+      "name": "Creative Operating System Plugin",
+      "description": "Bundle the Creative Operating System workflow into one installable package with audit, concepting, creator, timing, evaluation, and first-run operational templates.",
+      "category": "marketing-plugins/creative",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-06-28T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/creative-operating-system-plugin/plugin.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-operating-system-plugin/0.1.0.tar.gz",
+          "sha256": "ccc144aca72dc90100f29f9fbaa9e2beb2e12cc699db957bd4efff7a4a5746c1"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "creative-operating-system",
+        "anti-slop",
+        "creator-ops",
+        "product-as-media",
+        "cultural-timing",
+        "governance"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "includes": {
+        "skills": [
+          "adtech/brand-rag-memory-bootstrap",
+          "marketing/creative-operating-system-audit",
+          "marketing/utility-campaign-concept-designer",
+          "marketing/product-as-media-mapper",
+          "marketing/cultural-timing-signal-triage",
+          "marketing/creator-strategy-brief",
+          "marketing/ai-output-eval-scorecard"
+        ],
+        "agents": [
+          "marketing/creative-operating-system-supervisor"
+        ],
+        "hooks": [
+          "require-memory-before-ideation",
+          "require-launch-gate-review"
+        ]
+      },
+      "requires": {
+        "approvals": [
+          "human-review-before-public-launch",
+          "human-review-before-product-surface-change"
         ]
       }
     },

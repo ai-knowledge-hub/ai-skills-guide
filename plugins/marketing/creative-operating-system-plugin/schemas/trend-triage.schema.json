@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Trend Triage Decision",
+  "type": "object",
+  "required": ["signal", "brand_permission", "decision"],
+  "properties": {
+    "signal": { "type": "string" },
+    "source": { "type": "string" },
+    "brand_permission": { "type": "string" },
+    "risk_notes": { "type": "array", "items": { "type": "string" } },
+    "required_reviewers": { "type": "array", "items": { "type": "string" } },
+    "decision": { "type": "string", "enum": ["act-now", "prepare-and-wait", "monitor", "decline"] },
+    "rationale": { "type": "string" }
+  }
+}

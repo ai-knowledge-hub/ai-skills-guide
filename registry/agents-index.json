@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0",
-  "generated_at": "2026-05-06T00:00:00Z",
+  "generated_at": "2026-06-27T00:00:00Z",
   "skills": [
     {
       "id": "adtech/ad-platform-control-plane-supervisor",
@@ -225,6 +225,70 @@
         "tools": [
           "campaign_config_reader",
           "slack_post"
+        ]
+      }
+    },
+    {
+      "id": "marketing/creative-operating-system-supervisor",
+      "name": "Creative Operating System Supervisor",
+      "description": "Coordinate the Creative Operating System workflow from brand memory and utility concepts to creator briefs, cultural timing, and final quality evaluation.",
+      "category": "marketing-agents/creative-ops",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-06-27T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/agents/marketing/creative-operating-system-supervisor/agent.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-operating-system-supervisor/0.1.0.tar.gz",
+          "sha256": "10f9546b2c056466847e63447eb593dbbee861401eb33999a460c89e25f4f89b"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "creative-operating-system",
+        "cannes-2026",
+        "anti-slop",
+        "brand-memory",
+        "creator-ops",
+        "governance"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "May create plans, briefs, scorecards, and routing recommendations; require human approval before public activation, creator outreach, product-surface changes, paid launch, or any claim involving regulated categories.",
+        "role": "Creative operations supervisor for AI-assisted marketing work that must stay useful, distinctive, culturally timed, and governed.",
+        "coordinates": [
+          "Brand memory and operating-system audit",
+          "Utility-led campaign concept design",
+          "Product-as-media opportunity mapping",
+          "Cultural timing and risk triage",
+          "Creator strategy briefing",
+          "Final AI output evaluation and launch-readiness summary"
+        ],
+        "autonomy_level": "semi-autonomous",
+        "outputs": [
+          "Creative operating system audit",
+          "Recommended workflow sequence",
+          "Utility concept shortlist",
+          "Product-as-media opportunity map",
+          "Creator brief package",
+          "Launch-readiness scorecard"
+        ]
+      },
+      "dependencies": {
+        "skills": [
+          "marketing/creative-operating-system-audit",
+          "marketing/utility-campaign-concept-designer",
+          "marketing/product-as-media-mapper",
+          "marketing/cultural-timing-signal-triage",
+          "marketing/creator-strategy-brief",
+          "marketing/ai-output-eval-scorecard",
+          "adtech/brand-rag-memory-bootstrap"
         ]
       }
     },

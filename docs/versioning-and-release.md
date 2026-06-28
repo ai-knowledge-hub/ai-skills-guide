@@ -28,25 +28,85 @@ git tag v0.2.0-alpha.1
 git push origin v0.2.0-alpha.1
 ```
 
-## Automated release cut (recommended)
+## GitHub release cut (recommended)
 
-From a clean `main` branch, run:
+Use the `Cut Release` workflow from the GitHub Actions tab. It is a manual
+workflow so maintainers can decide which merged changes deserve a public
+release.
+
+Inputs:
+
+- `release_type`: the version bump to cut from the latest `v*` tag.
+- `dry_run`: validates and computes the next tag without pushing it.
+
+Recommended flow:
+
+1. Merge `dev` into `main`.
+2. Open GitHub Actions.
+3. Run `Cut Release` with `dry_run: true`.
+4. Confirm the computed tag and checks.
+5. Re-run with `dry_run: false`.
+
+The workflow runs validation, rebuilds the registry, checks generated files,
+installs the web app, lints it, builds it, and then pushes the computed tag.
+The tag push triggers `.github/workflows/release-on-tag.yml`.
+
+## Release type definitions
+
+Use semantic versioning: `vMAJOR.MINOR.PATCH`.
+
+`patch`:
+
+- Small stable fixes.
+- Example: `v0.2.0-alpha.1` -> `v0.2.1`.
+- Use for bug fixes, docs fixes, CI fixes, and no new capability.
+
+`minor`:
+
+- New stable backward-compatible capability.
+- Example: `v0.2.0-alpha.1` -> `v0.3.0`.
+- Use for new plugins, skills, agents, catalog features, or install behavior
+  that does not break existing users.
+
+`major`:
+
+- Stable breaking release.
+- Example: `v0.2.0-alpha.1` -> `v1.0.0`.
+- Use when schemas, registry contracts, CLI behavior, or install layout break
+  existing consumers.
+
+`patch-alpha`:
+
+- Prerelease patch.
+- Example: `v0.2.0-alpha.1` -> `v0.2.1-alpha.1`.
+- Use for small fixes that should remain marked experimental.
+
+`minor-alpha`:
+
+- Prerelease minor.
+- Example: `v0.2.0-alpha.1` -> `v0.3.0-alpha.1`.
+- Use for new capabilities that are still alpha. This is the usual choice for
+  catalog/plugin waves.
+
+`major-alpha`:
+
+- Prerelease major.
+- Example: `v0.2.0-alpha.1` -> `v1.0.0-alpha.1`.
+- Use when preparing breaking changes that are not ready to call stable.
+
+## Local release cut fallback
+
+If GitHub Actions is unavailable, a maintainer can still cut a release from a
+clean `main` branch:
 
 ```bash
-make release-cut VERSION=v0.2.0-alpha.2
+make release-cut VERSION=v0.3.0-alpha.1
 ```
-
-What this does:
-- verifies clean working tree and `main` branch
-- fast-forwards `main` from `origin/main`
-- runs skill validation and registry generation checks
-- runs web install, lint, and build checks
-- creates and pushes the tag
 
 Optional:
 
 ```bash
-RUN_E2E=1 make release-cut VERSION=v0.2.0-alpha.2
+RUN_E2E=1 make release-cut VERSION=v0.3.0-alpha.1
 ```
 
 to include local Playwright smoke tests before tagging.

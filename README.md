@@ -22,7 +22,8 @@ We publish reusable building blocks across four modules:
 - plugins (installable composition layer)
 - tools & MCP connectors (integration layer)
 
-`packs/` contains documentation-only playbooks that curate existing catalog entries. Packs are not installable modules.
+`packs/` contains documentation-only playbooks that curate existing catalog
+entries. Packs are not installable modules.
 
 ## Operational Metadata Standard
 
@@ -129,7 +130,7 @@ The first rollouts are on `tools-mcp` and `agents`.
 4. `agentops/agent-control-plane-server`
 5. `adtech/ad-platform-executor-template`
 
-### Plugins (9)
+### Plugins (10)
 
 1. `marketing/performance-reporting-plugin`
 2. `marketing/campaign-audit-plugin`
@@ -140,6 +141,7 @@ The first rollouts are on `tools-mcp` and `agents`.
 7. `engineering/code-maintenance-plugin`
 8. `security/runtime-safety-plugin`
 9. `agentops/harness-governance-plugin`
+10. `marketing/creative-operating-system-plugin`
 
 ## Recent Additions
 
@@ -194,6 +196,7 @@ The first rollouts are on `tools-mcp` and `agents`.
 - `marketing/cultural-timing-signal-triage`
 - `marketing/creator-strategy-brief`
 - `marketing/creative-operating-system-supervisor`
+- `marketing/creative-operating-system-plugin`
 
 ## Definition of done for each module entry
 
@@ -508,7 +511,7 @@ for approval gates before live actions.
 
 Docs:
 
-- [OpenAI Codex Docs](https://developers.openai.com/codex/)
+- [OpenAI Codex Docs](https://developers.openai.com/codex)
 
 Install to Codex runtime paths:
 

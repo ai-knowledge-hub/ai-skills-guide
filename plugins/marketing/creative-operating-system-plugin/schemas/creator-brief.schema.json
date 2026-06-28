@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Creator Brief",
+  "type": "object",
+  "required": ["creator_role", "freedom_boundaries", "proof_requirements", "success_criteria"],
+  "properties": {
+    "creator_role": { "type": "string" },
+    "audience_fit": { "type": "string" },
+    "freedom_boundaries": { "type": "array", "items": { "type": "string" } },
+    "proof_requirements": { "type": "array", "items": { "type": "string" } },
+    "prohibited_claims": { "type": "array", "items": { "type": "string" } },
+    "success_criteria": { "type": "array", "items": { "type": "string" } }
+  }
+}

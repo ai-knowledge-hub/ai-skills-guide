@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Approval Matrix",
+  "type": "object",
+  "required": ["rows"],
+  "properties": {
+    "rows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["decision_area", "required_owner"],
+        "properties": {
+          "decision_area": { "type": "string" },
+          "required_owner": { "type": "string" },
+          "backup_owner": { "type": "string" },
+          "evidence_required": { "type": "array", "items": { "type": "string" } },
+          "notes": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -2,12 +2,11 @@
 
 A practical pack for building the machinery behind distinctive AI-assisted marketing work.
 
-This pack is documentation-only. It curates catalog entries and workflow guidance, but it is not an installable module in the hub or CLI.
+This pack is documentation-only. It curates catalog entries and workflow guidance. Use the installable plugin for out-of-the-box setup, and use this pack as the deeper playbook.
 
 This pack was created as the implementation companion to the AI Knowledge Hub Cannes Lions 2026 analysis on the Creative Operating System: the shift from isolated AI output generation to memory, utility, product surfaces, cultural timing, creator collaboration, and governed evaluation.
 
-Article link placeholder:
-https://ai-news-hub.performics-labs.com/news/cannes-lions-2026-ai-creativity-operating-system
+Article link: pending publication.
 
 ## What this pack is for
 
@@ -16,6 +15,16 @@ Use this pack when your team needs to answer a harder question than "can AI gene
 The real question is:
 
 > Do we have the operating system that helps AI-assisted work stay useful, distinctive, culturally aware, and safe to ship?
+
+## Best way to start
+
+If you want to use this workflow straight away, install `marketing/creative-operating-system-plugin` first.
+
+```bash
+./bin/skills-hub install --module plugins --entry marketing/creative-operating-system-plugin@0.1.0 --runtime codex
+```
+
+The plugin bundles the supervisor agent, the core skills, starter intake templates, launch-gate artifacts, and packaged hooks that stop teams from skipping memory or approval steps.
 
 ## Included skills
 

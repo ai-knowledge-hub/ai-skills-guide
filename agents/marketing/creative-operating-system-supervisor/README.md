@@ -27,6 +27,14 @@ Use it for:
 
 ## Install
 
+Preferred for first-time users:
+
+```bash
+./bin/skills-hub install --module plugins --entry marketing/creative-operating-system-plugin@0.1.0 --runtime codex
+```
+
+Agent-only install if you already have the surrounding workflow and templates:
+
 ```bash
 ./bin/skills-hub install \
   marketing/creative-operating-system-supervisor@latest \

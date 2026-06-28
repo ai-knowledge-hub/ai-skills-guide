@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Launch Gate",
+  "type": "object",
+  "required": ["claims_evidenced", "approvals_complete", "rollback_owner"],
+  "properties": {
+    "claims_evidenced": { "type": "boolean" },
+    "sensitive_context_reviewed": { "type": "boolean" },
+    "product_surface_approved": { "type": "boolean" },
+    "creator_disclosures_defined": { "type": "boolean" },
+    "measurement_plan_defined": { "type": "boolean" },
+    "rollback_owner": { "type": "string" },
+    "cultural_timing_documented": { "type": "boolean" },
+    "final_scorecard_complete": { "type": "boolean" }
+  }
+}

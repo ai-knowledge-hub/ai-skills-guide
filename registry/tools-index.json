@@ -121,7 +121,7 @@
           "released_at": "2026-07-24T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/adtech/conversion-event-reconciler/tool.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/conversion-event-reconciler/0.1.0.tar.gz",
-          "sha256": "aef1d651ff49a450a38379af9106d8cb5a554f4e8fcff25a20b1c20373a9ec7b"
+          "sha256": "418018d071d17ceae8b76a0515c5e5d27fe31a7bae85a35e4c4faf2d8713e282"
         }
       ],
       "runtimes": [

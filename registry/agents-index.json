@@ -129,7 +129,7 @@
           "released_at": "2026-07-24T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/agents/adtech/chatgpt-ads-experiment-supervisor/agent.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/chatgpt-ads-experiment-supervisor/0.1.0.tar.gz",
-          "sha256": "948e84eac915c7d0dc4116fb07d407783c576f58fc04e33cfb3f0b7c2734978b"
+          "sha256": "ac8a8a26dab49607fbc3e8bdeba97ad68415901f2832f9a3cbe2343e8df013cd"
         }
       ],
       "runtimes": [
@@ -166,6 +166,10 @@
         ]
       },
       "dependencies": {
+        "agents": [
+          "marketing/creative-operating-system-supervisor",
+          "adtech/ad-platform-control-plane-supervisor"
+        ],
         "skills": [
           "marketing/task-map-designer",
           "marketing/ai-output-eval-scorecard",

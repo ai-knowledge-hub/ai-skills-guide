@@ -25,6 +25,9 @@ entrypoints:
   tests: tests/test-prompts.md
   examples_dir: examples
 dependencies:
+  agents:
+    - marketing/creative-operating-system-supervisor
+    - adtech/ad-platform-control-plane-supervisor
   skills:
     - marketing/task-map-designer
     - marketing/ai-output-eval-scorecard

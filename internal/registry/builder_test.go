@@ -84,6 +84,8 @@ runtimes:
 entrypoints:
   spec: AGENT.md
 dependencies:
+  agents:
+    - marketing/creative-operating-system-supervisor
   skills:
     - adtech/dashboard-generator
   tools:
@@ -119,8 +121,8 @@ deprecated: false
 	if entry.Operational == nil || entry.Operational.Role != "Demo supervisor." {
 		t.Fatalf("expected operational metadata in index, got %#v", entry.Operational)
 	}
-	if entry.Dependencies == nil || len(entry.Dependencies.Skills) != 1 {
-		t.Fatalf("expected dependencies in index, got %#v", entry.Dependencies)
+	if entry.Dependencies == nil || len(entry.Dependencies.Agents) != 1 || len(entry.Dependencies.Skills) != 1 {
+		t.Fatalf("expected agent and skill dependencies in index, got %#v", entry.Dependencies)
 	}
 	if !strings.Contains(entry.Versions[0].ManifestURL, "/agents/marketing/demo-agent/agent.yaml") {
 		t.Fatalf("unexpected manifest url: %s", entry.Versions[0].ManifestURL)

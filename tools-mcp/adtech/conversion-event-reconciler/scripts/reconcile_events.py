@@ -40,11 +40,15 @@ def reconcile(payload):
             current = canonical[key]
             current["sources"].append(source_name)
             for field in ("order_id", "value", "currency"):
-                if item.get(field) is not None and current.get(field) != item.get(field):
+                incoming = item.get(field)
+                existing = current.get(field)
+                if existing is None and incoming is not None:
+                    current[field] = incoming
+                elif incoming is not None and existing is not None and existing != incoming:
                     current["conflicts"].append({
                         "field": field,
-                        "kept": current.get(field),
-                        "received": item.get(field),
+                        "kept": existing,
+                        "received": incoming,
                         "source": source_name,
                     })
 

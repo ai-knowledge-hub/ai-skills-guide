@@ -38,6 +38,32 @@ class ReconcileEventsTests(unittest.TestCase):
         self.assertEqual(result["canonical_events"][0]["conflicts"][0]["field"], "value")
         self.assertTrue(any(item["code"] == "event_conflict" for item in result["warnings"]))
 
+    def test_server_event_enriches_missing_browser_fields(self):
+        payload = {
+            "browser_events": [
+                {"event_name": "purchase", "event_id": "evt-2"}
+            ],
+            "server_events": [
+                {
+                    "event_name": "purchase",
+                    "event_id": "evt-2",
+                    "order_id": "ord-2",
+                    "value": 42,
+                    "currency": "GBP",
+                }
+            ],
+            "outcomes": [{"order_id": "ord-2", "status": "settled"}],
+        }
+        result = MODULE.reconcile(payload)
+        event = result["canonical_events"][0]
+
+        self.assertEqual(event["order_id"], "ord-2")
+        self.assertEqual(event["value"], 42)
+        self.assertEqual(event["currency"], "GBP")
+        self.assertEqual(event["conflicts"], [])
+        self.assertEqual(result["summary"]["verified_outcome_count"], 1)
+        self.assertFalse(any(item["code"] == "event_conflict" for item in result["warnings"]))
+
 
 if __name__ == "__main__":
     unittest.main()

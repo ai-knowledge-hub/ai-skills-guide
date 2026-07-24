@@ -137,7 +137,7 @@ func hasOperational(operational OperationalMetadata) bool {
 }
 
 func hasDependencies(dependencies DependencySet) bool {
-	return len(dependencies.Skills) > 0 || len(dependencies.Tools) > 0 || len(dependencies.APIs) > 0 || len(dependencies.MCPServers) > 0
+	return len(dependencies.Agents) > 0 || len(dependencies.Skills) > 0 || len(dependencies.Tools) > 0 || len(dependencies.APIs) > 0 || len(dependencies.MCPServers) > 0
 }
 
 func hasRequirements(requires RequirementSet) bool {

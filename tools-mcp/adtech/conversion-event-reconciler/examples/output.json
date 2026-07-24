@@ -1,0 +1,64 @@
+{
+  "canonical_events": [
+    {
+      "conflicts": [],
+      "currency": "GBP",
+      "event_id": "evt-100",
+      "event_name": "purchase",
+      "key": "purchase:evt-100",
+      "order_id": "ord-100",
+      "outcome": {
+        "order_id": "ord-100",
+        "status": "settled"
+      },
+      "sources": [
+        "browser_events",
+        "server_events"
+      ],
+      "value": 79
+    },
+    {
+      "conflicts": [],
+      "currency": "GBP",
+      "event_id": null,
+      "event_name": "lead",
+      "key": "unmatched:691465d8951926e5",
+      "order_id": null,
+      "outcome": null,
+      "sources": [
+        "browser_events"
+      ],
+      "value": 0
+    },
+    {
+      "conflicts": [],
+      "currency": "GBP",
+      "event_id": "evt-101",
+      "event_name": "purchase",
+      "key": "purchase:evt-101",
+      "order_id": "ord-101",
+      "outcome": {
+        "order_id": "ord-101",
+        "status": "refunded"
+      },
+      "sources": [
+        "server_events"
+      ],
+      "value": 49
+    }
+  ],
+  "summary": {
+    "canonical_event_count": 3,
+    "duplicate_event_count": 1,
+    "raw_event_count": 4,
+    "reversed_outcome_count": 1,
+    "verified_outcome_count": 1
+  },
+  "warnings": [
+    {
+      "code": "missing_event_id",
+      "key": "unmatched:691465d8951926e5",
+      "source": "browser_events"
+    }
+  ]
+}

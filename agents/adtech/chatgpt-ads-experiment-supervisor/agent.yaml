@@ -1,0 +1,56 @@
+id: adtech/chatgpt-ads-experiment-supervisor
+name: ChatGPT Ads Experiment Supervisor
+description: Coordinate task-led ChatGPT advertising experiments across creative, policy, measurement ownership, platform inspection, reconciliation, and memory.
+version: 0.1.0
+released_at: "2026-07-24T00:00:00Z"
+category: adtech-agents/experimentation
+tags:
+  - chatgpt-ads
+  - experiment-supervisor
+  - measurement
+  - agentic-commerce
+  - governance
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  spec: AGENT.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  skills:
+    - marketing/task-map-designer
+    - marketing/ai-output-eval-scorecard
+    - adtech/advertising-signal-ownership-auditor
+    - marketing/agent-share-of-choice-evaluator
+    - agentops/ad-platform-policy-gate-designer
+  tools:
+    - conversion_event_reconciler
+    - openai_ads_adapter_template
+    - ad_platform_executor_template
+operational:
+  role: Experiment supervisor for task-led conversational advertising and agent-mediated commerce.
+  coordinates:
+    - Task hypothesis design
+    - Creative and compliance readiness
+    - Signal ownership and measurement
+    - Mock or read-only platform inspection
+    - Event reconciliation and experiment memory
+  autonomy_level: advisory
+  approval_boundary: May plan, inspect approved read-only data, and reconcile supplied evidence; live campaign writes require the existing policy gate, executor, and human approval.
+  outputs:
+    - Experiment plan
+    - Readiness decision
+    - Reconciled evidence
+    - Experiment memory record
+verification:
+  tests_min_prompts: 5
+  security_reviewed: false
+deprecated: false

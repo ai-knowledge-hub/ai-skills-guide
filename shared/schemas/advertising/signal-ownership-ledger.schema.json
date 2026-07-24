@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skills.ai-knowledge-hub.org/schemas/advertising/signal-ownership-ledger.schema.json",
+  "title": "Advertising Signal Ownership Ledger",
+  "type": "object",
+  "required": [
+    "entries",
+    "gaps",
+    "verdict"
+  ],
+  "properties": {
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "event",
+          "collector",
+          "controller",
+          "visible_to",
+          "system_of_record",
+          "purpose"
+        ],
+        "properties": {
+          "event": {
+            "type": "string"
+          },
+          "collector": {
+            "type": "string"
+          },
+          "controller": {
+            "type": "string"
+          },
+          "visible_to": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "system_of_record": {
+            "type": "string"
+          },
+          "identifier": {
+            "type": "string"
+          },
+          "consent_basis": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "retention": {
+            "type": "string"
+          },
+          "independent_evidence": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "verdict": {
+      "enum": [
+        "ready",
+        "revise",
+        "block"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

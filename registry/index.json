@@ -1,7 +1,53 @@
 {
   "registry_version": "1.0",
-  "generated_at": "2026-06-27T00:00:00Z",
+  "generated_at": "2026-07-24T00:00:00Z",
   "skills": [
+    {
+      "id": "adtech/advertising-signal-ownership-auditor",
+      "name": "Advertising Signal Ownership Auditor",
+      "description": "Audit collection, control, visibility, retention, and use of advertising signals from exposure through verified business outcome.",
+      "category": "adtech/analytics-engineering",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-07-24T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/advertising-signal-ownership-auditor/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/advertising-signal-ownership-auditor/0.1.0.tar.gz",
+          "sha256": "0c6de51d1e134569ea973f57fd9477a3e281a6bdeb765d4d52d353a904ed2461"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "measurement",
+        "signal-ownership",
+        "pixel",
+        "conversions-api",
+        "governance"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "May audit and recommend; privacy, consent, retention, and platform configuration changes require responsible human approval.",
+        "outputs": [
+          "Signal ownership ledger",
+          "Measurement gaps",
+          "Independent evidence plan"
+        ],
+        "use_when": "Use before campaign activation or measurement redesign to determine who owns and can verify each signal.",
+        "execution_mode": "analysis-only"
+      },
+      "dependencies": {
+        "tools": [
+          "shared/schemas/advertising/signal-ownership-ledger.schema.json"
+        ]
+      }
+    },
     {
       "id": "adtech/analyst-copilot-bigquery-redshift",
       "name": "Analyst Co-pilot (BigQuery + Redshift)",
@@ -875,6 +921,52 @@
       }
     },
     {
+      "id": "marketing/agent-share-of-choice-evaluator",
+      "name": "Agent Share of Choice Evaluator",
+      "description": "Evaluate brand progression across retrieval, consideration, recommendation, selection, transaction, completion, and reuse in agent-mediated tasks.",
+      "category": "marketing-tools/measurement",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-07-24T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/agent-share-of-choice-evaluator/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/agent-share-of-choice-evaluator/0.1.0.tar.gz",
+          "sha256": "98067867b4c9d5b7f411aa09facfde92668558c7fd36597a80096950c77166f6"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "agent-visibility",
+        "share-of-choice",
+        "chatgpt-ads",
+        "agentic-commerce",
+        "evaluation"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Evaluation only; do not publish comparative claims without methodology and human review.",
+        "outputs": [
+          "Stage evidence",
+          "Route comparison",
+          "Confidence and next-test report"
+        ],
+        "use_when": "Use when a team needs a repeatable task-panel evaluation of paid, earned, and executable brand participation.",
+        "execution_mode": "analysis-only"
+      },
+      "dependencies": {
+        "tools": [
+          "marketing/ai-output-eval-scorecard"
+        ]
+      }
+    },
+    {
       "id": "marketing/ai-output-eval-scorecard",
       "name": "AI Output Eval Scorecard",
       "description": "Score AI-generated marketing outputs across accuracy, clarity, brand fit, policy compliance, actionability, and creative operating system fit.",
@@ -1404,6 +1496,52 @@
       "dependencies": {
         "tools": [
           "python3"
+        ]
+      }
+    },
+    {
+      "id": "marketing/task-map-designer",
+      "name": "Task Map Designer",
+      "description": "Convert customer situations into testable task and context hypotheses for agent-mediated advertising and commerce.",
+      "category": "marketing-tools/ads-ops",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-07-24T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/task-map-designer/skill.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/task-map-designer/0.1.0.tar.gz",
+          "sha256": "72a36c32ef6bf10e6a8002a6915c21ce6cfee6a19e01d6343196e551c6f53cd3"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "task-design",
+        "chatgpt-ads",
+        "experimentation",
+        "agentic-commerce",
+        "planning"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "Advisory planning only; targeting, activation, and data collection require platform and privacy approval.",
+        "outputs": [
+          "Task map",
+          "Testable hypotheses",
+          "Measurement plan"
+        ],
+        "use_when": "Use when an advertising or commerce experiment should begin from a customer task rather than a keyword or placement list.",
+        "execution_mode": "analysis-only"
+      },
+      "dependencies": {
+        "tools": [
+          "shared/schemas/advertising/task-map.schema.json"
         ]
       }
     },

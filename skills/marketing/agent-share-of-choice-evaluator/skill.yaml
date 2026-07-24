@@ -1,0 +1,42 @@
+id: marketing/agent-share-of-choice-evaluator
+name: Agent Share of Choice Evaluator
+description: Evaluate brand progression across retrieval, consideration, recommendation, selection, transaction, completion, and reuse in agent-mediated tasks.
+version: 0.1.0
+released_at: "2026-07-24T00:00:00Z"
+category: marketing-tools/measurement
+tags:
+  - agent-visibility
+  - share-of-choice
+  - chatgpt-ads
+  - agentic-commerce
+  - evaluation
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  tools:
+    - marketing/ai-output-eval-scorecard
+operational:
+  use_when: Use when a team needs a repeatable task-panel evaluation of paid, earned, and executable brand participation.
+  execution_mode: analysis-only
+  outputs:
+    - Stage evidence
+    - Route comparison
+    - Confidence and next-test report
+  approval_boundary: Evaluation only; do not publish comparative claims without methodology and human review.
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

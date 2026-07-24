@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skills.ai-knowledge-hub.org/schemas/advertising/task-map.schema.json",
+  "title": "Advertising Task Map",
+  "type": "object",
+  "required": [
+    "task_id",
+    "task",
+    "context",
+    "decision_criteria",
+    "hypothesis",
+    "routes",
+    "measures"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "task": {
+      "type": "string",
+      "minLength": 10
+    },
+    "context": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "decision_criteria": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "hypothesis": {
+      "type": "string"
+    },
+    "routes": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "paid_placement",
+          "earned_discovery",
+          "executable_participation"
+        ]
+      }
+    },
+    "measures": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "disconfirming_evidence": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false
+}

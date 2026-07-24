@@ -1,0 +1,45 @@
+id: adtech/conversion-event-reconciler
+name: Conversion Event Reconciler
+description: Deterministically deduplicate browser and server conversion events and reconcile them with first-party business outcomes.
+version: 0.1.0
+released_at: "2026-07-24T00:00:00Z"
+category: tools-mcp/adtech
+tags:
+  - measurement
+  - deduplication
+  - pixel
+  - conversions-api
+  - first-party-data
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  spec: TOOL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  tools:
+    - python3
+operational:
+  connected_system: Local event fixtures or approved event export
+  capabilities:
+    - Deduplicate browser and server events by event name and event ID.
+    - Preserve event provenance and flag conflicting values.
+    - Reconcile conversions with first-party outcomes.
+  auth_required:
+    - None for local fixtures
+  access_level: read-only
+  trust_boundary: local-tool
+  approval_boundary: Reads supplied files and writes JSON to stdout; live event collection and platform uploads are out of scope.
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: true
+  security_reviewed: false
+deprecated: false

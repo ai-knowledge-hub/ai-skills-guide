@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skills.ai-knowledge-hub.org/schemas/advertising/experiment-record.schema.json",
+  "title": "Agent-Mediated Advertising Experiment Record",
+  "type": "object",
+  "required": [
+    "experiment_id",
+    "task_map_version",
+    "mode",
+    "evidence",
+    "decision"
+  ],
+  "properties": {
+    "experiment_id": {
+      "type": "string"
+    },
+    "task_map_version": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "plan-only",
+        "mock-run",
+        "read-only",
+        "approval-gated"
+      ]
+    },
+    "hypothesis": {
+      "type": "string"
+    },
+    "routes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "source",
+          "label",
+          "value"
+        ],
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "label": {
+            "enum": [
+              "observed",
+              "synthetic",
+              "platform_reported",
+              "independently_verified"
+            ]
+          },
+          "value": {},
+          "sample_size": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "decision": {
+      "enum": [
+        "continue",
+        "revise",
+        "hold",
+        "stop"
+      ]
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "next_test": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

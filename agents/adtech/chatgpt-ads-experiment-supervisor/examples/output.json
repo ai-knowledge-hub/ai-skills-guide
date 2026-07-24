@@ -1,0 +1,19 @@
+{
+  "mode": "mock-run",
+  "readiness": "revise",
+  "completed": [
+    "task_map",
+    "creative_evaluation",
+    "signal_ownership_audit",
+    "mock_insights",
+    "event_reconciliation"
+  ],
+  "blockers": [
+    "No four-week retention event in the outcome ledger"
+  ],
+  "evidence": {
+    "platform_conversions": 36,
+    "independently_verified_fixture_outcomes": 1
+  },
+  "next_decision": "Add retention and cancellation outcomes before interpreting conversion quality"
+}

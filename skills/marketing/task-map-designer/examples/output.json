@@ -1,0 +1,36 @@
+{
+  "task_id": "family-weeknight-meals",
+  "task": "Choose and start a healthy weeknight meal plan for a family of four",
+  "context": [
+    "time-constrained",
+    "nut-free requirement",
+    "budget ceiling"
+  ],
+  "decision_criteria": [
+    "dietary safety",
+    "preparation time",
+    "weekly cost",
+    "delivery reliability"
+  ],
+  "capabilities": [
+    "allergen filters",
+    "family plan comparison",
+    "delivery availability check"
+  ],
+  "hypothesis": "If the brand can verify allergen suitability, total weekly cost, and delivery availability inside the task, qualified customers will select it more often.",
+  "routes": [
+    "paid_placement",
+    "earned_discovery",
+    "executable_participation"
+  ],
+  "measures": [
+    "consideration_rate",
+    "selection_rate",
+    "completed_signup_rate",
+    "four_week_retention"
+  ],
+  "disconfirming_evidence": [
+    "High click rate with low completed signup",
+    "Selection followed by early cancellation"
+  ]
+}

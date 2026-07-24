@@ -1,0 +1,20 @@
+{
+  "panel_version": "meal-planning-v1",
+  "sample_size": 4,
+  "stages": {
+    "retrieved": 3,
+    "understood": 3,
+    "considered": 2,
+    "recommended_earned": 1,
+    "shown_paid": 1,
+    "selected": 1,
+    "completed": 1,
+    "verified_quality": 0
+  },
+  "confidence": "low",
+  "limitations": [
+    "Small sample",
+    "No post-purchase evidence"
+  ],
+  "next_test": "Add four-week retention and cancellation outcomes"
+}

@@ -214,7 +214,7 @@ func digestSkillDir(skillDir string) (string, error) {
 		if rel == "." {
 			return nil
 		}
-		if containsHiddenPart(rel) {
+		if containsIgnoredDigestPart(rel) {
 			if d.IsDir() {
 				return filepath.SkipDir
 			}
@@ -256,10 +256,13 @@ func digestSkillDir(skillDir string) (string, error) {
 	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
-func containsHiddenPart(rel string) bool {
+func containsIgnoredDigestPart(rel string) bool {
 	parts := strings.Split(filepath.ToSlash(rel), "/")
 	for _, part := range parts {
 		if strings.HasPrefix(part, ".") {
+			return true
+		}
+		if part == "__pycache__" || strings.HasSuffix(part, ".pyc") || strings.HasSuffix(part, ".pyo") {
 			return true
 		}
 	}

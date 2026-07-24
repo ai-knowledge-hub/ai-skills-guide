@@ -254,3 +254,50 @@ deprecated: false
 		t.Fatalf("unexpected manifest url: %s", entry.Versions[0].ManifestURL)
 	}
 }
+
+func TestDigestSkillDirIgnoresPythonCache(t *testing.T) {
+	root := t.TempDir()
+	scriptDir := filepath.Join(root, "scripts")
+	cacheDir := filepath.Join(scriptDir, "__pycache__")
+	if err := os.MkdirAll(cacheDir, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	sourcePath := filepath.Join(scriptDir, "reconcile.py")
+	if err := os.WriteFile(sourcePath, []byte("print('source')\n"), 0o644); err != nil {
+		t.Fatalf("write source: %v", err)
+	}
+
+	before, err := digestSkillDir(root)
+	if err != nil {
+		t.Fatalf("digest before cache: %v", err)
+	}
+	if err := os.WriteFile(
+		filepath.Join(cacheDir, "reconcile.cpython-314.pyc"),
+		[]byte("runtime-specific bytecode"),
+		0o644,
+	); err != nil {
+		t.Fatalf("write pycache: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(scriptDir, "temporary.pyo"), []byte("optimized bytecode"), 0o644); err != nil {
+		t.Fatalf("write pyo: %v", err)
+	}
+
+	afterCache, err := digestSkillDir(root)
+	if err != nil {
+		t.Fatalf("digest after cache: %v", err)
+	}
+	if before != afterCache {
+		t.Fatalf("python cache changed digest: before=%s after=%s", before, afterCache)
+	}
+
+	if err := os.WriteFile(sourcePath, []byte("print('changed source')\n"), 0o644); err != nil {
+		t.Fatalf("update source: %v", err)
+	}
+	afterSource, err := digestSkillDir(root)
+	if err != nil {
+		t.Fatalf("digest after source change: %v", err)
+	}
+	if afterSource == before {
+		t.Fatal("tracked source change did not alter digest")
+	}
+}

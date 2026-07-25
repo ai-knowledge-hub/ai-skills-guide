@@ -50,6 +50,8 @@ func ParseManifest(path string) (Manifest, error) {
 			switch nestedMapKey {
 			case "dependencies":
 				switch currentNestedListKey {
+				case "agents":
+					out.Dependencies.Agents = append(out.Dependencies.Agents, item)
 				case "skills":
 					out.Dependencies.Skills = append(out.Dependencies.Skills, item)
 				case "tools":

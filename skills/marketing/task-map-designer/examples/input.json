@@ -1,0 +1,12 @@
+{
+  "brand": "Northstar Meals",
+  "situation": "A parent is comparing healthy weeknight meal options for a family of four",
+  "constraints": [
+    "under 30 minutes",
+    "nut-free",
+    "under GBP 45 per week"
+  ],
+  "evidence": [
+    "Existing customers value predictable delivery and dietary filters"
+  ]
+}

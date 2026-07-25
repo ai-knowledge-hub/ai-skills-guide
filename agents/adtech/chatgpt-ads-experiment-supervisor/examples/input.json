@@ -1,0 +1,7 @@
+{
+  "mode": "mock-run",
+  "brand": "Northstar Meals",
+  "objective": "Test whether task-led advertising improves qualified family-plan signups",
+  "task": "Choose a nut-free family meal plan under GBP 45",
+  "risk_policy": "No live writes; use bundled fixtures"
+}

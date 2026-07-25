@@ -135,6 +135,8 @@ author:
 runtimes:
   - codex
 dependencies:
+  agents:
+    - marketing/creative-operating-system-supervisor
   skills:
     - adtech/dashboard-generator
   tools:
@@ -172,6 +174,9 @@ deprecated: false
 	}
 	if len(m.Operational.Outputs) != 2 {
 		t.Fatalf("unexpected outputs: %#v", m.Operational.Outputs)
+	}
+	if len(m.Dependencies.Agents) != 1 || m.Dependencies.Agents[0] != "marketing/creative-operating-system-supervisor" {
+		t.Fatalf("unexpected agent dependencies: %#v", m.Dependencies)
 	}
 	if len(m.Dependencies.Skills) != 1 || m.Dependencies.Skills[0] != "adtech/dashboard-generator" {
 		t.Fatalf("unexpected skill dependencies: %#v", m.Dependencies)

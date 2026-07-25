@@ -1,0 +1,14 @@
+{
+  "campaign_id": "cmp_mock_001",
+  "date_range": {
+    "start": "2026-07-01",
+    "end": "2026-07-07"
+  },
+  "metrics": {
+    "impressions": 12000,
+    "clicks": 420,
+    "platform_conversions": 36,
+    "spend": 840
+  },
+  "evidence_label": "platform_reported_mock"
+}

@@ -34,6 +34,7 @@ type OperationalMetadata struct {
 }
 
 type DependencySet struct {
+	Agents     []string `json:"agents,omitempty"`
 	Skills     []string `json:"skills,omitempty"`
 	Tools      []string `json:"tools,omitempty"`
 	APIs       []string `json:"apis,omitempty"`

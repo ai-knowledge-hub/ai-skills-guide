@@ -1,0 +1,42 @@
+id: adtech/advertising-signal-ownership-auditor
+name: Advertising Signal Ownership Auditor
+description: Audit collection, control, visibility, retention, and use of advertising signals from exposure through verified business outcome.
+version: 0.1.0
+released_at: "2026-07-24T00:00:00Z"
+category: adtech/analytics-engineering
+tags:
+  - measurement
+  - signal-ownership
+  - pixel
+  - conversions-api
+  - governance
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  tools:
+    - shared/schemas/advertising/signal-ownership-ledger.schema.json
+operational:
+  use_when: Use before campaign activation or measurement redesign to determine who owns and can verify each signal.
+  execution_mode: analysis-only
+  outputs:
+    - Signal ownership ledger
+    - Measurement gaps
+    - Independent evidence plan
+  approval_boundary: May audit and recommend; privacy, consent, retention, and platform configuration changes require responsible human approval.
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

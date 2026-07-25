@@ -1,0 +1,16 @@
+{
+  "systems": [
+    "ChatGPT Ads",
+    "browser pixel",
+    "server events",
+    "CRM",
+    "order system"
+  ],
+  "events": [
+    "ad_click",
+    "lead",
+    "purchase",
+    "refund"
+  ],
+  "objective": "Optimize for qualified purchases while preserving independent measurement"
+}

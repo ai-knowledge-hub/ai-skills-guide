@@ -1,0 +1,25 @@
+{
+  "entries": [
+    {
+      "event": "purchase",
+      "collector": "commerce backend",
+      "controller": "advertiser",
+      "visible_to": [
+        "advertiser",
+        "ad platform via scoped server event"
+      ],
+      "system_of_record": "order system",
+      "identifier": "event_id and order_id",
+      "purpose": [
+        "platform optimization",
+        "independent evaluation"
+      ],
+      "retention": "per approved data policy",
+      "independent_evidence": "settled order"
+    }
+  ],
+  "gaps": [
+    "Refund outcomes are not currently sent to the evaluation store"
+  ],
+  "verdict": "revise"
+}

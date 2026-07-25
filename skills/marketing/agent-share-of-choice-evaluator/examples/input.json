@@ -1,0 +1,12 @@
+{
+  "panel_version": "meal-planning-v1",
+  "tasks": [
+    "Choose a nut-free family meal plan under GBP 45",
+    "Find a healthy dinner service with Tuesday delivery"
+  ],
+  "surfaces": [
+    "agent-a",
+    "agent-b"
+  ],
+  "brand": "Northstar Meals"
+}

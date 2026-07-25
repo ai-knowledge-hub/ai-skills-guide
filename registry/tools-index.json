@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0",
-  "generated_at": "2026-05-06T00:00:00Z",
+  "generated_at": "2026-07-24T00:00:00Z",
   "skills": [
     {
       "id": "ads/meta-ads-mcp-connector",
@@ -106,6 +106,110 @@
         "apis": [
           "Google Ads API",
           "Display \u0026 Video 360 API"
+        ]
+      }
+    },
+    {
+      "id": "adtech/conversion-event-reconciler",
+      "name": "Conversion Event Reconciler",
+      "description": "Deterministically deduplicate browser and server conversion events and reconcile them with first-party business outcomes.",
+      "category": "tools-mcp/adtech",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-07-24T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/adtech/conversion-event-reconciler/tool.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/conversion-event-reconciler/0.1.0.tar.gz",
+          "sha256": "418018d071d17ceae8b76a0515c5e5d27fe31a7bae85a35e4c4faf2d8713e282"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "measurement",
+        "deduplication",
+        "pixel",
+        "conversions-api",
+        "first-party-data"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "connected_system": "Local event fixtures or approved event export",
+        "capabilities": [
+          "Deduplicate browser and server events by event name and event ID.",
+          "Preserve event provenance and flag conflicting values.",
+          "Reconcile conversions with first-party outcomes."
+        ],
+        "auth_required": [
+          "None for local fixtures"
+        ],
+        "access_level": "read-only",
+        "trust_boundary": "local-tool",
+        "approval_boundary": "Reads supplied files and writes JSON to stdout; live event collection and platform uploads are out of scope."
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ]
+      }
+    },
+    {
+      "id": "adtech/openai-ads-adapter-template",
+      "name": "OpenAI Ads Adapter Template",
+      "description": "Mock-first read-only adapter contract for OpenAI Ads accounts, campaigns, ads, insights, and product feeds.",
+      "category": "tools-mcp/adtech",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-07-24T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/adtech/openai-ads-adapter-template/tool.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/openai-ads-adapter-template/0.1.0.tar.gz",
+          "sha256": "01b4b7841260505f22ea1dddbde2c2b5ed44e520a3be294ec2e88f3db8e32958"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "openai-ads",
+        "adapter",
+        "read-only",
+        "campaign-insights",
+        "product-feeds"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "connected_system": "OpenAI Ads API or local mock fixtures",
+        "capabilities": [
+          "Read advertiser account metadata.",
+          "List campaigns and ads.",
+          "Retrieve campaign insights.",
+          "Validate product-feed records."
+        ],
+        "auth_required": [
+          "Account-scoped OpenAI Ads API credential for live bindings"
+        ],
+        "access_level": "read-only",
+        "trust_boundary": "third-party-hosted",
+        "approval_boundary": "Read-only by design; future writes must use the existing policy-gated ad-platform executor."
+      },
+      "dependencies": {
+        "tools": [
+          "secret_manager"
+        ],
+        "apis": [
+          "OpenAI Ads API"
         ]
       }
     },

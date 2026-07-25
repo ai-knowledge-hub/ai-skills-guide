@@ -1,0 +1,30 @@
+{
+  "experiment_id": "northstar-meals-task-led-001",
+  "task_map_version": "family-weeknight-meals-v1",
+  "mode": "mock-run",
+  "hypothesis": "Verifying allergen suitability, total weekly cost, and delivery availability within the task will improve qualified family-plan selection.",
+  "routes": [
+    "paid_placement",
+    "earned_discovery",
+    "executable_participation"
+  ],
+  "evidence": [
+    {
+      "source": "OpenAI Ads campaign insights fixture",
+      "label": "platform_reported",
+      "value": 36,
+      "sample_size": 36
+    },
+    {
+      "source": "Order outcome fixture",
+      "label": "independently_verified",
+      "value": 1,
+      "sample_size": 2
+    }
+  ],
+  "decision": "revise",
+  "limitations": [
+    "No four-week retention event in the outcome ledger"
+  ],
+  "next_test": "Add retention and cancellation outcomes before interpreting conversion quality"
+}

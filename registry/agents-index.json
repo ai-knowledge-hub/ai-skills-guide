@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0",
-  "generated_at": "2026-06-27T00:00:00Z",
+  "generated_at": "2026-07-24T00:00:00Z",
   "skills": [
     {
       "id": "adtech/ad-platform-control-plane-supervisor",
@@ -114,6 +114,73 @@
         "tools": [
           "bigquery_sql",
           "ga4_query"
+        ]
+      }
+    },
+    {
+      "id": "adtech/chatgpt-ads-experiment-supervisor",
+      "name": "ChatGPT Ads Experiment Supervisor",
+      "description": "Coordinate task-led ChatGPT advertising experiments across creative, policy, measurement ownership, platform inspection, reconciliation, and memory.",
+      "category": "adtech-agents/experimentation",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-07-24T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/agents/adtech/chatgpt-ads-experiment-supervisor/agent.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/chatgpt-ads-experiment-supervisor/0.1.0.tar.gz",
+          "sha256": "ac8a8a26dab49607fbc3e8bdeba97ad68415901f2832f9a3cbe2343e8df013cd"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "chatgpt-ads",
+        "experiment-supervisor",
+        "measurement",
+        "agentic-commerce",
+        "governance"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "approval_boundary": "May plan, inspect approved read-only data, and reconcile supplied evidence; live campaign writes require the existing policy gate, executor, and human approval.",
+        "role": "Experiment supervisor for task-led conversational advertising and agent-mediated commerce.",
+        "coordinates": [
+          "Task hypothesis design",
+          "Creative and compliance readiness",
+          "Signal ownership and measurement",
+          "Mock or read-only platform inspection",
+          "Event reconciliation and experiment memory"
+        ],
+        "autonomy_level": "advisory",
+        "outputs": [
+          "Experiment plan",
+          "Readiness decision",
+          "Reconciled evidence",
+          "Experiment memory record"
+        ]
+      },
+      "dependencies": {
+        "agents": [
+          "marketing/creative-operating-system-supervisor",
+          "adtech/ad-platform-control-plane-supervisor"
+        ],
+        "skills": [
+          "marketing/task-map-designer",
+          "marketing/ai-output-eval-scorecard",
+          "adtech/advertising-signal-ownership-auditor",
+          "marketing/agent-share-of-choice-evaluator",
+          "agentops/ad-platform-policy-gate-designer"
+        ],
+        "tools": [
+          "conversion_event_reconciler",
+          "openai_ads_adapter_template",
+          "ad_platform_executor_template"
         ]
       }
     },

@@ -137,7 +137,7 @@ func hasOperational(operational OperationalMetadata) bool {
 }
 
 func hasDependencies(dependencies DependencySet) bool {
-	return len(dependencies.Skills) > 0 || len(dependencies.Tools) > 0 || len(dependencies.APIs) > 0 || len(dependencies.MCPServers) > 0
+	return len(dependencies.Agents) > 0 || len(dependencies.Skills) > 0 || len(dependencies.Tools) > 0 || len(dependencies.APIs) > 0 || len(dependencies.MCPServers) > 0
 }
 
 func hasRequirements(requires RequirementSet) bool {
@@ -214,7 +214,7 @@ func digestSkillDir(skillDir string) (string, error) {
 		if rel == "." {
 			return nil
 		}
-		if containsHiddenPart(rel) {
+		if containsIgnoredDigestPart(rel) {
 			if d.IsDir() {
 				return filepath.SkipDir
 			}
@@ -256,10 +256,13 @@ func digestSkillDir(skillDir string) (string, error) {
 	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
-func containsHiddenPart(rel string) bool {
+func containsIgnoredDigestPart(rel string) bool {
 	parts := strings.Split(filepath.ToSlash(rel), "/")
 	for _, part := range parts {
 		if strings.HasPrefix(part, ".") {
+			return true
+		}
+		if part == "__pycache__" || strings.HasSuffix(part, ".pyc") || strings.HasSuffix(part, ".pyo") {
 			return true
 		}
 	}

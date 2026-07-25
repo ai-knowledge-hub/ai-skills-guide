@@ -1,0 +1,43 @@
+{
+  "browser_events": [
+    {
+      "event_name": "purchase",
+      "event_id": "evt-100",
+      "order_id": "ord-100",
+      "value": 79,
+      "currency": "GBP"
+    },
+    {
+      "event_name": "lead",
+      "order_id": null,
+      "value": 0,
+      "currency": "GBP"
+    }
+  ],
+  "server_events": [
+    {
+      "event_name": "purchase",
+      "event_id": "evt-100",
+      "order_id": "ord-100",
+      "value": 79,
+      "currency": "GBP"
+    },
+    {
+      "event_name": "purchase",
+      "event_id": "evt-101",
+      "order_id": "ord-101",
+      "value": 49,
+      "currency": "GBP"
+    }
+  ],
+  "outcomes": [
+    {
+      "order_id": "ord-100",
+      "status": "settled"
+    },
+    {
+      "order_id": "ord-101",
+      "status": "refunded"
+    }
+  ]
+}

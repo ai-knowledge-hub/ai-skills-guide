@@ -6,7 +6,10 @@ tools/MCP definitions, a hub UI, and QA automation flows.
 
 ## What this repo is
 
-This repository is the practical companion to our written guide. It contains a mix of directly usable instructions, local executables, configured integrations, orchestration templates, installable plugins, and documentation-only packs. Every registry entry now declares or receives an explicit usability classification.
+This repository is the practical companion to our written guide. It contains
+directly usable instructions, local executables, configured integrations,
+orchestration templates, installable plugins, and documentation-only packs.
+Every registry entry declares or receives an explicit usability classification.
 
 ## Positioning
 
@@ -28,19 +31,27 @@ entries. Packs are not installable modules.
 Review maturity and operational usability answer different questions:
 
 - `readiness` says whether an entry is experimental, reviewed, or deprecated.
-- `usability.availability` says whether it can be used now, needs setup, is a template, or is documentation only.
-- `usability.execution` says whether it behaves as instructions, a local tool, remote integration, orchestrator, bundle, or documentation.
+- `usability.availability` says whether it can be used now, needs setup, is a
+  template, or is documentation only.
+- `usability.execution` says whether it behaves as instructions, a local tool,
+  remote integration, orchestrator, bundle, or documentation.
 
-| Availability | Meaning |
-| --- | --- |
-| `usable-now` | Install and use the instructions or local executable immediately. |
-| `setup-required` | The package works after credentials, bindings, dependencies, or policy are configured. |
-| `template-only` | The package is a contract or scaffold to implement, not an executable integration. |
-| `documentation-only` | The package is a learning or architecture guide and is not installed as runtime capability. |
+- `usable-now`: Install and use the instructions or local executable
+  immediately.
+- `setup-required`: Configure credentials, bindings, dependencies, or policy
+  before use.
+- `template-only`: Implement the supplied contract or scaffold before treating
+  it as an executable integration.
+- `documentation-only`: Use the package as a learning or architecture guide;
+  it is not installed as a runtime capability.
 
-Older entries receive conservative inferred labels during registry generation. New or updated entries should declare `usability` in their manifest. The website and `skills-hub info` show whether a classification is declared or inferred.
+Older entries receive conservative inferred labels during registry generation.
+New or updated entries should declare `usability` in their manifest. The
+website and `skills-hub info` show whether a classification is declared or
+inferred.
 
-See [docs/using-the-catalog.md](docs/using-the-catalog.md) for module behavior, install effects, and first-run guidance.
+See [docs/using-the-catalog.md](docs/using-the-catalog.md) for module behavior,
+install effects, and first-run guidance.
 
 ## Catalog scope
 
@@ -51,7 +62,9 @@ Generated registry files are the source of truth for current catalog contents:
 - `registry/tools-index.json`
 - `registry/plugins-index.json`
 
-Use `./bin/skills-hub list --module <skills|agents|tools|plugins>` for the current inventory. `packs/` remains documentation-only and is intentionally outside the install registry.
+Use `./bin/skills-hub list --module <skills|agents|tools|plugins>` for the
+current inventory. `packs/` remains documentation-only and is intentionally
+outside the install registry.
 
 ## Definition of done for each module entry
 

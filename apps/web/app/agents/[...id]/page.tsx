@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import InstallCommands from "@/components/InstallCommands";
 import { buildModuleInstallSnippet, getEntryById, loadAgentsRegistry } from "@/lib/registry";
 import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
+import UsabilityPanel from "@/components/UsabilityPanel";
 
 export async function generateStaticParams() {
   const registry = await loadAgentsRegistry();
@@ -42,6 +43,7 @@ export default async function AgentDetailPage({ params }: { params: { id: string
       </article>
 
       <section className="detail-grid">
+        <UsabilityPanel usability={entry.usability} />
         <article className="card detail-panel">
           <h2>Operational Summary</h2>
           <p><span className="meta">Role:</span> {entry.operational?.role ?? "Not documented"}</p>
@@ -59,6 +61,7 @@ export default async function AgentDetailPage({ params }: { params: { id: string
           <p><span className="meta">ID:</span> {entry.id}</p>
           <p><span className="meta">Runtimes:</span> {entry.runtimes.join(", ")}</p>
           <p><span className="meta">Skill dependencies:</span> {entry.dependencies?.skills?.length ?? 0}</p>
+          <p><span className="meta">Agent dependencies:</span> {entry.dependencies?.agents?.length ?? 0}</p>
           <p><span className="meta">Tool dependencies:</span> {entry.dependencies?.tools?.length ?? 0}</p>
           {entry.replaced_by ? <p><span className="meta">Replaced by:</span> {entry.replaced_by}</p> : null}
         </article>

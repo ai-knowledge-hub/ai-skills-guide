@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0",
-  "generated_at": "2026-07-24T00:00:00Z",
+  "generated_at": "2026-07-25T00:00:00Z",
   "skills": [
     {
       "id": "ads/meta-ads-mcp-connector",
@@ -43,6 +43,14 @@
         "access_level": "read-only",
         "trust_boundary": "remote-mcp-server",
         "approval_boundary": "Safe for reporting queries only; require human approval before pairing with any workflow that can modify campaigns, budgets, or creative state."
+      },
+      "usability": {
+        "availability": "setup-required",
+        "execution": "remote-integration",
+        "requires_setup": [
+          "Configure the connected system and authentication outside agent context."
+        ],
+        "source": "inferred"
       },
       "dependencies": {
         "mcp_servers": [
@@ -97,6 +105,11 @@
         "trust_boundary": "remote-mcp-server",
         "approval_boundary": "Applies only policy-approved bounded writes; high-risk changes require human approval and rollback evidence."
       },
+      "usability": {
+        "availability": "template-only",
+        "execution": "integration-template",
+        "source": "inferred"
+      },
       "dependencies": {
         "tools": [
           "authorization_broker",
@@ -121,7 +134,7 @@
           "released_at": "2026-07-24T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/adtech/conversion-event-reconciler/tool.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/conversion-event-reconciler/0.1.0.tar.gz",
-          "sha256": "418018d071d17ceae8b76a0515c5e5d27fe31a7bae85a35e4c4faf2d8713e282"
+          "sha256": "43e7546f8ae971d5987f751cb9f0bcdb22a9976e2f5762934154d9440db8c918"
         }
       ],
       "runtimes": [
@@ -153,6 +166,12 @@
         "trust_boundary": "local-tool",
         "approval_boundary": "Reads supplied files and writes JSON to stdout; live event collection and platform uploads are out of scope."
       },
+      "usability": {
+        "availability": "usable-now",
+        "execution": "local-tool",
+        "quickstart": "python3 scripts/reconcile_events.py examples/input.json",
+        "source": "declared"
+      },
       "dependencies": {
         "tools": [
           "python3"
@@ -171,7 +190,7 @@
           "released_at": "2026-07-24T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/adtech/openai-ads-adapter-template/tool.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/openai-ads-adapter-template/0.1.0.tar.gz",
-          "sha256": "01b4b7841260505f22ea1dddbde2c2b5ed44e520a3be294ec2e88f3db8e32958"
+          "sha256": "2b83ca41d925b251fd71dd7e7f8263e79cdedb5c8b79e35e3292a3a088cb59a3"
         }
       ],
       "runtimes": [
@@ -204,12 +223,92 @@
         "trust_boundary": "third-party-hosted",
         "approval_boundary": "Read-only by design; future writes must use the existing policy-gated ad-platform executor."
       },
+      "usability": {
+        "availability": "template-only",
+        "execution": "integration-template",
+        "limitations": [
+          "This package contains contracts and fixtures, not an API client."
+        ],
+        "quickstart": "Use adtech/openai-ads-api-client for an executable mock or live read-only integration.",
+        "source": "declared"
+      },
       "dependencies": {
         "tools": [
           "secret_manager"
         ],
         "apis": [
           "OpenAI Ads API"
+        ]
+      }
+    },
+    {
+      "id": "adtech/openai-ads-api-client",
+      "name": "OpenAI Ads API Client",
+      "description": "Dry-run-first client for mock or live read-only OpenAI Ads account, campaign, ad, and insights retrieval plus non-persisting Conversions API validation.",
+      "category": "tools-mcp/adtech",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-07-25T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/adtech/openai-ads-api-client/tool.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/openai-ads-api-client/0.1.0.tar.gz",
+          "sha256": "d202296ac427521dc4c6af470c7e6550c384f7d5c1f390fdd992433d5679727a"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "openai-ads",
+        "advertiser-api",
+        "campaign-insights",
+        "conversions-api",
+        "read-only"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "operational": {
+        "connected_system": "OpenAI Advertiser API and Ads Conversions API",
+        "capabilities": [
+          "Read ad-account metadata.",
+          "List campaigns and ads.",
+          "Retrieve account, campaign, ad-group, or ad insights.",
+          "Validate conversion event batches locally or through validate-only server mode."
+        ],
+        "auth_required": [
+          "OPENAI_ADS_API_KEY for live Advertiser API reads",
+          "OPENAI_ADS_PIXEL_ID and OPENAI_ADS_CONVERSIONS_API_KEY for remote conversion validation"
+        ],
+        "access_level": "read-only",
+        "trust_boundary": "third-party-hosted",
+        "approval_boundary": "Advertiser operations are GET-only; Conversions API requests always force validate_only true and cannot persist events."
+      },
+      "usability": {
+        "availability": "usable-now",
+        "execution": "remote-integration",
+        "requires_setup": [
+          "For live reads, create an account-scoped Ads API key in OpenAI Ads Manager.",
+          "Keep API keys in environment variables outside agent context."
+        ],
+        "limitations": [
+          "Campaign, ad-group, ad, file, and feed mutations are intentionally excluded.",
+          "Remote conversion requests validate events without saving them.",
+          "Automatic pagination, retries, and rate-limit backoff are not included in this first client."
+        ],
+        "quickstart": "python3 scripts/openai_ads_client.py --mode mock account",
+        "source": "declared"
+      },
+      "dependencies": {
+        "tools": [
+          "python3"
+        ],
+        "apis": [
+          "OpenAI Advertiser API",
+          "OpenAI Ads Conversions API"
         ]
       }
     },
@@ -260,6 +359,14 @@
         "trust_boundary": "remote-mcp-server",
         "approval_boundary": "Safe for policy checks and audit writes; requires human approval before executing high-risk operational actions or changing policy."
       },
+      "usability": {
+        "availability": "setup-required",
+        "execution": "remote-integration",
+        "requires_setup": [
+          "Configure the connected system and authentication outside agent context."
+        ],
+        "source": "inferred"
+      },
       "dependencies": {
         "mcp_servers": [
           "agent-control-plane"
@@ -308,6 +415,14 @@
         "trust_boundary": "remote-mcp-server",
         "approval_boundary": "Safe for read-only analytics retrieval; require human approval before combining with any workflow that writes back to ad platforms or reporting systems."
       },
+      "usability": {
+        "availability": "setup-required",
+        "execution": "remote-integration",
+        "requires_setup": [
+          "Configure the connected system and authentication outside agent context."
+        ],
+        "source": "inferred"
+      },
       "dependencies": {
         "mcp_servers": [
           "ga4"
@@ -355,6 +470,14 @@
         "access_level": "read-only",
         "trust_boundary": "remote-mcp-server",
         "approval_boundary": "Safe for parameterized read-only queries; require human approval before broadening dataset scope or enabling any non-read-only SQL path."
+      },
+      "usability": {
+        "availability": "setup-required",
+        "execution": "remote-integration",
+        "requires_setup": [
+          "Configure the connected system and authentication outside agent context."
+        ],
+        "source": "inferred"
       },
       "dependencies": {
         "mcp_servers": [

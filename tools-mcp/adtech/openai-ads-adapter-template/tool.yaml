@@ -41,6 +41,12 @@ operational:
   access_level: read-only
   trust_boundary: third-party-hosted
   approval_boundary: Read-only by design; future writes must use the existing policy-gated ad-platform executor.
+usability:
+  availability: template-only
+  execution: integration-template
+  limitations:
+    - This package contains contracts and fixtures, not an API client.
+  quickstart: Use adtech/openai-ads-api-client for an executable mock or live read-only integration.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

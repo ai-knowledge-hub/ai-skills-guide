@@ -74,7 +74,7 @@ func runList(args []string) error {
 		if s.Deprecated {
 			status = "deprecated"
 		}
-		fmt.Printf("%s\t%s\t%s\t%s\n", s.ID, status, s.Latest, s.Name)
+		fmt.Printf("%s\t%s\t%s\t%s\t%s\n", s.ID, status, s.Usability.Availability, s.Latest, s.Name)
 	}
 	return nil
 }
@@ -167,6 +167,7 @@ func runInfo(args []string) error {
 	fmt.Printf("selected_version: %s\n", resolvedVersion.Version)
 	fmt.Printf("versions: %s\n", strings.Join(versions, ", "))
 	fmt.Printf("runtimes: %s\n", strings.Join(skill.Runtimes, ", "))
+	printUsabilitySummary(os.Stdout, skill)
 	fmt.Printf("deprecated: %t\n", skill.Deprecated)
 	if skill.ReplacedBy != "" {
 		fmt.Printf("replaced_by: %s\n", skill.ReplacedBy)
@@ -305,6 +306,7 @@ func runInstall(args []string) error {
 		}
 		fmt.Fprintln(os.Stderr)
 	}
+	printInstallUsabilityWarning(os.Stderr, skill)
 
 	sourceDir := filepath.Join(resolveModuleRoot(*entriesRoot, moduleName), filepath.FromSlash(skill.ID))
 	if stat, statErr := os.Stat(sourceDir); statErr != nil || !stat.IsDir() {
@@ -349,10 +351,35 @@ func runInstall(args []string) error {
 	}
 
 	fmt.Printf("Installed %s@%s to %s (runtime=%s)\n", skill.ID, resolvedVersion.Version, destination, rt.Runtime)
+	printUsabilitySummary(os.Stdout, skill)
 	if moduleName == "plugins" {
 		printPluginInstallNotes(os.Stdout, os.Stderr, skill, rt.Runtime, destination, runtimeArtifacts, dependencyResult)
 	}
 	return nil
+}
+
+func printUsabilitySummary(w io.Writer, entry registry.SkillEntry) {
+	fmt.Fprintf(w, "usability.availability: %s\n", entry.Usability.Availability)
+	fmt.Fprintf(w, "usability.execution: %s\n", entry.Usability.Execution)
+	fmt.Fprintf(w, "usability.source: %s\n", entry.Usability.Source)
+	if entry.Usability.Quickstart != "" {
+		fmt.Fprintf(w, "usability.quickstart: %s\n", entry.Usability.Quickstart)
+	}
+	if len(entry.Usability.RequiresSetup) > 0 {
+		fmt.Fprintf(w, "usability.requires_setup: %s\n", strings.Join(entry.Usability.RequiresSetup, "; "))
+	}
+	if len(entry.Usability.Limitations) > 0 {
+		fmt.Fprintf(w, "usability.limitations: %s\n", strings.Join(entry.Usability.Limitations, "; "))
+	}
+}
+
+func printInstallUsabilityWarning(w io.Writer, entry registry.SkillEntry) {
+	switch entry.Usability.Availability {
+	case "template-only":
+		fmt.Fprintf(w, "warning: %s installs a reference template, not a connected executable integration\n", entry.ID)
+	case "setup-required":
+		fmt.Fprintf(w, "note: %s requires configuration before operational use\n", entry.ID)
+	}
 }
 
 func printPluginSummary(w io.Writer, entry registry.SkillEntry) {
@@ -406,7 +433,10 @@ func printPluginInstallNotes(
 	if runtime == "codex" || runtime == "claude" {
 		fmt.Fprintf(stdout, "install.next_step: review the generated %s runtime manifest before enabling the plugin\n", runtime)
 	} else if runtime != "" {
-		fmt.Fprintf(stdout, "install.next_step: connect this plugin directory to your runtime manually and verify required secrets before use\n")
+		fmt.Fprintf(stdout, "install.next_step: connect this plugin directory to your runtime manually; configure secrets only for features that need them\n")
+	}
+	if entry.Usability.Quickstart != "" {
+		fmt.Fprintf(stdout, "install.quickstart: %s\n", entry.Usability.Quickstart)
 	}
 	printPluginDependencySummary(stdout, deps)
 	printPluginSummary(stdout, entry)

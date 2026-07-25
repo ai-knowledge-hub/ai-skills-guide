@@ -35,9 +35,9 @@ dependencies:
     - marketing/agent-share-of-choice-evaluator
     - agentops/ad-platform-policy-gate-designer
   tools:
-    - conversion_event_reconciler
-    - openai_ads_adapter_template
-    - ad_platform_executor_template
+    - adtech/conversion-event-reconciler
+    - adtech/openai-ads-api-client
+    - adtech/ad-platform-executor-template
 operational:
   role: Experiment supervisor for task-led conversational advertising and agent-mediated commerce.
   coordinates:
@@ -53,6 +53,15 @@ operational:
     - Readiness decision
     - Reconciled evidence
     - Experiment memory record
+usability:
+  availability: setup-required
+  execution: orchestrator
+  requires_setup:
+    - Install all declared agent, skill, and tool dependencies, preferably through the ChatGPT Advertising Experiment Plugin.
+    - Configure mock or live read-only tool bindings and a governance profile.
+  limitations:
+    - The supervisor is advisory and does not execute campaign writes.
+  quickstart: Run the plugin mock lab, then invoke this agent in mock-run mode with the generated evidence bundle.
 verification:
   tests_min_prompts: 5
   security_reviewed: false

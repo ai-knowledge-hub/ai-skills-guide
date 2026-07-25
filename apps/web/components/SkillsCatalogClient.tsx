@@ -7,6 +7,7 @@ import type { SkillEntry } from "@/lib/registry";
 import FilterSelect, { type FilterOption } from "@/components/FilterSelect";
 import type { CatalogInitialFilters } from "@/lib/catalogFilters";
 import { formatCategoryLabel } from "@/lib/categoryLabels";
+import UsabilityBadge from "@/components/UsabilityBadge";
 
 type SkillsCatalogClientProps = {
   skills: SkillEntry[];
@@ -171,7 +172,10 @@ export default function SkillsCatalogClient({ skills, categories, tags, initial 
       <section className="grid">
         {filtered.map((skill) => (
           <Link key={skill.id} href={`/skills/${skill.id}`} className="card">
-            <p className="meta">{skill.id}</p>
+            <div className="catalog-card-head">
+              <p className="meta">{skill.id}</p>
+              <UsabilityBadge availability={skill.usability.availability} />
+            </div>
             <h2>{skill.name}</h2>
             <p className="meta">{formatCategoryLabel(skill.category)}</p>
             <p>{skill.description}</p>

@@ -1,0 +1,66 @@
+id: marketing/chatgpt-advertising-experiment-plugin
+name: ChatGPT Advertising Experiment Plugin
+description: Install a task-led ChatGPT Ads experiment workflow with planning skills, supervisors, read-only API access, conversion reconciliation, policy gates, and a one-command mock lab.
+version: 0.1.0
+released_at: "2026-07-25T00:00:00Z"
+category: marketing-plugins/intelligence
+tags:
+  - chatgpt-ads
+  - advertiser-api
+  - experimentation
+  - measurement
+  - agentic-commerce
+  - governance
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  spec: plugin.json
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+includes:
+  skills:
+    - marketing/task-map-designer
+    - marketing/ai-output-eval-scorecard
+    - adtech/advertising-signal-ownership-auditor
+    - marketing/agent-share-of-choice-evaluator
+    - agentops/ad-platform-policy-gate-designer
+  agents:
+    - adtech/chatgpt-ads-experiment-supervisor
+    - marketing/creative-operating-system-supervisor
+    - adtech/ad-platform-control-plane-supervisor
+  tools:
+    - adtech/conversion-event-reconciler
+    - adtech/openai-ads-api-client
+    - adtech/ad-platform-executor-template
+  hooks:
+    - require-measurement-before-activation
+requires:
+  secrets:
+    - OPENAI_ADS_API_KEY
+    - OPENAI_ADS_PIXEL_ID
+    - OPENAI_ADS_CONVERSIONS_API_KEY
+  approvals:
+    - human-approval-before-live-campaign-write
+    - human-approval-before-tracking-change
+usability:
+  availability: usable-now
+  execution: bundle
+  requires_setup:
+    - For live reads, configure account-scoped API credentials only after the mock lab passes.
+    - Replace the executor template with an approved platform executor before any mutation.
+  limitations:
+    - The installed OpenAI Ads client does not mutate campaigns, ad groups, ads, files, or feeds.
+    - The bundled executor remains a reference template rather than a live OpenAI Ads writer.
+  quickstart: python3 scripts/run_mock_lab.py
+verification:
+  tests_min_prompts: 5
+  security_reviewed: false
+deprecated: false

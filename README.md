@@ -6,9 +6,7 @@ tools/MCP definitions, a hub UI, and QA automation flows.
 
 ## What this repo is
 
-This repository is the executable companion to our written guide.
-It contains production-oriented `SKILL.md` packages, deterministic
-scripts, test prompts, and contribution standards.
+This repository is the practical companion to our written guide. It contains a mix of directly usable instructions, local executables, configured integrations, orchestration templates, installable plugins, and documentation-only packs. Every registry entry now declares or receives an explicit usability classification.
 
 ## Positioning
 
@@ -25,178 +23,35 @@ We publish reusable building blocks across four modules:
 `packs/` contains documentation-only playbooks that curate existing catalog
 entries. Packs are not installable modules.
 
-## Operational Metadata Standard
+## Know what you are installing
 
-The catalog is being normalized around a shared operational metadata model so
-users can answer the same practical questions across modules:
+Review maturity and operational usability answer different questions:
 
-- what this entry does
-- what systems it touches
-- what it needs to authenticate
-- what permissions it can exercise
-- what approval boundary applies
+- `readiness` says whether an entry is experimental, reviewed, or deprecated.
+- `usability.availability` says whether it can be used now, needs setup, is a template, or is documentation only.
+- `usability.execution` says whether it behaves as instructions, a local tool, remote integration, orchestrator, bundle, or documentation.
 
-The first rollouts are on `tools-mcp` and `agents`.
+| Availability | Meaning |
+| --- | --- |
+| `usable-now` | Install and use the instructions or local executable immediately. |
+| `setup-required` | The package works after credentials, bindings, dependencies, or policy are configured. |
+| `template-only` | The package is a contract or scaffold to implement, not an executable integration. |
+| `documentation-only` | The package is a learning or architecture guide and is not installed as runtime capability. |
 
-`tools-mcp` now exposes:
+Older entries receive conservative inferred labels during registry generation. New or updated entries should declare `usability` in their manifest. The website and `skills-hub info` show whether a classification is declared or inferred.
 
-- connected system
-- capabilities
-- auth required
-- access level
-- trust boundary
-- approval boundary
+See [docs/using-the-catalog.md](docs/using-the-catalog.md) for module behavior, install effects, and first-run guidance.
 
-`agents` now exposes:
+## Catalog scope
 
-- role
-- coordinates
-- autonomy level
-- approval boundary
-- outputs
+Generated registry files are the source of truth for current catalog contents:
 
-`skills` now exposes:
+- `registry/skills-index.json`
+- `registry/agents-index.json`
+- `registry/tools-index.json`
+- `registry/plugins-index.json`
 
-- use when
-- execution mode
-- outputs
-- approval boundary
-
-- Guide article site:
-  [ai-news-hub.performics-labs.com](https://ai-news-hub.performics-labs.com)
-  (article title: The Agent Architect’s Playbook: Building AI Skills
-  for Marketing & Ad Tech)
-- Community references:
-  [awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills)
-
-## Current Scope
-
-### Skills (39)
-
-1. `meta-google-weekly-performance-review` (Beginner)
-2. `creative-workshop-pmax-reels` (Intermediate)
-3. `lifecycle-experiment-planner` (Intermediate)
-4. `policy-brand-compliance-checker` (Intermediate)
-5. `seo-paid-search-synergy` (Advanced)
-6. `analyst-copilot-bigquery-redshift` (Advanced)
-7. `playwright-agentic-e2e` (QA / Infrastructure)
-8. `playwright-vscode-loop-codex` (QA / VS Code Loop)
-9. `ai-output-eval-scorecard` (Governance / Evaluation)
-10. `cross-channel-budget-pacing-agent` (Ads Ops)
-11. `ab-test-planner-analyzer` (Measurement / Experimentation)
-12. `lifecycle-journey-trigger-designer` (Lifecycle CRM)
-13. `dynamic-creative-rules-engine` (Creative Ops / Personalization)
-14. `brand-rag-memory-bootstrap` (Analytics Engineering / RAG)
-15. `weekly-performance-review-bi` (BI Reporting)
-16. `dashboard-generator` (BI Dashboard Build)
-17. `dashboard-qa-checker` (BI QA)
-18. `executive-narrative-writer` (BI Insights Communication)
-19. `engineering/implementation-strategy` (Code Maintenance)
-20. `engineering/code-change-verification` (Code Maintenance)
-21. `engineering/test-gap-analyzer` (Testing Quality)
-22. `engineering/coverage-gap-reporter` (Testing Quality)
-23. `engineering/pr-review-and-draft` (PR Review)
-24. `security/handle-untrusted-content` (Prompt Safety)
-25. `security/dependency-supply-chain-audit` (Supply Chain)
-26. `security/secrets-and-credential-hygiene` (Runtime Hardening)
-27. `security/environment-risk-assessment` (Runtime Hardening)
-28. `agentops/harness-run-reflection` (Harness Evolution)
-29. `agentops/harness-skill-proposal` (Harness Governance)
-30. `agentops/harness-regression-evaluator` (Harness Evaluation)
-31. `agentops/agent-control-plane-review` (Harness Governance)
-32. `security/marketing-agent-risk-review` (Runtime Hardening)
-33. `security/ad-platform-agent-auth-review` (Runtime Hardening)
-34. `agentops/ad-platform-policy-gate-designer` (Harness Governance)
-35. `marketing/creative-operating-system-audit` (Creative Ops / Anti-Slop)
-36. `marketing/utility-campaign-concept-designer` (Creative Ops / Utility)
-37. `marketing/product-as-media-mapper` (Creative Ops / Owned Surfaces)
-38. `marketing/cultural-timing-signal-triage` (Creative Ops / Cultural Timing)
-39. `marketing/creator-strategy-brief` (Creator Ops)
-
-### Agents (6)
-
-1. `marketing/weekly-performance-supervisor`
-2. `marketing/campaign-qa-supervisor`
-3. `adtech/bi-insights-orchestrator`
-4. `agentops/agent-control-plane-supervisor`
-5. `adtech/ad-platform-control-plane-supervisor`
-6. `marketing/creative-operating-system-supervisor`
-
-### Tools & MCP (5)
-
-1. `analytics/ga4-mcp-connector`
-2. `ads/meta-ads-mcp-connector`
-3. `warehouse/bigquery-mcp-query-runner`
-4. `agentops/agent-control-plane-server`
-5. `adtech/ad-platform-executor-template`
-
-### Plugins (10)
-
-1. `marketing/performance-reporting-plugin`
-2. `marketing/campaign-audit-plugin`
-3. `marketing/content-repurposing-plugin`
-4. `marketing/page-speed-technical-seo-plugin`
-5. `marketing/competitive-intelligence-plugin`
-6. `marketing/ad-creative-plugin`
-7. `engineering/code-maintenance-plugin`
-8. `security/runtime-safety-plugin`
-9. `agentops/harness-governance-plugin`
-10. `marketing/creative-operating-system-plugin`
-
-## Recent Additions
-
-- `ai-output-eval-scorecard`
-- `cross-channel-budget-pacing-agent`
-- `ab-test-planner-analyzer`
-- `lifecycle-journey-trigger-designer`
-- `dynamic-creative-rules-engine`
-- `brand-rag-memory-bootstrap`
-- `weekly-performance-review-bi`
-- `dashboard-generator`
-- `dashboard-qa-checker`
-- `executive-narrative-writer`
-- `marketing/weekly-performance-supervisor`
-- `marketing/campaign-qa-supervisor`
-- `adtech/bi-insights-orchestrator`
-- `analytics/ga4-mcp-connector`
-- `ads/meta-ads-mcp-connector`
-- `warehouse/bigquery-mcp-query-runner`
-- `marketing/performance-reporting-plugin`
-- `marketing/campaign-audit-plugin`
-- `marketing/content-repurposing-plugin`
-- `marketing/page-speed-technical-seo-plugin`
-- `marketing/competitive-intelligence-plugin`
-- `marketing/ad-creative-plugin`
-- `engineering/code-maintenance-plugin`
-- `security/runtime-safety-plugin`
-- `agentops/harness-governance-plugin`
-- `engineering/implementation-strategy`
-- `engineering/code-change-verification`
-- `engineering/test-gap-analyzer`
-- `engineering/coverage-gap-reporter`
-- `engineering/pr-review-and-draft`
-- `security/handle-untrusted-content`
-- `security/dependency-supply-chain-audit`
-- `security/secrets-and-credential-hygiene`
-- `security/environment-risk-assessment`
-- `agentops/harness-run-reflection`
-- `agentops/harness-skill-proposal`
-- `agentops/harness-regression-evaluator`
-- `agentops/agent-control-plane-review`
-- `security/marketing-agent-risk-review`
-- `agentops/agent-control-plane-supervisor`
-- `agentops/agent-control-plane-server`
-- `security/ad-platform-agent-auth-review`
-- `agentops/ad-platform-policy-gate-designer`
-- `adtech/ad-platform-control-plane-supervisor`
-- `adtech/ad-platform-executor-template`
-- `marketing/creative-operating-system-audit`
-- `marketing/utility-campaign-concept-designer`
-- `marketing/product-as-media-mapper`
-- `marketing/cultural-timing-signal-triage`
-- `marketing/creator-strategy-brief`
-- `marketing/creative-operating-system-supervisor`
-- `marketing/creative-operating-system-plugin`
+Use `./bin/skills-hub list --module <skills|agents|tools|plugins>` for the current inventory. `packs/` remains documentation-only and is intentionally outside the install registry.
 
 ## Definition of done for each module entry
 

@@ -1,0 +1,62 @@
+id: adtech/openai-ads-api-client
+name: OpenAI Ads API Client
+description: Dry-run-first client for mock or live read-only OpenAI Ads account, campaign, ad, and insights retrieval plus non-persisting Conversions API validation.
+version: 0.1.0
+released_at: "2026-07-25T00:00:00Z"
+category: tools-mcp/adtech
+tags:
+  - openai-ads
+  - advertiser-api
+  - campaign-insights
+  - conversions-api
+  - read-only
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  spec: TOOL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  scripts_dir: scripts
+  examples_dir: examples
+dependencies:
+  apis:
+    - OpenAI Advertiser API
+    - OpenAI Ads Conversions API
+  tools:
+    - python3
+operational:
+  connected_system: OpenAI Advertiser API and Ads Conversions API
+  capabilities:
+    - Read ad-account metadata.
+    - List campaigns and ads.
+    - Retrieve account, campaign, ad-group, or ad insights.
+    - Validate conversion event batches locally or through validate-only server mode.
+  auth_required:
+    - OPENAI_ADS_API_KEY for live Advertiser API reads
+    - OPENAI_ADS_PIXEL_ID and OPENAI_ADS_CONVERSIONS_API_KEY for remote conversion validation
+  access_level: read-only
+  trust_boundary: third-party-hosted
+  approval_boundary: Advertiser operations are GET-only; Conversions API requests always force validate_only true and cannot persist events.
+usability:
+  availability: usable-now
+  execution: remote-integration
+  requires_setup:
+    - For live reads, create an account-scoped Ads API key in OpenAI Ads Manager.
+    - Keep API keys in environment variables outside agent context.
+  limitations:
+    - Campaign, ad-group, ad, file, and feed mutations are intentionally excluded.
+    - Remote conversion requests validate events without saving them.
+    - Automatic pagination, retries, and rate-limit backoff are not included in this first client.
+  quickstart: python3 scripts/openai_ads_client.py --mode mock account
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: true
+  security_reviewed: false
+deprecated: false

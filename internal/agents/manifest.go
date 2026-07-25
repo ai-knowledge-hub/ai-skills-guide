@@ -42,6 +42,8 @@ func ParseAgentManifest(path string) (Manifest, error) {
 			item = unquote(item)
 			if section == "dependencies" {
 				switch currentList {
+				case "agents":
+					out.DependencyAgents = append(out.DependencyAgents, item)
 				case "skills":
 					out.DependencySkills = append(out.DependencySkills, item)
 				case "tools":

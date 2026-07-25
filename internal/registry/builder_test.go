@@ -60,6 +60,9 @@ deprecated: false
 	if entry.Dependencies == nil || len(entry.Dependencies.Tools) != 1 {
 		t.Fatalf("expected dependencies in index, got %#v", entry.Dependencies)
 	}
+	if entry.Usability.Availability != "usable-now" || entry.Usability.Execution != "instructions" || entry.Usability.Source != "inferred" {
+		t.Fatalf("unexpected default usability: %#v", entry.Usability)
+	}
 }
 
 func TestBuildAgentsIndex(t *testing.T) {
@@ -123,6 +126,9 @@ deprecated: false
 	}
 	if entry.Dependencies == nil || len(entry.Dependencies.Agents) != 1 || len(entry.Dependencies.Skills) != 1 {
 		t.Fatalf("expected agent and skill dependencies in index, got %#v", entry.Dependencies)
+	}
+	if entry.Usability.Availability != "setup-required" || entry.Usability.Execution != "orchestrator" {
+		t.Fatalf("unexpected agent usability: %#v", entry.Usability)
 	}
 	if !strings.Contains(entry.Versions[0].ManifestURL, "/agents/marketing/demo-agent/agent.yaml") {
 		t.Fatalf("unexpected manifest url: %s", entry.Versions[0].ManifestURL)

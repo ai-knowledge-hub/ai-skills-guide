@@ -20,6 +20,8 @@ tags:
 runtimes:
   - codex
 dependencies:
+  agents:
+    - marketing/creative-supervisor
   skills:
     - adtech/dashboard-generator
   tools:
@@ -37,6 +39,9 @@ dependencies:
 	}
 	if len(m.DependencySkills) != 1 || m.DependencySkills[0] != "adtech/dashboard-generator" {
 		t.Fatalf("unexpected skills deps: %#v", m.DependencySkills)
+	}
+	if len(m.DependencyAgents) != 1 || m.DependencyAgents[0] != "marketing/creative-supervisor" {
+		t.Fatalf("unexpected agent deps: %#v", m.DependencyAgents)
 	}
 	if len(m.DependencyTools) != 1 || m.DependencyTools[0] != "ga4_query" {
 		t.Fatalf("unexpected tools deps: %#v", m.DependencyTools)

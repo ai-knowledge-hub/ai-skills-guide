@@ -1,0 +1,1 @@
+{"validate_only":true,"events":[{"id":"order_12345","type":"order_created","timestamp_ms":1784937600000,"source_url":"https://example.com/checkout/confirmation","action_source":"web","user":{"country":"GB"},"data":{"type":"contents"}}]}

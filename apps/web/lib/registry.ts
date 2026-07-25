@@ -21,6 +21,14 @@ export type RegistryEntry = {
   runtimes: string[];
   tags: string[];
   readiness: "experimental" | "reviewed" | "deprecated";
+  usability: {
+    availability: "usable-now" | "setup-required" | "template-only" | "documentation-only";
+    execution: "instructions" | "local-tool" | "remote-integration" | "integration-template" | "orchestrator" | "bundle" | "documentation";
+    requires_setup?: string[];
+    limitations?: string[];
+    quickstart?: string;
+    source: "declared" | "inferred";
+  };
   security_reviewed: boolean;
   deprecated: boolean;
   replaced_by?: string;
@@ -39,6 +47,7 @@ export type RegistryEntry = {
     execution_mode?: string;
   };
   dependencies?: {
+    agents?: string[];
     skills?: string[];
     tools?: string[];
     apis?: string[];

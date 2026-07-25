@@ -118,6 +118,47 @@ deprecated: false
 	}
 }
 
+func TestParseManifestUsability(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "tool.yaml")
+	content := `id: adtech/example-tool
+name: Example Tool
+description: Example tool manifest for usability parsing.
+version: 0.1.0
+released_at: "2026-07-25T00:00:00Z"
+category: tools-mcp/adtech
+tags:
+  - example
+license: MIT
+author:
+  name: Example
+runtimes:
+  - codex
+usability:
+  availability: setup-required
+  execution: remote-integration
+  requires_setup:
+    - Configure an account-scoped key.
+  limitations:
+    - Dry-run mode is the default.
+  quickstart: python3 scripts/client.py account
+deprecated: false
+`
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("write file: %v", err)
+	}
+	m, err := ParseManifest(path)
+	if err != nil {
+		t.Fatalf("parse manifest: %v", err)
+	}
+	if m.Usability.Availability != "setup-required" || m.Usability.Execution != "remote-integration" {
+		t.Fatalf("unexpected usability: %#v", m.Usability)
+	}
+	if len(m.Usability.RequiresSetup) != 1 || len(m.Usability.Limitations) != 1 {
+		t.Fatalf("unexpected usability lists: %#v", m.Usability)
+	}
+}
+
 func TestParseAgentManifestOperationalMetadata(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "agent.yaml")

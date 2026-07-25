@@ -49,6 +49,14 @@
           "Executor and rollback checklist"
         ]
       },
+      "usability": {
+        "availability": "setup-required",
+        "execution": "orchestrator",
+        "requires_setup": [
+          "Install declared dependencies and configure tool bindings."
+        ],
+        "source": "inferred"
+      },
       "dependencies": {
         "skills": [
           "security/ad-platform-agent-auth-review",
@@ -105,6 +113,14 @@
           "Risks and data limitations"
         ]
       },
+      "usability": {
+        "availability": "setup-required",
+        "execution": "orchestrator",
+        "requires_setup": [
+          "Install declared dependencies and configure tool bindings."
+        ],
+        "source": "inferred"
+      },
       "dependencies": {
         "skills": [
           "adtech/analyst-copilot-bigquery-redshift",
@@ -129,7 +145,7 @@
           "released_at": "2026-07-24T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/agents/adtech/chatgpt-ads-experiment-supervisor/agent.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/chatgpt-ads-experiment-supervisor/0.1.0.tar.gz",
-          "sha256": "ac8a8a26dab49607fbc3e8bdeba97ad68415901f2832f9a3cbe2343e8df013cd"
+          "sha256": "fe13951af91f9ebc8f65750db3ceb0b110eb7340e88187c687a98fd262c507d0"
         }
       ],
       "runtimes": [
@@ -165,6 +181,19 @@
           "Experiment memory record"
         ]
       },
+      "usability": {
+        "availability": "setup-required",
+        "execution": "orchestrator",
+        "requires_setup": [
+          "Install all declared agent, skill, and tool dependencies, preferably through the ChatGPT Advertising Experiment Plugin.",
+          "Configure mock or live read-only tool bindings and a governance profile."
+        ],
+        "limitations": [
+          "The supervisor is advisory and does not execute campaign writes."
+        ],
+        "quickstart": "Run the plugin mock lab, then invoke this agent in mock-run mode with the generated evidence bundle.",
+        "source": "declared"
+      },
       "dependencies": {
         "agents": [
           "marketing/creative-operating-system-supervisor",
@@ -178,9 +207,9 @@
           "agentops/ad-platform-policy-gate-designer"
         ],
         "tools": [
-          "conversion_event_reconciler",
-          "openai_ads_adapter_template",
-          "ad_platform_executor_template"
+          "adtech/conversion-event-reconciler",
+          "adtech/openai-ads-api-client",
+          "adtech/ad-platform-executor-template"
         ]
       }
     },
@@ -230,6 +259,14 @@
           "Policy and approval recommendations",
           "Audit evidence checklist"
         ]
+      },
+      "usability": {
+        "availability": "setup-required",
+        "execution": "orchestrator",
+        "requires_setup": [
+          "Install declared dependencies and configure tool bindings."
+        ],
+        "source": "inferred"
       },
       "dependencies": {
         "skills": [
@@ -284,6 +321,14 @@
           "Remediation action list",
           "Alert summary for escalation"
         ]
+      },
+      "usability": {
+        "availability": "setup-required",
+        "execution": "orchestrator",
+        "requires_setup": [
+          "Install declared dependencies and configure tool bindings."
+        ],
+        "source": "inferred"
       },
       "dependencies": {
         "skills": [
@@ -347,6 +392,14 @@
           "Launch-readiness scorecard"
         ]
       },
+      "usability": {
+        "availability": "setup-required",
+        "execution": "orchestrator",
+        "requires_setup": [
+          "Install declared dependencies and configure tool bindings."
+        ],
+        "source": "inferred"
+      },
       "dependencies": {
         "skills": [
           "marketing/creative-operating-system-audit",
@@ -402,6 +455,14 @@
           "QA package",
           "Executive narrative"
         ]
+      },
+      "usability": {
+        "availability": "setup-required",
+        "execution": "orchestrator",
+        "requires_setup": [
+          "Install declared dependencies and configure tool bindings."
+        ],
+        "source": "inferred"
       },
       "dependencies": {
         "skills": [

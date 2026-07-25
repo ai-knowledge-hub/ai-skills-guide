@@ -51,4 +51,13 @@ JSON
 )"
 echo "$sample_out" | grep -q '"recommended_total_sample_size"'
 
+echo "[check] conversion event reconciler tests"
+python3 -m unittest discover -s "$ROOT/tools-mcp/adtech/conversion-event-reconciler/tests" -p 'test_*.py'
+
+echo "[check] OpenAI Ads API client tests"
+python3 -m unittest discover -s "$ROOT/tools-mcp/adtech/openai-ads-api-client/tests" -p 'test_*.py'
+
+echo "[check] ChatGPT advertising plugin mock lab"
+python3 -m unittest discover -s "$ROOT/plugins/marketing/chatgpt-advertising-experiment-plugin/tests" -p 'test_*.py'
+
 echo "All skill scripts passed deterministic checks."

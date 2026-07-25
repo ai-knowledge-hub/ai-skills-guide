@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import InstallCommands from "@/components/InstallCommands";
 import { buildModuleInstallSnippet, getEntryById, loadToolsRegistry } from "@/lib/registry";
 import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
+import UsabilityPanel from "@/components/UsabilityPanel";
 
 export async function generateStaticParams() {
   const registry = await loadToolsRegistry();
@@ -42,6 +43,7 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
       </article>
 
       <section className="detail-grid">
+        <UsabilityPanel usability={entry.usability} />
         <article className="card detail-panel">
           <h2>Operational Summary</h2>
           <p><span className="meta">Connected system:</span> {entry.operational?.connected_system ?? "Not documented"}</p>

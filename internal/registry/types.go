@@ -13,9 +13,19 @@ type Manifest struct {
 	Deprecated       bool
 	ReplacedBy       string
 	Operational      OperationalMetadata
+	Usability        UsabilityMetadata
 	Dependencies     DependencySet
 	Includes         IncludeSet
 	Requires         RequirementSet
+}
+
+type UsabilityMetadata struct {
+	Availability  string   `json:"availability"`
+	Execution     string   `json:"execution"`
+	RequiresSetup []string `json:"requires_setup,omitempty"`
+	Limitations   []string `json:"limitations,omitempty"`
+	Quickstart    string   `json:"quickstart,omitempty"`
+	Source        string   `json:"source"`
 }
 
 type OperationalMetadata struct {
@@ -73,6 +83,7 @@ type SkillEntry struct {
 	Deprecated       bool                 `json:"deprecated"`
 	ReplacedBy       string               `json:"replaced_by,omitempty"`
 	Operational      *OperationalMetadata `json:"operational,omitempty"`
+	Usability        UsabilityMetadata    `json:"usability"`
 	Dependencies     *DependencySet       `json:"dependencies,omitempty"`
 	Includes         *IncludeSet          `json:"includes,omitempty"`
 	Requires         *RequirementSet      `json:"requires,omitempty"`

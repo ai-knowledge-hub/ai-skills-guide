@@ -36,6 +36,7 @@ func RunPreflight(opts RunOptions) (RunReport, error) {
 		Checks:           []string{},
 		Warnings:         []string{},
 		BlockingReasons:  []string{},
+		DependencyAgents: append([]string{}, m.DependencyAgents...),
 		DependencySkills: append([]string{}, m.DependencySkills...),
 		DependencyTools:  append([]string{}, m.DependencyTools...),
 		ResolvedTools:    map[string]ToolBinding{},
@@ -58,6 +59,13 @@ func RunPreflight(opts RunOptions) (RunReport, error) {
 			report.BlockingReasons = append(report.BlockingReasons, fmt.Sprintf("Missing skill dependency: %s", dep))
 		}
 	}
+	for _, dep := range m.DependencyAgents {
+		p := filepath.Join(opts.AgentsRoot, filepath.FromSlash(dep))
+		if _, err := os.Stat(p); err != nil {
+			report.Status = "blocked"
+			report.BlockingReasons = append(report.BlockingReasons, fmt.Sprintf("Missing agent dependency: %s", dep))
+		}
+	}
 
 	bindings := ToolBindingsFile{Tools: map[string]ToolBinding{}}
 	if strings.TrimSpace(opts.BindingsPath) != "" {
@@ -69,6 +77,13 @@ func RunPreflight(opts RunOptions) (RunReport, error) {
 	}
 
 	for _, depTool := range m.DependencyTools {
+		if strings.Contains(depTool, "/") {
+			p := filepath.Join(opts.ToolsRoot, filepath.FromSlash(depTool))
+			if _, err := os.Stat(p); err != nil {
+				report.Status = "blocked"
+				report.BlockingReasons = append(report.BlockingReasons, fmt.Sprintf("Missing tool dependency: %s", depTool))
+			}
+		}
 		binding, ok := bindings.Tools[depTool]
 		if !ok {
 			report.Status = "blocked"

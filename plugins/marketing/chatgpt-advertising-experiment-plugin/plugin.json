@@ -1,0 +1,5 @@
+{
+  "name": "chatgpt-advertising-experiment-plugin",
+  "version": "0.1.0",
+  "description": "Installable task-led ChatGPT Ads experimentation workflow with a deterministic mock lab and guarded API boundaries."
+}

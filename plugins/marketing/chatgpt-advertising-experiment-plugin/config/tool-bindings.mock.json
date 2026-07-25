@@ -1,0 +1,7 @@
+{
+  "tools": {
+    "adtech/conversion-event-reconciler": {"endpoint": "local://conversion-event-reconciler", "mode": "read_only"},
+    "adtech/openai-ads-api-client": {"endpoint": "local://openai-ads-api-client?mode=mock", "mode": "read_only"},
+    "adtech/ad-platform-executor-template": {"endpoint": "disabled://template-only", "mode": "read_only"}
+  }
+}

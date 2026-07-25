@@ -9,9 +9,13 @@ import (
 func TestRunPreflightReady(t *testing.T) {
 	root := t.TempDir()
 	agentDir := filepath.Join(root, "agents", "marketing", "demo")
+	dependencyAgentDir := filepath.Join(root, "agents", "marketing", "creative-supervisor")
 	skillDir := filepath.Join(root, "skills", "adtech", "dashboard-generator")
 	if err := os.MkdirAll(agentDir, 0o755); err != nil {
 		t.Fatalf("mkdir agent: %v", err)
+	}
+	if err := os.MkdirAll(dependencyAgentDir, 0o755); err != nil {
+		t.Fatalf("mkdir dependency agent: %v", err)
 	}
 	if err := os.MkdirAll(skillDir, 0o755); err != nil {
 		t.Fatalf("mkdir skill: %v", err)
@@ -30,6 +34,8 @@ tags:
 runtimes:
   - codex
 dependencies:
+  agents:
+    - marketing/creative-supervisor
   skills:
     - adtech/dashboard-generator
   tools:
@@ -59,5 +65,51 @@ dependencies:
 	}
 	if len(report.WorkflowSteps) != 2 {
 		t.Fatalf("expected workflow steps, got %#v", report.WorkflowSteps)
+	}
+}
+
+func TestRunPreflightBlocksMissingCanonicalToolPackage(t *testing.T) {
+	root := t.TempDir()
+	agentDir := filepath.Join(root, "agents", "marketing", "demo")
+	if err := os.MkdirAll(agentDir, 0o755); err != nil {
+		t.Fatalf("mkdir agent: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(agentDir, "AGENT.md"), []byte("## Workflow\n1. Inspect\n"), 0o644); err != nil {
+		t.Fatalf("write AGENT.md: %v", err)
+	}
+	manifest := `id: marketing/demo
+name: Demo
+description: Demo.
+version: 0.1.0
+released_at: "2026-07-25T00:00:00Z"
+category: marketing-agents/performance
+tags:
+  - demo
+runtimes:
+  - codex
+dependencies:
+  tools:
+    - adtech/missing-tool
+`
+	if err := os.WriteFile(filepath.Join(agentDir, "agent.yaml"), []byte(manifest), 0o644); err != nil {
+		t.Fatalf("write manifest: %v", err)
+	}
+	bindings := filepath.Join(root, "bindings.json")
+	if err := os.WriteFile(bindings, []byte(`{"tools":{"adtech/missing-tool":{"endpoint":"local://missing","mode":"read_only"}}}`), 0o644); err != nil {
+		t.Fatalf("write bindings: %v", err)
+	}
+	report, err := RunPreflight(RunOptions{
+		AgentsRoot:   filepath.Join(root, "agents"),
+		SkillsRoot:   filepath.Join(root, "skills"),
+		ToolsRoot:    filepath.Join(root, "tools-mcp"),
+		AgentID:      "marketing/demo",
+		BindingsPath: bindings,
+		ApproveLive:  true,
+	})
+	if err != nil {
+		t.Fatalf("run preflight: %v", err)
+	}
+	if report.Status != "blocked" || len(report.BlockingReasons) == 0 {
+		t.Fatalf("expected missing tool to block preflight, got %#v", report)
 	}
 }

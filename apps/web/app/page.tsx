@@ -1,6 +1,7 @@
 import { loadAgentsRegistry, loadPluginsRegistry, loadSkillsRegistry, loadToolsRegistry } from "@/lib/registry";
 import { FEATURED_PLUGIN_IDS, FEATURED_SKILL_IDS } from "@/lib/home";
 import { formatCategoryFamily } from "@/lib/categoryLabels";
+import UsabilityBadge from "@/components/UsabilityBadge";
 
 export default async function HomePage() {
   const [skillsRegistry, agentsRegistry, toolsRegistry] = await Promise.all([
@@ -96,6 +97,19 @@ export default async function HomePage() {
         </article>
       </section>
 
+      <section className="usability-guide" aria-labelledby="use-the-catalog">
+        <div className="section-head">
+          <h2 id="use-the-catalog">Know what you are installing</h2>
+          <p className="meta">Review maturity and operational usability are separate signals.</p>
+        </div>
+        <div className="grid usability-guide-grid">
+          <article className="card"><UsabilityBadge availability="usable-now" /><p>Instructions or a local executable you can use after installation.</p></article>
+          <article className="card"><UsabilityBadge availability="setup-required" /><p>A working integration or orchestrator that needs credentials, bindings, or local policy.</p></article>
+          <article className="card"><UsabilityBadge availability="template-only" /><p>A reference contract or scaffold to adapt before it can execute.</p></article>
+          <article className="card"><UsabilityBadge availability="documentation-only" /><p>A learning pack or architecture guide; it is not installed as runtime capability.</p></article>
+        </div>
+      </section>
+
       <section className="featured-section">
         <div className="section-head">
           <h2>Featured Skills</h2>
@@ -109,7 +123,7 @@ export default async function HomePage() {
       <section className="grid featured-grid">
         {featuredSkills.map((skill) => (
           <a key={skill.id} href={`/skills/${skill.id}`} className="card catalog-card">
-            <p className="meta catalog-card-domain">{formatCategoryFamily(skill.category)}</p>
+            <div className="catalog-card-head"><p className="meta catalog-card-domain">{formatCategoryFamily(skill.category)}</p><UsabilityBadge availability={skill.usability.availability} /></div>
             <h3>{skill.name}</h3>
             <p>{skill.description}</p>
           </a>
@@ -129,7 +143,7 @@ export default async function HomePage() {
       <section className="grid featured-grid">
         {featuredPlugins.map((plugin) => (
           <a key={plugin.id} href={`/plugins/${plugin.id}`} className="card catalog-card">
-            <p className="meta catalog-card-domain">{formatCategoryFamily(plugin.category)}</p>
+            <div className="catalog-card-head"><p className="meta catalog-card-domain">{formatCategoryFamily(plugin.category)}</p><UsabilityBadge availability={plugin.usability.availability} /></div>
             <h3>{plugin.name}</h3>
             <p>{plugin.description}</p>
           </a>

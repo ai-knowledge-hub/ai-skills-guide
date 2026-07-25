@@ -5,11 +5,13 @@
 1. Choose one entry matching your workflow:
    - `skills/` for task-level expertise
    - `agents/` for orchestrated templates
+   - `plugins/` for installable bundles that resolve dependencies
    - `tools-mcp/` for integration connectors
-2. Copy the module spec (`SKILL.md`, `AGENT.md`, or `TOOL.md`) into your runtime workflow.
-3. Run the prompts in `tests/test-prompts.md`.
-4. Evaluate output consistency against expected format.
-5. Tune wording and constraints, then re-test.
+2. Check the entry's usability label. Prefer `usable-now`, or follow every item under `requires_setup`.
+3. Copy or install the module spec (`SKILL.md`, `AGENT.md`, `plugin.json`, or `TOOL.md`) into your runtime workflow.
+4. Run the prompts in `tests/test-prompts.md`.
+5. Evaluate output consistency against expected format.
+6. Tune wording and constraints, then re-test.
 
 ## Track B: Ad-Tech Engineer
 
@@ -36,3 +38,6 @@ Primary routes:
 - `/skills`
 - `/agents`
 - `/tools-mcp`
+- `/plugins`
+
+Read [using-the-catalog.md](using-the-catalog.md) before assuming installation means an external integration is connected.

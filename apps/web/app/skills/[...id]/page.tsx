@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { buildInstallSnippet, getSkillById, loadSkillsRegistry } from "@/lib/registry";
 import InstallCommands from "@/components/InstallCommands";
 import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
+import UsabilityPanel from "@/components/UsabilityPanel";
 
 export async function generateStaticParams() {
   const registry = await loadSkillsRegistry();
@@ -43,6 +44,7 @@ export default async function SkillDetailPage({ params }: { params: { id: string
       </article>
 
       <section className="detail-grid">
+        <UsabilityPanel usability={skill.usability} />
         <article className="card detail-panel">
           <h2>Operational Summary</h2>
           <p><span className="meta">Use when:</span> {skill.operational?.use_when ?? "Not documented"}</p>

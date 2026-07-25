@@ -1,6 +1,6 @@
 {
   "registry_version": "1.0",
-  "generated_at": "2026-06-28T00:00:00Z",
+  "generated_at": "2026-07-25T00:00:00Z",
   "skills": [
     {
       "id": "agentops/harness-governance-plugin",
@@ -31,6 +31,14 @@
       "readiness": "experimental",
       "security_reviewed": false,
       "deprecated": false,
+      "usability": {
+        "availability": "setup-required",
+        "execution": "bundle",
+        "requires_setup": [
+          "Review bundled components, secrets, and approval rules before enabling."
+        ],
+        "source": "inferred"
+      },
       "includes": {
         "skills": [
           "agentops/harness-run-reflection",
@@ -76,6 +84,14 @@
       "readiness": "experimental",
       "security_reviewed": false,
       "deprecated": false,
+      "usability": {
+        "availability": "setup-required",
+        "execution": "bundle",
+        "requires_setup": [
+          "Review bundled components, secrets, and approval rules before enabling."
+        ],
+        "source": "inferred"
+      },
       "includes": {
         "skills": [
           "engineering/implementation-strategy",
@@ -123,6 +139,14 @@
       "readiness": "experimental",
       "security_reviewed": false,
       "deprecated": false,
+      "usability": {
+        "availability": "setup-required",
+        "execution": "bundle",
+        "requires_setup": [
+          "Review bundled components, secrets, and approval rules before enabling."
+        ],
+        "source": "inferred"
+      },
       "includes": {
         "skills": [
           "marketing/creative-workshop-pmax-reels",
@@ -175,6 +199,14 @@
       "readiness": "experimental",
       "security_reviewed": false,
       "deprecated": false,
+      "usability": {
+        "availability": "setup-required",
+        "execution": "bundle",
+        "requires_setup": [
+          "Review bundled components, secrets, and approval rules before enabling."
+        ],
+        "source": "inferred"
+      },
       "includes": {
         "skills": [
           "adtech/policy-brand-compliance-checker",
@@ -198,6 +230,85 @@
         ],
         "approvals": [
           "human-approval-for-live-changes"
+        ]
+      }
+    },
+    {
+      "id": "marketing/chatgpt-advertising-experiment-plugin",
+      "name": "ChatGPT Advertising Experiment Plugin",
+      "description": "Install a task-led ChatGPT Ads experiment workflow with planning skills, supervisors, read-only API access, conversion reconciliation, policy gates, and a one-command mock lab.",
+      "category": "marketing-plugins/intelligence",
+      "latest": "0.1.0",
+      "versions": [
+        {
+          "version": "0.1.0",
+          "released_at": "2026-07-25T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/chatgpt-advertising-experiment-plugin/plugin.yaml",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/chatgpt-advertising-experiment-plugin/0.1.0.tar.gz",
+          "sha256": "cecee5e90eac1be1b2ffc35e7619f501bbbf0cc972e456638ed4dd049a3464bb"
+        }
+      ],
+      "runtimes": [
+        "codex",
+        "claude",
+        "generic"
+      ],
+      "tags": [
+        "chatgpt-ads",
+        "advertiser-api",
+        "experimentation",
+        "measurement",
+        "agentic-commerce",
+        "governance"
+      ],
+      "readiness": "experimental",
+      "security_reviewed": false,
+      "deprecated": false,
+      "usability": {
+        "availability": "usable-now",
+        "execution": "bundle",
+        "requires_setup": [
+          "For live reads, configure account-scoped API credentials only after the mock lab passes.",
+          "Replace the executor template with an approved platform executor before any mutation."
+        ],
+        "limitations": [
+          "The installed OpenAI Ads client does not mutate campaigns, ad groups, ads, files, or feeds.",
+          "The bundled executor remains a reference template rather than a live OpenAI Ads writer."
+        ],
+        "quickstart": "python3 scripts/run_mock_lab.py",
+        "source": "declared"
+      },
+      "includes": {
+        "skills": [
+          "marketing/task-map-designer",
+          "marketing/ai-output-eval-scorecard",
+          "adtech/advertising-signal-ownership-auditor",
+          "marketing/agent-share-of-choice-evaluator",
+          "agentops/ad-platform-policy-gate-designer"
+        ],
+        "agents": [
+          "adtech/chatgpt-ads-experiment-supervisor",
+          "marketing/creative-operating-system-supervisor",
+          "adtech/ad-platform-control-plane-supervisor"
+        ],
+        "tools": [
+          "adtech/conversion-event-reconciler",
+          "adtech/openai-ads-api-client",
+          "adtech/ad-platform-executor-template"
+        ],
+        "hooks": [
+          "require-measurement-before-activation"
+        ]
+      },
+      "requires": {
+        "secrets": [
+          "OPENAI_ADS_API_KEY",
+          "OPENAI_ADS_PIXEL_ID",
+          "OPENAI_ADS_CONVERSIONS_API_KEY"
+        ],
+        "approvals": [
+          "human-approval-before-live-campaign-write",
+          "human-approval-before-tracking-change"
         ]
       }
     },
@@ -230,6 +341,14 @@
       "readiness": "experimental",
       "security_reviewed": false,
       "deprecated": false,
+      "usability": {
+        "availability": "setup-required",
+        "execution": "bundle",
+        "requires_setup": [
+          "Review bundled components, secrets, and approval rules before enabling."
+        ],
+        "source": "inferred"
+      },
       "includes": {
         "skills": [
           "adtech/brand-rag-memory-bootstrap",
@@ -275,6 +394,14 @@
       "readiness": "experimental",
       "security_reviewed": false,
       "deprecated": false,
+      "usability": {
+        "availability": "setup-required",
+        "execution": "bundle",
+        "requires_setup": [
+          "Review bundled components, secrets, and approval rules before enabling."
+        ],
+        "source": "inferred"
+      },
       "includes": {
         "skills": [
           "marketing/creative-workshop-pmax-reels",
@@ -322,6 +449,14 @@
       "readiness": "experimental",
       "security_reviewed": false,
       "deprecated": false,
+      "usability": {
+        "availability": "setup-required",
+        "execution": "bundle",
+        "requires_setup": [
+          "Review bundled components, secrets, and approval rules before enabling."
+        ],
+        "source": "inferred"
+      },
       "includes": {
         "skills": [
           "adtech/brand-rag-memory-bootstrap",
@@ -376,6 +511,14 @@
       "readiness": "experimental",
       "security_reviewed": false,
       "deprecated": false,
+      "usability": {
+        "availability": "setup-required",
+        "execution": "bundle",
+        "requires_setup": [
+          "Review bundled components, secrets, and approval rules before enabling."
+        ],
+        "source": "inferred"
+      },
       "includes": {
         "skills": [
           "marketing/seo-paid-search-synergy",
@@ -427,6 +570,14 @@
       "readiness": "experimental",
       "security_reviewed": false,
       "deprecated": false,
+      "usability": {
+        "availability": "setup-required",
+        "execution": "bundle",
+        "requires_setup": [
+          "Review bundled components, secrets, and approval rules before enabling."
+        ],
+        "source": "inferred"
+      },
       "includes": {
         "skills": [
           "marketing/meta-google-weekly-performance-review",
@@ -486,6 +637,14 @@
       "readiness": "experimental",
       "security_reviewed": false,
       "deprecated": false,
+      "usability": {
+        "availability": "setup-required",
+        "execution": "bundle",
+        "requires_setup": [
+          "Review bundled components, secrets, and approval rules before enabling."
+        ],
+        "source": "inferred"
+      },
       "includes": {
         "skills": [
           "security/handle-untrusted-content",

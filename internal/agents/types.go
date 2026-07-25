@@ -9,6 +9,7 @@ type Manifest struct {
 	Category         string
 	Tags             []string
 	Runtimes         []string
+	DependencyAgents []string
 	DependencySkills []string
 	DependencyTools  []string
 }
@@ -40,6 +41,7 @@ type RunReport struct {
 	Checks           []string               `json:"checks"`
 	Warnings         []string               `json:"warnings"`
 	BlockingReasons  []string               `json:"blocking_reasons"`
+	DependencyAgents []string               `json:"dependency_agents"`
 	DependencySkills []string               `json:"dependency_skills"`
 	DependencyTools  []string               `json:"dependency_tools"`
 	ResolvedTools    map[string]ToolBinding `json:"resolved_tools"`

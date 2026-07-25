@@ -1,0 +1,8 @@
+{
+  "experiment_id": "northstar-task-led-001",
+  "mode": "mock-run",
+  "brand": "Northstar Meals",
+  "task": "Choose a nut-free family meal plan under GBP 45",
+  "hypothesis": "Showing verified allergen, weekly price, and availability evidence will improve qualified plan selection.",
+  "decision_policy": "No live writes; require independently verified outcomes before interpretation."
+}

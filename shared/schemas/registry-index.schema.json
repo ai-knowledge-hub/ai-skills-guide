@@ -38,6 +38,7 @@
           "runtimes",
           "tags",
           "readiness",
+          "usability",
           "security_reviewed",
           "deprecated"
         ],
@@ -174,6 +175,9 @@
               }
             }
           },
+          "usability": {
+            "$ref": "#/$defs/registry_usability"
+          },
           "dependencies": {
             "type": "object",
             "additionalProperties": false,
@@ -304,6 +308,19 @@
     }
   },
   "$defs": {
+    "registry_usability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["availability", "execution", "source"],
+      "properties": {
+        "availability": { "type": "string", "enum": ["usable-now", "setup-required", "template-only", "documentation-only"] },
+        "execution": { "type": "string", "enum": ["instructions", "local-tool", "remote-integration", "integration-template", "orchestrator", "bundle", "documentation"] },
+        "requires_setup": { "type": "array", "items": { "type": "string", "minLength": 3 }, "uniqueItems": true },
+        "limitations": { "type": "array", "items": { "type": "string", "minLength": 3 }, "uniqueItems": true },
+        "quickstart": { "type": "string", "minLength": 3, "maxLength": 300 },
+        "source": { "type": "string", "enum": ["declared", "inferred"] }
+      }
+    },
     "version_entry": {
       "type": "object",
       "additionalProperties": false,

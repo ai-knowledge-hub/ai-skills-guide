@@ -240,6 +240,38 @@ p {
   color: #ffb0b0;
 }
 
+.usability-badge.is-usable-now {
+  background: rgba(51, 215, 111, 0.12);
+  border-color: rgba(51, 215, 111, 0.28);
+  color: #d8fee7;
+}
+
+.usability-badge.is-setup-required {
+  background: rgba(235, 185, 74, 0.12);
+  border-color: rgba(235, 185, 74, 0.28);
+  color: #f4d78c;
+}
+
+.usability-badge.is-template-only,
+.usability-badge.is-documentation-only {
+  background: rgba(148, 163, 184, 0.1);
+  border-color: rgba(148, 163, 184, 0.26);
+  color: #c7d0dc;
+}
+
+.usability-guide {
+  margin: 0 0 1.8rem;
+}
+
+.usability-guide-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 0.8rem;
+}
+
+.usability-guide-grid p {
+  margin-bottom: 0;
+}
+
 .meta {
   font-family: var(--font-code);
   font-size: 0.78rem;
@@ -622,6 +654,10 @@ p {
     grid-template-columns: 1fr;
   }
 
+  .usability-guide-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .detail-grid {
     grid-template-columns: 1fr;
   }
@@ -645,5 +681,11 @@ p {
   .button {
     width: 100%;
     text-align: center;
+  }
+}
+
+@media (max-width: 560px) {
+  .usability-guide-grid {
+    grid-template-columns: 1fr;
   }
 }

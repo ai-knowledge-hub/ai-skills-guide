@@ -16,7 +16,7 @@ Coordinate task design, creative evaluation, signal ownership, policy controls, 
 1. Use `marketing/task-map-designer` to define task hypotheses.
 2. Route creative work through `marketing/creative-operating-system-supervisor` and compliance evaluation.
 3. Use `adtech/advertising-signal-ownership-auditor` before activation.
-4. Inspect mock or live read-only data through `adtech/openai-ads-adapter-template`.
+4. Inspect mock or live read-only data through `adtech/openai-ads-api-client`.
 5. Use the existing policy gate and executor for any proposed write.
 6. Reconcile Pixel, server, CRM, order, and reversal events with `adtech/conversion-event-reconciler`.
 7. Use `marketing/agent-share-of-choice-evaluator` to evaluate paid, earned, and executable routes.

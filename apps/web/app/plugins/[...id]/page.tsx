@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import InstallCommands from "@/components/InstallCommands";
 import { buildModuleInstallSnippet, getEntryById, loadPluginsRegistry } from "@/lib/registry";
 import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
+import UsabilityPanel from "@/components/UsabilityPanel";
 
 const REPO_BLOB_BASE = "https://github.com/ai-knowledge-hub/ai-skills-guide/blob/main";
 
@@ -59,6 +60,7 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
       </article>
 
       <section className="detail-grid">
+        <UsabilityPanel usability={entry.usability} />
         <article className="card detail-panel">
           <h2>Status</h2>
           <p><span className="meta">Readiness:</span> {formatReadinessLabel(entry.readiness)}</p>

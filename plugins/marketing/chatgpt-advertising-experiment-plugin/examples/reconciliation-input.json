@@ -1,0 +1,5 @@
+{
+  "browser_events": [{"event_name":"order_created","event_id":"order_12345"}],
+  "server_events": [{"event_name":"order_created","event_id":"order_12345","order_id":"order_12345","value":39,"currency":"GBP"}],
+  "outcomes": [{"order_id":"order_12345","status":"settled"}]
+}

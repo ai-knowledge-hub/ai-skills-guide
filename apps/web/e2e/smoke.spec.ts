@@ -15,6 +15,7 @@ test("home route smoke", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Plugins", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Tools & MCP" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Explore skills" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Know what you are installing" })).toBeVisible();
 });
 
 test("skills route filter interaction smoke", async ({ page }) => {
@@ -34,6 +35,7 @@ test("skill detail copy-button smoke", async ({ page }) => {
 
   await page.goto(sampleSkillPath);
   await expect(page.getByRole("heading", { name: "Operational Summary" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "How You Can Use This" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Outputs" })).toBeVisible();
   await expect(page.getByText("may-run-local-verification")).toBeVisible();
   const copyButtons = page.locator(".copy-button");

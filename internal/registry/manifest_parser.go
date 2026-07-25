@@ -90,6 +90,13 @@ func ParseManifest(path string) (Manifest, error) {
 				case "approvals":
 					out.Requires.Approvals = append(out.Requires.Approvals, item)
 				}
+			case "usability":
+				switch currentNestedListKey {
+				case "requires_setup":
+					out.Usability.RequiresSetup = append(out.Usability.RequiresSetup, item)
+				case "limitations":
+					out.Usability.Limitations = append(out.Usability.Limitations, item)
+				}
 			}
 			continue
 		}
@@ -128,6 +135,15 @@ func ParseManifest(path string) (Manifest, error) {
 							out.Operational.UseWhen = nestedValue
 						case "execution_mode":
 							out.Operational.ExecutionMode = nestedValue
+						}
+					case "usability":
+						switch nestedKey {
+						case "availability":
+							out.Usability.Availability = nestedValue
+						case "execution":
+							out.Usability.Execution = nestedValue
+						case "quickstart":
+							out.Usability.Quickstart = nestedValue
 						}
 					}
 					currentNestedListKey = ""
@@ -186,7 +202,7 @@ func ParseManifest(path string) (Manifest, error) {
 			out.Deprecated = strings.EqualFold(value, "true")
 		case "replaced_by":
 			out.ReplacedBy = value
-		case "author", "entrypoints", "dependencies", "verification", "includes", "requires", "install", "operational":
+		case "author", "entrypoints", "dependencies", "verification", "includes", "requires", "install", "operational", "usability":
 			inNestedMap = true
 			nestedMapKey = key
 		}

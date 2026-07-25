@@ -208,6 +208,9 @@
         }
       }
     },
+    "usability": {
+      "$ref": "#/$defs/usability"
+    },
     "verification": {
       "type": "object",
       "additionalProperties": false,
@@ -231,6 +234,19 @@
     "replaced_by": {
       "type": "string",
       "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+    }
+  },
+  "$defs": {
+    "usability": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "availability": { "type": "string", "enum": ["usable-now", "setup-required", "template-only", "documentation-only"] },
+        "execution": { "type": "string", "enum": ["instructions", "local-tool", "remote-integration", "integration-template", "orchestrator", "bundle", "documentation"] },
+        "requires_setup": { "type": "array", "items": { "type": "string", "minLength": 3 }, "uniqueItems": true },
+        "limitations": { "type": "array", "items": { "type": "string", "minLength": 3 }, "uniqueItems": true },
+        "quickstart": { "type": "string", "minLength": 3, "maxLength": 300 }
+      }
     }
   },
   "allOf": [

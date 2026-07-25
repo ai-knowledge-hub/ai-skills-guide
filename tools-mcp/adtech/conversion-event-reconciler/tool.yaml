@@ -38,6 +38,10 @@ operational:
   access_level: read-only
   trust_boundary: local-tool
   approval_boundary: Reads supplied files and writes JSON to stdout; live event collection and platform uploads are out of scope.
+usability:
+  availability: usable-now
+  execution: local-tool
+  quickstart: python3 scripts/reconcile_events.py examples/input.json
 verification:
   tests_min_prompts: 5
   deterministic_scripts: true

@@ -1,0 +1,5 @@
+{
+  "context_files": [],
+  "state_store": "output/mock-evidence-bundle.json",
+  "retention_days": 30
+}

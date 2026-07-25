@@ -77,6 +77,7 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 			SecurityReviewed: m.SecurityReviewed,
 			Deprecated:       m.Deprecated,
 			ReplacedBy:       m.ReplacedBy,
+			Usability:        usabilityFor(m, moduleDir),
 		}
 		if hasOperational(m.Operational) {
 			operational := m.Operational
@@ -115,6 +116,62 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 		GeneratedAt:     generatedAt,
 		Skills:          skills,
 	}, nil
+}
+
+func usabilityFor(m Manifest, moduleDir string) UsabilityMetadata {
+	result := m.Usability
+	declared := result.Availability != "" || result.Execution != "" || result.Quickstart != "" ||
+		len(result.RequiresSetup) > 0 || len(result.Limitations) > 0
+
+	if result.Availability == "" {
+		switch moduleDir {
+		case "skills":
+			result.Availability = "usable-now"
+		case "agents", "plugins":
+			result.Availability = "setup-required"
+		case "tools-mcp":
+			if strings.Contains(m.ID, "template") || strings.Contains(strings.ToLower(m.Name), "template") {
+				result.Availability = "template-only"
+			} else if m.Operational.TrustBoundary == "local-tool" {
+				result.Availability = "usable-now"
+			} else {
+				result.Availability = "setup-required"
+			}
+		}
+	}
+	if result.Execution == "" {
+		switch moduleDir {
+		case "skills":
+			result.Execution = "instructions"
+		case "agents":
+			result.Execution = "orchestrator"
+		case "plugins":
+			result.Execution = "bundle"
+		case "tools-mcp":
+			if m.Operational.TrustBoundary == "local-tool" {
+				result.Execution = "local-tool"
+			} else if result.Availability == "template-only" {
+				result.Execution = "integration-template"
+			} else {
+				result.Execution = "remote-integration"
+			}
+		}
+	}
+	if result.Availability == "setup-required" && len(result.RequiresSetup) == 0 {
+		if moduleDir == "agents" {
+			result.RequiresSetup = []string{"Install declared dependencies and configure tool bindings."}
+		} else if moduleDir == "plugins" {
+			result.RequiresSetup = []string{"Review bundled components, secrets, and approval rules before enabling."}
+		} else if moduleDir == "tools-mcp" {
+			result.RequiresSetup = []string{"Configure the connected system and authentication outside agent context."}
+		}
+	}
+	if declared {
+		result.Source = "declared"
+	} else {
+		result.Source = "inferred"
+	}
+	return result
 }
 
 func hasIncludes(includes IncludeSet) bool {

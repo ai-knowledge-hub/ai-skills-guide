@@ -6,6 +6,7 @@ import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import type { RegistryEntry } from "@/lib/registry";
 import FilterSelect, { type FilterOption } from "@/components/FilterSelect";
 import type { CatalogInitialFilters } from "@/lib/catalogFilters";
+import UsabilityBadge from "@/components/UsabilityBadge";
 import {
   formatDomainLabel,
   formatCategoryFamily,
@@ -200,7 +201,10 @@ export default function CatalogClient({ entries, categories, tags, basePath, ini
         {filtered.map((entry) => (
           <article key={entry.id} className="card catalog-card">
             <Link href={`${basePath}/${entry.id}`} className="catalog-card-link">
-              <p className="meta catalog-card-domain">{formatCategoryFamily(entry.category)}</p>
+              <div className="catalog-card-head">
+                <p className="meta catalog-card-domain">{formatCategoryFamily(entry.category)}</p>
+                <UsabilityBadge availability={entry.usability.availability} />
+              </div>
               <h2>{entry.name}</h2>
               <p>{entry.description}</p>
             </Link>

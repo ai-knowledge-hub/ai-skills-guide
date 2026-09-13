@@ -1,0 +1,57 @@
+schema_version: "2.0"
+id: adtech/contract-fixture-tool
+name: Contract Fixture Tool
+description: Valid v2 tool manifest used for schema contract testing.
+version: 1.0.0
+released_at: "2026-09-13T00:00:00Z"
+category: tools-mcp/adtech
+tags:
+  - contract-test
+license: MIT
+author:
+  name: Schema Tests
+runtimes:
+  - codex
+entrypoints:
+  spec: TOOL.md
+execution:
+  kind: mcp-server
+  command:
+    - node
+    - dist/server.js
+  healthcheck:
+    - node
+    - dist/server.js
+    - --healthcheck
+  smoke_test:
+    - node
+    - dist/server.js
+    - --smoke
+  supported_platforms:
+    - linux
+    - macos
+  supported_runtimes:
+    - node22
+artifact:
+  self_contained: true
+  dependency_lock: pnpm-lock.yaml
+  checksums: checksums.txt
+  sbom: sbom.cdx.json
+authentication:
+  status: required
+  methods:
+    - api-key
+  credential_bindings:
+    - PROVIDER_API_KEY
+  scopes:
+    - read
+  setup_url: https://example.test/setup
+  credential_storage: Runtime credential store.
+  validation: Call the provider identity endpoint without mutation.
+  revocation: Revoke the key in the provider console.
+verification:
+  security_reviewed: false
+  evidence:
+    - evidence://fixture/tool/mcp-smoke
+  last_verified_at: "2026-09-13T00:00:00Z"
+deprecated: false

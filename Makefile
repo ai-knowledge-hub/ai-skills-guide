@@ -45,7 +45,7 @@ test-scripts:
 
 test: validate test-scripts
 
-ci-local: test registry manifests
+ci-local: test registry manifests cli-test
 
 cli-test:
 	go test ./...

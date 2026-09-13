@@ -1,0 +1,54 @@
+schema_version: "2.0"
+id: agentops/contract-fixture-agent
+name: Contract Fixture Agent
+description: Valid v2 agent manifest used for schema contract testing.
+version: 1.0.0
+released_at: "2026-09-13T00:00:00Z"
+category: agentops/testing
+tags:
+  - contract-test
+license: MIT
+author:
+  name: Schema Tests
+runtimes:
+  - codex
+entrypoints:
+  spec: AGENT.md
+execution:
+  kind: orchestrator
+  command:
+    - skills-hub
+    - agent
+    - run
+    - agentops/contract-fixture-agent
+  smoke_test:
+    - skills-hub
+    - agent
+    - run
+    - agentops/contract-fixture-agent
+    - --smoke
+  supported_platforms:
+    - linux
+    - macos
+  supported_runtimes:
+    - codex
+artifact:
+  self_contained: true
+  dependency_lock: null
+  checksums: checksums.txt
+  sbom: sbom.cdx.json
+authentication:
+  status: none
+  methods:
+    - none
+  credential_bindings: []
+  scopes: []
+  credential_storage: No credentials are used.
+  validation: Confirm the orchestrator does not request credentials.
+  revocation: No credential revocation applies.
+verification:
+  security_reviewed: false
+  evidence:
+    - evidence://fixture/agent/smoke
+  last_verified_at: "2026-09-13T00:00:00Z"
+deprecated: false

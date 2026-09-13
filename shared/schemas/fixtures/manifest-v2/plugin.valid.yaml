@@ -1,0 +1,47 @@
+schema_version: "2.0"
+id: agentops/contract-fixture-plugin
+name: Contract Fixture Plugin
+description: Valid v2 plugin manifest used for schema contract testing.
+version: 1.0.0
+released_at: "2026-09-13T00:00:00Z"
+category: agentops-plugins/governance
+tags:
+  - contract-test
+license: MIT
+author:
+  name: Schema Tests
+runtimes:
+  - codex
+entrypoints:
+  spec: plugin.json
+includes:
+  skills:
+    - engineering/contract-fixture-skill
+execution:
+  kind: bundle
+  supported_platforms:
+    - linux
+    - macos
+  supported_runtimes:
+    - codex
+artifact:
+  self_contained: true
+  dependency_lock: null
+  checksums: checksums.txt
+  sbom: sbom.cdx.json
+authentication:
+  status: optional
+  methods:
+    - brokered
+  credential_bindings: []
+  scopes: []
+  setup_url: https://example.test/setup
+  credential_storage: Runtime credential broker when enabled.
+  validation: Validate any configured broker grant.
+  revocation: Revoke any configured broker grant.
+verification:
+  security_reviewed: false
+  evidence:
+    - evidence://fixture/plugin/bundle
+  last_verified_at: "2026-09-13T00:00:00Z"
+deprecated: false

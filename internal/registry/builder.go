@@ -59,11 +59,12 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 		relManifest = filepath.ToSlash(relManifest)
 
 		entry := SkillEntry{
-			ID:          m.ID,
-			Name:        m.Name,
-			Description: m.Description,
-			Category:    m.Category,
-			Latest:      m.Version,
+			SchemaVersion: m.SchemaVersion,
+			ID:            m.ID,
+			Name:          m.Name,
+			Description:   m.Description,
+			Category:      m.Category,
+			Latest:        m.Version,
 			Versions: []VersionEntry{{
 				Version:     m.Version,
 				ReleasedAt:  m.ReleasedAt,
@@ -78,6 +79,16 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 			Deprecated:       m.Deprecated,
 			ReplacedBy:       m.ReplacedBy,
 			Usability:        usabilityFor(m, moduleDir),
+		}
+		if m.SchemaVersion != "" {
+			execution := m.Execution
+			artifact := m.Artifact
+			authentication := m.Authentication
+			verification := m.Verification
+			entry.Execution = &execution
+			entry.Artifact = &artifact
+			entry.Authentication = &authentication
+			entry.Verification = &verification
 		}
 		if hasOperational(m.Operational) {
 			operational := m.Operational
@@ -112,7 +123,7 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 	}
 
 	return Index{
-		RegistryVersion: "1.0",
+		RegistryVersion: "1.1",
 		GeneratedAt:     generatedAt,
 		Skills:          skills,
 	}, nil

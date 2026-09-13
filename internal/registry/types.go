@@ -1,22 +1,63 @@
 package registry
 
 type Manifest struct {
-	ID               string
-	Name             string
-	Description      string
-	Version          string
-	ReleasedAt       string
-	Category         string
-	Tags             []string
-	Runtimes         []string
-	SecurityReviewed bool
-	Deprecated       bool
-	ReplacedBy       string
-	Operational      OperationalMetadata
-	Usability        UsabilityMetadata
-	Dependencies     DependencySet
-	Includes         IncludeSet
-	Requires         RequirementSet
+	SchemaVersion     string                 `json:"schema_version"`
+	ID                string                 `json:"id"`
+	Name              string                 `json:"name"`
+	Description       string                 `json:"description"`
+	Version           string                 `json:"version"`
+	ReleasedAt        string                 `json:"released_at"`
+	Category          string                 `json:"category"`
+	Tags              []string               `json:"tags"`
+	Runtimes          []string               `json:"runtimes"`
+	SecurityReviewed  bool                   `json:"-"`
+	Deprecated        bool                   `json:"deprecated"`
+	ReplacedBy        string                 `json:"replaced_by"`
+	Operational       OperationalMetadata    `json:"operational"`
+	Usability         UsabilityMetadata      `json:"usability"`
+	Execution         ExecutionMetadata      `json:"execution"`
+	Artifact          ArtifactMetadata       `json:"artifact"`
+	Authentication    AuthenticationMetadata `json:"authentication"`
+	Verification      VerificationMetadata   `json:"verification"`
+	Dependencies      DependencySet          `json:"dependencies"`
+	Includes          IncludeSet             `json:"includes"`
+	Requires          RequirementSet         `json:"requires"`
+	executionSet      bool
+	artifactSet       bool
+	authenticationSet bool
+	verificationSet   bool
+}
+
+type ExecutionMetadata struct {
+	Kind               string   `json:"kind"`
+	Command            []string `json:"command,omitempty"`
+	Healthcheck        []string `json:"healthcheck,omitempty"`
+	SmokeTest          []string `json:"smoke_test,omitempty"`
+	SupportedPlatforms []string `json:"supported_platforms"`
+	SupportedRuntimes  []string `json:"supported_runtimes"`
+}
+
+type ArtifactMetadata struct {
+	SelfContained  bool    `json:"self_contained"`
+	DependencyLock *string `json:"dependency_lock"`
+	Checksums      *string `json:"checksums"`
+	SBOM           *string `json:"sbom"`
+}
+
+type AuthenticationMetadata struct {
+	Status             string   `json:"status"`
+	Methods            []string `json:"methods"`
+	CredentialBindings []string `json:"credential_bindings"`
+	Scopes             []string `json:"scopes"`
+	SetupURL           string   `json:"setup_url,omitempty"`
+	CredentialStorage  string   `json:"credential_storage"`
+	Validation         string   `json:"validation"`
+	Revocation         string   `json:"revocation"`
+}
+
+type VerificationMetadata struct {
+	Evidence       []string `json:"evidence"`
+	LastVerifiedAt string   `json:"last_verified_at"`
 }
 
 type UsabilityMetadata struct {
@@ -70,23 +111,28 @@ type Index struct {
 }
 
 type SkillEntry struct {
-	ID               string               `json:"id"`
-	Name             string               `json:"name"`
-	Description      string               `json:"description"`
-	Category         string               `json:"category"`
-	Latest           string               `json:"latest"`
-	Versions         []VersionEntry       `json:"versions"`
-	Runtimes         []string             `json:"runtimes"`
-	Tags             []string             `json:"tags"`
-	Readiness        string               `json:"readiness"`
-	SecurityReviewed bool                 `json:"security_reviewed"`
-	Deprecated       bool                 `json:"deprecated"`
-	ReplacedBy       string               `json:"replaced_by,omitempty"`
-	Operational      *OperationalMetadata `json:"operational,omitempty"`
-	Usability        UsabilityMetadata    `json:"usability"`
-	Dependencies     *DependencySet       `json:"dependencies,omitempty"`
-	Includes         *IncludeSet          `json:"includes,omitempty"`
-	Requires         *RequirementSet      `json:"requires,omitempty"`
+	SchemaVersion    string                  `json:"schema_version,omitempty"`
+	ID               string                  `json:"id"`
+	Name             string                  `json:"name"`
+	Description      string                  `json:"description"`
+	Category         string                  `json:"category"`
+	Latest           string                  `json:"latest"`
+	Versions         []VersionEntry          `json:"versions"`
+	Runtimes         []string                `json:"runtimes"`
+	Tags             []string                `json:"tags"`
+	Readiness        string                  `json:"readiness"`
+	SecurityReviewed bool                    `json:"security_reviewed"`
+	Deprecated       bool                    `json:"deprecated"`
+	ReplacedBy       string                  `json:"replaced_by,omitempty"`
+	Operational      *OperationalMetadata    `json:"operational,omitempty"`
+	Usability        UsabilityMetadata       `json:"usability"`
+	Execution        *ExecutionMetadata      `json:"execution,omitempty"`
+	Artifact         *ArtifactMetadata       `json:"artifact,omitempty"`
+	Authentication   *AuthenticationMetadata `json:"authentication,omitempty"`
+	Verification     *VerificationMetadata   `json:"verification,omitempty"`
+	Dependencies     *DependencySet          `json:"dependencies,omitempty"`
+	Includes         *IncludeSet             `json:"includes,omitempty"`
+	Requires         *RequirementSet         `json:"requires,omitempty"`
 }
 
 type VersionEntry struct {

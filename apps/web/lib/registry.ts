@@ -3,6 +3,28 @@ import path from "node:path";
 
 export type ModuleKey = "skills" | "agents" | "tools" | "plugins";
 
+export type ExecutionKind =
+  | "instructions"
+  | "script"
+  | "cli"
+  | "mcp-server"
+  | "service"
+  | "orchestrator"
+  | "bundle"
+  | "integration-template";
+
+export type AuthenticationMethod =
+  | "none"
+  | "api-key"
+  | "bearer-token"
+  | "oauth-authorization-code-pkce"
+  | "oauth-device-flow"
+  | "oauth-client-credentials"
+  | "service-account"
+  | "workload-identity"
+  | "brokered"
+  | "custom";
+
 export type VersionEntry = {
   version: string;
   released_at: string;
@@ -12,6 +34,7 @@ export type VersionEntry = {
 };
 
 export type RegistryEntry = {
+  schema_version?: "2.0";
   id: string;
   name: string;
   description: string;
@@ -45,6 +68,34 @@ export type RegistryEntry = {
     outputs?: string[];
     use_when?: string;
     execution_mode?: string;
+  };
+  execution?: {
+    kind: ExecutionKind;
+    command?: string[];
+    healthcheck?: string[];
+    smoke_test?: string[];
+    supported_platforms: ("linux" | "macos" | "windows" | "web")[];
+    supported_runtimes: string[];
+  };
+  artifact?: {
+    self_contained: boolean;
+    dependency_lock: string | null;
+    checksums: string | null;
+    sbom: string | null;
+  };
+  authentication?: {
+    status: "none" | "optional" | "required";
+    methods: AuthenticationMethod[];
+    credential_bindings: string[];
+    scopes: string[];
+    setup_url?: string;
+    credential_storage: string;
+    validation: string;
+    revocation: string;
+  };
+  verification?: {
+    evidence: string[];
+    last_verified_at: string;
   };
   dependencies?: {
     agents?: string[];

@@ -65,6 +65,12 @@ Schemas, registry builders, validators, installers, and catalog UI MUST preserve
 that contract and MUST NOT treat prompt tests or schema validation as evidence
 of operational availability.
 
+Manifest schema version 2 adds the shared machine-readable execution, artifact,
+authentication, and verification fields defined by the
+[Manifest Contract v2](../shared/contracts/manifest-contract-v2.md). Legacy
+manifests remain valid; opting into any v2 field requires the complete v2
+contract.
+
 The first implemented slices are `tools-mcp` and `agents`.
 
 `tools-mcp` now documents:

@@ -24,14 +24,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
       - name: Install check-jsonschema
         run: python3 -m pip install --upgrade pip check-jsonschema
+      - name: Run manifest and registry contract tests
+        run: make cli-test
       - name: Generate registry index
         run: make registry
       - name: Validate manifests and registry schemas
         run: bash scripts/validate-manifests.sh
       - name: Ensure registry indexes are committed
-        run: git diff --exit-code registry/index.json registry/skills-index.json registry/agents-index.json registry/tools-index.json
+        run: git diff --exit-code registry/index.json registry/skills-index.json registry/agents-index.json registry/tools-index.json registry/plugins-index.json
 
   markdown:
     runs-on: ubuntu-latest

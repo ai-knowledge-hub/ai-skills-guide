@@ -1,0 +1,22 @@
+id: engineering/unversioned-v2-skill
+name: Unversioned V2 Skill
+description: Invalid skill uses a v2 field without declaring schema version 2.
+version: 1.0.0
+released_at: "2026-09-13T00:00:00Z"
+category: engineering/testing-quality
+tags:
+  - contract-test
+license: MIT
+author:
+  name: Schema Tests
+runtimes:
+  - codex
+entrypoints:
+  skill_md: SKILL.md
+execution:
+  kind: instructions
+  supported_platforms:
+    - linux
+  supported_runtimes:
+    - codex
+deprecated: false

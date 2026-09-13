@@ -58,6 +58,13 @@ pages answer practical questions quickly:
 - what trust boundary it crosses
 - what approval boundary applies
 
+The normative vocabulary, module-state constraints, usability scopes, evidence
+requirements, promotion/demotion rules, and expiry semantics are defined by
+[Operational Readiness and Promotion Contract v1](../shared/contracts/operational-readiness-v1.md).
+Schemas, registry builders, validators, installers, and catalog UI MUST preserve
+that contract and MUST NOT treat prompt tests or schema validation as evidence
+of operational availability.
+
 The first implemented slices are `tools-mcp` and `agents`.
 
 `tools-mcp` now documents:

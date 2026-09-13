@@ -45,6 +45,12 @@ Review maturity and operational usability answer different questions:
 - `documentation-only`: Use the package as a learning or architecture guide;
   it is not installed as a runtime capability.
 
+Operational lifecycle, evidence, promotion, demotion, and verification expiry
+are governed by the normative
+[Operational Readiness and Promotion Contract](shared/contracts/operational-readiness-v1.md).
+In particular, prompt tests and schema-valid manifests do not by themselves
+prove that an entry is operationally available.
+
 Older entries receive conservative inferred labels during registry generation.
 New or updated entries should declare `usability` in their manifest. The
 website and `skills-hub info` show whether a classification is declared or

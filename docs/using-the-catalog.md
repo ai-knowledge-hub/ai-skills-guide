@@ -1,14 +1,24 @@
 # Using the Catalog
 
 The catalog separates **what a package is** from **how ready it is to use**.
+The normative definitions, evidence rules, target scoping, and expiry semantics
+are in the
+[Operational Readiness and Promotion Contract](../shared/contracts/operational-readiness-v1.md).
 
-## Two independent signals
+## Catalog projections
 
-`readiness` describes review maturity:
+The current registry exposes two compatibility projections. They are useful for
+discovery, but neither field by itself proves operational availability.
+
+`readiness` describes review maturity and lifecycle:
 
 - `experimental`: not security reviewed
-- `reviewed`: security review recorded
+- `reviewed`: a security review is asserted
 - `deprecated`: retained for compatibility, no longer preferred
+
+Under the normative contract, `reviewed` maps to `security-reviewed` only when
+the exact artifact has a current accepted security disposition. The registry
+label alone is not that evidence.
 
 `usability` describes operational behavior:
 
@@ -66,4 +76,11 @@ The output includes:
 - `usability.quickstart`
 - `usability.source`
 
-An inferred classification is a conservative registry default. A declared classification has been set in the package manifest and should be preferred when planning implementation.
+An inferred classification is a conservative registry default. A declared
+classification has been set in the package manifest and should be preferred
+when planning implementation.
+Neither `inferred` nor `declared` is verification. A `usable-now` entry is
+operationally verified only for the instruction or executable scope and target
+key covered by current evidence. Until the registry carries those evidence
+references and target keys, inspect the package's documented limitations and
+treat the availability value as an unverified classification.

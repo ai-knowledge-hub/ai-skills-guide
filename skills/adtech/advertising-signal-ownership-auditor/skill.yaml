@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: adtech/advertising-signal-ownership-auditor
 name: Advertising Signal Ownership Auditor
 description: Audit collection, control, visibility, retention, and use of advertising signals from exposure through verified business outcome.
@@ -35,6 +36,12 @@ operational:
     - Measurement gaps
     - Independent evidence plan
   approval_boundary: May audit and recommend; privacy, consent, retention, and platform configuration changes require responsible human approval.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

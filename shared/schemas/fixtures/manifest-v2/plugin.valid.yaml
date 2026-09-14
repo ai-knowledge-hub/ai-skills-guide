@@ -1,4 +1,4 @@
-schema_version: "2.0"
+schema_version: "2.1"
 id: agentops/contract-fixture-plugin
 name: Contract Fixture Plugin
 description: Valid v2 plugin manifest used for schema contract testing.
@@ -17,6 +17,9 @@ entrypoints:
 includes:
   skills:
     - engineering/contract-fixture-skill
+usability:
+  availability: not-verified
+  execution: bundle
 execution:
   kind: bundle
   supported_platforms:

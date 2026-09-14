@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: adtech/openai-ads-api-client
 name: OpenAI Ads API Client
 description: Dry-run-first client for mock or live read-only OpenAI Ads account, campaign, ad, and insights retrieval plus non-persisting Conversions API validation.
@@ -45,14 +46,17 @@ operational:
   trust_boundary: third-party-hosted
   approval_boundary: Advertiser operations are GET-only; Conversions API requests always force validate_only true and cannot persist events.
 usability:
-  availability: usable-now
+  availability: not-verified
   execution: remote-integration
   requires_setup:
-    - For live reads, create an account-scoped Ads API key in OpenAI Ads Manager.
+    - For live reads, create an account-scoped Ads API key in OpenAI Ads Manager and configure the API base URL.
     - Keep API keys in environment variables outside agent context.
+    - Write-capable operations require explicit approval outside this client.
   limitations:
+    - Mock mode is local and read-only; live mode depends on an external API contract.
+    - No published clean-client installation and live-readiness evidence is recorded yet.
     - Campaign, ad-group, ad, file, and feed mutations are intentionally excluded.
-    - Remote conversion requests validate events without saving them.
+    - Conversion validation is dry-run only and does not persist events.
     - Automatic pagination, retries, and rate-limit backoff are not included in this first client.
   quickstart: python3 scripts/openai_ads_client.py --mode mock account
 verification:

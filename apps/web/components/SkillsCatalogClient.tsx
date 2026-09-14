@@ -179,6 +179,8 @@ export default function SkillsCatalogClient({ skills, categories, tags, initial 
             <h2>{skill.name}</h2>
             <p className="meta">{formatCategoryLabel(skill.category)}</p>
             <p>{skill.description}</p>
+            <p className="meta">Execution: {skill.usability.execution}</p>
+            {skill.usability.limitations?.[0] ? <p className="meta">Limit: {skill.usability.limitations[0]}</p> : null}
             <div className="tags">
               {skill.tags.map((entry) => (
                 <span key={entry} className="tag">{entry}</span>

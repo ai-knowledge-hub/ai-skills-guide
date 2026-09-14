@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://skills.ai-knowledge-hub.org/schemas/registry-index.schema.json",
+  "$id": "https://skills.ai-knowledge-hub.org/schemas/registry-index-v1.2.schema.json",
   "title": "Skills Registry Index",
   "type": "object",
   "additionalProperties": false,
@@ -12,7 +12,7 @@
   "properties": {
     "registry_version": {
       "type": "string",
-      "pattern": "^[0-9]+\\.[0-9]+$"
+      "const": "1.2"
     },
     "generated_at": {
       "type": "string",
@@ -45,7 +45,11 @@
         "properties": {
           "schema_version": {
             "type": "string",
-            "const": "2.0"
+            "enum": [
+              "1.1",
+              "2.0",
+              "2.1"
+            ]
           },
           "id": {
             "type": "string",
@@ -323,6 +327,11 @@
             "if": {
               "anyOf": [
                 {
+                  "properties": {
+                    "schema_version": {
+                      "pattern": "^2\\."
+                    }
+                  },
                   "required": [
                     "schema_version"
                   ]
@@ -394,6 +403,7 @@
           "enum": [
             "usable-now",
             "setup-required",
+            "not-verified",
             "template-only",
             "documentation-only"
           ]
@@ -430,6 +440,53 @@
           "type": "string",
           "minLength": 3,
           "maxLength": 300
+        },
+        "executable_helpers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "entrypoint",
+              "availability",
+              "execution",
+              "limitations"
+            ],
+            "properties": {
+              "entrypoint": {
+                "type": "string",
+                "minLength": 3
+              },
+              "availability": {
+                "type": "string",
+                "enum": [
+                  "usable-now",
+                  "setup-required",
+                  "not-verified"
+                ]
+              },
+              "execution": {
+                "type": "string",
+                "const": "local-tool"
+              },
+              "limitations": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 3
+                }
+              },
+              "quickstart": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 300
+              }
+            }
+          }
         },
         "source": {
           "type": "string",

@@ -206,8 +206,20 @@ func validateManifestFields(m Manifest, path string) error {
 		return fmt.Errorf("manifest %s deprecated but missing replaced_by", path)
 	}
 	if m.SchemaVersion != "" {
-		if m.SchemaVersion != "2.0" {
+		if m.SchemaVersion != "1.1" && m.SchemaVersion != "2.0" && m.SchemaVersion != "2.1" {
 			return fmt.Errorf("manifest %s has unsupported schema_version %q", path, m.SchemaVersion)
+		}
+		if m.SchemaVersion == "2.0" && m.Usability.Availability == "not-verified" {
+			return fmt.Errorf("manifest %s must use schema_version 2.1 for usability availability not-verified", path)
+		}
+		if m.SchemaVersion == "2.0" && len(m.Usability.ExecutableHelpers) > 0 {
+			return fmt.Errorf("manifest %s must use schema_version 1.1 or 2.1 for usability executable_helpers", path)
+		}
+		if m.SchemaVersion == "1.1" {
+			if m.executionSet || m.artifactSet || m.authenticationSet || len(m.Verification.Evidence) > 0 || m.Verification.LastVerifiedAt != "" {
+				return fmt.Errorf("manifest %s uses v2 contract fields with schema_version 1.1", path)
+			}
+			return nil
 		}
 		if !m.executionSet || !m.artifactSet || !m.authenticationSet || !m.verificationSet {
 			return fmt.Errorf("manifest %s is missing a required v2 contract section", path)

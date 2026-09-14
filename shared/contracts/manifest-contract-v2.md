@@ -1,7 +1,7 @@
 # Manifest Contract v2
 
 - Status: normative
-- Schema version: `2.0`
+- Schema versions: `2.0`, `2.1`
 - Schema definitions:
   [`manifest-contract-v2.schema.json`](../schemas/manifest-contract-v2.schema.json)
 
@@ -21,19 +21,27 @@ artifact, target, and current evidence.
 
 `schema_version` is separate from the package's SemVer `version`.
 
-- A manifest without `schema_version` is a legacy v1 manifest. Existing fields
-  retain their current meaning and the manifest remains valid.
+- The parser can still read a manifest without `schema_version` as legacy v1
+  input, but current admission schemas require a version. Current catalog
+  manifests use `schema_version: "1.1"` to declare mandatory usability metadata
+  explicitly.
 - A manifest that declares any v2 contract field must set
-  `schema_version: "2.0"` and provide `execution`, `artifact`,
+  `schema_version: "2.0"` or `"2.1"` and provide `execution`, `artifact`,
   `authentication`, plus verification `evidence` and `last_verified_at`.
+- Schema `2.1` adds the `not-verified` availability value and executable-helper
+  disclosures. Schema `2.0` does not accept `not-verified`, preventing older
+  closed-enum consumers from silently claiming compatibility.
 - Producers must not emit a partial v2 contract. Consumers that do not support
   schema version 2 must report it as unsupported; they must not reinterpret or
   silently discard its execution or authentication requirements.
 - Compatible clarifications may extend the 2.x schema with optional fields.
   Removing fields, weakening invariants, or changing meanings requires a new
   major schema version.
-- Registry format `1.1` preserves v2 metadata while continuing to carry legacy
-  entries without synthesizing v2 claims.
+- Registry format `1.2` carries schema `1.1`/`2.1` metadata and the
+  `not-verified` value. Updated consumers accept registry `1.1` and `1.2` but
+  fail closed on unknown versions. Consumers limited to `1.1` must use a prior
+  compatible registry snapshot or upgrade; no lossy readiness downgrade is
+  generated.
 
 ## Execution
 
@@ -162,9 +170,10 @@ and validate its target, artifact digest, observations, producer, disposition,
 and expiry under the operational readiness contract.
 
 Legacy v1 manifests receive structural entrypoint and dependency checks but are
-not promoted on the strength of legacy verification labels. Their remaining
-inferred usability classifications are a compatibility projection pending
-explicit catalog reclassification.
+not promoted on the strength of legacy verification labels. All admitted
+manifests must explicitly declare `usability.availability` and
+`usability.execution`; registry generation does not infer either value from a
+module directory, package name, or operational metadata.
 
 The golden fixtures under `shared/schemas/fixtures/manifest-v2/` cover every
 execution kind and authentication method, all four module schemas, explicit

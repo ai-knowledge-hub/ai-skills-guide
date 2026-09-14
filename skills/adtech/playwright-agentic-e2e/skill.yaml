@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: adtech/playwright-agentic-e2e
 name: Playwright Agentic E2E QA
 description: Build and maintain reusable Playwright smoke tests with planner, generator, and healer loops for web app regression checks.
@@ -37,6 +38,12 @@ operational:
     - Run summary
     - Healing suggestions
   approval_boundary: May run local test commands and propose fixes; require human approval before deleting tests or broadening coverage scope.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

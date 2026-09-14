@@ -28,6 +28,9 @@ runtimes:
   - codex
 entrypoints:
   skill_md: SKILL.md
+usability:
+  availability: documentation-only
+  execution: instructions
 dependencies:
   tools:
     - rg
@@ -60,8 +63,8 @@ deprecated: false
 	if entry.Dependencies == nil || len(entry.Dependencies.Tools) != 1 {
 		t.Fatalf("expected dependencies in index, got %#v", entry.Dependencies)
 	}
-	if entry.Usability.Availability != "usable-now" || entry.Usability.Execution != "instructions" || entry.Usability.Source != "inferred" {
-		t.Fatalf("unexpected default usability: %#v", entry.Usability)
+	if entry.Usability.Availability != "documentation-only" || entry.Usability.Execution != "instructions" || entry.Usability.Source != "declared" {
+		t.Fatalf("unexpected declared usability: %#v", entry.Usability)
 	}
 }
 
@@ -86,6 +89,9 @@ runtimes:
   - codex
 entrypoints:
   spec: AGENT.md
+usability:
+  availability: template-only
+  execution: orchestrator
 dependencies:
   agents:
     - marketing/creative-operating-system-supervisor
@@ -127,7 +133,7 @@ deprecated: false
 	if entry.Dependencies == nil || len(entry.Dependencies.Agents) != 1 || len(entry.Dependencies.Skills) != 1 {
 		t.Fatalf("expected agent and skill dependencies in index, got %#v", entry.Dependencies)
 	}
-	if entry.Usability.Availability != "setup-required" || entry.Usability.Execution != "orchestrator" {
+	if entry.Usability.Availability != "template-only" || entry.Usability.Execution != "orchestrator" || entry.Usability.Source != "declared" {
 		t.Fatalf("unexpected agent usability: %#v", entry.Usability)
 	}
 	if !strings.Contains(entry.Versions[0].ManifestURL, "/agents/marketing/demo-agent/agent.yaml") {
@@ -159,6 +165,9 @@ runtimes:
   - codex
 entrypoints:
   spec: TOOL.md
+usability:
+  availability: template-only
+  execution: integration-template
 dependencies:
   mcp_servers:
     - demo-mcp
@@ -226,6 +235,9 @@ runtimes:
   - codex
 entrypoints:
   spec: plugin.json
+usability:
+  availability: template-only
+  execution: bundle
 includes:
   skills:
     - marketing/meta-google-weekly-performance-review
@@ -316,7 +328,7 @@ func TestBuildIndexPreservesV2Contracts(t *testing.T) {
 	if err := os.MkdirAll(entryDir, 0o755); err != nil {
 		t.Fatalf("mkdir: %v", err)
 	}
-	mf := `schema_version: "2.0"
+	mf := `schema_version: "2.1"
 id: adtech/v2-tool
 name: V2 Tool
 description: V2 tool manifest used for registry preservation testing.
@@ -332,6 +344,9 @@ runtimes:
   - codex
 entrypoints:
   spec: TOOL.md
+usability:
+  availability: not-verified
+  execution: local-tool
 execution:
   kind: cli
   command:
@@ -376,7 +391,7 @@ deprecated: false
 		t.Fatalf("build index: %v", err)
 	}
 	entry := idx.Skills[0]
-	if idx.RegistryVersion != "1.1" || entry.SchemaVersion != "2.0" {
+	if idx.RegistryVersion != "1.2" || entry.SchemaVersion != "2.1" {
 		t.Fatalf("unexpected registry versions: %#v", entry)
 	}
 	if entry.Execution == nil || entry.Execution.Kind != "cli" || entry.Artifact == nil {

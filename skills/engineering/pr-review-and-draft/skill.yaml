@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: engineering/pr-review-and-draft
 name: PR Review and Draft
 description: Review code changes for correctness, performance, security, and
@@ -32,6 +33,12 @@ operational:
     - Risk summary
     - PR draft
   approval_boundary: Safe for review and drafting; require human approval before applying code changes based on review findings.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

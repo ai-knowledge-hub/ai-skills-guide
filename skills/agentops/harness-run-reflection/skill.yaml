@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: agentops/harness-run-reflection
 name: Harness Run Reflection
 description: Review recent agent run logs to identify repeated misses,
@@ -32,6 +33,12 @@ operational:
     - Failure patterns
     - Improvement candidates
   approval_boundary: Safe for harness analysis; must not widen scope into production code changes on its own.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

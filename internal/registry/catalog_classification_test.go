@@ -1,0 +1,104 @@
+package registry
+
+import (
+	"path/filepath"
+	"testing"
+)
+
+func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
+	root := filepath.Clean(filepath.Join("..", ".."))
+	tests := []struct {
+		name         string
+		build        func(string) (Index, error)
+		wantCount    int
+		availability string
+		execution    string
+	}{
+		{name: "skills", build: BuildSkillsIndex, wantCount: 42, availability: "documentation-only", execution: "instructions"},
+		{name: "agents", build: BuildAgentsIndex, wantCount: 7, availability: "template-only", execution: "orchestrator"},
+		{name: "plugins", build: BuildPluginsIndex, wantCount: 11, availability: "template-only", execution: "bundle"},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			index, err := test.build(root)
+			if err != nil {
+				t.Fatalf("build index: %v", err)
+			}
+			if len(index.Skills) != test.wantCount {
+				t.Fatalf("got %d entries, want %d", len(index.Skills), test.wantCount)
+			}
+			for _, entry := range index.Skills {
+				assertClassification(t, entry, test.availability, test.execution)
+			}
+		})
+	}
+
+	skills, err := BuildSkillsIndex(root)
+	if err != nil {
+		t.Fatalf("build skills index for helper audit: %v", err)
+	}
+	wantHelpers := map[string]string{
+		"adtech/analyst-copilot-bigquery-redshift":        "scripts/query_safety_check.py",
+		"adtech/playwright-vscode-loop-codex":             "scripts/install-global-codex.sh",
+		"adtech/policy-brand-compliance-checker":          "scripts/utm_lint.py",
+		"marketing/creative-workshop-pmax-reels":          "scripts/validate_lengths.py",
+		"marketing/lifecycle-experiment-planner":          "scripts/sample_size.py",
+		"marketing/meta-google-weekly-performance-review": "scripts/compute_metrics.py",
+		"marketing/seo-paid-search-synergy":               "scripts/extract_seo_winners.py",
+	}
+	for _, entry := range skills.Skills {
+		want, scriptBearing := wantHelpers[entry.ID]
+		if !scriptBearing {
+			if len(entry.Usability.ExecutableHelpers) != 0 {
+				t.Errorf("%s unexpectedly declares executable helpers", entry.ID)
+			}
+			continue
+		}
+		if len(entry.Usability.ExecutableHelpers) != 1 {
+			t.Errorf("%s helpers = %#v, want one", entry.ID, entry.Usability.ExecutableHelpers)
+			continue
+		}
+		helper := entry.Usability.ExecutableHelpers[0]
+		if helper.Entrypoint != want || helper.Availability != "not-verified" || helper.Execution != "local-tool" {
+			t.Errorf("%s helper = %#v, want %s not-verified/local-tool", entry.ID, helper, want)
+		}
+	}
+
+	tools, err := BuildToolsIndex(root)
+	if err != nil {
+		t.Fatalf("build tools index: %v", err)
+	}
+	wantTools := map[string][2]string{
+		"ads/meta-ads-mcp-connector":           {"template-only", "integration-template"},
+		"adtech/ad-platform-executor-template": {"template-only", "integration-template"},
+		"adtech/conversion-event-reconciler":   {"not-verified", "local-tool"},
+		"adtech/openai-ads-adapter-template":   {"template-only", "integration-template"},
+		"adtech/openai-ads-api-client":         {"not-verified", "remote-integration"},
+		"agentops/agent-control-plane-server":  {"template-only", "integration-template"},
+		"analytics/ga4-mcp-connector":          {"template-only", "integration-template"},
+		"warehouse/bigquery-mcp-query-runner":  {"template-only", "integration-template"},
+	}
+	if len(tools.Skills) != len(wantTools) {
+		t.Fatalf("got %d tools, want %d", len(tools.Skills), len(wantTools))
+	}
+	for _, entry := range tools.Skills {
+		want, ok := wantTools[entry.ID]
+		if !ok {
+			t.Fatalf("unexpected tool %q", entry.ID)
+		}
+		assertClassification(t, entry, want[0], want[1])
+	}
+}
+
+func assertClassification(t *testing.T, entry SkillEntry, availability, execution string) {
+	t.Helper()
+	if entry.SchemaVersion != "1.1" {
+		t.Errorf("%s schema_version = %q, want 1.1", entry.ID, entry.SchemaVersion)
+	}
+	if entry.Usability.Source != "declared" || entry.Usability.Availability != availability || entry.Usability.Execution != execution {
+		t.Errorf("%s usability = %#v, want declared %s/%s", entry.ID, entry.Usability, availability, execution)
+	}
+	if len(entry.Usability.Limitations) == 0 {
+		t.Errorf("%s must disclose at least one limitation", entry.ID)
+	}
+}

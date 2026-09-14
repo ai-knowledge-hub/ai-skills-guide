@@ -1,10 +1,10 @@
 schema_version: "2.1"
-id: agentops/contract-fixture-agent
-name: Contract Fixture Agent
-description: Valid v2 agent manifest used for schema contract testing.
+id: engineering/contract-fixture-skill
+name: Contract Fixture Skill
+description: Valid v2.1 skill manifest containing independently classified executable helper metadata.
 version: 1.0.0
 released_at: "2026-09-13T00:00:00Z"
-category: agentops/testing
+category: engineering/testing-quality
 tags:
   - contract-test
 license: MIT
@@ -13,26 +13,20 @@ author:
 runtimes:
   - codex
 entrypoints:
-  spec: AGENT.md
+  skill_md: SKILL.md
 usability:
-  availability: not-verified
-  execution: orchestrator
+  availability: documentation-only
+  execution: instructions
+  executable_helpers:
+    - entrypoint: scripts/check.py
+      availability: not-verified
+      execution: local-tool
+      limitations:
+        - No current executable evidence is recorded.
 execution:
-  kind: orchestrator
-  command:
-    - skills-hub
-    - agent
-    - run
-    - agentops/contract-fixture-agent
-  smoke_test:
-    - skills-hub
-    - agent
-    - run
-    - agentops/contract-fixture-agent
-    - --smoke
+  kind: instructions
   supported_platforms:
     - linux
-    - macos
   supported_runtimes:
     - codex
 artifact:
@@ -47,11 +41,11 @@ authentication:
   credential_bindings: []
   scopes: []
   credential_storage: No credentials are used.
-  validation: Confirm the orchestrator does not request credentials.
+  validation: Confirm the instruction path does not request credentials.
   revocation: No credential revocation applies.
 verification:
   security_reviewed: false
   evidence:
-    - evidence://fixture/agent/smoke
+    - evidence://fixture/skill/instruction-run
   last_verified_at: "2026-09-13T00:00:00Z"
 deprecated: false

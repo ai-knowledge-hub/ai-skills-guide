@@ -63,12 +63,21 @@ type VerificationMetadata struct {
 }
 
 type UsabilityMetadata struct {
-	Availability  string   `json:"availability"`
-	Execution     string   `json:"execution"`
-	RequiresSetup []string `json:"requires_setup,omitempty"`
-	Limitations   []string `json:"limitations,omitempty"`
-	Quickstart    string   `json:"quickstart,omitempty"`
-	Source        string   `json:"source"`
+	Availability      string                     `json:"availability"`
+	Execution         string                     `json:"execution"`
+	RequiresSetup     []string                   `json:"requires_setup,omitempty"`
+	Limitations       []string                   `json:"limitations,omitempty"`
+	Quickstart        string                     `json:"quickstart,omitempty"`
+	ExecutableHelpers []ExecutableHelperMetadata `json:"executable_helpers,omitempty"`
+	Source            string                     `json:"source"`
+}
+
+type ExecutableHelperMetadata struct {
+	Entrypoint   string   `json:"entrypoint"`
+	Availability string   `json:"availability"`
+	Execution    string   `json:"execution"`
+	Limitations  []string `json:"limitations,omitempty"`
+	Quickstart   string   `json:"quickstart,omitempty"`
 }
 
 type OperationalMetadata struct {

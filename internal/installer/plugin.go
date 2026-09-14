@@ -28,6 +28,10 @@ func InstallPluginDependencies(
 	force bool,
 ) (DependencyInstallResult, error) {
 	result := DependencyInstallResult{}
+	pluginSourceDir := filepath.Join(pluginTargetRoot, filepath.FromSlash(entry.ID))
+	if err := PreflightPluginDependencies(entry, runtimeName, pluginTargetRoot, pluginSourceDir, moduleRoots, registryPaths); err != nil {
+		return result, err
+	}
 
 	if entry.Includes == nil {
 		return result, nil
@@ -40,7 +44,6 @@ func InstallPluginDependencies(
 			pluginTargetRoot,
 			"skills",
 			moduleRoots["skills"],
-			registryPaths["skills"],
 			force,
 		)
 		if err != nil {
@@ -57,7 +60,6 @@ func InstallPluginDependencies(
 			pluginTargetRoot,
 			"agents",
 			moduleRoots["agents"],
-			registryPaths["agents"],
 			force,
 		)
 		if err != nil {
@@ -74,7 +76,6 @@ func InstallPluginDependencies(
 			pluginTargetRoot,
 			"tools",
 			moduleRoots["tools"],
-			registryPaths["tools"],
 			force,
 		)
 		if err != nil {
@@ -95,25 +96,103 @@ func InstallPluginDependencies(
 	return result, nil
 }
 
-func installDependencySet(
+// PreflightPluginDependencies validates the complete cross-module dependency
+// closure before an installer performs its first filesystem mutation.
+func PreflightPluginDependencies(
+	entry registry.SkillEntry,
+	runtimeName string,
+	pluginTargetRoot string,
+	pluginSourceDir string,
+	moduleRoots map[string]string,
+	registryPaths map[string]string,
+) error {
+	if err := ValidateOperationalInstall(entry); err != nil {
+		return err
+	}
+	if entry.Includes == nil {
+		return nil
+	}
+
+	sets := []struct {
+		ids        []string
+		moduleName string
+	}{
+		{ids: entry.Includes.Skills, moduleName: "skills"},
+		{ids: entry.Includes.Agents, moduleName: "agents"},
+		{ids: entry.Includes.Tools, moduleName: "tools"},
+	}
+	for _, set := range sets {
+		if len(set.ids) == 0 {
+			continue
+		}
+		if err := preflightDependencySet(
+			set.ids,
+			runtimeName,
+			pluginTargetRoot,
+			set.moduleName,
+			moduleRoots[set.moduleName],
+			registryPaths[set.moduleName],
+		); err != nil {
+			return err
+		}
+	}
+
+	for _, hookName := range entry.Includes.Hooks {
+		if _, err := resolveHookPath(filepath.Join(pluginSourceDir, "hooks"), hookName); err != nil {
+			return fmt.Errorf("resolve hook %s for %s: %w", hookName, entry.ID, err)
+		}
+	}
+	return nil
+}
+
+func preflightDependencySet(
 	ids []string,
 	runtimeName string,
 	pluginTargetRoot string,
 	moduleName string,
 	moduleRoot string,
 	registryPath string,
-	force bool,
-) ([]string, []string, error) {
+) error {
 	if strings.TrimSpace(moduleRoot) == "" {
-		return nil, nil, fmt.Errorf("missing module root for %s", moduleName)
+		return fmt.Errorf("missing module root for %s", moduleName)
 	}
 	if strings.TrimSpace(registryPath) == "" {
-		return nil, nil, fmt.Errorf("missing registry path for %s", moduleName)
+		return fmt.Errorf("missing registry path for %s", moduleName)
 	}
 
 	idx, err := registry.LoadIndex(registryPath)
 	if err != nil {
-		return nil, nil, fmt.Errorf("load %s registry: %w", moduleName, err)
+		return fmt.Errorf("load %s registry: %w", moduleName, err)
+	}
+	if _, err := ResolvePluginDependencyTarget(runtimeName, moduleName, pluginTargetRoot); err != nil {
+		return err
+	}
+	for _, id := range ids {
+		entry, ok := registry.FindSkill(idx, id)
+		if !ok {
+			return fmt.Errorf("%s dependency not found in registry: %s", moduleName, id)
+		}
+		if err := ValidateOperationalInstall(entry); err != nil {
+			return fmt.Errorf("%s dependency: %w", moduleName, err)
+		}
+		sourceDir := filepath.Join(moduleRoot, filepath.FromSlash(id))
+		if stat, statErr := os.Stat(sourceDir); statErr != nil || !stat.IsDir() {
+			return fmt.Errorf("local source not found for %s dependency at %s", id, sourceDir)
+		}
+	}
+	return nil
+}
+
+func installDependencySet(
+	ids []string,
+	runtimeName string,
+	pluginTargetRoot string,
+	moduleName string,
+	moduleRoot string,
+	force bool,
+) ([]string, []string, error) {
+	if strings.TrimSpace(moduleRoot) == "" {
+		return nil, nil, fmt.Errorf("missing module root for %s", moduleName)
 	}
 	target, err := ResolvePluginDependencyTarget(runtimeName, moduleName, pluginTargetRoot)
 	if err != nil {
@@ -123,15 +202,7 @@ func installDependencySet(
 	installed := make([]string, 0, len(ids))
 	skipped := make([]string, 0)
 	for _, id := range ids {
-		if _, ok := registry.FindSkill(idx, id); !ok {
-			return nil, nil, fmt.Errorf("%s dependency not found in registry: %s", moduleName, id)
-		}
-
 		sourceDir := filepath.Join(moduleRoot, filepath.FromSlash(id))
-		if stat, statErr := os.Stat(sourceDir); statErr != nil || !stat.IsDir() {
-			return nil, nil, fmt.Errorf("local source not found for %s dependency at %s", id, sourceDir)
-		}
-
 		destinationDir := filepath.Join(target.TargetPath, filepath.FromSlash(id))
 		if _, statErr := os.Stat(destinationDir); statErr == nil && !force {
 			skipped = append(skipped, destinationDir)

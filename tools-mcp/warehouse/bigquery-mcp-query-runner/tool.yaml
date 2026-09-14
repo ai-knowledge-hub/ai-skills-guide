@@ -1,6 +1,7 @@
+schema_version: "1.1"
 id: warehouse/bigquery-mcp-query-runner
 name: BigQuery MCP Query Runner
-description: Execute parameterized read-only BigQuery SQL through MCP for analytics and BI workflows.
+description: Implementation specification and template for a read-only BigQuery MCP query runner; no launchable server is packaged.
 version: 0.1.0
 released_at: "2026-03-02T00:00:00Z"
 category: tools-mcp/warehouse
@@ -36,6 +37,12 @@ operational:
   access_level: read-only
   trust_boundary: remote-mcp-server
   approval_boundary: Safe for parameterized read-only queries; require human approval before broadening dataset scope or enabling any non-read-only SQL path.
+usability:
+  availability: template-only
+  execution: integration-template
+  limitations:
+    - Specification, prompts, and examples only; no launchable MCP transport is packaged.
+  quickstart: Review TOOL.md as an implementation contract; do not register this package as an MCP server.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

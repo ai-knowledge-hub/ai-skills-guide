@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: marketing/agent-share-of-choice-evaluator
 name: Agent Share of Choice Evaluator
 description: Evaluate brand progression across retrieval, consideration, recommendation, selection, transaction, completion, and reuse in agent-mediated tasks.
@@ -35,6 +36,12 @@ operational:
     - Route comparison
     - Confidence and next-test report
   approval_boundary: Evaluation only; do not publish comparative claims without methodology and human review.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

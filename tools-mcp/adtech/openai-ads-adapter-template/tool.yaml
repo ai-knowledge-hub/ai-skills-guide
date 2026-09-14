@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: adtech/openai-ads-adapter-template
 name: OpenAI Ads Adapter Template
 description: Mock-first read-only adapter contract for OpenAI Ads accounts, campaigns, ads, insights, and product feeds.
@@ -45,7 +46,7 @@ usability:
   availability: template-only
   execution: integration-template
   limitations:
-    - This package contains contracts and fixtures, not an API client.
+    - Reference adapter contract only; no connected executable integration is packaged.
   quickstart: Use adtech/openai-ads-api-client for an executable mock or live read-only integration.
 verification:
   tests_min_prompts: 5

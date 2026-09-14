@@ -298,6 +298,9 @@ func runInstall(args []string) error {
 	if err != nil {
 		return err
 	}
+	if err := installer.ValidateOperationalInstall(skill); err != nil {
+		return err
+	}
 
 	if skill.Deprecated {
 		fmt.Fprintf(os.Stderr, "warning: %s is deprecated", skill.ID)
@@ -317,6 +320,28 @@ func runInstall(args []string) error {
 	if err != nil {
 		return err
 	}
+	dependencyModuleRoots := map[string]string{
+		"skills": resolveModuleRoot("", "skills"),
+		"agents": resolveModuleRoot("", "agents"),
+		"tools":  resolveModuleRoot("", "tools"),
+	}
+	dependencyRegistryPaths := map[string]string{
+		"skills": resolveRegistryPath("", "skills"),
+		"agents": resolveRegistryPath("", "agents"),
+		"tools":  resolveRegistryPath("", "tools"),
+	}
+	if moduleName == "plugins" {
+		if err := installer.PreflightPluginDependencies(
+			skill,
+			rt.Runtime,
+			rt.TargetPath,
+			sourceDir,
+			dependencyModuleRoots,
+			dependencyRegistryPaths,
+		); err != nil {
+			return err
+		}
+	}
 	destination, err := installer.InstallSkill(sourceDir, rt.TargetPath, skill.ID, *force)
 	if err != nil {
 		return err
@@ -333,16 +358,8 @@ func runInstall(args []string) error {
 			skill,
 			rt.Runtime,
 			rt.TargetPath,
-			map[string]string{
-				"skills": resolveModuleRoot("", "skills"),
-				"agents": resolveModuleRoot("", "agents"),
-				"tools":  resolveModuleRoot("", "tools"),
-			},
-			map[string]string{
-				"skills": resolveRegistryPath("", "skills"),
-				"agents": resolveRegistryPath("", "agents"),
-				"tools":  resolveRegistryPath("", "tools"),
-			},
+			dependencyModuleRoots,
+			dependencyRegistryPaths,
 			*force,
 		)
 		if err != nil {
@@ -371,6 +388,13 @@ func printUsabilitySummary(w io.Writer, entry registry.SkillEntry) {
 	if len(entry.Usability.Limitations) > 0 {
 		fmt.Fprintf(w, "usability.limitations: %s\n", strings.Join(entry.Usability.Limitations, "; "))
 	}
+	for _, helper := range entry.Usability.ExecutableHelpers {
+		fmt.Fprintf(w, "usability.executable_helper: %s (%s, %s)\n", helper.Entrypoint, helper.Availability, helper.Execution)
+		if helper.Quickstart != "" {
+			fmt.Fprintf(w, "usability.executable_helper.quickstart: %s\n", helper.Quickstart)
+		}
+		fmt.Fprintf(w, "usability.executable_helper.limitations: %s\n", strings.Join(helper.Limitations, "; "))
+	}
 }
 
 func printInstallUsabilityWarning(w io.Writer, entry registry.SkillEntry) {
@@ -379,6 +403,10 @@ func printInstallUsabilityWarning(w io.Writer, entry registry.SkillEntry) {
 		fmt.Fprintf(w, "warning: %s installs a reference template, not a connected executable integration\n", entry.ID)
 	case "setup-required":
 		fmt.Fprintf(w, "note: %s requires configuration before operational use\n", entry.ID)
+	case "not-verified":
+		fmt.Fprintf(w, "warning: %s has an implementation but no current target-scoped operational evidence\n", entry.ID)
+	case "documentation-only":
+		fmt.Fprintf(w, "note: %s installs instructions or documentation, not executable runtime capability\n", entry.ID)
 	}
 }
 

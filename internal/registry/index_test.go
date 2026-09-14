@@ -1,6 +1,32 @@
 package registry
 
-import "testing"
+import (
+	"path/filepath"
+	"strings"
+	"testing"
+)
+
+func TestLoadIndexVersionCompatibility(t *testing.T) {
+	for _, version := range []string{"1.1", "1.2"} {
+		t.Run(version, func(t *testing.T) {
+			path := filepath.Join(t.TempDir(), "index.json")
+			if err := WriteIndex(path, Index{RegistryVersion: version, Skills: []SkillEntry{}}); err != nil {
+				t.Fatalf("write index: %v", err)
+			}
+			if _, err := LoadIndex(path); err != nil {
+				t.Fatalf("load supported registry: %v", err)
+			}
+		})
+	}
+
+	path := filepath.Join(t.TempDir(), "index.json")
+	if err := WriteIndex(path, Index{RegistryVersion: "1.3", Skills: []SkillEntry{}}); err != nil {
+		t.Fatalf("write index: %v", err)
+	}
+	if _, err := LoadIndex(path); err == nil || !strings.Contains(err.Error(), "unsupported registry_version") {
+		t.Fatalf("expected fail-closed version error, got %v", err)
+	}
+}
 
 func TestResolveVersion(t *testing.T) {
 	skill := SkillEntry{

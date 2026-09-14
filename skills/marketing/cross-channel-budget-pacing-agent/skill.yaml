@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: marketing/cross-channel-budget-pacing-agent
 name: Cross-Channel Budget Pacing Agent
 description: Monitor pacing across paid channels, detect anomalies, and recommend budget reallocation actions.
@@ -35,6 +36,12 @@ operational:
     - Anomaly list
     - Reallocation plan
   approval_boundary: Safe for analysis and recommendation; require human approval before changing live budgets.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

@@ -1,8 +1,9 @@
 {
-  "registry_version": "1.1",
+  "registry_version": "1.2",
   "generated_at": "2026-07-24T00:00:00Z",
   "skills": [
     {
+      "schema_version": "1.1",
       "id": "adtech/ad-platform-control-plane-supervisor",
       "name": "Ad Platform Control Plane Supervisor",
       "description": "Advisory supervisor for DV360 and Google Ads agents, coordinating auth review, policy gates, executor readiness, approvals, audit, and rollback planning.",
@@ -14,7 +15,7 @@
           "released_at": "2026-05-06T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/agents/adtech/ad-platform-control-plane-supervisor/agent.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/ad-platform-control-plane-supervisor/0.1.0.tar.gz",
-          "sha256": "448631cfba43166109009a9860aba98cb5073c0fa4bc714cbd74e93324b4d726"
+          "sha256": "a7d7e569915c0b93e4a0d7c2591e55f15af27ef4c08d3a3b2ba343a554d03448"
         }
       ],
       "runtimes": [
@@ -50,12 +51,13 @@
         ]
       },
       "usability": {
-        "availability": "setup-required",
+        "availability": "template-only",
         "execution": "orchestrator",
-        "requires_setup": [
-          "Install declared dependencies and configure tool bindings."
+        "limitations": [
+          "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged."
         ],
-        "source": "inferred"
+        "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+        "source": "declared"
       },
       "dependencies": {
         "skills": [
@@ -70,6 +72,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "adtech/bi-insights-orchestrator",
       "name": "BI Insights Orchestrator",
       "description": "Orchestrate warehouse and ad platform data analysis into standardized BI insights with QA-aware controls.",
@@ -81,7 +84,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/agents/adtech/bi-insights-orchestrator/agent.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/bi-insights-orchestrator/0.1.0.tar.gz",
-          "sha256": "d5be1ccaca95295c2e516aad05b7b3a40531ba298cde3c49c9410ae8db556517"
+          "sha256": "878da6bb61b030ea8b4e1909fd5928efe56e9d02330f0fa03e7c8815b0b09fdb"
         }
       ],
       "runtimes": [
@@ -114,12 +117,13 @@
         ]
       },
       "usability": {
-        "availability": "setup-required",
+        "availability": "template-only",
         "execution": "orchestrator",
-        "requires_setup": [
-          "Install declared dependencies and configure tool bindings."
+        "limitations": [
+          "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged."
         ],
-        "source": "inferred"
+        "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+        "source": "declared"
       },
       "dependencies": {
         "skills": [
@@ -134,6 +138,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "adtech/chatgpt-ads-experiment-supervisor",
       "name": "ChatGPT Ads Experiment Supervisor",
       "description": "Coordinate task-led ChatGPT advertising experiments across creative, policy, measurement ownership, platform inspection, reconciliation, and memory.",
@@ -145,7 +150,7 @@
           "released_at": "2026-07-24T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/agents/adtech/chatgpt-ads-experiment-supervisor/agent.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/chatgpt-ads-experiment-supervisor/0.1.0.tar.gz",
-          "sha256": "fe13951af91f9ebc8f65750db3ceb0b110eb7340e88187c687a98fd262c507d0"
+          "sha256": "bc3e399f1a3193947ff3bce090ca2025389d6a8d083141d585d649a6d3223ab4"
         }
       ],
       "runtimes": [
@@ -182,16 +187,13 @@
         ]
       },
       "usability": {
-        "availability": "setup-required",
+        "availability": "template-only",
         "execution": "orchestrator",
-        "requires_setup": [
-          "Install all declared agent, skill, and tool dependencies, preferably through the ChatGPT Advertising Experiment Plugin.",
-          "Configure mock or live read-only tool bindings and a governance profile."
-        ],
         "limitations": [
+          "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged.",
           "The supervisor is advisory and does not execute campaign writes."
         ],
-        "quickstart": "Run the plugin mock lab, then invoke this agent in mock-run mode with the generated evidence bundle.",
+        "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
         "source": "declared"
       },
       "dependencies": {
@@ -214,6 +216,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "agentops/agent-control-plane-supervisor",
       "name": "Agent Control Plane Supervisor",
       "description": "Advisory supervisor for reviewing, routing, and documenting governed marketing agent workflows before production deployment.",
@@ -225,7 +228,7 @@
           "released_at": "2026-04-26T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/agents/agentops/agent-control-plane-supervisor/agent.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/agent-control-plane-supervisor/0.1.0.tar.gz",
-          "sha256": "c993ff17cf9cdcb9641113b3110d6eb9d920c3c17653e0bf6bc23b9cfdb835ad"
+          "sha256": "66f41f541602ead7581b16e6bac279b029f568f4f04ff3a3b9f6badacacca37d"
         }
       ],
       "runtimes": [
@@ -261,12 +264,13 @@
         ]
       },
       "usability": {
-        "availability": "setup-required",
+        "availability": "template-only",
         "execution": "orchestrator",
-        "requires_setup": [
-          "Install declared dependencies and configure tool bindings."
+        "limitations": [
+          "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged."
         ],
-        "source": "inferred"
+        "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+        "source": "declared"
       },
       "dependencies": {
         "skills": [
@@ -279,6 +283,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/campaign-qa-supervisor",
       "name": "Campaign QA Supervisor",
       "description": "Validate campaign setup quality, tracking integrity, and policy compliance before launch or major edits.",
@@ -290,7 +295,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/agents/marketing/campaign-qa-supervisor/agent.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/campaign-qa-supervisor/0.1.0.tar.gz",
-          "sha256": "30b75a2f94f47727bfa59cb80965555edad853f9e28c55147a7268616bb9c32e"
+          "sha256": "afbc93b2fed95db2a67774acddaa314346cb0fa10c37ae6e34688689a9589cb2"
         }
       ],
       "runtimes": [
@@ -323,12 +328,13 @@
         ]
       },
       "usability": {
-        "availability": "setup-required",
+        "availability": "template-only",
         "execution": "orchestrator",
-        "requires_setup": [
-          "Install declared dependencies and configure tool bindings."
+        "limitations": [
+          "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged."
         ],
-        "source": "inferred"
+        "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+        "source": "declared"
       },
       "dependencies": {
         "skills": [
@@ -341,6 +347,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/creative-operating-system-supervisor",
       "name": "Creative Operating System Supervisor",
       "description": "Coordinate the Creative Operating System workflow from brand memory and utility concepts to creator briefs, cultural timing, and final quality evaluation.",
@@ -352,7 +359,7 @@
           "released_at": "2026-06-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/agents/marketing/creative-operating-system-supervisor/agent.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-operating-system-supervisor/0.1.0.tar.gz",
-          "sha256": "10f9546b2c056466847e63447eb593dbbee861401eb33999a460c89e25f4f89b"
+          "sha256": "b4e9912595bb73a5f12a19802336cd05281551f6af94749ef1927f2b7f8d51bc"
         }
       ],
       "runtimes": [
@@ -393,12 +400,13 @@
         ]
       },
       "usability": {
-        "availability": "setup-required",
+        "availability": "template-only",
         "execution": "orchestrator",
-        "requires_setup": [
-          "Install declared dependencies and configure tool bindings."
+        "limitations": [
+          "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged."
         ],
-        "source": "inferred"
+        "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+        "source": "declared"
       },
       "dependencies": {
         "skills": [
@@ -413,6 +421,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/weekly-performance-supervisor",
       "name": "Weekly Performance Supervisor",
       "description": "Orchestrate weekly performance reporting by chaining dashboard generation, QA checks, and executive narrative output.",
@@ -424,7 +433,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/agents/marketing/weekly-performance-supervisor/agent.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/weekly-performance-supervisor/0.1.0.tar.gz",
-          "sha256": "7c1381b204cc9fe23d9e5c75e2304d91833bb1c571f7727cec7eb2ac7906542c"
+          "sha256": "6674ab5e979c25b457e21f48a69d5cb758424ff12bdd48c082c501282b291453"
         }
       ],
       "runtimes": [
@@ -457,12 +466,13 @@
         ]
       },
       "usability": {
-        "availability": "setup-required",
+        "availability": "template-only",
         "execution": "orchestrator",
-        "requires_setup": [
-          "Install declared dependencies and configure tool bindings."
+        "limitations": [
+          "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged."
         ],
-        "source": "inferred"
+        "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+        "source": "declared"
       },
       "dependencies": {
         "skills": [

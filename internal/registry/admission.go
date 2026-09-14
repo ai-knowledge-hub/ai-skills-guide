@@ -69,6 +69,9 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time) erro
 	if !validSemver(manifest.Version) {
 		return fmt.Errorf("manifest %s has invalid semantic version %q", manifestPath, manifest.Version)
 	}
+	if !manifest.usabilitySet || manifest.Usability.Availability == "" || manifest.Usability.Execution == "" {
+		return fmt.Errorf("manifest %s must explicitly declare usability.availability and usability.execution", manifestPath)
+	}
 	packageDir := filepath.Dir(manifestPath)
 	keys := make([]string, 0, len(manifest.Entrypoints))
 	for key := range manifest.Entrypoints {
@@ -81,8 +84,13 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time) erro
 			return fmt.Errorf("manifest %s entrypoint %s: %w", manifestPath, key, err)
 		}
 	}
+	for _, helper := range manifest.Usability.ExecutableHelpers {
+		if err := validateContainedPath(packageDir, helper.Entrypoint, false); err != nil {
+			return fmt.Errorf("manifest %s executable helper %s: %w", manifestPath, helper.Entrypoint, err)
+		}
+	}
 
-	if manifest.SchemaVersion == "2.0" {
+	if strings.HasPrefix(manifest.SchemaVersion, "2.") {
 		if filepath.Base(manifestPath) == "plugin.yaml" && manifest.Execution.Kind == "bundle" && !manifest.Artifact.SelfContained {
 			return fmt.Errorf("manifest %s bundle artifact must declare a self-contained dependency closure", manifestPath)
 		}
@@ -107,7 +115,7 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time) erro
 		if authenticationIsRequired(manifest) && manifest.Authentication.Status == "none" {
 			return fmt.Errorf("manifest %s requires authentication but declares authentication.status none", manifestPath)
 		}
-		if manifest.usabilitySet && manifest.Usability.Availability == "usable-now" {
+		if manifest.Usability.Availability == "usable-now" {
 			if err := validateFreshEvidence(manifestPath, manifest, now); err != nil {
 				return err
 			}
@@ -117,7 +125,7 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time) erro
 	// Legacy compatibility: an explicitly working local or remote executable
 	// must at least point at packaged implementation files. Evidence-backed
 	// readiness promotion itself is reserved for v2 manifests.
-	if manifest.usabilitySet && manifest.Usability.Availability == "usable-now" {
+	if manifest.Usability.Availability == "usable-now" {
 		switch manifest.Usability.Execution {
 		case "local-tool", "remote-integration":
 			if _, ok := manifest.Entrypoints["scripts_dir"]; !ok {

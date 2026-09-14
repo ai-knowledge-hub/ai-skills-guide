@@ -1,4 +1,4 @@
-schema_version: "2.0"
+schema_version: "2.1"
 id: adtech/flow-sequence-fixture
 name: Flow Sequence Fixture
 description: Valid v2 tool manifest using YAML flow-style sequences throughout.
@@ -12,6 +12,9 @@ author:
 runtimes: [codex, generic]
 entrypoints:
   spec: TOOL.md
+usability:
+  availability: not-verified
+  execution: local-tool
 execution:
   kind: cli
   command: [bin/example, run]

@@ -60,6 +60,70 @@ deprecated: false
 	}
 }
 
+func TestParseManifestSchemaVersionCompatibility(t *testing.T) {
+	t.Run("catalog 1.1 allows usability without v2 contract", func(t *testing.T) {
+		path := filepath.Join(t.TempDir(), "skill.yaml")
+		content := `schema_version: "1.1"
+id: marketing/versioned-skill
+name: Versioned Skill
+description: Versioned catalog manifest used for compatibility testing.
+version: 1.0.0
+released_at: "2026-09-14T00:00:00Z"
+category: marketing-tools/ads-ops
+tags: [testing]
+runtimes: [codex]
+usability:
+  availability: documentation-only
+  execution: instructions
+deprecated: false
+`
+		if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+			t.Fatalf("write manifest: %v", err)
+		}
+		if _, err := ParseManifest(path); err != nil {
+			t.Fatalf("parse schema 1.1 manifest: %v", err)
+		}
+	})
+
+	t.Run("v2.0 rejects new availability", func(t *testing.T) {
+		path := filepath.Join(t.TempDir(), "tool.yaml")
+		content := "schema_version: \"2.0\"\n" + strings.Replace(
+			unversionedV2ToolManifest,
+			"availability: setup-required",
+			"availability: not-verified",
+			1,
+		)
+		if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+			t.Fatalf("write manifest: %v", err)
+		}
+		if _, err := ParseManifest(path); err == nil || !strings.Contains(err.Error(), "schema_version 2.1") {
+			t.Fatalf("expected version-gated availability error, got %v", err)
+		}
+	})
+
+	t.Run("v2.0 rejects executable helpers", func(t *testing.T) {
+		path := filepath.Join(t.TempDir(), "tool.yaml")
+		content := "schema_version: \"2.0\"\n" + strings.Replace(
+			unversionedV2ToolManifest,
+			"  execution: local-tool",
+			`  execution: local-tool
+  executable_helpers:
+    - entrypoint: scripts/check.py
+      availability: not-verified
+      execution: local-tool
+      limitations:
+        - No current executable evidence.`,
+			1,
+		)
+		if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+			t.Fatalf("write manifest: %v", err)
+		}
+		if _, err := ParseManifest(path); err == nil || !strings.Contains(err.Error(), "executable_helpers") {
+			t.Fatalf("expected version-gated executable helper error, got %v", err)
+		}
+	})
+}
+
 func TestParseToolManifestOperationalMetadata(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "tool.yaml")
@@ -604,6 +668,9 @@ author:
 runtimes: [codex]
 entrypoints:
   spec: TOOL.md
+usability:
+  availability: setup-required
+  execution: local-tool
 execution:
   kind: cli
   command: [bin/tool]

@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: security/ad-platform-agent-auth-review
 name: Ad Platform Agent Auth Review
 description: Review DV360, Google Ads, and similar ad-platform agents for personal OAuth risk, workspace scoping, token storage, read/write separation, and approval readiness.
@@ -33,6 +34,12 @@ operational:
     - Read/write separation checklist
     - Approval-gated execution recommendation
   approval_boundary: Analysis-only; must not create tokens, change OAuth scopes, approve access, or execute ad-platform writes.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

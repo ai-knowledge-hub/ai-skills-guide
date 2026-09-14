@@ -207,6 +207,12 @@ network access, or external effect. An executable package MAY also carry
 instruction evidence, but the two evidence records remain independently scoped
 and independently expiring.
 
+When an instruction-primary skill packages executable helpers, the instruction
+classification MUST remain separate from an `executable_helpers` disclosure for
+each runnable entrypoint. Each helper carries its own execution shape,
+availability, limitations, and executable evidence scope; the instruction
+classification MUST NOT deny the helper's existence or promote it implicitly.
+
 Prompt tests assess instruction behavior. They MAY contribute to instruction
 verification when their environment, artifact identity, expected outcomes, and
 results are recorded. Prompt tests alone MUST NOT prove executable usability or
@@ -295,11 +301,17 @@ The existing `usability.availability` field is a user-facing compatibility
 projection, not a fifth source-of-truth axis. Conforming producers map it as
 follows for a stated scope and target key:
 
+`not-verified` is introduced by manifest schema 1.1/2.1 and registry format 1.2.
+Schema 2.0 and registry 1.1 consumers do not understand that value and MUST use
+a compatible prior snapshot or upgrade; producers MUST NOT down-convert it to a
+positive readiness claim.
+
 | `usability.availability` | Contract source |
 | --- | --- |
 | `documentation-only` | Delivery is `documentation-only` |
 | `template-only` | Delivery is `template-only` |
 | `setup-required` | Derived `setup-required` predicate in section 6 |
+| `not-verified` | An implementation is present, but no current evidence establishes a target-scoped readiness predicate |
 | `usable-now` | Derived `usable-now:instruction` or `usable-now:executable` predicate in section 6, with the scope exposed separately |
 
 `usability.execution` describes technical shape and does not prove delivery or

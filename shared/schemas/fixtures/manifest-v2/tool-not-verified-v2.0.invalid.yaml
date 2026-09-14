@@ -1,7 +1,7 @@
-schema_version: "2.1"
+schema_version: "2.0"
 id: adtech/contract-fixture-tool
 name: Contract Fixture Tool
-description: Valid v2 tool manifest used for schema contract testing.
+description: Invalid v2.0 tool using the availability value introduced by schema 2.1.
 version: 1.0.0
 released_at: "2026-09-13T00:00:00Z"
 category: tools-mcp/adtech

@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: agentops/harness-skill-proposal
 name: Harness Skill Proposal
 description: Propose new or revised harness skills and policy text from
@@ -32,6 +33,12 @@ operational:
     - Boundary notes
     - Rationale summary
   approval_boundary: Safe for proposal drafting inside harness-owned assets; require human approval before any change outside harness scope.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

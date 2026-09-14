@@ -1,6 +1,7 @@
+schema_version: "1.1"
 id: analytics/ga4-mcp-connector
 name: GA4 MCP Connector
-description: MCP-backed GA4 query connector for structured marketing analytics retrieval.
+description: Implementation specification and template for a GA4 MCP query connector; no launchable server is packaged.
 version: 0.1.0
 released_at: "2026-03-02T00:00:00Z"
 category: tools-mcp/analytics
@@ -36,6 +37,12 @@ operational:
   access_level: read-only
   trust_boundary: remote-mcp-server
   approval_boundary: Safe for read-only analytics retrieval; require human approval before combining with any workflow that writes back to ad platforms or reporting systems.
+usability:
+  availability: template-only
+  execution: integration-template
+  limitations:
+    - Specification, prompts, and examples only; no launchable MCP transport is packaged.
+  quickstart: Review TOOL.md as an implementation contract; do not register this package as an MCP server.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

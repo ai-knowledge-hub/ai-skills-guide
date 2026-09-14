@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: security/marketing-agent-risk-review
 name: Marketing Agent Risk Review
 description: Assess marketing and adtech agents for risky actions, sensitive data exposure, unsafe tool access, and missing human approval boundaries.
@@ -32,6 +33,12 @@ operational:
     - Required approval gates
     - Data-governance recommendations
   approval_boundary: Analysis-only; must not approve campaigns, change spend, publish content, export data, or modify permissions.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

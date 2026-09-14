@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: engineering/test-gap-analyzer
 name: Test Gap Analyzer
 description: Identify missing unit, integration, regression, and edge-case
@@ -32,6 +33,12 @@ operational:
     - Risk ranking
     - Suggested next tests
   approval_boundary: Safe for inspection and recommendation; require human approval before broadening test scope or changing suites.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

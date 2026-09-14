@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: marketing/campaign-qa-supervisor
 name: Campaign QA Supervisor
 description: Validate campaign setup quality, tracking integrity, and policy compliance before launch or major edits.
@@ -41,6 +42,12 @@ operational:
     - Critical blocker list
     - Remediation action list
     - Alert summary for escalation
+usability:
+  availability: template-only
+  execution: orchestrator
+  limitations:
+    - Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged.
+  quickstart: Review AGENT.md and implement and register the declared runtime bindings before launch.
 verification:
   tests_min_prompts: 5
   security_reviewed: false

@@ -20,7 +20,8 @@ We publish reusable building blocks across four modules:
 
 - skills (task-level expertise)
 - agents (orchestrated templates)
-- plugins (composition templates today; installable bundles when implemented and verified)
+- plugins (composition templates today; installable bundles when implemented
+  and verified)
 - tools & MCP connectors (integration layer)
 
 `packs/` contains documentation-only playbooks that curate existing catalog

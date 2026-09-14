@@ -32,9 +32,10 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
         <p>{entry.description}</p>
         <p className="meta">{entry.tags.join(", ")}</p>
         <div className="detail-install-lead">
-          <p className="meta">Install this connector</p>
+          <p className="meta">{entry.usability.availability === "template-only" ? "Reference template" : "Install this connector"}</p>
           <InstallCommands
             compact
+            availability={entry.usability.availability}
             codex={buildModuleInstallSnippet("tools", entry, "codex")}
             claude={buildModuleInstallSnippet("tools", entry, "claude")}
             generic={buildModuleInstallSnippet("tools", entry, "generic")}

@@ -1,8 +1,9 @@
 {
-  "registry_version": "1.0",
+  "registry_version": "1.2",
   "generated_at": "2026-07-25T00:00:00Z",
   "skills": [
     {
+      "schema_version": "1.1",
       "id": "agentops/harness-governance-plugin",
       "name": "Harness Governance Plugin",
       "description": "Package harness reflection, proposal drafting, and regression evaluation into one governed harness-improvement plugin with explicit human gates.",
@@ -14,7 +15,7 @@
           "released_at": "2026-03-31T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/agentops/harness-governance-plugin/plugin.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-governance-plugin/0.1.0.tar.gz",
-          "sha256": "7a67a9f53a583ee0054236b867f845b9fd77d15c7195a3642c8da83d9a0665be"
+          "sha256": "846d37baad4abe262529de7783de763a0a84c9a2302b488ee12c2d050b700860"
         }
       ],
       "runtimes": [
@@ -32,12 +33,13 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "setup-required",
+        "availability": "template-only",
         "execution": "bundle",
-        "requires_setup": [
-          "Review bundled components, secrets, and approval rules before enabling."
+        "limitations": [
+          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published."
         ],
-        "source": "inferred"
+        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+        "source": "declared"
       },
       "includes": {
         "skills": [
@@ -56,6 +58,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "engineering/code-maintenance-plugin",
       "name": "Code Maintenance Plugin",
       "description": "Package repo planning, verification, test-gap analysis, coverage review, and PR drafting into one governed maintenance workflow plugin.",
@@ -67,7 +70,7 @@
           "released_at": "2026-03-31T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/engineering/code-maintenance-plugin/plugin.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/code-maintenance-plugin/0.1.0.tar.gz",
-          "sha256": "66520979d381b13cf6bf9b0d6eb6376bd985027fb0097da3eebb4fba5acc7555"
+          "sha256": "4699d7a4181e6c6de1964acc67680763ae834a966c3bb141a5bab80a9580474a"
         }
       ],
       "runtimes": [
@@ -85,12 +88,13 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "setup-required",
+        "availability": "template-only",
         "execution": "bundle",
-        "requires_setup": [
-          "Review bundled components, secrets, and approval rules before enabling."
+        "limitations": [
+          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published."
         ],
-        "source": "inferred"
+        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+        "source": "declared"
       },
       "includes": {
         "skills": [
@@ -111,6 +115,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/ad-creative-plugin",
       "name": "Ad Creative Plugin",
       "description": "Package creative ideation, rules-based review, experiment planning, and delivery guidance into one plugin for paid-media creative teams.",
@@ -122,7 +127,7 @@
           "released_at": "2026-03-29T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/ad-creative-plugin/plugin.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/ad-creative-plugin/0.1.0.tar.gz",
-          "sha256": "2e0ac40d1b124f095b7197b471f9e10e1ef27d412456ce639f49c43cbb767a5a"
+          "sha256": "4ad6b09546944da5ac15e5e9c0b13941117338096f40ba778466ef4ada5a0622"
         }
       ],
       "runtimes": [
@@ -140,12 +145,13 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "setup-required",
+        "availability": "template-only",
         "execution": "bundle",
-        "requires_setup": [
-          "Review bundled components, secrets, and approval rules before enabling."
+        "limitations": [
+          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published."
         ],
-        "source": "inferred"
+        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+        "source": "declared"
       },
       "includes": {
         "skills": [
@@ -171,6 +177,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/campaign-audit-plugin",
       "name": "Campaign Audit Plugin",
       "description": "Package campaign QA, compliance checks, and audit supervision into a reusable plugin for pre-launch and in-flight campaign reviews.",
@@ -182,7 +189,7 @@
           "released_at": "2026-03-28T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/campaign-audit-plugin/plugin.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/campaign-audit-plugin/0.1.0.tar.gz",
-          "sha256": "e9142087f217444e7fcd1037d54bc690d99e1ae2702867b1fa36282d20172d8c"
+          "sha256": "9e89bd90ffee58eb1482b391cabb35a75fb7ce6abcd5855888e897d70d968d3c"
         }
       ],
       "runtimes": [
@@ -200,12 +207,13 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "setup-required",
+        "availability": "template-only",
         "execution": "bundle",
-        "requires_setup": [
-          "Review bundled components, secrets, and approval rules before enabling."
+        "limitations": [
+          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published."
         ],
-        "source": "inferred"
+        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+        "source": "declared"
       },
       "includes": {
         "skills": [
@@ -234,6 +242,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/chatgpt-advertising-experiment-plugin",
       "name": "ChatGPT Advertising Experiment Plugin",
       "description": "Install a task-led ChatGPT Ads experiment workflow with planning skills, supervisors, read-only API access, conversion reconciliation, policy gates, and a one-command mock lab.",
@@ -245,7 +254,7 @@
           "released_at": "2026-07-25T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/chatgpt-advertising-experiment-plugin/plugin.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/chatgpt-advertising-experiment-plugin/0.1.0.tar.gz",
-          "sha256": "cecee5e90eac1be1b2ffc35e7619f501bbbf0cc972e456638ed4dd049a3464bb"
+          "sha256": "ad3dfb9e7e43fd72d69fc1b35e9dca9f8fd7292352e4b0f7dac15ea21d593801"
         }
       ],
       "runtimes": [
@@ -265,17 +274,14 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "usable-now",
+        "availability": "template-only",
         "execution": "bundle",
-        "requires_setup": [
-          "For live reads, configure account-scoped API credentials only after the mock lab passes.",
-          "Replace the executor template with an approved platform executor before any mutation."
-        ],
         "limitations": [
-          "The installed OpenAI Ads client does not mutate campaigns, ad groups, ads, files, or feeds.",
+          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published.",
+          "The included OpenAI Ads client does not mutate campaigns, ad groups, ads, files, or feeds.",
           "The bundled executor remains a reference template rather than a live OpenAI Ads writer."
         ],
-        "quickstart": "python3 scripts/run_mock_lab.py",
+        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
         "source": "declared"
       },
       "includes": {
@@ -313,6 +319,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/competitive-intelligence-plugin",
       "name": "Competitive Intelligence Plugin",
       "description": "Bundle competitor signal collection, evidence review, and insight packaging into a reusable plugin for marketing strategy teams.",
@@ -324,7 +331,7 @@
           "released_at": "2026-03-29T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/competitive-intelligence-plugin/plugin.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/competitive-intelligence-plugin/0.1.0.tar.gz",
-          "sha256": "a09c2a682364ceec1a89b33ff31a7cff9b0ee1a68e6228cc340ba007136897a9"
+          "sha256": "d4966fd13614a86c9109fda99629444fca72129091d8002afca71e6dcd32adff"
         }
       ],
       "runtimes": [
@@ -342,12 +349,13 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "setup-required",
+        "availability": "template-only",
         "execution": "bundle",
-        "requires_setup": [
-          "Review bundled components, secrets, and approval rules before enabling."
+        "limitations": [
+          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published."
         ],
-        "source": "inferred"
+        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+        "source": "declared"
       },
       "includes": {
         "skills": [
@@ -366,6 +374,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/content-repurposing-plugin",
       "name": "Content Repurposing Plugin",
       "description": "Bundle content transformation, review guidance, and publishing-oriented workflow references into a portable plugin for multi-channel reuse.",
@@ -377,7 +386,7 @@
           "released_at": "2026-03-28T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/content-repurposing-plugin/plugin.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/content-repurposing-plugin/0.1.0.tar.gz",
-          "sha256": "04ab2636ccf8bdd3bfc5972773bad09dd4b4c5e007291eb3d582300cfc9652c6"
+          "sha256": "7d0fa219f69d4af6d1d1c03a29aa7b20c5ed1aaf7784580e005fbe980b4e1bd0"
         }
       ],
       "runtimes": [
@@ -395,12 +404,13 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "setup-required",
+        "availability": "template-only",
         "execution": "bundle",
-        "requires_setup": [
-          "Review bundled components, secrets, and approval rules before enabling."
+        "limitations": [
+          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published."
         ],
-        "source": "inferred"
+        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+        "source": "declared"
       },
       "includes": {
         "skills": [
@@ -419,6 +429,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/creative-operating-system-plugin",
       "name": "Creative Operating System Plugin",
       "description": "Bundle the Creative Operating System workflow into one installable package with audit, concepting, creator, timing, evaluation, and first-run operational templates.",
@@ -430,7 +441,7 @@
           "released_at": "2026-06-28T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/creative-operating-system-plugin/plugin.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-operating-system-plugin/0.1.0.tar.gz",
-          "sha256": "ccc144aca72dc90100f29f9fbaa9e2beb2e12cc699db957bd4efff7a4a5746c1"
+          "sha256": "e5c2dfc93d5252c1d1b20e953c55b92420afbfda6d0cb408b428f488e3cd05e4"
         }
       ],
       "runtimes": [
@@ -450,12 +461,13 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "setup-required",
+        "availability": "template-only",
         "execution": "bundle",
-        "requires_setup": [
-          "Review bundled components, secrets, and approval rules before enabling."
+        "limitations": [
+          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published."
         ],
-        "source": "inferred"
+        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+        "source": "declared"
       },
       "includes": {
         "skills": [
@@ -483,6 +495,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/page-speed-technical-seo-plugin",
       "name": "Page Speed \u0026 Technical SEO Plugin",
       "description": "Package technical SEO diagnostics, page experience checks, and reporting guidance into one installable plugin for search and landing-page teams.",
@@ -494,7 +507,7 @@
           "released_at": "2026-03-29T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/page-speed-technical-seo-plugin/plugin.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/page-speed-technical-seo-plugin/0.1.0.tar.gz",
-          "sha256": "55137c2907b0e8e84772b2e1b960484887b883a8469ff9d564336bb2a2a18cd1"
+          "sha256": "45af98d1e141aa611fd51a8b95528fcddcb5982863a91f46de113dc96ef05c67"
         }
       ],
       "runtimes": [
@@ -512,12 +525,13 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "setup-required",
+        "availability": "template-only",
         "execution": "bundle",
-        "requires_setup": [
-          "Review bundled components, secrets, and approval rules before enabling."
+        "limitations": [
+          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published."
         ],
-        "source": "inferred"
+        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+        "source": "declared"
       },
       "includes": {
         "skills": [
@@ -542,6 +556,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/performance-reporting-plugin",
       "name": "Performance Reporting Plugin",
       "description": "Bundle weekly reporting skills, agent templates, connector references, and delivery hooks into one portable analytics workflow package.",
@@ -553,7 +568,7 @@
           "released_at": "2026-03-28T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/marketing/performance-reporting-plugin/plugin.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/performance-reporting-plugin/0.1.0.tar.gz",
-          "sha256": "d6d9e93b3f7bed4f44888ad99ad1619ebba54535c4703b6378a3a5e35a33d449"
+          "sha256": "99d9ad36f3b2c815ddffe3540c8bf8f9a726edcbd6e06161fc1e2ceafa173030"
         }
       ],
       "runtimes": [
@@ -571,12 +586,13 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "setup-required",
+        "availability": "template-only",
         "execution": "bundle",
-        "requires_setup": [
-          "Review bundled components, secrets, and approval rules before enabling."
+        "limitations": [
+          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published."
         ],
-        "source": "inferred"
+        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+        "source": "declared"
       },
       "includes": {
         "skills": [
@@ -609,6 +625,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "security/runtime-safety-plugin",
       "name": "Runtime Safety Plugin",
       "description": "Package untrusted-content handling, dependency audit, secret hygiene, and environment-risk assessment into one conservative security review workflow plugin.",
@@ -620,7 +637,7 @@
           "released_at": "2026-03-31T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/plugins/security/runtime-safety-plugin/plugin.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/runtime-safety-plugin/0.1.0.tar.gz",
-          "sha256": "18eb91d8c9e7bb1defc1af7528a5f1e14fa38eaa691d0326fc71e760cc493b11"
+          "sha256": "5daf7b72c6518500b58f0f9bdbfe67b8748b2765a5062989b0033726c1070c1a"
         }
       ],
       "runtimes": [
@@ -638,12 +655,13 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "setup-required",
+        "availability": "template-only",
         "execution": "bundle",
-        "requires_setup": [
-          "Review bundled components, secrets, and approval rules before enabling."
+        "limitations": [
+          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published."
         ],
-        "source": "inferred"
+        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+        "source": "declared"
       },
       "includes": {
         "skills": [

@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: security/dependency-supply-chain-audit
 name: Dependency Supply Chain Audit
 description: Review manifests and lockfiles for vulnerable, suspicious, or
@@ -23,7 +24,6 @@ entrypoints:
   skill_md: SKILL.md
   readme: README.md
   tests: tests/test-prompts.md
-  scripts_dir: scripts
   examples_dir: examples
 dependencies:
   tools:
@@ -37,6 +37,12 @@ operational:
     - Risk ranking
     - Mitigation recommendations
   approval_boundary: May run local scanners and review package risk; require human approval before removing dependencies or changing production lockfiles.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

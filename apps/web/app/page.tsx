@@ -105,8 +105,9 @@ export default async function HomePage() {
         <div className="grid usability-guide-grid">
           <article className="card"><UsabilityBadge availability="usable-now" /><p>Instructions or a local executable you can use after installation.</p></article>
           <article className="card"><UsabilityBadge availability="setup-required" /><p>A working integration or orchestrator that needs credentials, bindings, or local policy.</p></article>
+          <article className="card"><UsabilityBadge availability="not-verified" /><p>Implementation exists, but current target-scoped operational evidence is not recorded.</p></article>
           <article className="card"><UsabilityBadge availability="template-only" /><p>A reference contract or scaffold to adapt before it can execute.</p></article>
-          <article className="card"><UsabilityBadge availability="documentation-only" /><p>A learning pack or architecture guide; it is not installed as runtime capability.</p></article>
+          <article className="card"><UsabilityBadge availability="documentation-only" /><p>An instruction package or guide; it does not provide executable runtime capability.</p></article>
         </div>
       </section>
 

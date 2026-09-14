@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: marketing/creator-strategy-brief
 name: Creator Strategy Brief
 description: Create creator briefs that treat creators as strategic collaborators with audience trust, format expertise, and cultural intelligence.
@@ -36,6 +37,12 @@ operational:
     - Measurement plan
     - Risk notes
   approval_boundary: Safe for brief drafting; require human approval before creator outreach, contracting, claims, or publication.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

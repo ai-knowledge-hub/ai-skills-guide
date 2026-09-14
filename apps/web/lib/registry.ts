@@ -3,6 +3,28 @@ import path from "node:path";
 
 export type ModuleKey = "skills" | "agents" | "tools" | "plugins";
 
+export type ExecutionKind =
+  | "instructions"
+  | "script"
+  | "cli"
+  | "mcp-server"
+  | "service"
+  | "orchestrator"
+  | "bundle"
+  | "integration-template";
+
+export type AuthenticationMethod =
+  | "none"
+  | "api-key"
+  | "bearer-token"
+  | "oauth-authorization-code-pkce"
+  | "oauth-device-flow"
+  | "oauth-client-credentials"
+  | "service-account"
+  | "workload-identity"
+  | "brokered"
+  | "custom";
+
 export type VersionEntry = {
   version: string;
   released_at: string;
@@ -12,6 +34,7 @@ export type VersionEntry = {
 };
 
 export type RegistryEntry = {
+  schema_version?: "1.1" | "2.0" | "2.1";
   id: string;
   name: string;
   description: string;
@@ -22,11 +45,18 @@ export type RegistryEntry = {
   tags: string[];
   readiness: "experimental" | "reviewed" | "deprecated";
   usability: {
-    availability: "usable-now" | "setup-required" | "template-only" | "documentation-only";
+    availability: "usable-now" | "setup-required" | "not-verified" | "template-only" | "documentation-only";
     execution: "instructions" | "local-tool" | "remote-integration" | "integration-template" | "orchestrator" | "bundle" | "documentation";
     requires_setup?: string[];
     limitations?: string[];
     quickstart?: string;
+    executable_helpers?: Array<{
+      entrypoint: string;
+      availability: "usable-now" | "setup-required" | "not-verified";
+      execution: "local-tool";
+      limitations: string[];
+      quickstart?: string;
+    }>;
     source: "declared" | "inferred";
   };
   security_reviewed: boolean;
@@ -45,6 +75,34 @@ export type RegistryEntry = {
     outputs?: string[];
     use_when?: string;
     execution_mode?: string;
+  };
+  execution?: {
+    kind: ExecutionKind;
+    command?: string[];
+    healthcheck?: string[];
+    smoke_test?: string[];
+    supported_platforms: ("linux" | "macos" | "windows" | "web")[];
+    supported_runtimes: string[];
+  };
+  artifact?: {
+    self_contained: boolean;
+    dependency_lock: string | null;
+    checksums: string | null;
+    sbom: string | null;
+  };
+  authentication?: {
+    status: "none" | "optional" | "required";
+    methods: AuthenticationMethod[];
+    credential_bindings: string[];
+    scopes: string[];
+    setup_url?: string;
+    credential_storage: string;
+    validation: string;
+    revocation: string;
+  };
+  verification?: {
+    evidence: string[];
+    last_verified_at: string;
   };
   dependencies?: {
     agents?: string[];
@@ -66,7 +124,7 @@ export type RegistryEntry = {
 };
 
 export type RegistryIndex = {
-  registry_version: string;
+  registry_version: "1.1" | "1.2";
   generated_at: string;
   skills: RegistryEntry[];
 };
@@ -102,7 +160,11 @@ async function resolveRegistryPath(module: ModuleKey) {
 
 export async function loadRegistry(module: ModuleKey = "skills"): Promise<RegistryIndex> {
   const data = await fs.readFile(await resolveRegistryPath(module), "utf-8");
-  return JSON.parse(data) as RegistryIndex;
+  const parsed = JSON.parse(data) as { registry_version?: unknown };
+  if (parsed.registry_version !== "1.1" && parsed.registry_version !== "1.2") {
+    throw new Error(`Unsupported registry_version ${String(parsed.registry_version)}; upgrade this consumer or use a compatible registry snapshot.`);
+  }
+  return parsed as RegistryIndex;
 }
 
 export async function loadSkillsRegistry() {

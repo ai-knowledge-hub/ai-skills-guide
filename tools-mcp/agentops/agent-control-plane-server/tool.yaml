@@ -1,6 +1,7 @@
+schema_version: "1.1"
 id: agentops/agent-control-plane-server
 name: Agent Control Plane MCP Server
-description: MCP server template for policy checks, approval requests, agent action logging, and audit-chain verification.
+description: Implementation specification and template for an agent control-plane MCP server; no launchable server is packaged.
 version: 0.1.0
 released_at: "2026-04-26T00:00:00Z"
 category: tools-mcp/agentops
@@ -41,6 +42,12 @@ operational:
   access_level: read-write
   trust_boundary: remote-mcp-server
   approval_boundary: Safe for policy checks and audit writes; requires human approval before executing high-risk operational actions or changing policy.
+usability:
+  availability: template-only
+  execution: integration-template
+  limitations:
+    - Specification, prompts, and examples only; no launchable MCP transport is packaged.
+  quickstart: Review TOOL.md as an implementation contract; do not register this package as an MCP server.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

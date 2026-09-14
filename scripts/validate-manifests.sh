@@ -7,6 +7,9 @@ AGENT_SCHEMA="$ROOT/shared/schemas/agent.schema.json"
 TOOL_SCHEMA="$ROOT/shared/schemas/tool.schema.json"
 PLUGIN_SCHEMA="$ROOT/shared/schemas/plugin.schema.json"
 REGISTRY_SCHEMA="$ROOT/shared/schemas/registry-index.schema.json"
+CONTRACT_SCHEMA="$ROOT/shared/schemas/manifest-contract-v2.schema.json"
+CONTRACT_FIXTURES="$ROOT/shared/schemas/fixtures/manifest-v2"
+CONTRACT_MATRIX_SCHEMA="$CONTRACT_FIXTURES/contract-matrix.schema.json"
 
 CHECK_JSONSCHEMA=""
 if command -v check-jsonschema >/dev/null 2>&1; then
@@ -48,6 +51,47 @@ validate_module_manifests "$ROOT/skills" "skill.yaml" "$SKILL_SCHEMA" "skill"
 validate_module_manifests "$ROOT/agents" "agent.yaml" "$AGENT_SCHEMA" "agent"
 validate_module_manifests "$ROOT/tools-mcp" "tool.yaml" "$TOOL_SCHEMA" "tool"
 validate_module_manifests "$ROOT/plugins" "plugin.yaml" "$PLUGIN_SCHEMA" "plugin"
+
+echo "[check] validating semantic manifest invariants"
+go run ./cmd/manifest-validator "$ROOT"
+
+echo "[check] validating manifest contract v2 golden fixtures"
+"$CHECK_JSONSCHEMA" --check-metaschema "$CONTRACT_SCHEMA" "$CONTRACT_MATRIX_SCHEMA"
+"$CHECK_JSONSCHEMA" --schemafile "$CONTRACT_MATRIX_SCHEMA" "$CONTRACT_FIXTURES/contract-matrix.valid.json"
+"$CHECK_JSONSCHEMA" --schemafile "$SKILL_SCHEMA" "$CONTRACT_FIXTURES/skill.valid.yaml"
+"$CHECK_JSONSCHEMA" --schemafile "$SKILL_SCHEMA" "$CONTRACT_FIXTURES/skill-executable-helper-v2.1.valid.yaml"
+"$CHECK_JSONSCHEMA" --schemafile "$AGENT_SCHEMA" "$CONTRACT_FIXTURES/agent.valid.yaml"
+"$CHECK_JSONSCHEMA" --schemafile "$TOOL_SCHEMA" "$CONTRACT_FIXTURES/tool.valid.yaml"
+"$CHECK_JSONSCHEMA" --schemafile "$TOOL_SCHEMA" "$CONTRACT_FIXTURES/tool-flow-sequences.valid.yaml"
+"$CHECK_JSONSCHEMA" --schemafile "$TOOL_SCHEMA" "$CONTRACT_FIXTURES/tool-secret-in-allowed-field.semantic-invalid.yaml"
+"$CHECK_JSONSCHEMA" --schemafile "$PLUGIN_SCHEMA" "$CONTRACT_FIXTURES/plugin.valid.yaml"
+
+for fixture_path in "$CONTRACT_FIXTURES"/*.invalid.json; do
+  if "$CHECK_JSONSCHEMA" --schemafile "$CONTRACT_MATRIX_SCHEMA" "$fixture_path" >/dev/null 2>&1; then
+    echo "[ERROR] Expected schema rejection: ${fixture_path#$ROOT/}"
+    exit 1
+  fi
+done
+
+if "$CHECK_JSONSCHEMA" --schemafile "$SKILL_SCHEMA" "$CONTRACT_FIXTURES/skill-partial.invalid.yaml" >/dev/null 2>&1; then
+  echo "[ERROR] Expected schema rejection: shared/schemas/fixtures/manifest-v2/skill-partial.invalid.yaml"
+  exit 1
+fi
+
+if "$CHECK_JSONSCHEMA" --schemafile "$SKILL_SCHEMA" "$CONTRACT_FIXTURES/skill-unversioned-v2.invalid.yaml" >/dev/null 2>&1; then
+  echo "[ERROR] Expected schema rejection: shared/schemas/fixtures/manifest-v2/skill-unversioned-v2.invalid.yaml"
+  exit 1
+fi
+
+if "$CHECK_JSONSCHEMA" --schemafile "$TOOL_SCHEMA" "$CONTRACT_FIXTURES/tool-not-verified-v2.0.invalid.yaml" >/dev/null 2>&1; then
+  echo "[ERROR] Expected schema rejection: shared/schemas/fixtures/manifest-v2/tool-not-verified-v2.0.invalid.yaml"
+  exit 1
+fi
+
+if "$CHECK_JSONSCHEMA" --schemafile "$SKILL_SCHEMA" "$CONTRACT_FIXTURES/skill-executable-helper-v2.0.invalid.yaml" >/dev/null 2>&1; then
+  echo "[ERROR] Expected schema rejection: shared/schemas/fixtures/manifest-v2/skill-executable-helper-v2.0.invalid.yaml"
+  exit 1
+fi
 
 for index_path in \
   "$ROOT/registry/index.json" \

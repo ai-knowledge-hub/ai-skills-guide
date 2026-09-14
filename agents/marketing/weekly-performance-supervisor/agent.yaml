@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: marketing/weekly-performance-supervisor
 name: Weekly Performance Supervisor
 description: Orchestrate weekly performance reporting by chaining dashboard generation, QA checks, and executive narrative output.
@@ -43,6 +44,12 @@ operational:
     - Dashboard package
     - QA package
     - Executive narrative
+usability:
+  availability: template-only
+  execution: orchestrator
+  limitations:
+    - Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged.
+  quickstart: Review AGENT.md and implement and register the declared runtime bindings before launch.
 verification:
   tests_min_prompts: 5
   security_reviewed: false

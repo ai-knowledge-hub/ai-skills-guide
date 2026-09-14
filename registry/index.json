@@ -1,8 +1,9 @@
 {
-  "registry_version": "1.0",
+  "registry_version": "1.2",
   "generated_at": "2026-07-24T00:00:00Z",
   "skills": [
     {
+      "schema_version": "1.1",
       "id": "adtech/advertising-signal-ownership-auditor",
       "name": "Advertising Signal Ownership Auditor",
       "description": "Audit collection, control, visibility, retention, and use of advertising signals from exposure through verified business outcome.",
@@ -14,7 +15,7 @@
           "released_at": "2026-07-24T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/advertising-signal-ownership-auditor/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/advertising-signal-ownership-auditor/0.1.0.tar.gz",
-          "sha256": "0c6de51d1e134569ea973f57fd9477a3e281a6bdeb765d4d52d353a904ed2461"
+          "sha256": "2b7a6c873aaf0807ecff89855b68b1c0ca7acc55f51feaf856ca9429dc435945"
         }
       ],
       "runtimes": [
@@ -43,9 +44,13 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -54,6 +59,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "adtech/analyst-copilot-bigquery-redshift",
       "name": "Analyst Co-pilot (BigQuery + Redshift)",
       "description": "Assist analysts with safe SQL drafting, metric validation, and stakeholder-ready summaries across BigQuery and Redshift.",
@@ -65,7 +71,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/analyst-copilot-bigquery-redshift/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/analyst-copilot-bigquery-redshift/0.1.0.tar.gz",
-          "sha256": "b6dae5254cd078ab30415f00de3c12c920becf640f76196fa7f6c6cdb866afde"
+          "sha256": "1da7da73c1aa7e65738b775624c9d20d3755ee5d5969e3d17a9b10416a6a28ab"
         }
       ],
       "runtimes": [
@@ -93,9 +99,24 @@
         "execution_mode": "read-only-local-inspection"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "executable_helpers": [
+          {
+            "entrypoint": "scripts/query_safety_check.py",
+            "availability": "not-verified",
+            "execution": "local-tool",
+            "limitations": [
+              "Packaged helper exists, but current clean-client executable evidence is not recorded."
+            ],
+            "quickstart": "printf 'SELECT 1' | python3 scripts/query_safety_check.py"
+          }
+        ],
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -104,6 +125,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "adtech/brand-rag-memory-bootstrap",
       "name": "Brand RAG Memory Bootstrap",
       "description": "Build a private retrieval-ready brand memory from product, campaign, and policy context for downstream agent skills.",
@@ -115,7 +137,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/brand-rag-memory-bootstrap/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/brand-rag-memory-bootstrap/0.1.0.tar.gz",
-          "sha256": "4004d705d2ff3099cac2a367806a933e31b6a6aefe8640526dd6ccca955c193d"
+          "sha256": "54693f4ee9cc858415c346832f3d0baa8625e7a752136579d9059b21c200228d"
         }
       ],
       "runtimes": [
@@ -144,9 +166,13 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -155,6 +181,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "adtech/dashboard-generator",
       "name": "Dashboard Generator",
       "description": "Generate deterministic weekly marketing dashboard outputs from normalized performance tables for BI publishing.",
@@ -166,7 +193,7 @@
           "released_at": "2026-02-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/dashboard-generator/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/dashboard-generator/0.1.0.tar.gz",
-          "sha256": "8a7f83d626d0fd42583db59076a313c68e290ea1067776d3af3988abf7fa5b27"
+          "sha256": "660c75d1f362d78f60757c70d99096f5c92efb121184b8156713a61745c38b17"
         }
       ],
       "runtimes": [
@@ -194,9 +221,13 @@
         "execution_mode": "may-run-local-verification"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -205,6 +236,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "adtech/dashboard-qa-checker",
       "name": "Dashboard QA Checker",
       "description": "Validate dashboard datasets with freshness, completeness, reconciliation, anomaly, and schema drift checks before publish.",
@@ -216,7 +248,7 @@
           "released_at": "2026-02-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/dashboard-qa-checker/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/dashboard-qa-checker/0.1.0.tar.gz",
-          "sha256": "83fb0b6eba1f6a909147d32ac7db3bdaf4e22875c2d1314f34a970b169a02f2a"
+          "sha256": "5ba8aeaaeb94a3ab61334e54948e040dab945287f0703906b507047e0e9c4577"
         }
       ],
       "runtimes": [
@@ -244,9 +276,13 @@
         "execution_mode": "may-run-local-verification"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -255,6 +291,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "adtech/executive-narrative-writer",
       "name": "Executive Narrative Writer",
       "description": "Convert validated BI performance outputs into concise executive narratives with actions and risks.",
@@ -266,7 +303,7 @@
           "released_at": "2026-02-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/executive-narrative-writer/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/executive-narrative-writer/0.1.0.tar.gz",
-          "sha256": "cebf9b90a68f2e96261ca7d2d4eb40dc0044484f6a8e2d63182ce5d8e02132b1"
+          "sha256": "e84bc9724bca0dc317de527752303eae8ce72fa3834cdb8f935ef866dd0666a9"
         }
       ],
       "runtimes": [
@@ -294,9 +331,13 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -305,6 +346,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "adtech/playwright-agentic-e2e",
       "name": "Playwright Agentic E2E QA",
       "description": "Build and maintain reusable Playwright smoke tests with planner, generator, and healer loops for web app regression checks.",
@@ -316,7 +358,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/playwright-agentic-e2e/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/playwright-agentic-e2e/0.1.0.tar.gz",
-          "sha256": "ac7a119e98ba6e42005d74c3a2080242113beb737e9cf7ce0afa6e3bb8b37c70"
+          "sha256": "13687efe797db3bdcce82743d1ada79edb323121b8861051aad0e5519e5fec34"
         }
       ],
       "runtimes": [
@@ -345,9 +387,13 @@
         "execution_mode": "may-run-local-verification"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -358,6 +404,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "adtech/playwright-vscode-loop-codex",
       "name": "Playwright VS Code Loop for Codex",
       "description": "Orchestrate Playwright planner, generator, and healer workflows from Codex with VS Code loop execution for reusable web UX QA.",
@@ -369,7 +416,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/playwright-vscode-loop-codex/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/playwright-vscode-loop-codex/0.1.0.tar.gz",
-          "sha256": "3109b45ce75ed42ace064148db29e9c4cd1ff711a223268f598512829414c40b"
+          "sha256": "2ca153e6b7164a0440a20112eeffdac5a856febb3e1328b2fbff0c8ebd7d89ed"
         }
       ],
       "runtimes": [
@@ -398,9 +445,25 @@
         "execution_mode": "may-run-local-verification"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "executable_helpers": [
+          {
+            "entrypoint": "scripts/install-global-codex.sh",
+            "availability": "not-verified",
+            "execution": "local-tool",
+            "limitations": [
+              "Packaged helper exists, but current clean-client executable evidence is not recorded.",
+              "The installer replaces an existing skill at the resolved Codex skills destination."
+            ],
+            "quickstart": "Review scripts/install-global-codex.sh and its destination before running it."
+          }
+        ],
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -411,6 +474,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "adtech/policy-brand-compliance-checker",
       "name": "Policy + Brand Compliance Checker",
       "description": "Validate ad copy, landing URLs, and UTM tracking for policy and brand compliance before campaign launch.",
@@ -422,7 +486,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/policy-brand-compliance-checker/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/policy-brand-compliance-checker/0.1.0.tar.gz",
-          "sha256": "9d084f5643ff4bd200caeacb597fb43bc299a77747bb6a54c01232e2bc9ed7c1"
+          "sha256": "bf38ae5ab13a58c9d30e08694a0312e47837eba0b57212f2dffed3578bfad7f6"
         }
       ],
       "runtimes": [
@@ -450,9 +514,24 @@
         "execution_mode": "may-run-local-verification"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "executable_helpers": [
+          {
+            "entrypoint": "scripts/utm_lint.py",
+            "availability": "not-verified",
+            "execution": "local-tool",
+            "limitations": [
+              "Packaged helper exists, but current clean-client executable evidence is not recorded."
+            ],
+            "quickstart": "python3 scripts/utm_lint.py \u003c examples/input.json"
+          }
+        ],
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -461,6 +540,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "adtech/weekly-performance-review-bi",
       "name": "Weekly Performance Review BI",
       "description": "Chain dashboard generation, QA gating, and executive narrative writing for deterministic weekly BI reporting.",
@@ -472,7 +552,7 @@
           "released_at": "2026-02-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/weekly-performance-review-bi/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/weekly-performance-review-bi/0.1.0.tar.gz",
-          "sha256": "6b4fb369f7dae082276eb6aae757c1368eb4a88bac6c250490f8c37110ef0378"
+          "sha256": "eb70f2463277e8d4a5db07fe71946af91a0eb3f89b835f874989ace4d47ea6c3"
         }
       ],
       "runtimes": [
@@ -501,9 +581,13 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -512,6 +596,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "agentops/ad-platform-policy-gate-designer",
       "name": "Ad Platform Policy Gate Designer",
       "description": "Design policy gates, approval thresholds, deny rules, and bounded execution rules for marketing agents that change bids, budgets, targeting, audiences, feeds, or tracking.",
@@ -523,7 +608,7 @@
           "released_at": "2026-05-06T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/ad-platform-policy-gate-designer/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/ad-platform-policy-gate-designer/0.1.0.tar.gz",
-          "sha256": "21915f623744e408439a1197579920e3d1c47505f177749ebb02a44a5aa4808a"
+          "sha256": "77b3bfc60a264ee0883bfa25ebf2de60433224a5a588c99109c2a3dca282bacd"
         }
       ],
       "runtimes": [
@@ -553,12 +638,17 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       }
     },
     {
+      "schema_version": "1.1",
       "id": "agentops/agent-control-plane-review",
       "name": "Agent Control Plane Review",
       "description": "Review an agent workflow for identity, gateway, policy, approval, inspection, and audit coverage before it touches production systems.",
@@ -570,7 +660,7 @@
           "released_at": "2026-04-26T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/agent-control-plane-review/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/agent-control-plane-review/0.1.0.tar.gz",
-          "sha256": "c958a4b51ae7be376bd2d72e6504af74027a9befb3d4e6029b78bcccde543236"
+          "sha256": "636d10053b18841ff890cb894ae7211c12bf06e628a5d64af5fc3c30ed679844"
         }
       ],
       "runtimes": [
@@ -599,12 +689,17 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       }
     },
     {
+      "schema_version": "1.1",
       "id": "agentops/harness-regression-evaluator",
       "name": "Harness Regression Evaluator",
       "description": "Evaluate proposed harness changes against benchmark prompts and red-team scenarios before adoption.",
@@ -616,7 +711,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/harness-regression-evaluator/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-regression-evaluator/0.1.0.tar.gz",
-          "sha256": "564251d06db3f5f5b3f611e4b94d57ff05e6e965d0f230d1bcc9726129f7b6d4"
+          "sha256": "f5fb955b5088c839977f25ffac149566ece94cf351cff4a0dd3b34c31214ff1e"
         }
       ],
       "runtimes": [
@@ -644,12 +739,17 @@
         "execution_mode": "may-run-local-verification"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       }
     },
     {
+      "schema_version": "1.1",
       "id": "agentops/harness-run-reflection",
       "name": "Harness Run Reflection",
       "description": "Review recent agent run logs to identify repeated misses, skipped skills, and inefficient loops in the harness.",
@@ -661,7 +761,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/harness-run-reflection/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-run-reflection/0.1.0.tar.gz",
-          "sha256": "943057c634d65a4c2636f33e896d678f1825879543843878099a840639b179ef"
+          "sha256": "60e86f399a8c089764c8997ee9e936d9a45afef7b17a0a6f88ddedf08b3178c6"
         }
       ],
       "runtimes": [
@@ -689,12 +789,17 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       }
     },
     {
+      "schema_version": "1.1",
       "id": "agentops/harness-skill-proposal",
       "name": "Harness Skill Proposal",
       "description": "Propose new or revised harness skills and policy text from recurring failure patterns while keeping scope limited to harness assets.",
@@ -706,7 +811,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/harness-skill-proposal/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-skill-proposal/0.1.0.tar.gz",
-          "sha256": "c4fc626488ff0e8d477fa486451109c446f803bafc11e95031d52b912e620587"
+          "sha256": "dac3653df798f295cdf586013d7617d636ea1a74229f217ab9da9cb6c112c0e9"
         }
       ],
       "runtimes": [
@@ -734,12 +839,17 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       }
     },
     {
+      "schema_version": "1.1",
       "id": "engineering/code-change-verification",
       "name": "Code Change Verification",
       "description": "Run change-aware lint, typecheck, build, and test verification based on the files and stack touched by a code change.",
@@ -751,7 +861,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/code-change-verification/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/code-change-verification/0.1.0.tar.gz",
-          "sha256": "22f665578aab9a2b0a1bdb0c251a8bf2b3aba0d4e1543941ebcf47163528befd"
+          "sha256": "e79fdd94f3ce9f92f1d1086cdbb63d90c739fd19c8573cfa7da6d383fe927e77"
         }
       ],
       "runtimes": [
@@ -779,9 +889,13 @@
         "execution_mode": "may-run-local-verification"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -790,6 +904,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "engineering/coverage-gap-reporter",
       "name": "Coverage Gap Reporter",
       "description": "Parse coverage outputs, map changed files to uncovered risk areas, and recommend targeted tests.",
@@ -801,7 +916,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/coverage-gap-reporter/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/coverage-gap-reporter/0.1.0.tar.gz",
-          "sha256": "48024d23ebcf530d80a34ff330b45e0143be4956e0d73a4dbc1fe8aa737b086d"
+          "sha256": "9943e5b3ed46038a6592913832a719d62dd302769e95364077b432a649df8861"
         }
       ],
       "runtimes": [
@@ -829,12 +944,17 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       }
     },
     {
+      "schema_version": "1.1",
       "id": "engineering/implementation-strategy",
       "name": "Implementation Strategy",
       "description": "Plan repo-aware code changes before editing by mapping scope, commands, risks, and likely side effects.",
@@ -846,7 +966,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/implementation-strategy/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/implementation-strategy/0.1.0.tar.gz",
-          "sha256": "1e5403e7862a995a518ee44d6e30b5d0c2ce154e7e7ade99834fe60a1000f500"
+          "sha256": "e194ee91bfbeb617afb314066f472ecdf272ae8cf7e482f683d61afa26137603"
         }
       ],
       "runtimes": [
@@ -874,9 +994,13 @@
         "execution_mode": "read-only-local-inspection"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -885,6 +1009,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "engineering/pr-review-and-draft",
       "name": "PR Review and Draft",
       "description": "Review code changes for correctness, performance, security, and test completeness, then draft a structured PR summary.",
@@ -896,7 +1021,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/pr-review-and-draft/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/pr-review-and-draft/0.1.0.tar.gz",
-          "sha256": "cd62e89ef3a9319f10297ee8bd7ad2bc097ed6c8d8b49a58eb3a6d961df5ae27"
+          "sha256": "7af2c3b5c3580615e00edfb4fc60536e304cf161e396d0d593e27f561d3c44e2"
         }
       ],
       "runtimes": [
@@ -924,12 +1049,17 @@
         "execution_mode": "read-only-local-inspection"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       }
     },
     {
+      "schema_version": "1.1",
       "id": "engineering/test-gap-analyzer",
       "name": "Test Gap Analyzer",
       "description": "Identify missing unit, integration, regression, and edge-case test scenarios for recently changed code.",
@@ -941,7 +1071,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/test-gap-analyzer/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/test-gap-analyzer/0.1.0.tar.gz",
-          "sha256": "69aea5860b143dd7636c8669022bd55ac7639bbdc6f557139b3ba9c48f4dba33"
+          "sha256": "079637a76541a7177e28cb043734a05ef7c73ab230f59c9ff6b9d2d7da7ad76f"
         }
       ],
       "runtimes": [
@@ -969,12 +1099,17 @@
         "execution_mode": "read-only-local-inspection"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/ab-test-planner-analyzer",
       "name": "A/B Test Planner + Analyzer",
       "description": "Plan and analyze A/B tests with explicit hypotheses, sample sizing assumptions, and decision rules.",
@@ -986,7 +1121,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/ab-test-planner-analyzer/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/ab-test-planner-analyzer/0.1.0.tar.gz",
-          "sha256": "085db550c13d2719092a7f5d939e28d1a184bd353c2b2f75f567156a61d7cd3b"
+          "sha256": "064fedc641ecc402f449b8752276b38556da485a6bcb178f46402b7fb689b175"
         }
       ],
       "runtimes": [
@@ -1015,9 +1150,13 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -1026,6 +1165,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/agent-share-of-choice-evaluator",
       "name": "Agent Share of Choice Evaluator",
       "description": "Evaluate brand progression across retrieval, consideration, recommendation, selection, transaction, completion, and reuse in agent-mediated tasks.",
@@ -1037,7 +1177,7 @@
           "released_at": "2026-07-24T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/agent-share-of-choice-evaluator/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/agent-share-of-choice-evaluator/0.1.0.tar.gz",
-          "sha256": "98067867b4c9d5b7f411aa09facfde92668558c7fd36597a80096950c77166f6"
+          "sha256": "0a6ac20bbd39969a7a03ae7e9f31adaf31de89e9d6365a3d5072dc545c9dcc3f"
         }
       ],
       "runtimes": [
@@ -1066,17 +1206,22 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
-        "tools": [
+        "skills": [
           "marketing/ai-output-eval-scorecard"
         ]
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/ai-output-eval-scorecard",
       "name": "AI Output Eval Scorecard",
       "description": "Score AI-generated marketing outputs across accuracy, clarity, brand fit, policy compliance, actionability, and creative operating system fit.",
@@ -1088,7 +1233,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/ai-output-eval-scorecard/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/ai-output-eval-scorecard/0.1.0.tar.gz",
-          "sha256": "94443958e9a1980b1fd47dc9330ab4a3cd1405f547d3b028ec32d74ed2263160"
+          "sha256": "2402b2df557d15c9efb2f2002bdea844029426517b90cfa07d1bb33d0c139c19"
         }
       ],
       "runtimes": [
@@ -1120,9 +1265,13 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -1131,6 +1280,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/creative-operating-system-audit",
       "name": "Creative Operating System Audit",
       "description": "Audit whether a marketing team has the memory, context, evaluation, creator, product-as-media, feedback, and governance machinery needed for AI-era creative work.",
@@ -1142,7 +1292,7 @@
           "released_at": "2026-06-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/creative-operating-system-audit/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-operating-system-audit/0.1.0.tar.gz",
-          "sha256": "a013f24ddf01db8293bba41a4609845650cfa5bcd34ef389ea33073f610692c6"
+          "sha256": "960fe27c96bcea0d26107eeff45626943845af1ff2a3fb027aedb43c4e0ce623"
         }
       ],
       "runtimes": [
@@ -1172,12 +1322,17 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/creative-workshop-pmax-reels",
       "name": "Creative Workshop (PMax + Reels)",
       "description": "Generate channel-specific creative variants for Google PMax and Meta Reels with deterministic length checks.",
@@ -1189,7 +1344,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/creative-workshop-pmax-reels/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-workshop-pmax-reels/0.1.0.tar.gz",
-          "sha256": "527becb3b9f86eafd6641e27441336e3cc498a297d41e167747de4cdcedb93c3"
+          "sha256": "cf0cdd2a705961dfcb04021e60414dcef9f4e8aec7036ece31eebcc59176aa68"
         }
       ],
       "runtimes": [
@@ -1217,9 +1372,24 @@
         "execution_mode": "may-run-local-verification"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "executable_helpers": [
+          {
+            "entrypoint": "scripts/validate_lengths.py",
+            "availability": "not-verified",
+            "execution": "local-tool",
+            "limitations": [
+              "Packaged helper exists, but current clean-client executable evidence is not recorded."
+            ],
+            "quickstart": "python3 scripts/validate_lengths.py \u003c examples/input.json"
+          }
+        ],
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -1228,6 +1398,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/creator-strategy-brief",
       "name": "Creator Strategy Brief",
       "description": "Create creator briefs that treat creators as strategic collaborators with audience trust, format expertise, and cultural intelligence.",
@@ -1239,7 +1410,7 @@
           "released_at": "2026-06-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/creator-strategy-brief/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creator-strategy-brief/0.1.0.tar.gz",
-          "sha256": "9efafc120c4c2a56edfa990c835d9adc9560a5b4080e0c28283e6bc0b73d486d"
+          "sha256": "0b8fde26ea08b0053e1b19ba310b7f79027d794b4dffa99565b756de6c815c0e"
         }
       ],
       "runtimes": [
@@ -1270,12 +1441,17 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/cross-channel-budget-pacing-agent",
       "name": "Cross-Channel Budget Pacing Agent",
       "description": "Monitor pacing across paid channels, detect anomalies, and recommend budget reallocation actions.",
@@ -1287,7 +1463,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/cross-channel-budget-pacing-agent/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/cross-channel-budget-pacing-agent/0.1.0.tar.gz",
-          "sha256": "638f68e3024a2c7404cf05fdcd6f5b10fc2a0a36567c1c8b8ea998c600617e27"
+          "sha256": "0de1bfe3285aed4cf5b5e1d9c6fe6259c96f9293278cb0d20cb52e31b6cc2f30"
         }
       ],
       "runtimes": [
@@ -1316,9 +1492,13 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -1327,6 +1507,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/cultural-timing-signal-triage",
       "name": "Cultural Timing Signal Triage",
       "description": "Decide whether a live cultural moment is worth acting on, and define the safe, fast, brand-fit response path.",
@@ -1338,7 +1519,7 @@
           "released_at": "2026-06-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/cultural-timing-signal-triage/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/cultural-timing-signal-triage/0.1.0.tar.gz",
-          "sha256": "c98eccfc05173a20e6493ca99621ce9817f52bd473177f8a0eab3fdc2694d6eb"
+          "sha256": "e7c2df1d2bbde6be68b6086fdb0e3448648683b617a7770cdc7b8de3a5739ff6"
         }
       ],
       "runtimes": [
@@ -1367,12 +1548,17 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/dynamic-creative-rules-engine",
       "name": "Dynamic Creative Rules Engine",
       "description": "Define dynamic creative assembly rules per audience and context while enforcing brand and policy constraints.",
@@ -1384,7 +1570,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/dynamic-creative-rules-engine/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/dynamic-creative-rules-engine/0.1.0.tar.gz",
-          "sha256": "74c348cd7bc68f525acb112a33ad784e1ea1ba047cd4a39f9444bcf6f1899e2f"
+          "sha256": "be83e523fafd66c91c04aa710a23cbf55e2b12a07c7198f0046115f96229f042"
         }
       ],
       "runtimes": [
@@ -1413,9 +1599,13 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -1424,6 +1614,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/lifecycle-experiment-planner",
       "name": "Lifecycle Experiment Planner",
       "description": "Design lifecycle A/B tests with hypothesis checks, sample-size guidance, and stopping criteria.",
@@ -1435,7 +1626,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/lifecycle-experiment-planner/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/lifecycle-experiment-planner/0.1.0.tar.gz",
-          "sha256": "4ea9b15b727772214ebf952fdf4532388b8c49e4494f84c04504bbcd62a4c73d"
+          "sha256": "13b67707dbec7258b746a0f0908285faf449336893b839538536e66470b48808"
         }
       ],
       "runtimes": [
@@ -1463,9 +1654,24 @@
         "execution_mode": "may-run-local-verification"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "executable_helpers": [
+          {
+            "entrypoint": "scripts/sample_size.py",
+            "availability": "not-verified",
+            "execution": "local-tool",
+            "limitations": [
+              "Packaged helper exists, but current clean-client executable evidence is not recorded."
+            ],
+            "quickstart": "python3 scripts/sample_size.py 0.05 0.01"
+          }
+        ],
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -1474,6 +1680,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/lifecycle-journey-trigger-designer",
       "name": "Lifecycle Journey Trigger Designer",
       "description": "Design lifecycle triggers and channel sequencing for CRM journeys with measurable guardrails and rollout rules.",
@@ -1485,7 +1692,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/lifecycle-journey-trigger-designer/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/lifecycle-journey-trigger-designer/0.1.0.tar.gz",
-          "sha256": "67da9be48bc1901c1b0f8e10f9f4d5d782216277fde770a1c6e2b3642751cbd7"
+          "sha256": "2b6fac1867c602814351bad32c9501c5f8b51dbc06afab93fd9e9882ead29efb"
         }
       ],
       "runtimes": [
@@ -1514,9 +1721,13 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -1525,6 +1736,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/meta-google-weekly-performance-review",
       "name": "Meta + Google Weekly Performance Review",
       "description": "Analyze weekly paid media performance across Meta and Google Ads with KPI deltas and prioritized actions.",
@@ -1536,7 +1748,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/meta-google-weekly-performance-review/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/meta-google-weekly-performance-review/0.1.0.tar.gz",
-          "sha256": "9b274e77aaf6b68c40bc37541109f5093128fa38bba9923b3f57e508e7b6a6a5"
+          "sha256": "cd10ecd93346e43de540cb06793b2355d11183548dc9d426dd12a40dbdc915a5"
         }
       ],
       "runtimes": [
@@ -1564,9 +1776,24 @@
         "execution_mode": "may-run-local-verification"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "executable_helpers": [
+          {
+            "entrypoint": "scripts/compute_metrics.py",
+            "availability": "not-verified",
+            "execution": "local-tool",
+            "limitations": [
+              "Packaged helper exists, but current clean-client executable evidence is not recorded."
+            ],
+            "quickstart": "python3 scripts/compute_metrics.py \u003c examples/input.json"
+          }
+        ],
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -1575,6 +1802,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/product-as-media-mapper",
       "name": "Product As Media Mapper",
       "description": "Identify product, app, commerce, service, packaging, data, and owned-channel surfaces that can become campaign media.",
@@ -1586,7 +1814,7 @@
           "released_at": "2026-06-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/product-as-media-mapper/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/product-as-media-mapper/0.1.0.tar.gz",
-          "sha256": "0b9bd764bc2fa7d9d03ad919dc37cb3c758ffb3a7436d28c13db4a776e78a8a3"
+          "sha256": "ea65be97166798e582ba58e96bf625c757137abc64fd787c7aa29ec07da3502c"
         }
       ],
       "runtimes": [
@@ -1614,12 +1842,17 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/seo-paid-search-synergy",
       "name": "SEO to Paid Search Synergy",
       "description": "Turn top-performing SEO themes into paid search opportunities with keyword clustering and launch-ready recommendations.",
@@ -1631,7 +1864,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/seo-paid-search-synergy/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/seo-paid-search-synergy/0.1.0.tar.gz",
-          "sha256": "2447b75b96b39bf3a71c36626d9321e8e0f220b31ddbf413df55155951dbbcc4"
+          "sha256": "d5fab066c37b04d484b35c9111d77aff4e7d9b6a121bcc84a78a7e7a1a16fe0d"
         }
       ],
       "runtimes": [
@@ -1659,9 +1892,24 @@
         "execution_mode": "may-run-local-verification"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "executable_helpers": [
+          {
+            "entrypoint": "scripts/extract_seo_winners.py",
+            "availability": "not-verified",
+            "execution": "local-tool",
+            "limitations": [
+              "Packaged helper exists, but current clean-client executable evidence is not recorded."
+            ],
+            "quickstart": "python3 scripts/extract_seo_winners.py \u003c examples/input.json"
+          }
+        ],
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -1670,6 +1918,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/task-map-designer",
       "name": "Task Map Designer",
       "description": "Convert customer situations into testable task and context hypotheses for agent-mediated advertising and commerce.",
@@ -1681,7 +1930,7 @@
           "released_at": "2026-07-24T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/task-map-designer/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/task-map-designer/0.1.0.tar.gz",
-          "sha256": "72a36c32ef6bf10e6a8002a6915c21ce6cfee6a19e01d6343196e551c6f53cd3"
+          "sha256": "503cc2f75ecfd3009b12be29b0d4ca05d2d0fbe9e35c459ddbef1fb687e38bb2"
         }
       ],
       "runtimes": [
@@ -1710,9 +1959,13 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -1721,6 +1974,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "marketing/utility-campaign-concept-designer",
       "name": "Utility Campaign Concept Designer",
       "description": "Convert a campaign brief into useful interventions that help people, shift behavior, or solve a real friction before generating messages.",
@@ -1732,7 +1986,7 @@
           "released_at": "2026-06-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/utility-campaign-concept-designer/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/utility-campaign-concept-designer/0.1.0.tar.gz",
-          "sha256": "513cfb3cacdb18450fd6e082c3e45eb70310fe392dd974eaf73a5e21d8bee53b"
+          "sha256": "1943052e0f6865c89c84dfd46a05cdd0973b72318918e5fc94ab5686e40135a6"
         }
       ],
       "runtimes": [
@@ -1762,12 +2016,17 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       }
     },
     {
+      "schema_version": "1.1",
       "id": "security/ad-platform-agent-auth-review",
       "name": "Ad Platform Agent Auth Review",
       "description": "Review DV360, Google Ads, and similar ad-platform agents for personal OAuth risk, workspace scoping, token storage, read/write separation, and approval readiness.",
@@ -1779,7 +2038,7 @@
           "released_at": "2026-05-06T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/ad-platform-agent-auth-review/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/ad-platform-agent-auth-review/0.1.0.tar.gz",
-          "sha256": "bd3088243aefcbfec577a438cf1fbd08d2850f0c4fa9da114b18545b74835f9f"
+          "sha256": "d6020b3f786cc9b7fbbcd30e1774863f3c4cec6118e101bcc952f866bbf27e39"
         }
       ],
       "runtimes": [
@@ -1809,12 +2068,17 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       }
     },
     {
+      "schema_version": "1.1",
       "id": "security/dependency-supply-chain-audit",
       "name": "Dependency Supply Chain Audit",
       "description": "Review manifests and lockfiles for vulnerable, suspicious, or overpowered dependencies and recommend mitigations.",
@@ -1826,7 +2090,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/dependency-supply-chain-audit/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/dependency-supply-chain-audit/0.1.0.tar.gz",
-          "sha256": "4d7d1c41be650480a044e806fb8ab4984a54298e76cf6245f55745bba51ae962"
+          "sha256": "d81ef040c9e16240a3bab85eb9d61919c4fa70f9d3a83118bb6efe026e062139"
         }
       ],
       "runtimes": [
@@ -1854,9 +2118,13 @@
         "execution_mode": "may-run-local-verification"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -1866,6 +2134,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "security/environment-risk-assessment",
       "name": "Environment Risk Assessment",
       "description": "Assess whether the runtime environment is safe for autonomous agent execution and recommend isolation or approval boundaries.",
@@ -1877,7 +2146,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/environment-risk-assessment/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/environment-risk-assessment/0.1.0.tar.gz",
-          "sha256": "4199db513316791a71e37d87e95447ef5d334f20e3f1dabc320612b916a6d36f"
+          "sha256": "86b61041e2185edc1468dfb1c94c5db3891277bf1c07c6de036b76fe7f14c309"
         }
       ],
       "runtimes": [
@@ -1905,12 +2174,17 @@
         "execution_mode": "read-only-local-inspection"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       }
     },
     {
+      "schema_version": "1.1",
       "id": "security/handle-untrusted-content",
       "name": "Handle Untrusted Content",
       "description": "Treat external content, logs, tickets, webpages, and MCP responses as untrusted data and quarantine suspicious instructions.",
@@ -1922,7 +2196,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/handle-untrusted-content/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/handle-untrusted-content/0.1.0.tar.gz",
-          "sha256": "eabef3c1bff3ab9df17f03e8c32e324d60fec96ae667583134d9d41df368d6d4"
+          "sha256": "6a223ca81b6a6a3fe4abbf9c865cc9807146531064f1453e3e33e1173c3d25af"
         }
       ],
       "runtimes": [
@@ -1950,12 +2224,17 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       }
     },
     {
+      "schema_version": "1.1",
       "id": "security/marketing-agent-risk-review",
       "name": "Marketing Agent Risk Review",
       "description": "Assess marketing and adtech agents for risky actions, sensitive data exposure, unsafe tool access, and missing human approval boundaries.",
@@ -1967,7 +2246,7 @@
           "released_at": "2026-04-26T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/marketing-agent-risk-review/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/marketing-agent-risk-review/0.1.0.tar.gz",
-          "sha256": "45eda81dcfee110ad461f5497ada7d31c9cb3f58416d67ff22c41578ac868705"
+          "sha256": "45d63ce78d4cf79301746cc7992cee783e4522a251e51493f4c418e2587b4989"
         }
       ],
       "runtimes": [
@@ -1996,12 +2275,17 @@
         "execution_mode": "analysis-only"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       }
     },
     {
+      "schema_version": "1.1",
       "id": "security/secrets-and-credential-hygiene",
       "name": "Secrets and Credential Hygiene",
       "description": "Scan diffs and repository context for leaked secrets, risky credential placement, and over-broad environment exposure.",
@@ -2013,7 +2297,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/secrets-and-credential-hygiene/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/secrets-and-credential-hygiene/0.1.0.tar.gz",
-          "sha256": "7ed458691a13d3c69a68ebf16e15687235db192d1cfae1d33c206d7d8771f790"
+          "sha256": "81c552c5953a9c44451f83e183f32e4a9127dcabcc5a8877ecc876ef6afa94a3"
         }
       ],
       "runtimes": [
@@ -2041,9 +2325,13 @@
         "execution_mode": "may-run-local-verification"
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "documentation-only",
         "execution": "instructions",
-        "source": "inferred"
+        "limitations": [
+          "Instruction package only; it does not provide or authorize an executable runtime capability."
+        ],
+        "quickstart": "Read SKILL.md and follow the documented workflow.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [

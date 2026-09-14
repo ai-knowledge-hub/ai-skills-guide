@@ -1,0 +1,169 @@
+{
+  "executions": [
+    {
+      "kind": "instructions",
+      "supported_platforms": ["linux", "macos", "windows", "web"],
+      "supported_runtimes": ["codex"]
+    },
+    {
+      "kind": "script",
+      "command": ["python3", "scripts/run.py"],
+      "smoke_test": ["python3", "scripts/run.py", "--smoke"],
+      "supported_platforms": ["linux", "macos", "windows"],
+      "supported_runtimes": ["python3.12"]
+    },
+    {
+      "kind": "cli",
+      "command": ["bin/example"],
+      "smoke_test": ["bin/example", "--version"],
+      "supported_platforms": ["linux", "macos"],
+      "supported_runtimes": ["native"]
+    },
+    {
+      "kind": "mcp-server",
+      "command": ["node", "dist/server.js"],
+      "healthcheck": ["node", "dist/server.js", "--healthcheck"],
+      "smoke_test": ["node", "dist/server.js", "--smoke"],
+      "supported_platforms": ["linux", "macos", "windows"],
+      "supported_runtimes": ["node22"]
+    },
+    {
+      "kind": "service",
+      "command": ["bin/service"],
+      "healthcheck": ["bin/service", "healthcheck"],
+      "smoke_test": ["bin/service", "smoke"],
+      "supported_platforms": ["linux"],
+      "supported_runtimes": ["container"]
+    },
+    {
+      "kind": "orchestrator",
+      "command": ["skills-hub", "agent", "run", "example/agent"],
+      "smoke_test": ["skills-hub", "agent", "run", "example/agent", "--smoke"],
+      "supported_platforms": ["linux", "macos", "windows"],
+      "supported_runtimes": ["codex", "claude"]
+    },
+    {
+      "kind": "bundle",
+      "supported_platforms": ["linux", "macos", "windows"],
+      "supported_runtimes": ["codex", "claude"]
+    },
+    {
+      "kind": "integration-template",
+      "supported_platforms": ["web"],
+      "supported_runtimes": ["generic"]
+    }
+  ],
+  "artifacts": [
+    {
+      "self_contained": true,
+      "dependency_lock": "go.sum",
+      "checksums": "checksums.txt",
+      "sbom": "sbom.cdx.json"
+    },
+    {
+      "self_contained": true,
+      "dependency_lock": null,
+      "checksums": "checksums.txt",
+      "sbom": "sbom.spdx.json"
+    }
+  ],
+  "authentications": [
+    {
+      "status": "none",
+      "methods": ["none"],
+      "credential_bindings": [],
+      "scopes": [],
+      "credential_storage": "No credentials are used.",
+      "validation": "Confirm no credential is requested.",
+      "revocation": "No revocation applies."
+    },
+    {
+      "status": "required",
+      "methods": ["api-key"],
+      "credential_bindings": ["EXAMPLE_API_KEY"],
+      "scopes": ["read"],
+      "setup_url": "https://example.test/setup/api-key",
+      "credential_storage": "Runtime credential store.",
+      "validation": "Call the non-destructive identity endpoint.",
+      "revocation": "Revoke the key at the provider."
+    },
+    {
+      "status": "required",
+      "methods": ["bearer-token"],
+      "credential_bindings": ["EXAMPLE_BEARER_TOKEN"],
+      "scopes": ["read"],
+      "credential_storage": "Runtime credential store.",
+      "validation": "Call the non-destructive identity endpoint.",
+      "revocation": "Revoke the token at the provider."
+    },
+    {
+      "status": "required",
+      "methods": ["oauth-authorization-code-pkce"],
+      "credential_bindings": ["EXAMPLE_OAUTH_PKCE"],
+      "scopes": ["read"],
+      "credential_storage": "Runtime credential store.",
+      "validation": "Validate the granted identity and scopes.",
+      "revocation": "Revoke the grant at the provider."
+    },
+    {
+      "status": "required",
+      "methods": ["oauth-device-flow"],
+      "credential_bindings": ["EXAMPLE_DEVICE_FLOW"],
+      "scopes": ["read"],
+      "credential_storage": "Runtime credential store.",
+      "validation": "Validate the granted identity and scopes.",
+      "revocation": "Revoke the grant at the provider."
+    },
+    {
+      "status": "required",
+      "methods": ["oauth-client-credentials"],
+      "credential_bindings": ["EXAMPLE_CLIENT_CREDENTIALS"],
+      "scopes": ["read"],
+      "credential_storage": "Runtime credential store.",
+      "validation": "Validate the client identity and scopes.",
+      "revocation": "Rotate or revoke the client credential."
+    },
+    {
+      "status": "required",
+      "methods": ["service-account"],
+      "credential_bindings": ["EXAMPLE_SERVICE_ACCOUNT"],
+      "scopes": ["read"],
+      "credential_storage": "Runtime credential store.",
+      "validation": "Validate the service identity and scopes.",
+      "revocation": "Disable the service identity at the provider."
+    },
+    {
+      "status": "required",
+      "methods": ["workload-identity"],
+      "credential_bindings": ["EXAMPLE_WORKLOAD_IDENTITY"],
+      "scopes": ["read"],
+      "credential_storage": "Runtime identity binding.",
+      "validation": "Validate the workload identity and audience.",
+      "revocation": "Remove the workload identity binding."
+    },
+    {
+      "status": "required",
+      "methods": ["brokered"],
+      "credential_bindings": ["EXAMPLE_BROKERED_CREDENTIAL"],
+      "scopes": ["read"],
+      "credential_storage": "Approved credential broker.",
+      "validation": "Validate the broker attestation and identity.",
+      "revocation": "Revoke the broker grant."
+    },
+    {
+      "status": "required",
+      "methods": ["custom"],
+      "credential_bindings": ["EXAMPLE_CUSTOM_CREDENTIAL"],
+      "scopes": ["provider-specific"],
+      "credential_storage": "Approved custom credential provider.",
+      "validation": "Run the documented non-destructive validation.",
+      "revocation": "Run the documented provider revocation."
+    }
+  ],
+  "verifications": [
+    {
+      "evidence": ["evidence://fixture/contract-matrix"],
+      "last_verified_at": "2026-09-13T00:00:00Z"
+    }
+  ]
+}

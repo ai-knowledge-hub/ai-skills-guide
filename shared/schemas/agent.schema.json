@@ -5,6 +5,7 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
+    "schema_version",
     "id",
     "name",
     "description",
@@ -15,9 +16,27 @@
     "license",
     "author",
     "runtimes",
-    "entrypoints"
+    "entrypoints",
+    "usability"
   ],
   "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "1.1",
+        "2.0",
+        "2.1"
+      ]
+    },
+    "execution": {
+      "$ref": "#/$defs/execution"
+    },
+    "artifact": {
+      "$ref": "#/$defs/artifact"
+    },
+    "authentication": {
+      "$ref": "#/$defs/authentication"
+    },
     "id": {
       "type": "string",
       "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
@@ -217,6 +236,12 @@
         },
         "security_reviewed": {
           "type": "boolean"
+        },
+        "evidence": {
+          "$ref": "#/$defs/evidence"
+        },
+        "last_verified_at": {
+          "$ref": "#/$defs/last_verified_at"
         }
       }
     },
@@ -234,12 +259,479 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "availability": { "type": "string", "enum": ["usable-now", "setup-required", "template-only", "documentation-only"] },
-        "execution": { "type": "string", "enum": ["instructions", "local-tool", "remote-integration", "integration-template", "orchestrator", "bundle", "documentation"] },
-        "requires_setup": { "type": "array", "items": { "type": "string", "minLength": 3 }, "uniqueItems": true },
-        "limitations": { "type": "array", "items": { "type": "string", "minLength": 3 }, "uniqueItems": true },
-        "quickstart": { "type": "string", "minLength": 3, "maxLength": 300 }
+        "availability": {
+          "type": "string",
+          "enum": [
+            "usable-now",
+            "setup-required",
+            "not-verified",
+            "template-only",
+            "documentation-only"
+          ]
+        },
+        "execution": {
+          "type": "string",
+          "enum": [
+            "instructions",
+            "local-tool",
+            "remote-integration",
+            "integration-template",
+            "orchestrator",
+            "bundle",
+            "documentation"
+          ]
+        },
+        "requires_setup": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
+          "uniqueItems": true
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 3
+          },
+          "uniqueItems": true
+        },
+        "quickstart": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 300
+        },
+        "executable_helpers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "entrypoint",
+              "availability",
+              "execution",
+              "limitations"
+            ],
+            "properties": {
+              "entrypoint": {
+                "type": "string",
+                "minLength": 3
+              },
+              "availability": {
+                "type": "string",
+                "enum": [
+                  "usable-now",
+                  "setup-required",
+                  "not-verified"
+                ]
+              },
+              "execution": {
+                "type": "string",
+                "const": "local-tool"
+              },
+              "limitations": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 3
+                }
+              },
+              "quickstart": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 300
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "availability",
+        "execution"
+      ]
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "supported_platforms",
+        "supported_runtimes"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "instructions",
+            "script",
+            "cli",
+            "mcp-server",
+            "service",
+            "orchestrator",
+            "bundle",
+            "integration-template"
+          ]
+        },
+        "command": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1
+        },
+        "healthcheck": {
+          "$ref": "#/$defs/check"
+        },
+        "smoke_test": {
+          "$ref": "#/$defs/check"
+        },
+        "supported_platforms": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "linux",
+              "macos",
+              "windows",
+              "web"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "supported_runtimes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9.-]{1,63}$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "script",
+                  "cli",
+                  "mcp-server",
+                  "service",
+                  "orchestrator"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "command",
+              "smoke_test"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "mcp-server",
+                  "service"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "healthcheck"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "instructions",
+                  "bundle",
+                  "integration-template"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "command"
+                  ]
+                },
+                {
+                  "required": [
+                    "healthcheck"
+                  ]
+                },
+                {
+                  "required": [
+                    "smoke_test"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "script",
+                  "cli",
+                  "orchestrator"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "healthcheck"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "check": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "self_contained",
+        "dependency_lock",
+        "checksums",
+        "sbom"
+      ],
+      "properties": {
+        "self_contained": {
+          "type": "boolean"
+        },
+        "dependency_lock": {
+          "$ref": "#/$defs/artifact_file"
+        },
+        "checksums": {
+          "$ref": "#/$defs/artifact_file"
+        },
+        "sbom": {
+          "$ref": "#/$defs/artifact_file"
+        }
       }
+    },
+    "artifact_file": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "authentication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "methods",
+        "credential_bindings",
+        "scopes",
+        "credential_storage",
+        "validation",
+        "revocation"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "none",
+            "optional",
+            "required"
+          ]
+        },
+        "methods": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "none",
+              "api-key",
+              "bearer-token",
+              "oauth-authorization-code-pkce",
+              "oauth-device-flow",
+              "oauth-client-credentials",
+              "service-account",
+              "workload-identity",
+              "brokered",
+              "custom"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "credential_bindings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]{1,127}$",
+            "description": "Non-secret name resolved by the runtime credential store."
+          },
+          "uniqueItems": true
+        },
+        "scopes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "setup_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "credential_storage": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 240
+        },
+        "validation": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 240
+        },
+        "revocation": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 240
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "none"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "methods": {
+                "const": [
+                  "none"
+                ]
+              },
+              "credential_bindings": {
+                "maxItems": 0
+              },
+              "scopes": {
+                "maxItems": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "optional",
+                  "required"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "methods": {
+                "not": {
+                  "contains": {
+                    "const": "none"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "required"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "credential_bindings": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 500
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "last_verified_at": {
+      "type": "string",
+      "format": "date-time"
     }
   },
   "allOf": [
@@ -258,6 +750,101 @@
         "required": [
           "replaced_by"
         ]
+      }
+    },
+    {
+      "if": {
+        "anyOf": [
+          {
+            "properties": {
+              "schema_version": {
+                "pattern": "^2\\."
+              }
+            },
+            "required": [
+              "schema_version"
+            ]
+          },
+          {
+            "required": [
+              "execution"
+            ]
+          },
+          {
+            "required": [
+              "artifact"
+            ]
+          },
+          {
+            "required": [
+              "authentication"
+            ]
+          },
+          {
+            "properties": {
+              "verification": {
+                "anyOf": [
+                  {
+                    "required": [
+                      "evidence"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "last_verified_at"
+                    ]
+                  }
+                ]
+              }
+            },
+            "required": [
+              "verification"
+            ]
+          }
+        ]
+      },
+      "then": {
+        "required": [
+          "schema_version",
+          "execution",
+          "artifact",
+          "authentication",
+          "verification"
+        ],
+        "properties": {
+          "verification": {
+            "required": [
+              "evidence",
+              "last_verified_at"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": "2.0"
+          }
+        },
+        "required": [
+          "schema_version"
+        ]
+      },
+      "then": {
+        "properties": {
+        "usability": {
+          "properties": {
+            "availability": {
+              "not": {
+                "const": "not-verified"
+              }
+            },
+            "executable_helpers": false
+          }
+        }
+        }
       }
     }
   ]

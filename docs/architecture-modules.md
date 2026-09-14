@@ -8,8 +8,8 @@ modules and registries.
 - Skills: reusable task-level expertise packages across marketing, adtech,
   engineering, security, and agent operations.
 - Agents: orchestrated templates that compose role, memory, skills, and tools.
-- Plugins: installable bundles that package skills, agents, tools, hooks, and
-  setup guidance into portable team capabilities.
+- Plugins: composition templates that can become installable bundles once their
+  dependency closure and runtime behavior are implemented and verified.
 - Tools & MCP: integration connectors, adapters, and MCP server definitions.
 
 ## Repository Structure
@@ -57,6 +57,19 @@ pages answer practical questions quickly:
 - what permissions it needs
 - what trust boundary it crosses
 - what approval boundary applies
+
+The normative vocabulary, module-state constraints, usability scopes, evidence
+requirements, promotion/demotion rules, and expiry semantics are defined by
+[Operational Readiness and Promotion Contract v1](../shared/contracts/operational-readiness-v1.md).
+Schemas, registry builders, validators, installers, and catalog UI MUST preserve
+that contract and MUST NOT treat prompt tests or schema validation as evidence
+of operational availability.
+
+Manifest schema versions 2.0 and 2.1 add the shared machine-readable execution, artifact,
+authentication, and verification fields defined by the
+[Manifest Contract v2](../shared/contracts/manifest-contract-v2.md). Current
+catalog manifests use schema 1.1 for explicit usability; opting into any v2
+field requires the complete v2 contract.
 
 The first implemented slices are `tools-mcp` and `agents`.
 

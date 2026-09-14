@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: marketing/dynamic-creative-rules-engine
 name: Dynamic Creative Rules Engine
 description: Define dynamic creative assembly rules per audience and context while enforcing brand and policy constraints.
@@ -35,6 +36,12 @@ operational:
     - Blocked combinations
     - Test matrix
   approval_boundary: Safe for rule design and evaluation; require human approval before deploying personalization logic.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

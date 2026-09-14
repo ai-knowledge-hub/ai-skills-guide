@@ -31,7 +31,7 @@ export default async function PluginsPage({ searchParams = {} }: { searchParams?
       </div>
 
       <h1>Plugins Catalog</h1>
-      <p>Browse installable bundles that package skills, agents, tools, hooks, and setup guidance into portable team capabilities.</p>
+      <p>Browse source-composition templates that reference skills, agents, tools, hooks, and setup guidance. Operational installation remains blocked until implementation and verification.</p>
 
       <CatalogClient
         entries={registry.skills}

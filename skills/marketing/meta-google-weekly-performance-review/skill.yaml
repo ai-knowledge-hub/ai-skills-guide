@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: marketing/meta-google-weekly-performance-review
 name: Meta + Google Weekly Performance Review
 description: Analyze weekly paid media performance across Meta and Google Ads with KPI deltas and prioritized actions.
@@ -35,6 +36,19 @@ operational:
     - Insight list
     - Recommended actions
   approval_boundary: Safe for read-only analysis and reporting; require human approval before using outputs to make live media changes.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
+  executable_helpers:
+    - entrypoint: scripts/compute_metrics.py
+      availability: not-verified
+      execution: local-tool
+      limitations:
+        - Packaged helper exists, but current clean-client executable evidence is not recorded.
+      quickstart: python3 scripts/compute_metrics.py < examples/input.json
 verification:
   tests_min_prompts: 5
   deterministic_scripts: true

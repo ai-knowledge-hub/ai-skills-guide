@@ -32,9 +32,10 @@ export default async function AgentDetailPage({ params }: { params: { id: string
         <p>{entry.description}</p>
         <p className="meta">{entry.tags.join(", ")}</p>
         <div className="detail-install-lead">
-          <p className="meta">Install this agent</p>
+          <p className="meta">{entry.usability.availability === "template-only" ? "Reference template" : "Install this agent"}</p>
           <InstallCommands
             compact
+            availability={entry.usability.availability}
             codex={buildModuleInstallSnippet("agents", entry, "codex")}
             claude={buildModuleInstallSnippet("agents", entry, "claude")}
             generic={buildModuleInstallSnippet("agents", entry, "generic")}

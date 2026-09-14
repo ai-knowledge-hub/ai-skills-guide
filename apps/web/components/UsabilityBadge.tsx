@@ -5,6 +5,7 @@ type Availability = RegistryEntry["usability"]["availability"];
 const labels: Record<Availability, string> = {
   "usable-now": "Usable now",
   "setup-required": "Setup required",
+  "not-verified": "Not verified",
   "template-only": "Template only",
   "documentation-only": "Documentation"
 };

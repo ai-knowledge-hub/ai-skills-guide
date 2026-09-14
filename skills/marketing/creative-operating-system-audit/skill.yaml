@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: marketing/creative-operating-system-audit
 name: Creative Operating System Audit
 description: Audit whether a marketing team has the memory, context, evaluation, creator, product-as-media, feedback, and governance machinery needed for AI-era creative work.
@@ -35,6 +36,12 @@ operational:
     - Prioritized action plan
     - Evidence table
   approval_boundary: Safe for analysis and planning; require human approval before changing process, governance, or live campaign workflows.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

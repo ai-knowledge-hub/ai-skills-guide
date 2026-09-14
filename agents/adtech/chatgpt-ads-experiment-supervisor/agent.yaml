@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: adtech/chatgpt-ads-experiment-supervisor
 name: ChatGPT Ads Experiment Supervisor
 description: Coordinate task-led ChatGPT advertising experiments across creative, policy, measurement ownership, platform inspection, reconciliation, and memory.
@@ -54,14 +55,12 @@ operational:
     - Reconciled evidence
     - Experiment memory record
 usability:
-  availability: setup-required
+  availability: template-only
   execution: orchestrator
-  requires_setup:
-    - Install all declared agent, skill, and tool dependencies, preferably through the ChatGPT Advertising Experiment Plugin.
-    - Configure mock or live read-only tool bindings and a governance profile.
   limitations:
+    - Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged.
     - The supervisor is advisory and does not execute campaign writes.
-  quickstart: Run the plugin mock lab, then invoke this agent in mock-run mode with the generated evidence bundle.
+  quickstart: Review AGENT.md and implement and register the declared runtime bindings before launch.
 verification:
   tests_min_prompts: 5
   security_reviewed: false

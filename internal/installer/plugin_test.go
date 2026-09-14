@@ -3,6 +3,7 @@ package installer
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
@@ -112,8 +113,93 @@ func TestInstallPluginDependenciesSkipsExistingWithoutForce(t *testing.T) {
 	}
 }
 
+func TestInstallPluginDependenciesRejectsTemplateBeforeAnyWrite(t *testing.T) {
+	root := t.TempDir()
+	skillsRoot := filepath.Join(root, "skills")
+	pluginTarget := filepath.Join(root, "runtime", "plugins")
+	for _, id := range []string{"marketing/implemented", "marketing/template"} {
+		mustMkdirAll(t, filepath.Join(skillsRoot, filepath.FromSlash(id)))
+		mustWriteFile(t, filepath.Join(skillsRoot, filepath.FromSlash(id), "SKILL.md"), "# Fixture\n")
+	}
+	indexPath := filepath.Join(root, "registry", "skills-index.json")
+	mustWriteIndex(t, indexPath, registry.Index{Skills: []registry.SkillEntry{
+		{ID: "marketing/implemented"},
+		{ID: "marketing/template", Usability: registry.UsabilityMetadata{Availability: "template-only"}},
+	}})
+
+	_, err := InstallPluginDependencies(
+		registry.SkillEntry{ID: "marketing/plugin", Includes: &registry.IncludeSet{Skills: []string{"marketing/implemented", "marketing/template"}}},
+		"generic",
+		pluginTarget,
+		map[string]string{"skills": skillsRoot},
+		map[string]string{"skills": indexPath},
+		false,
+	)
+	if err == nil || !strings.Contains(err.Error(), "template-only") {
+		t.Fatalf("expected template-only rejection, got %v", err)
+	}
+	if _, statErr := os.Stat(filepath.Join(root, "runtime", "skills")); !os.IsNotExist(statErr) {
+		t.Fatalf("preflight left a partial dependency install: %v", statErr)
+	}
+}
+
+func TestInstallPluginDependenciesPreflightsAcrossModuleCategories(t *testing.T) {
+	root := t.TempDir()
+	skillsRoot := filepath.Join(root, "skills")
+	agentsRoot := filepath.Join(root, "agents")
+	pluginTarget := filepath.Join(root, "runtime", "plugins")
+	mustMkdirAll(t, filepath.Join(skillsRoot, "marketing", "implemented"))
+	mustWriteFile(t, filepath.Join(skillsRoot, "marketing", "implemented", "SKILL.md"), "# Implemented\n")
+	mustMkdirAll(t, filepath.Join(agentsRoot, "marketing", "template"))
+	mustWriteFile(t, filepath.Join(agentsRoot, "marketing", "template", "AGENT.md"), "# Template\n")
+
+	skillsIndexPath := filepath.Join(root, "registry", "skills-index.json")
+	agentsIndexPath := filepath.Join(root, "registry", "agents-index.json")
+	mustWriteIndex(t, skillsIndexPath, registry.Index{Skills: []registry.SkillEntry{{ID: "marketing/implemented"}}})
+	mustWriteIndex(t, agentsIndexPath, registry.Index{Skills: []registry.SkillEntry{{
+		ID:        "marketing/template",
+		Usability: registry.UsabilityMetadata{Availability: "template-only"},
+	}}})
+
+	_, err := InstallPluginDependencies(
+		registry.SkillEntry{ID: "marketing/plugin", Includes: &registry.IncludeSet{
+			Skills: []string{"marketing/implemented"},
+			Agents: []string{"marketing/template"},
+		}},
+		"generic",
+		pluginTarget,
+		map[string]string{"skills": skillsRoot, "agents": agentsRoot},
+		map[string]string{"skills": skillsIndexPath, "agents": agentsIndexPath},
+		false,
+	)
+	if err == nil || !strings.Contains(err.Error(), "template-only") {
+		t.Fatalf("expected cross-module template rejection, got %v", err)
+	}
+	if _, statErr := os.Stat(filepath.Join(root, "runtime")); !os.IsNotExist(statErr) {
+		t.Fatalf("cross-module preflight left partial runtime state: %v", statErr)
+	}
+}
+
+func TestInstallPluginDependenciesRejectsTemplatePlugin(t *testing.T) {
+	root := t.TempDir()
+	entry := registry.SkillEntry{
+		ID:        "marketing/template-plugin",
+		Usability: registry.UsabilityMetadata{Availability: "template-only"},
+		Includes:  &registry.IncludeSet{},
+	}
+	if _, err := InstallPluginDependencies(entry, "generic", filepath.Join(root, "plugins"), nil, nil, false); err == nil || !strings.Contains(err.Error(), "template-only") {
+		t.Fatalf("expected template plugin rejection, got %v", err)
+	}
+	if entries, err := os.ReadDir(root); err != nil || len(entries) != 0 {
+		t.Fatalf("template plugin install changed the filesystem: entries=%v err=%v", entries, err)
+	}
+}
+
 func mustWriteIndex(t *testing.T, path string, idx registry.Index) {
 	t.Helper()
+	if idx.RegistryVersion == "" {
+		idx.RegistryVersion = "1.2"
+	}
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		t.Fatalf("mkdir index dir: %v", err)
 	}

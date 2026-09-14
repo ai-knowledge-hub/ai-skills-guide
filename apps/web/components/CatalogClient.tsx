@@ -207,6 +207,8 @@ export default function CatalogClient({ entries, categories, tags, basePath, ini
               </div>
               <h2>{entry.name}</h2>
               <p>{entry.description}</p>
+              <p className="meta">Execution: {entry.usability.execution}</p>
+              {entry.usability.limitations?.[0] ? <p className="meta">Limit: {entry.usability.limitations[0]}</p> : null}
             </Link>
             {isPluginCatalog ? (
               <div className="catalog-card-actions">

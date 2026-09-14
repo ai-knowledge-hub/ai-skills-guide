@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: adtech/bi-insights-orchestrator
 name: BI Insights Orchestrator
 description: Orchestrate warehouse and ad platform data analysis into standardized BI insights with QA-aware controls.
@@ -43,6 +44,12 @@ operational:
     - Anomaly summary with evidence
     - Publish recommendation
     - Risks and data limitations
+usability:
+  availability: template-only
+  execution: orchestrator
+  limitations:
+    - Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged.
+  quickstart: Review AGENT.md and implement and register the declared runtime bindings before launch.
 verification:
   tests_min_prompts: 5
   security_reviewed: false

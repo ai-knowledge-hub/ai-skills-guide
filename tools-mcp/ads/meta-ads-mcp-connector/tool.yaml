@@ -1,6 +1,7 @@
+schema_version: "1.1"
 id: ads/meta-ads-mcp-connector
 name: Meta Ads MCP Connector
-description: MCP-backed connector for read-only Meta Ads performance and campaign metadata retrieval.
+description: Implementation specification and template for a read-only Meta Ads MCP connector; no launchable server is packaged.
 version: 0.1.0
 released_at: "2026-03-02T00:00:00Z"
 category: tools-mcp/ads
@@ -36,6 +37,12 @@ operational:
   access_level: read-only
   trust_boundary: remote-mcp-server
   approval_boundary: Safe for reporting queries only; require human approval before pairing with any workflow that can modify campaigns, budgets, or creative state.
+usability:
+  availability: template-only
+  execution: integration-template
+  limitations:
+    - Specification, prompts, and examples only; no launchable MCP transport is packaged.
+  quickstart: Review TOOL.md as an implementation contract; do not register this package as an MCP server.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

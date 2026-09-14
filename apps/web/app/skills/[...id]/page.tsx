@@ -33,9 +33,10 @@ export default async function SkillDetailPage({ params }: { params: { id: string
         <p>{skill.description}</p>
         <p className="meta">{skill.tags.join(", ")}</p>
         <div className="detail-install-lead">
-          <p className="meta">Install this skill</p>
+          <p className="meta">{skill.usability.availability === "template-only" ? "Reference template" : "Install this skill"}</p>
           <InstallCommands
             compact
+            availability={skill.usability.availability}
             codex={buildInstallSnippet(skill, "codex")}
             claude={buildInstallSnippet(skill, "claude")}
             generic={buildInstallSnippet(skill, "generic")}

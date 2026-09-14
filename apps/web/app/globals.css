@@ -252,6 +252,12 @@ p {
   color: #f4d78c;
 }
 
+.usability-badge.is-not-verified {
+  background: rgba(235, 185, 74, 0.08);
+  border-color: rgba(235, 185, 74, 0.22);
+  color: #e7cc8a;
+}
+
 .usability-badge.is-template-only,
 .usability-badge.is-documentation-only {
   background: rgba(148, 163, 184, 0.1);
@@ -264,7 +270,7 @@ p {
 }
 
 .usability-guide-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
   margin-top: 0.8rem;
 }
 

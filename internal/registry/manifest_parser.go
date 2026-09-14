@@ -1,220 +1,180 @@
 package registry
 
 import (
-	"bufio"
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io"
 	"os"
+	"regexp"
+	"sort"
+	"strconv"
 	"strings"
+
+	"gopkg.in/yaml.v3"
 )
 
+var credentialPatterns = []*regexp.Regexp{
+	// Authorization payloads and private keys.
+	regexp.MustCompile(`(?i)\bbearer\s+[a-z0-9._~+/=-]{24,}`),
+	regexp.MustCompile(`\beyJ[a-zA-Z0-9_-]{8,}\.[a-zA-Z0-9_-]{8,}\.[a-zA-Z0-9_-]{8,}\b`),
+	regexp.MustCompile(`-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----`),
+	// Provider-issued keys and tokens with stable, high-confidence prefixes.
+	regexp.MustCompile(`\bgh[pousr]_[a-zA-Z0-9]{20,}\b`),
+	regexp.MustCompile(`\bgithub_pat_[a-zA-Z0-9_]{20,}\b`),
+	regexp.MustCompile(`\bglpat-[a-zA-Z0-9_-]{20,}\b`),
+	regexp.MustCompile(`\bsk-(?:proj-)?[a-zA-Z0-9_-]{16,}\b`),
+	regexp.MustCompile(`\b(?:sk|rk)_(?:live|test)_[a-zA-Z0-9]{16,}\b`),
+	regexp.MustCompile(`\bSG\.[a-zA-Z0-9_-]{16,}\.[a-zA-Z0-9_-]{16,}\b`),
+	regexp.MustCompile(`\bnpm_[a-zA-Z0-9]{20,}\b`),
+	regexp.MustCompile(`\bpypi-AgEIcHlwaS5vcmc[a-zA-Z0-9_-]{16,}\b`),
+	regexp.MustCompile(`\bshp(?:at|ca|pa|ss)_[a-fA-F0-9]{20,}\b`),
+	regexp.MustCompile(`\bdop_v1_[a-fA-F0-9]{40,}\b`),
+	regexp.MustCompile(`\bAIza[0-9A-Za-z_-]{20,}\b`),
+	regexp.MustCompile(`\bxox[baprs]-[0-9A-Za-z-]{12,}\b`),
+	regexp.MustCompile(`\bAKIA[0-9A-Z]{16}\b`),
+}
+
+// Provider-specific formats are not exhaustive. Catch high-confidence secret
+// assignments without treating binding identifiers as credential payloads.
+var credentialAssignmentPattern = regexp.MustCompile(`(?i)\b(?:api[_-]?key|access[_-]?key|authorization[_-]?code|client[_-]?secret|credential|device[_-]?code|password|refresh[_-]?token|secret|token)\s*[:=]\s*["']?([a-z0-9._~+/=-]{12,})`)
+
+var bindingReferencePattern = regexp.MustCompile(`^[A-Z][A-Z0-9_]*$`)
+
+var nonSecretCredentialSentinels = map[string]struct{}{
+	"externally-managed": {},
+	"managed-externally": {},
+	"no-credential":      {},
+	"no-credentials":     {},
+	"not-applicable":     {},
+	"not-configured":     {},
+	"not-required":       {},
+	"placeholder":        {},
+	"redacted":           {},
+	"runtime-managed":    {},
+	"unset":              {},
+}
+
 func ParseManifest(path string) (Manifest, error) {
-	f, err := os.Open(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return Manifest{}, fmt.Errorf("open manifest %s: %w", path, err)
 	}
-	defer f.Close()
 
+	var raw map[string]any
+	decoder := yaml.NewDecoder(bytes.NewReader(data))
+	if err := decoder.Decode(&raw); err != nil {
+		return Manifest{}, fmt.Errorf("decode manifest %s: %w", path, err)
+	}
+	var extra any
+	if err := decoder.Decode(&extra); err != io.EOF {
+		if err != nil {
+			return Manifest{}, fmt.Errorf("decode trailing YAML in manifest %s: %w", path, err)
+		}
+		return Manifest{}, fmt.Errorf("manifest %s contains multiple YAML documents", path)
+	}
+	if raw == nil {
+		return Manifest{}, fmt.Errorf("manifest %s is empty", path)
+	}
+
+	if secretPath, found := findCredentialShapedValue(raw, "$"); found {
+		return Manifest{}, fmt.Errorf("manifest %s contains a credential-shaped value at %s; use a binding name", path, secretPath)
+	}
+
+	payload, err := json.Marshal(raw)
+	if err != nil {
+		return Manifest{}, fmt.Errorf("normalize manifest %s: %w", path, err)
+	}
 	var out Manifest
-	scanner := bufio.NewScanner(f)
-	currentScalarKey := ""
-	currentListKey := ""
-	inNestedMap := false
-	nestedMapKey := ""
-	currentNestedListKey := ""
+	if err := json.Unmarshal(payload, &out); err != nil {
+		return Manifest{}, fmt.Errorf("decode normalized manifest %s: %w", path, err)
+	}
 
-	for scanner.Scan() {
-		line := scanner.Text()
-		trimmed := strings.TrimSpace(line)
-		if trimmed == "" || strings.HasPrefix(trimmed, "#") {
-			continue
-		}
-
-		if strings.HasPrefix(line, "  - ") {
-			if currentListKey == "" {
-				continue
-			}
-			item := strings.TrimSpace(strings.TrimPrefix(line, "  - "))
-			item = unquote(item)
-			switch currentListKey {
-			case "tags":
-				out.Tags = append(out.Tags, item)
-			case "runtimes":
-				out.Runtimes = append(out.Runtimes, item)
-			}
-			continue
-		}
-
-		if strings.HasPrefix(line, "    - ") && inNestedMap && currentNestedListKey != "" {
-			item := strings.TrimSpace(strings.TrimPrefix(line, "    - "))
-			item = unquote(item)
-			switch nestedMapKey {
-			case "dependencies":
-				switch currentNestedListKey {
-				case "agents":
-					out.Dependencies.Agents = append(out.Dependencies.Agents, item)
-				case "skills":
-					out.Dependencies.Skills = append(out.Dependencies.Skills, item)
-				case "tools":
-					out.Dependencies.Tools = append(out.Dependencies.Tools, item)
-				case "apis":
-					out.Dependencies.APIs = append(out.Dependencies.APIs, item)
-				case "mcp_servers":
-					out.Dependencies.MCPServers = append(out.Dependencies.MCPServers, item)
-				}
-			case "operational":
-				switch currentNestedListKey {
-				case "capabilities":
-					out.Operational.Capabilities = append(out.Operational.Capabilities, item)
-				case "auth_required":
-					out.Operational.AuthRequired = append(out.Operational.AuthRequired, item)
-				case "coordinates":
-					out.Operational.Coordinates = append(out.Operational.Coordinates, item)
-				case "outputs":
-					out.Operational.Outputs = append(out.Operational.Outputs, item)
-				}
-			case "includes":
-				switch currentNestedListKey {
-				case "skills":
-					out.Includes.Skills = append(out.Includes.Skills, item)
-				case "agents":
-					out.Includes.Agents = append(out.Includes.Agents, item)
-				case "tools":
-					out.Includes.Tools = append(out.Includes.Tools, item)
-				case "hooks":
-					out.Includes.Hooks = append(out.Includes.Hooks, item)
-				}
-			case "requires":
-				switch currentNestedListKey {
-				case "secrets":
-					out.Requires.Secrets = append(out.Requires.Secrets, item)
-				case "approvals":
-					out.Requires.Approvals = append(out.Requires.Approvals, item)
-				}
-			case "usability":
-				switch currentNestedListKey {
-				case "requires_setup":
-					out.Usability.RequiresSetup = append(out.Usability.RequiresSetup, item)
-				case "limitations":
-					out.Usability.Limitations = append(out.Usability.Limitations, item)
-				}
-			}
-			continue
-		}
-
-		if strings.HasPrefix(line, "  ") {
-			if inNestedMap {
-				if strings.HasSuffix(strings.TrimSpace(line), ":") {
-					nestedParts := strings.SplitN(strings.TrimSpace(line), ":", 2)
-					currentNestedListKey = strings.TrimSpace(nestedParts[0])
-					continue
-				}
-				nestedParts := strings.SplitN(strings.TrimSpace(line), ":", 2)
-				if len(nestedParts) == 2 {
-					nestedKey := strings.TrimSpace(nestedParts[0])
-					nestedValue := unquote(strings.TrimSpace(nestedParts[1]))
-					switch nestedMapKey {
-					case "verification":
-						if nestedKey == "security_reviewed" {
-							out.SecurityReviewed = strings.EqualFold(nestedValue, "true")
-						}
-					case "operational":
-						switch nestedKey {
-						case "connected_system":
-							out.Operational.ConnectedSystem = nestedValue
-						case "access_level":
-							out.Operational.AccessLevel = nestedValue
-						case "trust_boundary":
-							out.Operational.TrustBoundary = nestedValue
-						case "approval_boundary":
-							out.Operational.ApprovalBoundary = nestedValue
-						case "role":
-							out.Operational.Role = nestedValue
-						case "autonomy_level":
-							out.Operational.AutonomyLevel = nestedValue
-						case "use_when":
-							out.Operational.UseWhen = nestedValue
-						case "execution_mode":
-							out.Operational.ExecutionMode = nestedValue
-						}
-					case "usability":
-						switch nestedKey {
-						case "availability":
-							out.Usability.Availability = nestedValue
-						case "execution":
-							out.Usability.Execution = nestedValue
-						case "quickstart":
-							out.Usability.Quickstart = nestedValue
-						}
-					}
-					currentNestedListKey = ""
-				}
-			}
-			if currentScalarKey != "" && !strings.Contains(strings.TrimSpace(line), ":") {
-				appendText := strings.TrimSpace(line)
-				switch currentScalarKey {
-				case "description":
-					out.Description = strings.TrimSpace(out.Description + " " + appendText)
-				}
-				continue
-			}
-			if inNestedMap {
-				continue
-			}
-		}
-
-		if strings.HasPrefix(line, " ") {
-			continue
-		}
-
-		parts := strings.SplitN(line, ":", 2)
-		if len(parts) != 2 {
-			continue
-		}
-		key := strings.TrimSpace(parts[0])
-		value := strings.TrimSpace(parts[1])
-		value = unquote(value)
-
-		currentScalarKey = ""
-		currentListKey = ""
-		inNestedMap = false
-		nestedMapKey = ""
-		currentNestedListKey = ""
-
-		switch key {
-		case "id":
-			out.ID = value
-		case "name":
-			out.Name = value
-		case "description":
-			out.Description = value
-			currentScalarKey = "description"
-		case "version":
-			out.Version = value
-		case "released_at":
-			out.ReleasedAt = value
-		case "category":
-			out.Category = value
-		case "tags":
-			currentListKey = "tags"
-		case "runtimes":
-			currentListKey = "runtimes"
-		case "deprecated":
-			out.Deprecated = strings.EqualFold(value, "true")
-		case "replaced_by":
-			out.ReplacedBy = value
-		case "author", "entrypoints", "dependencies", "verification", "includes", "requires", "install", "operational", "usability":
-			inNestedMap = true
-			nestedMapKey = key
+	out.executionSet = hasMap(raw, "execution")
+	out.artifactSet = hasMap(raw, "artifact")
+	out.authenticationSet = hasMap(raw, "authentication")
+	out.verificationSet = hasMap(raw, "verification")
+	out.usabilitySet = hasMap(raw, "usability")
+	if verification, ok := raw["verification"].(map[string]any); ok {
+		if reviewed, ok := verification["security_reviewed"].(bool); ok {
+			out.SecurityReviewed = reviewed
 		}
 	}
-	if err := scanner.Err(); err != nil {
-		return Manifest{}, fmt.Errorf("scan manifest %s: %w", path, err)
+	if out.SchemaVersion == "" {
+		if contractField, found := firstV2ContractField(raw); found {
+			return Manifest{}, fmt.Errorf("manifest %s declares v2 contract field %s without schema_version", path, contractField)
+		}
 	}
 
 	if err := validateManifestFields(out, path); err != nil {
 		return Manifest{}, err
 	}
 	return out, nil
+}
+
+func firstV2ContractField(raw map[string]any) (string, bool) {
+	for _, field := range []string{"execution", "artifact", "authentication"} {
+		if _, found := raw[field]; found {
+			return "$." + field, true
+		}
+	}
+	if verification, ok := raw["verification"].(map[string]any); ok {
+		for _, field := range []string{"evidence", "last_verified_at"} {
+			if _, found := verification[field]; found {
+				return "$.verification." + field, true
+			}
+		}
+	}
+	return "", false
+}
+
+func hasMap(raw map[string]any, key string) bool {
+	_, ok := raw[key].(map[string]any)
+	return ok
+}
+
+func findCredentialShapedValue(value any, path string) (string, bool) {
+	switch typed := value.(type) {
+	case string:
+		for _, pattern := range credentialPatterns {
+			if pattern.MatchString(typed) {
+				return path, true
+			}
+		}
+		for _, match := range credentialAssignmentPattern.FindAllStringSubmatch(typed, -1) {
+			if !isNonSecretCredentialValue(match[1]) {
+				return path, true
+			}
+		}
+	case []any:
+		for index, item := range typed {
+			if foundPath, found := findCredentialShapedValue(item, path+"["+strconv.Itoa(index)+"]"); found {
+				return foundPath, true
+			}
+		}
+	case map[string]any:
+		keys := make([]string, 0, len(typed))
+		for key := range typed {
+			keys = append(keys, key)
+		}
+		sort.Strings(keys)
+		for _, key := range keys {
+			if foundPath, found := findCredentialShapedValue(typed[key], path+"."+key); found {
+				return foundPath, true
+			}
+		}
+	}
+	return "", false
+}
+
+func isNonSecretCredentialValue(value string) bool {
+	trimmed := strings.Trim(value, `"'.,;:()[]{}`)
+	if bindingReferencePattern.MatchString(trimmed) {
+		return true
+	}
+	normalized := strings.ToLower(strings.ReplaceAll(trimmed, "_", "-"))
+	_, found := nonSecretCredentialSentinels[normalized]
+	return found
 }
 
 func validateManifestFields(m Manifest, path string) error {
@@ -245,16 +205,68 @@ func validateManifestFields(m Manifest, path string) error {
 	if m.Deprecated && m.ReplacedBy == "" {
 		return fmt.Errorf("manifest %s deprecated but missing replaced_by", path)
 	}
+	if m.SchemaVersion != "" {
+		if m.SchemaVersion != "1.1" && m.SchemaVersion != "2.0" && m.SchemaVersion != "2.1" {
+			return fmt.Errorf("manifest %s has unsupported schema_version %q", path, m.SchemaVersion)
+		}
+		if m.SchemaVersion == "2.0" && m.Usability.Availability == "not-verified" {
+			return fmt.Errorf("manifest %s must use schema_version 2.1 for usability availability not-verified", path)
+		}
+		if m.SchemaVersion == "2.0" && len(m.Usability.ExecutableHelpers) > 0 {
+			return fmt.Errorf("manifest %s must use schema_version 1.1 or 2.1 for usability executable_helpers", path)
+		}
+		if m.SchemaVersion == "1.1" {
+			if m.executionSet || m.artifactSet || m.authenticationSet || len(m.Verification.Evidence) > 0 || m.Verification.LastVerifiedAt != "" {
+				return fmt.Errorf("manifest %s uses v2 contract fields with schema_version 1.1", path)
+			}
+			return nil
+		}
+		if !m.executionSet || !m.artifactSet || !m.authenticationSet || !m.verificationSet {
+			return fmt.Errorf("manifest %s is missing a required v2 contract section", path)
+		}
+		if m.Execution.Kind == "" || len(m.Execution.SupportedPlatforms) == 0 || len(m.Execution.SupportedRuntimes) == 0 {
+			return fmt.Errorf("manifest %s has incomplete execution contract", path)
+		}
+		switch m.Execution.Kind {
+		case "instructions", "bundle", "integration-template":
+			if len(m.Execution.Command) > 0 || len(m.Execution.Healthcheck) > 0 || len(m.Execution.SmokeTest) > 0 {
+				return fmt.Errorf("manifest %s non-executable contract cannot declare commands or checks", path)
+			}
+		case "script", "cli", "orchestrator":
+			if len(m.Execution.Command) == 0 || len(m.Execution.SmokeTest) == 0 || len(m.Execution.Healthcheck) > 0 {
+				return fmt.Errorf("manifest %s executable contract requires command and smoke_test but no healthcheck", path)
+			}
+		case "mcp-server", "service":
+			if len(m.Execution.Command) == 0 || len(m.Execution.Healthcheck) == 0 || len(m.Execution.SmokeTest) == 0 {
+				return fmt.Errorf("manifest %s service contract requires command, healthcheck, and smoke_test", path)
+			}
+		default:
+			return fmt.Errorf("manifest %s has unsupported execution kind %q", path, m.Execution.Kind)
+		}
+		if m.Authentication.Status == "" || len(m.Authentication.Methods) == 0 {
+			return fmt.Errorf("manifest %s has incomplete authentication contract", path)
+		}
+		if m.Authentication.Status == "required" && len(m.Authentication.CredentialBindings) == 0 {
+			return fmt.Errorf("manifest %s required authentication has no credential binding", path)
+		}
+		if m.Authentication.Status == "none" && (len(m.Authentication.Methods) != 1 || m.Authentication.Methods[0] != "none") {
+			return fmt.Errorf("manifest %s authentication status none requires only the none method", path)
+		}
+		if m.Authentication.Status != "none" && containsString(m.Authentication.Methods, "none") {
+			return fmt.Errorf("manifest %s authenticated contract cannot include the none method", path)
+		}
+		if len(m.Verification.Evidence) == 0 || m.Verification.LastVerifiedAt == "" {
+			return fmt.Errorf("manifest %s has incomplete verification contract", path)
+		}
+	}
 	return nil
 }
 
-func unquote(value string) string {
-	value = strings.TrimSpace(value)
-	if len(value) >= 2 {
-		if (value[0] == '"' && value[len(value)-1] == '"') ||
-			(value[0] == '\'' && value[len(value)-1] == '\'') {
-			return value[1 : len(value)-1]
+func containsString(values []string, want string) bool {
+	for _, value := range values {
+		if value == want {
+			return true
 		}
 	}
-	return value
+	return false
 }

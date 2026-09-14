@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: marketing/chatgpt-advertising-experiment-plugin
 name: ChatGPT Advertising Experiment Plugin
 description: Install a task-led ChatGPT Ads experiment workflow with planning skills, supervisors, read-only API access, conversion reconciliation, policy gates, and a one-command mock lab.
@@ -51,15 +52,13 @@ requires:
     - human-approval-before-live-campaign-write
     - human-approval-before-tracking-change
 usability:
-  availability: usable-now
+  availability: template-only
   execution: bundle
-  requires_setup:
-    - For live reads, configure account-scoped API credentials only after the mock lab passes.
-    - Replace the executor template with an approved platform executor before any mutation.
   limitations:
-    - The installed OpenAI Ads client does not mutate campaigns, ad groups, ads, files, or feeds.
+    - Source composition and advisory hooks only; no self-contained verified runtime bundle is published.
+    - The included OpenAI Ads client does not mutate campaigns, ad groups, ads, files, or feeds.
     - The bundled executor remains a reference template rather than a live OpenAI Ads writer.
-  quickstart: python3 scripts/run_mock_lab.py
+  quickstart: Review README.md and implement and register the bundled dependencies and hooks before use.
 verification:
   tests_min_prompts: 5
   security_reviewed: false

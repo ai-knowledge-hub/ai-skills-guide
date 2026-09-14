@@ -1,17 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import type { RegistryEntry } from "@/lib/registry";
 
 type InstallCommandsProps = {
   codex: string;
   claude: string;
   generic: string;
+  availability: RegistryEntry["usability"]["availability"];
   compact?: boolean;
 };
 
 type RuntimeKey = "codex" | "claude" | "generic";
 
-export default function InstallCommands({ codex, claude, generic, compact = false }: InstallCommandsProps) {
+export default function InstallCommands({ codex, claude, generic, availability, compact = false }: InstallCommandsProps) {
   const [copied, setCopied] = useState<RuntimeKey | null>(null);
 
   async function copy(runtime: RuntimeKey, value: string) {
@@ -29,6 +31,15 @@ export default function InstallCommands({ codex, claude, generic, compact = fals
     { key: "claude", title: "Install (Claude)", command: claude },
     { key: "generic", title: "Install (Generic)", command: generic }
   ];
+
+  if (availability === "template-only") {
+    return (
+      <article className={compact ? "install-inline" : "card detail-panel install-card"}>
+        <h3>Reference template</h3>
+        <p>This entry cannot be installed into an operational runtime. Copy its source from the repository only as a scaffold for implementation and review.</p>
+      </article>
+    );
+  }
 
   return (
     <article className={compact ? "install-inline" : "card detail-panel install-card"}>

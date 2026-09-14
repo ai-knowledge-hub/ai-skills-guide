@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: marketing/seo-paid-search-synergy
 name: SEO to Paid Search Synergy
 description: Turn top-performing SEO themes into paid search opportunities
@@ -36,6 +37,19 @@ operational:
     - Ad group recommendations
     - Experiment plan
   approval_boundary: Safe for planning and opportunity analysis; require human approval before launching paid search changes.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
+  executable_helpers:
+    - entrypoint: scripts/extract_seo_winners.py
+      availability: not-verified
+      execution: local-tool
+      limitations:
+        - Packaged helper exists, but current clean-client executable evidence is not recorded.
+      quickstart: python3 scripts/extract_seo_winners.py < examples/input.json
 verification:
   tests_min_prompts: 5
   deterministic_scripts: true

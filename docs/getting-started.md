@@ -5,10 +5,10 @@
 1. Choose one entry matching your workflow:
    - `skills/` for task-level expertise
    - `agents/` for orchestrated templates
-   - `plugins/` for installable bundles that resolve dependencies
+   - `plugins/` for composition templates today and implemented bundles later
    - `tools-mcp/` for integration connectors
-2. Check the entry's usability label. Prefer `usable-now`, or follow every item under `requires_setup`.
-3. Copy or install the module spec (`SKILL.md`, `AGENT.md`, `plugin.json`, or `TOOL.md`) into your runtime workflow.
+2. Check the entry's usability label and limitations. Treat `not-verified` as implemented but unproven for your target; use `setup-required` only after completing every listed setup item.
+3. Install instruction or implemented entries only when their availability permits it. For `template-only`, inspect or copy repository source as a scaffold without runtime registration.
 4. Run the prompts in `tests/test-prompts.md`.
 5. Evaluate output consistency against expected format.
 6. Tune wording and constraints, then re-test.

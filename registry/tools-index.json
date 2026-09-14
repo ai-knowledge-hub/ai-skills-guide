@@ -1,11 +1,12 @@
 {
-  "registry_version": "1.0",
+  "registry_version": "1.2",
   "generated_at": "2026-07-25T00:00:00Z",
   "skills": [
     {
+      "schema_version": "1.1",
       "id": "ads/meta-ads-mcp-connector",
       "name": "Meta Ads MCP Connector",
-      "description": "MCP-backed connector for read-only Meta Ads performance and campaign metadata retrieval.",
+      "description": "Implementation specification and template for a read-only Meta Ads MCP connector; no launchable server is packaged.",
       "category": "tools-mcp/ads",
       "latest": "0.1.0",
       "versions": [
@@ -14,7 +15,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/ads/meta-ads-mcp-connector/tool.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/ads/meta-ads-mcp-connector/0.1.0.tar.gz",
-          "sha256": "207ef9c8569ef7dcb036c97829030ec3decb129cd3a17acb0d50478a588072e9"
+          "sha256": "59ee95875cdcdaebeffe92da2c5462ec46055094da776f111a9cb2636d158905"
         }
       ],
       "runtimes": [
@@ -45,12 +46,13 @@
         "approval_boundary": "Safe for reporting queries only; require human approval before pairing with any workflow that can modify campaigns, budgets, or creative state."
       },
       "usability": {
-        "availability": "setup-required",
-        "execution": "remote-integration",
-        "requires_setup": [
-          "Configure the connected system and authentication outside agent context."
+        "availability": "template-only",
+        "execution": "integration-template",
+        "limitations": [
+          "Specification, prompts, and examples only; no launchable MCP transport is packaged."
         ],
-        "source": "inferred"
+        "quickstart": "Review TOOL.md as an implementation contract; do not register this package as an MCP server.",
+        "source": "declared"
       },
       "dependencies": {
         "mcp_servers": [
@@ -59,6 +61,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "adtech/ad-platform-executor-template",
       "name": "Ad Platform Executor Template",
       "description": "MCP/tool template for a narrow DV360 and Google Ads executor that applies only approved, policy-checked campaign changes and records rollback evidence.",
@@ -70,7 +73,7 @@
           "released_at": "2026-05-06T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/adtech/ad-platform-executor-template/tool.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/ad-platform-executor-template/0.1.0.tar.gz",
-          "sha256": "70173ebda5b24505a2635153a2db1b16fe21f724a4945d38c3f846224ca63b0e"
+          "sha256": "3776a8633629bbd79531e06155647433c88898d0f9a6fc211fa9a5d7f5964996"
         }
       ],
       "runtimes": [
@@ -108,7 +111,11 @@
       "usability": {
         "availability": "template-only",
         "execution": "integration-template",
-        "source": "inferred"
+        "limitations": [
+          "Reference executor contract only; no connected ad-platform implementation is packaged."
+        ],
+        "quickstart": "Review TOOL.md and implement the approved provider operations before registration.",
+        "source": "declared"
       },
       "dependencies": {
         "tools": [
@@ -123,6 +130,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "adtech/conversion-event-reconciler",
       "name": "Conversion Event Reconciler",
       "description": "Deterministically deduplicate browser and server conversion events and reconcile them with first-party business outcomes.",
@@ -134,7 +142,7 @@
           "released_at": "2026-07-24T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/adtech/conversion-event-reconciler/tool.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/conversion-event-reconciler/0.1.0.tar.gz",
-          "sha256": "43e7546f8ae971d5987f751cb9f0bcdb22a9976e2f5762934154d9440db8c918"
+          "sha256": "5a33d7fef1c300d83b400e14a6f4ff8c56137bd943722c46cdfae34781ed3976"
         }
       ],
       "runtimes": [
@@ -167,8 +175,12 @@
         "approval_boundary": "Reads supplied files and writes JSON to stdout; live event collection and platform uploads are out of scope."
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "not-verified",
         "execution": "local-tool",
+        "limitations": [
+          "A local deterministic script is packaged, but clean-client installation evidence is not yet recorded.",
+          "Live event collection and platform uploads are outside this package."
+        ],
         "quickstart": "python3 scripts/reconcile_events.py examples/input.json",
         "source": "declared"
       },
@@ -179,6 +191,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "adtech/openai-ads-adapter-template",
       "name": "OpenAI Ads Adapter Template",
       "description": "Mock-first read-only adapter contract for OpenAI Ads accounts, campaigns, ads, insights, and product feeds.",
@@ -190,7 +203,7 @@
           "released_at": "2026-07-24T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/adtech/openai-ads-adapter-template/tool.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/openai-ads-adapter-template/0.1.0.tar.gz",
-          "sha256": "2b83ca41d925b251fd71dd7e7f8263e79cdedb5c8b79e35e3292a3a088cb59a3"
+          "sha256": "b3bbb691f98a1e3ab6bedfc8a5068073ff04ce8ddbcff7e5b81df3d9626c57ee"
         }
       ],
       "runtimes": [
@@ -227,7 +240,7 @@
         "availability": "template-only",
         "execution": "integration-template",
         "limitations": [
-          "This package contains contracts and fixtures, not an API client."
+          "Reference adapter contract only; no connected executable integration is packaged."
         ],
         "quickstart": "Use adtech/openai-ads-api-client for an executable mock or live read-only integration.",
         "source": "declared"
@@ -242,6 +255,7 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "adtech/openai-ads-api-client",
       "name": "OpenAI Ads API Client",
       "description": "Dry-run-first client for mock or live read-only OpenAI Ads account, campaign, ad, and insights retrieval plus non-persisting Conversions API validation.",
@@ -253,7 +267,7 @@
           "released_at": "2026-07-25T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/adtech/openai-ads-api-client/tool.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/openai-ads-api-client/0.1.0.tar.gz",
-          "sha256": "d202296ac427521dc4c6af470c7e6550c384f7d5c1f390fdd992433d5679727a"
+          "sha256": "ba5496b419bbbaec2a8756fd2abc194a6a750b360f889444b51f7b7fb15ab63a"
         }
       ],
       "runtimes": [
@@ -288,15 +302,18 @@
         "approval_boundary": "Advertiser operations are GET-only; Conversions API requests always force validate_only true and cannot persist events."
       },
       "usability": {
-        "availability": "usable-now",
+        "availability": "not-verified",
         "execution": "remote-integration",
         "requires_setup": [
-          "For live reads, create an account-scoped Ads API key in OpenAI Ads Manager.",
-          "Keep API keys in environment variables outside agent context."
+          "For live reads, create an account-scoped Ads API key in OpenAI Ads Manager and configure the API base URL.",
+          "Keep API keys in environment variables outside agent context.",
+          "Write-capable operations require explicit approval outside this client."
         ],
         "limitations": [
+          "Mock mode is local and read-only; live mode depends on an external API contract.",
+          "No published clean-client installation and live-readiness evidence is recorded yet.",
           "Campaign, ad-group, ad, file, and feed mutations are intentionally excluded.",
-          "Remote conversion requests validate events without saving them.",
+          "Conversion validation is dry-run only and does not persist events.",
           "Automatic pagination, retries, and rate-limit backoff are not included in this first client."
         ],
         "quickstart": "python3 scripts/openai_ads_client.py --mode mock account",
@@ -313,9 +330,10 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "agentops/agent-control-plane-server",
       "name": "Agent Control Plane MCP Server",
-      "description": "MCP server template for policy checks, approval requests, agent action logging, and audit-chain verification.",
+      "description": "Implementation specification and template for an agent control-plane MCP server; no launchable server is packaged.",
       "category": "tools-mcp/agentops",
       "latest": "0.1.0",
       "versions": [
@@ -324,7 +342,7 @@
           "released_at": "2026-04-26T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/agentops/agent-control-plane-server/tool.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/agent-control-plane-server/0.1.0.tar.gz",
-          "sha256": "30b17139b60a754a3cecc5d27356b391d4560e514a86a67895cf2bf6128aadc1"
+          "sha256": "b8538fd4344377ea2adf36e984fe907eff02b0b06a156807400f2f995f869f6e"
         }
       ],
       "runtimes": [
@@ -360,12 +378,13 @@
         "approval_boundary": "Safe for policy checks and audit writes; requires human approval before executing high-risk operational actions or changing policy."
       },
       "usability": {
-        "availability": "setup-required",
-        "execution": "remote-integration",
-        "requires_setup": [
-          "Configure the connected system and authentication outside agent context."
+        "availability": "template-only",
+        "execution": "integration-template",
+        "limitations": [
+          "Specification, prompts, and examples only; no launchable MCP transport is packaged."
         ],
-        "source": "inferred"
+        "quickstart": "Review TOOL.md as an implementation contract; do not register this package as an MCP server.",
+        "source": "declared"
       },
       "dependencies": {
         "mcp_servers": [
@@ -374,9 +393,10 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "analytics/ga4-mcp-connector",
       "name": "GA4 MCP Connector",
-      "description": "MCP-backed GA4 query connector for structured marketing analytics retrieval.",
+      "description": "Implementation specification and template for a GA4 MCP query connector; no launchable server is packaged.",
       "category": "tools-mcp/analytics",
       "latest": "0.1.0",
       "versions": [
@@ -385,7 +405,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/analytics/ga4-mcp-connector/tool.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/analytics/ga4-mcp-connector/0.1.0.tar.gz",
-          "sha256": "cba19f8f653c7ae47277f74df3167ed6f13d14a6994febc42e3a1d4623298cd5"
+          "sha256": "72b9154ff65c0418adc15d318955c0c80e566fb0c2454281f90ee4fd7072b36c"
         }
       ],
       "runtimes": [
@@ -416,12 +436,13 @@
         "approval_boundary": "Safe for read-only analytics retrieval; require human approval before combining with any workflow that writes back to ad platforms or reporting systems."
       },
       "usability": {
-        "availability": "setup-required",
-        "execution": "remote-integration",
-        "requires_setup": [
-          "Configure the connected system and authentication outside agent context."
+        "availability": "template-only",
+        "execution": "integration-template",
+        "limitations": [
+          "Specification, prompts, and examples only; no launchable MCP transport is packaged."
         ],
-        "source": "inferred"
+        "quickstart": "Review TOOL.md as an implementation contract; do not register this package as an MCP server.",
+        "source": "declared"
       },
       "dependencies": {
         "mcp_servers": [
@@ -430,9 +451,10 @@
       }
     },
     {
+      "schema_version": "1.1",
       "id": "warehouse/bigquery-mcp-query-runner",
       "name": "BigQuery MCP Query Runner",
-      "description": "Execute parameterized read-only BigQuery SQL through MCP for analytics and BI workflows.",
+      "description": "Implementation specification and template for a read-only BigQuery MCP query runner; no launchable server is packaged.",
       "category": "tools-mcp/warehouse",
       "latest": "0.1.0",
       "versions": [
@@ -441,7 +463,7 @@
           "released_at": "2026-03-02T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/tools-mcp/warehouse/bigquery-mcp-query-runner/tool.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/warehouse/bigquery-mcp-query-runner/0.1.0.tar.gz",
-          "sha256": "909e25c4ee2cc2b29a3393e31f5a6d26443af0b7cc08e29ffe0ae38fcc192be5"
+          "sha256": "5062178debd2aa7a7be639f1972cd3d54c7b9548b323bc58c36bbb18de030b31"
         }
       ],
       "runtimes": [
@@ -472,12 +494,13 @@
         "approval_boundary": "Safe for parameterized read-only queries; require human approval before broadening dataset scope or enabling any non-read-only SQL path."
       },
       "usability": {
-        "availability": "setup-required",
-        "execution": "remote-integration",
-        "requires_setup": [
-          "Configure the connected system and authentication outside agent context."
+        "availability": "template-only",
+        "execution": "integration-template",
+        "limitations": [
+          "Specification, prompts, and examples only; no launchable MCP transport is packaged."
         ],
-        "source": "inferred"
+        "quickstart": "Review TOOL.md as an implementation contract; do not register this package as an MCP server.",
+        "source": "declared"
       },
       "dependencies": {
         "mcp_servers": [

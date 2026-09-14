@@ -7,9 +7,9 @@ tools/MCP definitions, a hub UI, and QA automation flows.
 ## What this repo is
 
 This repository is the practical companion to our written guide. It contains
-directly usable instructions, local executables, configured integrations,
-orchestration templates, installable plugins, and documentation-only packs.
-Every registry entry declares or receives an explicit usability classification.
+instruction packages, local executables, integration specifications,
+orchestration templates, plugin source compositions, and documentation-only
+packs. Every registry entry declares its usability classification explicitly.
 
 ## Positioning
 
@@ -20,7 +20,8 @@ We publish reusable building blocks across four modules:
 
 - skills (task-level expertise)
 - agents (orchestrated templates)
-- plugins (installable composition layer)
+- plugins (composition templates today; installable bundles when implemented
+  and verified)
 - tools & MCP connectors (integration layer)
 
 `packs/` contains documentation-only playbooks that curate existing catalog
@@ -39,16 +40,25 @@ Review maturity and operational usability answer different questions:
 - `usable-now`: Install and use the instructions or local executable
   immediately.
 - `setup-required`: Configure credentials, bindings, dependencies, or policy
-  before use.
+  for an implemented artifact before use.
+- `not-verified`: Implementation exists, but current target-scoped operational
+  evidence is not recorded.
 - `template-only`: Implement the supplied contract or scaffold before treating
   it as an executable integration.
 - `documentation-only`: Use the package as a learning or architecture guide;
   it is not installed as a runtime capability.
 
-Older entries receive conservative inferred labels during registry generation.
-New or updated entries should declare `usability` in their manifest. The
-website and `skills-hub info` show whether a classification is declared or
-inferred.
+Operational lifecycle, evidence, promotion, demotion, and verification expiry
+are governed by the normative
+[Operational Readiness and Promotion Contract](shared/contracts/operational-readiness-v1.md).
+In particular, prompt tests and schema-valid manifests do not by themselves
+prove that an entry is operationally available.
+
+Registry admission rejects manifests that omit `usability.availability` or
+`usability.execution`; registry generation preserves those declarations and
+does not infer them from module names or directories. Current catalog manifests
+use schema `1.1`, and generated indexes use registry format `1.2`; consumers
+must fail closed on unsupported versions rather than reinterpret new states.
 
 See [docs/using-the-catalog.md](docs/using-the-catalog.md) for module behavior,
 install effects, and first-run guidance.
@@ -137,7 +147,7 @@ Useful sections include skills for:
   and runtime risk assessment.
 - `skills/agentops/*`: harness reflection, skill proposal, and regression
   evaluation for self-evolving agent scaffolds.
-- `plugins/marketing/*`: installable bundles that package existing
+- `plugins/marketing/*`: source-composition templates that reference existing
   skills, agents, tools, hooks, and setup guidance.
 
 ## Quickstart
@@ -191,75 +201,14 @@ For generic runtimes:
   --target ./my-agent/skills
 ```
 
-## Install Plugins
+## Use Plugin Templates
 
-Plugins bundle existing skills, agents, tools, hooks, and setup guidance into
-one installable package. For `codex` and `claude`, the installer also generates
-a runtime-specific manifest inside the installed plugin directory:
-
-- `codex` -> `.codex-plugin/plugin.json`
-- `claude` -> `.claude-plugin/plugin.json`
-
-Plugin installs also resolve bundled dependencies automatically:
-
-- referenced `skills` install into the runtime skills directory
-- referenced `agents` install into the runtime agents directory
-- referenced `tools-mcp` install into the runtime tools directory
-- packaged `hooks/` remain inside the installed plugin directory
-
-For Codex:
-
-```bash
-./bin/skills-hub install --module plugins \
-  --entry marketing/performance-reporting-plugin@latest \
-  --runtime codex
-```
-
-Expected result:
-
-- plugin files copied into your Codex plugins directory
-- generated `.codex-plugin/plugin.json`
-- bundled skills, agents, and tools installed into sibling Codex runtime directories
-- CLI output listing bundled component IDs, required secrets, and approvals
-
-For Claude:
-
-```bash
-./bin/skills-hub install --module plugins \
-  --entry marketing/competitive-intelligence-plugin@latest \
-  --runtime claude
-```
-
-Expected result:
-
-- plugin files copied into your Claude plugins directory
-- generated `.claude-plugin/plugin.json`
-- bundled skills, agents, and tools installed into sibling Claude runtime directories
-- CLI output warning when the plugin is not security reviewed
-
-For generic runtimes:
-
-```bash
-./bin/skills-hub install --module plugins \
-  --entry marketing/ad-creative-plugin@latest \
-  --runtime generic \
-  --target ./my-agent/plugins
-```
-
-Expected result:
-
-- plugin files copied into `./my-agent/plugins`
-- bundled skills, agents, and tools installed into sibling directories under `./my-agent/`
-- no runtime-specific manifest generated automatically
-- you wire the plugin into your runtime manually
-
-Before enabling any plugin in a live environment:
-
-- review bundled skills, agents, and tool references
-- confirm required secrets are scoped correctly
-- confirm approval rules are compatible with your runtime
-- inspect generated runtime manifests before activation
-- treat `security_reviewed: false` as review-required, not install-ready
+Current plugin entries are `template-only` source compositions. The operational
+`skills-hub install --module plugins` path rejects them before writing runtime
+files, resolving dependencies, or generating Codex/Claude registration
+manifests. Review each plugin's `README.md`, `plugin.json`, referenced modules,
+hooks, secrets, and approval rules in the repository, then implement and verify
+a self-contained bundle before changing its availability.
 
 ## Use Agent Packages (Step-by-step)
 

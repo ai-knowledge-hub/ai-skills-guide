@@ -31,7 +31,7 @@ export default async function SkillsPage({ searchParams = {} }: { searchParams?:
       </div>
 
       <h1>Skills Catalog</h1>
-      <p>Filter by intent, runtime, and category to find install-ready skills.</p>
+      <p>Filter instruction packages by intent, runtime, and category, then inspect any independently classified executable helpers.</p>
 
       <CatalogClient
         entries={registry.skills}

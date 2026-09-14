@@ -25,7 +25,7 @@ entrypoints:
   tests: tests/test-prompts.md
   examples_dir: examples
 dependencies:
-  tools:
+  skills:
     - marketing/ai-output-eval-scorecard
 operational:
   use_when: Use when a team needs a repeatable task-panel evaluation of paid, earned, and executable brand participation.

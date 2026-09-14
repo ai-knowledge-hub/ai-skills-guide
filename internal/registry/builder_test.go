@@ -369,6 +369,7 @@ deprecated: false
 	if err := os.WriteFile(filepath.Join(entryDir, "TOOL.md"), []byte("# V2 Tool\n"), 0o644); err != nil {
 		t.Fatalf("write spec: %v", err)
 	}
+	writeV2ArtifactFiles(t, entryDir, "bin/v2-tool")
 
 	idx, err := BuildToolsIndex(root)
 	if err != nil {
@@ -409,6 +410,7 @@ func TestSchemaValidFlowSequencesRoundTripToRegistry(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(entryDir, "TOOL.md"), []byte("# Flow fixture\n"), 0o644); err != nil {
 		t.Fatalf("write spec: %v", err)
 	}
+	writeV2ArtifactFiles(t, entryDir, "bin/example")
 
 	idx, err := BuildToolsIndex(root)
 	if err != nil {
@@ -494,6 +496,7 @@ func TestBuildIndexAllowsBenignCredentialSentinel(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(entryDir, "TOOL.md"), []byte("# Sentinel Tool\n"), 0o644); err != nil {
 		t.Fatalf("write spec: %v", err)
 	}
+	writeV2ArtifactFiles(t, entryDir, "bin/tool")
 
 	idx, err := BuildToolsIndex(root)
 	if err != nil {
@@ -504,5 +507,18 @@ func TestBuildIndexAllowsBenignCredentialSentinel(t *testing.T) {
 	}
 	if got := idx.Skills[0].Authentication.Validation; got != "token=not-applicable" {
 		t.Fatalf("benign guidance was not preserved in registry: %q", got)
+	}
+}
+
+func writeV2ArtifactFiles(t *testing.T, entryDir, executable string) {
+	t.Helper()
+	for _, relative := range []string{"checksums.txt", "sbom.cdx.json", executable} {
+		path := filepath.Join(entryDir, filepath.FromSlash(relative))
+		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+			t.Fatalf("mkdir artifact path: %v", err)
+		}
+		if err := os.WriteFile(path, []byte("fixture\n"), 0o755); err != nil {
+			t.Fatalf("write artifact path: %v", err)
+		}
 	}
 }

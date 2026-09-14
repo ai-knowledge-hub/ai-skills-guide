@@ -166,7 +166,7 @@
           "released_at": "2026-02-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/dashboard-generator/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/dashboard-generator/0.1.0.tar.gz",
-          "sha256": "8a7f83d626d0fd42583db59076a313c68e290ea1067776d3af3988abf7fa5b27"
+          "sha256": "cf4d518137c2f732d560f9742207cb40ac250a0b3a24b57d169c4f58cce0cf82"
         }
       ],
       "runtimes": [
@@ -216,7 +216,7 @@
           "released_at": "2026-02-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/dashboard-qa-checker/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/dashboard-qa-checker/0.1.0.tar.gz",
-          "sha256": "83fb0b6eba1f6a909147d32ac7db3bdaf4e22875c2d1314f34a970b169a02f2a"
+          "sha256": "26eb1cb67655b9d854b2d931b34db87ff3120eca8a37ad4382adeb412d9f41e2"
         }
       ],
       "runtimes": [
@@ -266,7 +266,7 @@
           "released_at": "2026-02-27T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/executive-narrative-writer/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/executive-narrative-writer/0.1.0.tar.gz",
-          "sha256": "cebf9b90a68f2e96261ca7d2d4eb40dc0044484f6a8e2d63182ce5d8e02132b1"
+          "sha256": "d99be8d5e043bcc7da454c3b432d756f32d0580f32d31880195728d24cfffcf3"
         }
       ],
       "runtimes": [
@@ -316,7 +316,7 @@
           "released_at": "2026-02-23T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/playwright-agentic-e2e/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/playwright-agentic-e2e/0.1.0.tar.gz",
-          "sha256": "ac7a119e98ba6e42005d74c3a2080242113beb737e9cf7ce0afa6e3bb8b37c70"
+          "sha256": "a7946489860b41416b27728ffb329b6e5acdef5fb521f58e3485f4e0ed9a3232"
         }
       ],
       "runtimes": [
@@ -616,7 +616,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/harness-regression-evaluator/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-regression-evaluator/0.1.0.tar.gz",
-          "sha256": "564251d06db3f5f5b3f611e4b94d57ff05e6e965d0f230d1bcc9726129f7b6d4"
+          "sha256": "55b52da7afb0704d63cb6bf62a2953232cb3dcc66badb263243fa9b305b278b5"
         }
       ],
       "runtimes": [
@@ -661,7 +661,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/harness-run-reflection/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-run-reflection/0.1.0.tar.gz",
-          "sha256": "943057c634d65a4c2636f33e896d678f1825879543843878099a840639b179ef"
+          "sha256": "8fe75aed2745d29ad9ebe5a09998c39a4e430aff7193efe0e98e0f43ca583f8d"
         }
       ],
       "runtimes": [
@@ -706,7 +706,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/harness-skill-proposal/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-skill-proposal/0.1.0.tar.gz",
-          "sha256": "c4fc626488ff0e8d477fa486451109c446f803bafc11e95031d52b912e620587"
+          "sha256": "fefc7e8255a2d8e10df8e1d9b8ee49038825faf462a469f933fa656d19a8e6e5"
         }
       ],
       "runtimes": [
@@ -751,7 +751,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/code-change-verification/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/code-change-verification/0.1.0.tar.gz",
-          "sha256": "22f665578aab9a2b0a1bdb0c251a8bf2b3aba0d4e1543941ebcf47163528befd"
+          "sha256": "430cad7c3fa3ab972b8cf0cd4c227951083eeb7eb325ee3b9baadc789386f41f"
         }
       ],
       "runtimes": [
@@ -801,7 +801,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/coverage-gap-reporter/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/coverage-gap-reporter/0.1.0.tar.gz",
-          "sha256": "48024d23ebcf530d80a34ff330b45e0143be4956e0d73a4dbc1fe8aa737b086d"
+          "sha256": "03e1f8612c9eaed887f2c712b24c37dfaa4f17a534fa0b8ec302c367c736bfd5"
         }
       ],
       "runtimes": [
@@ -846,7 +846,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/implementation-strategy/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/implementation-strategy/0.1.0.tar.gz",
-          "sha256": "1e5403e7862a995a518ee44d6e30b5d0c2ce154e7e7ade99834fe60a1000f500"
+          "sha256": "11ab8946a87759d57c5c43e9f39a2eeeb6e54c106b7498d33017f41c1464c46c"
         }
       ],
       "runtimes": [
@@ -896,7 +896,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/pr-review-and-draft/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/pr-review-and-draft/0.1.0.tar.gz",
-          "sha256": "cd62e89ef3a9319f10297ee8bd7ad2bc097ed6c8d8b49a58eb3a6d961df5ae27"
+          "sha256": "5a3445f3be71ac1d679b0af259d0b36bd9016e8c9410fe31d092c1d43e042e97"
         }
       ],
       "runtimes": [
@@ -941,7 +941,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/test-gap-analyzer/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/test-gap-analyzer/0.1.0.tar.gz",
-          "sha256": "69aea5860b143dd7636c8669022bd55ac7639bbdc6f557139b3ba9c48f4dba33"
+          "sha256": "617c767956e41ddde92eb73105f845b7cbd01a514d6bfff5ccfe21be510bb453"
         }
       ],
       "runtimes": [
@@ -1037,7 +1037,7 @@
           "released_at": "2026-07-24T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/agent-share-of-choice-evaluator/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/agent-share-of-choice-evaluator/0.1.0.tar.gz",
-          "sha256": "98067867b4c9d5b7f411aa09facfde92668558c7fd36597a80096950c77166f6"
+          "sha256": "2a2b870c07a6f5c19d022c8d530d7795645d0125fcd433ee7f16bcee54ba2090"
         }
       ],
       "runtimes": [
@@ -1071,7 +1071,7 @@
         "source": "inferred"
       },
       "dependencies": {
-        "tools": [
+        "skills": [
           "marketing/ai-output-eval-scorecard"
         ]
       }
@@ -1826,7 +1826,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/dependency-supply-chain-audit/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/dependency-supply-chain-audit/0.1.0.tar.gz",
-          "sha256": "4d7d1c41be650480a044e806fb8ab4984a54298e76cf6245f55745bba51ae962"
+          "sha256": "7e5505eef23c6afafdec9ea62ae04914b37e5c47c07a72ccdcdc6a098744c6b3"
         }
       ],
       "runtimes": [
@@ -1877,7 +1877,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/environment-risk-assessment/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/environment-risk-assessment/0.1.0.tar.gz",
-          "sha256": "4199db513316791a71e37d87e95447ef5d334f20e3f1dabc320612b916a6d36f"
+          "sha256": "4ef676456de2fd1a60d10098207909a43ca72556b9ccb197bf516b9239056d50"
         }
       ],
       "runtimes": [
@@ -1922,7 +1922,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/handle-untrusted-content/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/handle-untrusted-content/0.1.0.tar.gz",
-          "sha256": "eabef3c1bff3ab9df17f03e8c32e324d60fec96ae667583134d9d41df368d6d4"
+          "sha256": "61e5b0d0d44d87a1c63abcc45065fcd1fb923ed8c29119af5c3873d5c47d7302"
         }
       ],
       "runtimes": [
@@ -2013,7 +2013,7 @@
           "released_at": "2026-03-19T00:00:00Z",
           "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/secrets-and-credential-hygiene/skill.yaml",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/secrets-and-credential-hygiene/0.1.0.tar.gz",
-          "sha256": "7ed458691a13d3c69a68ebf16e15687235db192d1cfae1d33c206d7d8771f790"
+          "sha256": "e8fda2c1fee2d40d4e153a1b2b4ba79e036c58e65e0bdc77753b57c75505a20c"
         }
       ],
       "runtimes": [

@@ -94,6 +94,7 @@ func ParseManifest(path string) (Manifest, error) {
 	out.artifactSet = hasMap(raw, "artifact")
 	out.authenticationSet = hasMap(raw, "authentication")
 	out.verificationSet = hasMap(raw, "verification")
+	out.usabilitySet = hasMap(raw, "usability")
 	if verification, ok := raw["verification"].(map[string]any); ok {
 		if reviewed, ok := verification["security_reviewed"].(bool); ok {
 			out.SecurityReviewed = reviewed

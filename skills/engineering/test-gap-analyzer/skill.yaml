@@ -23,7 +23,6 @@ entrypoints:
   skill_md: SKILL.md
   readme: README.md
   tests: tests/test-prompts.md
-  scripts_dir: scripts
   examples_dir: examples
 operational:
   use_when: Use when changed code needs missing unit, integration, regression, and edge-case scenarios identified.

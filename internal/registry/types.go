@@ -10,6 +10,7 @@ type Manifest struct {
 	Category          string                 `json:"category"`
 	Tags              []string               `json:"tags"`
 	Runtimes          []string               `json:"runtimes"`
+	Entrypoints       map[string]string      `json:"entrypoints"`
 	SecurityReviewed  bool                   `json:"-"`
 	Deprecated        bool                   `json:"deprecated"`
 	ReplacedBy        string                 `json:"replaced_by"`
@@ -26,6 +27,7 @@ type Manifest struct {
 	artifactSet       bool
 	authenticationSet bool
 	verificationSet   bool
+	usabilitySet      bool
 }
 
 type ExecutionMetadata struct {

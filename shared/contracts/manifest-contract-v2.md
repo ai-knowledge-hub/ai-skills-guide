@@ -151,6 +151,21 @@ Installers and launchers must fail closed on unsupported execution kinds,
 platforms, runtimes, or authentication methods. Unknown future schema versions
 must remain visible as unsupported rather than being treated as legacy.
 
+Repository admission additionally verifies that declared entrypoint, artifact,
+and package-relative command paths exist and remain contained in the package.
+It resolves internal skill, agent, tool, and plugin-include references against
+the repository, rejects incompatible runtime closure and dependency cycles, and
+requires a current verification reference and timestamp for an explicit v2
+`usable-now` claim. These checks do not turn an opaque evidence reference into
+proof: release promotion must still resolve the authoritative evidence record
+and validate its target, artifact digest, observations, producer, disposition,
+and expiry under the operational readiness contract.
+
+Legacy v1 manifests receive structural entrypoint and dependency checks but are
+not promoted on the strength of legacy verification labels. Their remaining
+inferred usability classifications are a compatibility projection pending
+explicit catalog reclassification.
+
 The golden fixtures under `shared/schemas/fixtures/manifest-v2/` cover every
 execution kind and authentication method, all four module schemas, explicit
 artifact absence, required binding enforcement, executable smoke-test

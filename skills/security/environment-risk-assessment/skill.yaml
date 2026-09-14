@@ -23,7 +23,6 @@ entrypoints:
   skill_md: SKILL.md
   readme: README.md
   tests: tests/test-prompts.md
-  scripts_dir: scripts
   examples_dir: examples
 operational:
   use_when: Use when you need to assess whether the current runtime is safe for autonomous agent execution.

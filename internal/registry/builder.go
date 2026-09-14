@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 )
 
 const baseURL = "https://skills.ai-knowledge-hub.org"
@@ -48,6 +49,9 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 			return Index{}, err
 		}
 		skillDir := filepath.Dir(manifestPath)
+		if err := validatePackage(manifestPath, m, time.Now().UTC()); err != nil {
+			return Index{}, err
+		}
 		sha, err := digestSkillDir(skillDir)
 		if err != nil {
 			return Index{}, err

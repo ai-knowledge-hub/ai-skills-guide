@@ -23,6 +23,7 @@ entrypoints:
   spec: TOOL.md
   readme: README.md
   tests: tests/test-prompts.md
+  scripts_dir: scripts
   examples_dir: examples
 dependencies:
   tools:

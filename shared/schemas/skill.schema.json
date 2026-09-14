@@ -164,6 +164,14 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
+          },
+          "uniqueItems": true
+        },
         "tools": {
           "type": "array",
           "items": {

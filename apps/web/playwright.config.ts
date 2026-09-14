@@ -2,6 +2,7 @@ import path from "node:path";
 import { defineConfig, devices } from "@playwright/test";
 
 const webAppRoot = __dirname;
+const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
 
 export default defineConfig({
   testDir: path.join(webAppRoot, "e2e"),
@@ -17,7 +18,12 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] }
+      use: {
+        ...devices["Desktop Chrome"],
+        ...(chromiumExecutablePath
+          ? { launchOptions: { executablePath: chromiumExecutablePath } }
+          : {})
+      }
     }
   ],
   webServer: {

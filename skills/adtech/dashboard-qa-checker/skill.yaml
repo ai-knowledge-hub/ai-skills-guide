@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: adtech/dashboard-qa-checker
 name: Dashboard QA Checker
 description: Validate dashboard datasets with freshness, completeness, reconciliation, anomaly, and schema drift checks before publish.
@@ -34,6 +35,12 @@ operational:
     - Blocking reasons
     - Alert payload
   approval_boundary: Safe for read-only QA evaluation; require human approval before overriding critical failures.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

@@ -8,7 +8,16 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
 )
+
+func ValidateOperationalInstall(entry registry.SkillEntry) error {
+	if entry.Usability.Availability == "template-only" {
+		return fmt.Errorf("%s is template-only and cannot be installed into an operational runtime; copy it from the repository as a reference scaffold instead", entry.ID)
+	}
+	return nil
+}
 
 func InstallSkill(sourceDir, targetRoot, skillID string, force bool) (string, error) {
 	destinationDir := filepath.Join(targetRoot, filepath.FromSlash(skillID))

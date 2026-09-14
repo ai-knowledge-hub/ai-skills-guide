@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: marketing/creative-operating-system-supervisor
 name: Creative Operating System Supervisor
 description: Coordinate the Creative Operating System workflow from brand memory and utility concepts to creator briefs, cultural timing, and final quality evaluation.
@@ -52,6 +53,12 @@ operational:
     - Product-as-media opportunity map
     - Creator brief package
     - Launch-readiness scorecard
+usability:
+  availability: template-only
+  execution: orchestrator
+  limitations:
+    - Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged.
+  quickstart: Review AGENT.md and implement and register the declared runtime bindings before launch.
 verification:
   tests_min_prompts: 5
   security_reviewed: false

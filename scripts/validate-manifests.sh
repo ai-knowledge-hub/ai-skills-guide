@@ -59,6 +59,7 @@ echo "[check] validating manifest contract v2 golden fixtures"
 "$CHECK_JSONSCHEMA" --check-metaschema "$CONTRACT_SCHEMA" "$CONTRACT_MATRIX_SCHEMA"
 "$CHECK_JSONSCHEMA" --schemafile "$CONTRACT_MATRIX_SCHEMA" "$CONTRACT_FIXTURES/contract-matrix.valid.json"
 "$CHECK_JSONSCHEMA" --schemafile "$SKILL_SCHEMA" "$CONTRACT_FIXTURES/skill.valid.yaml"
+"$CHECK_JSONSCHEMA" --schemafile "$SKILL_SCHEMA" "$CONTRACT_FIXTURES/skill-executable-helper-v2.1.valid.yaml"
 "$CHECK_JSONSCHEMA" --schemafile "$AGENT_SCHEMA" "$CONTRACT_FIXTURES/agent.valid.yaml"
 "$CHECK_JSONSCHEMA" --schemafile "$TOOL_SCHEMA" "$CONTRACT_FIXTURES/tool.valid.yaml"
 "$CHECK_JSONSCHEMA" --schemafile "$TOOL_SCHEMA" "$CONTRACT_FIXTURES/tool-flow-sequences.valid.yaml"
@@ -79,6 +80,16 @@ fi
 
 if "$CHECK_JSONSCHEMA" --schemafile "$SKILL_SCHEMA" "$CONTRACT_FIXTURES/skill-unversioned-v2.invalid.yaml" >/dev/null 2>&1; then
   echo "[ERROR] Expected schema rejection: shared/schemas/fixtures/manifest-v2/skill-unversioned-v2.invalid.yaml"
+  exit 1
+fi
+
+if "$CHECK_JSONSCHEMA" --schemafile "$TOOL_SCHEMA" "$CONTRACT_FIXTURES/tool-not-verified-v2.0.invalid.yaml" >/dev/null 2>&1; then
+  echo "[ERROR] Expected schema rejection: shared/schemas/fixtures/manifest-v2/tool-not-verified-v2.0.invalid.yaml"
+  exit 1
+fi
+
+if "$CHECK_JSONSCHEMA" --schemafile "$SKILL_SCHEMA" "$CONTRACT_FIXTURES/skill-executable-helper-v2.0.invalid.yaml" >/dev/null 2>&1; then
+  echo "[ERROR] Expected schema rejection: shared/schemas/fixtures/manifest-v2/skill-executable-helper-v2.0.invalid.yaml"
   exit 1
 fi
 

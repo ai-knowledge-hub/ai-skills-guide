@@ -17,6 +17,9 @@ func LoadIndex(path string) (Index, error) {
 	if err := json.Unmarshal(data, &idx); err != nil {
 		return Index{}, fmt.Errorf("parse registry index %s: %w", path, err)
 	}
+	if idx.RegistryVersion != "1.1" && idx.RegistryVersion != "1.2" {
+		return Index{}, fmt.Errorf("unsupported registry_version %q in %s; upgrade the consumer or use a compatible registry snapshot", idx.RegistryVersion, path)
+	}
 	return idx, nil
 }
 

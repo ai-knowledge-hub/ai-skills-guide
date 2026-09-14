@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: adtech/ad-platform-executor-template
 name: Ad Platform Executor Template
 description: MCP/tool template for a narrow DV360 and Google Ads executor that applies only approved, policy-checked campaign changes and records rollback evidence.
@@ -46,6 +47,12 @@ operational:
   access_level: read-write
   trust_boundary: remote-mcp-server
   approval_boundary: Applies only policy-approved bounded writes; high-risk changes require human approval and rollback evidence.
+usability:
+  availability: template-only
+  execution: integration-template
+  limitations:
+    - Reference executor contract only; no connected ad-platform implementation is packaged.
+  quickstart: Review TOOL.md and implement the approved provider operations before registration.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

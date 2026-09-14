@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: adtech/executive-narrative-writer
 name: Executive Narrative Writer
 description: Convert validated BI performance outputs into concise executive narratives with actions and risks.
@@ -34,6 +35,12 @@ operational:
     - Risk notes
     - Action recommendations
   approval_boundary: Safe for drafting narrative from approved inputs; require human approval before stakeholder distribution.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

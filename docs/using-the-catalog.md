@@ -26,7 +26,8 @@ label alone is not that evidence.
 | --- | --- | --- |
 | `usable-now` | Instructions or a local executable are copied into the runtime. | Supply task inputs and run the documented first step. |
 | `setup-required` | The package is installed, but does not become operational by installation alone. | Configure dependencies, tool bindings, credentials, and policy. |
-| `template-only` | A reference contract or scaffold is installed. | Implement and review the missing provider/runtime binding. |
+| `not-verified` | An implementation is present, but installation does not prove it works for your target. | Obtain current target-scoped operational evidence before relying on it. |
+| `template-only` | Operational installation is blocked; repository source remains available as a reference. | Copy only as a scaffold, then implement and review the missing provider/runtime binding. |
 | `documentation-only` | No runtime installation is implied. | Use the material as a guide or contribution map. |
 
 The `execution` value adds the technical shape:
@@ -43,19 +44,19 @@ The `execution` value adds the technical shape:
 
 ### Skills
 
-Skills are usually `usable-now` instructions. A skill may still depend on local tools or APIs. Installation makes the instructions discoverable; it does not create missing credentials or external services.
+Current skills are `documentation-only` instruction packages. Installation makes their guidance discoverable; it does not authorize executable runtime capability. Seven skills separately disclose packaged local helpers as `not-verified`; installing their instructions does not promote or verify those helpers.
 
 ### Tools and MCP
 
-Local deterministic tools can be `usable-now`. Remote connectors are `setup-required`. Entries ending in `-template` are normally `template-only` unless their manifest explicitly says otherwise.
+Specification-only connectors and servers are `template-only`. Implemented local tools and clients remain `not-verified` until current evidence supports a target-scoped readiness promotion.
 
 ### Agents
 
-Agents are orchestrators. Installation copies their specification, but operational use requires every declared skill, agent, and tool dependency plus tool bindings, memory, and governance. Prefer a plugin when one exists because plugin installation resolves bundled dependencies.
+Current agents are `template-only` orchestrator definitions. Operational installation is blocked because no launchable orchestrator or verified runtime bindings are packaged.
 
 ### Plugins
 
-Plugins are the installable composition layer. They install declared skills, agents, and tools into native runtime directories and retain hooks, config, templates, and examples inside the plugin directory. Required secrets and approvals still need local configuration.
+Current plugins are `template-only` source compositions with advisory hooks. Operational installation, dependency resolution, and runtime-manifest generation are blocked until a self-contained verified runtime bundle is published.
 
 ### Packs
 
@@ -74,12 +75,11 @@ The output includes:
 - `usability.requires_setup`
 - `usability.limitations`
 - `usability.quickstart`
+- `usability.executable_helpers` and each helper's independent availability
 - `usability.source`
 
-An inferred classification is a conservative registry default. A declared
-classification has been set in the package manifest and should be preferred
-when planning implementation.
-Neither `inferred` nor `declared` is verification. A `usable-now` entry is
+All current catalog classifications are declared in package manifests;
+repository admission rejects omissions. A declaration is not verification. A `usable-now` entry is
 operationally verified only for the instruction or executable scope and target
 key covered by current evidence. Until the registry carries those evidence
 references and target keys, inspect the package's documented limitations and

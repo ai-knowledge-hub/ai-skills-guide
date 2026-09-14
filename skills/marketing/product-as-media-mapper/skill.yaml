@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: marketing/product-as-media-mapper
 name: Product As Media Mapper
 description: Identify product, app, commerce, service, packaging, data, and owned-channel surfaces that can become campaign media.
@@ -33,6 +34,12 @@ operational:
     - Product-as-media concept map
     - Feasibility and risk score
   approval_boundary: Safe for planning; require product, engineering, legal, and operations approval before altering product or customer-service surfaces.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

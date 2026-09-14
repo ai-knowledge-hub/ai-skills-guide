@@ -5,6 +5,7 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
+    "schema_version",
     "id",
     "name",
     "description",
@@ -15,12 +16,17 @@
     "license",
     "author",
     "runtimes",
-    "entrypoints"
+    "entrypoints",
+    "usability"
   ],
   "properties": {
     "schema_version": {
       "type": "string",
-      "const": "2.0"
+      "enum": [
+        "1.1",
+        "2.0",
+        "2.1"
+      ]
     },
     "execution": {
       "$ref": "#/$defs/execution"
@@ -269,6 +275,7 @@
           "enum": [
             "usable-now",
             "setup-required",
+            "not-verified",
             "template-only",
             "documentation-only"
           ]
@@ -305,8 +312,59 @@
           "type": "string",
           "minLength": 3,
           "maxLength": 300
+        },
+        "executable_helpers": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "entrypoint",
+              "availability",
+              "execution",
+              "limitations"
+            ],
+            "properties": {
+              "entrypoint": {
+                "type": "string",
+                "minLength": 3
+              },
+              "availability": {
+                "type": "string",
+                "enum": [
+                  "usable-now",
+                  "setup-required",
+                  "not-verified"
+                ]
+              },
+              "execution": {
+                "type": "string",
+                "const": "local-tool"
+              },
+              "limitations": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 3
+                }
+              },
+              "quickstart": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 300
+              }
+            }
+          }
         }
-      }
+      },
+      "required": [
+        "availability",
+        "execution"
+      ]
     },
     "execution": {
       "type": "object",
@@ -709,6 +767,11 @@
       "if": {
         "anyOf": [
           {
+            "properties": {
+              "schema_version": {
+                "pattern": "^2\\."
+              }
+            },
             "required": [
               "schema_version"
             ]
@@ -766,6 +829,32 @@
               "last_verified_at"
             ]
           }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "const": "2.0"
+          }
+        },
+        "required": [
+          "schema_version"
+        ]
+      },
+      "then": {
+        "properties": {
+        "usability": {
+          "properties": {
+            "availability": {
+              "not": {
+                "const": "not-verified"
+              }
+            },
+            "executable_helpers": false
+          }
+        }
         }
       }
     }

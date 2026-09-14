@@ -34,7 +34,7 @@ export type VersionEntry = {
 };
 
 export type RegistryEntry = {
-  schema_version?: "2.0";
+  schema_version?: "1.1" | "2.0" | "2.1";
   id: string;
   name: string;
   description: string;
@@ -45,11 +45,18 @@ export type RegistryEntry = {
   tags: string[];
   readiness: "experimental" | "reviewed" | "deprecated";
   usability: {
-    availability: "usable-now" | "setup-required" | "template-only" | "documentation-only";
+    availability: "usable-now" | "setup-required" | "not-verified" | "template-only" | "documentation-only";
     execution: "instructions" | "local-tool" | "remote-integration" | "integration-template" | "orchestrator" | "bundle" | "documentation";
     requires_setup?: string[];
     limitations?: string[];
     quickstart?: string;
+    executable_helpers?: Array<{
+      entrypoint: string;
+      availability: "usable-now" | "setup-required" | "not-verified";
+      execution: "local-tool";
+      limitations: string[];
+      quickstart?: string;
+    }>;
     source: "declared" | "inferred";
   };
   security_reviewed: boolean;
@@ -117,7 +124,7 @@ export type RegistryEntry = {
 };
 
 export type RegistryIndex = {
-  registry_version: string;
+  registry_version: "1.1" | "1.2";
   generated_at: string;
   skills: RegistryEntry[];
 };
@@ -153,7 +160,11 @@ async function resolveRegistryPath(module: ModuleKey) {
 
 export async function loadRegistry(module: ModuleKey = "skills"): Promise<RegistryIndex> {
   const data = await fs.readFile(await resolveRegistryPath(module), "utf-8");
-  return JSON.parse(data) as RegistryIndex;
+  const parsed = JSON.parse(data) as { registry_version?: unknown };
+  if (parsed.registry_version !== "1.1" && parsed.registry_version !== "1.2") {
+    throw new Error(`Unsupported registry_version ${String(parsed.registry_version)}; upgrade this consumer or use a compatible registry snapshot.`);
+  }
+  return parsed as RegistryIndex;
 }
 
 export async function loadSkillsRegistry() {

@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: marketing/utility-campaign-concept-designer
 name: Utility Campaign Concept Designer
 description: Convert a campaign brief into useful interventions that help people, shift behavior, or solve a real friction before generating messages.
@@ -35,6 +36,12 @@ operational:
     - Proof and feasibility notes
     - Risk flags
   approval_boundary: Safe for concepting; require brand, legal, and operations approval before production or public use.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

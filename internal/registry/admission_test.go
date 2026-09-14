@@ -28,6 +28,15 @@ func TestValidateRepositoryAcceptsCompleteClosure(t *testing.T) {
 	}
 }
 
+func TestValidateRepositoryRejectsMissingUsabilityDeclaration(t *testing.T) {
+	root := t.TempDir()
+	path := writeTestModule(t, root, "skill", "shared/undeclared-usability", "codex", "")
+	replaceTestManifest(t, path, "usability:\n  availability: documentation-only\n  execution: instructions\n", "")
+
+	_, err := ValidateRepository(root)
+	assertAdmissionError(t, err, "must explicitly declare usability.availability and usability.execution")
+}
+
 func TestValidateRepositoryRejectsMissingDeclaredEntrypoint(t *testing.T) {
 	root := t.TempDir()
 	path := writeTestModule(t, root, "skill", "shared/missing-script", "codex", "")
@@ -193,7 +202,7 @@ func TestValidateRepositoryRejectsNonSelfContainedV2Bundle(t *testing.T) {
 	manifest := strings.Replace(
 		v2ExecutableManifest("shared/incomplete-bundle", time.Now().UTC()),
 		"entrypoints:\n  spec: TOOL.md\n  scripts_dir: bin\nusability:\n  availability: usable-now\n  execution: local-tool\n  quickstart: bin/tool\nexecution:\n  kind: cli\n  command: [bin/tool]\n  smoke_test: [bin/tool, --smoke]\n",
-		"entrypoints:\n  spec: plugin.json\nincludes: {}\nexecution:\n  kind: bundle\n",
+		"entrypoints:\n  spec: plugin.json\nincludes: {}\nusability:\n  availability: template-only\n  execution: bundle\nexecution:\n  kind: bundle\n",
 		1,
 	)
 	manifest = strings.Replace(manifest, "self_contained: true", "self_contained: false", 1)
@@ -215,6 +224,18 @@ func writeTestModule(t *testing.T, root, kind, id, runtime, extra string) string
 	case "plugin":
 		directory, manifestName, specName = "plugins", "plugin.yaml", "plugin.json"
 	}
+	availability, execution := "documentation-only", "instructions"
+	if kind == "agent" {
+		availability, execution = "template-only", "orchestrator"
+	} else if kind == "plugin" {
+		availability, execution = "template-only", "bundle"
+	} else if kind == "tool" {
+		availability, execution = "template-only", "integration-template"
+	}
+	usability := fmt.Sprintf("usability:\n  availability: %s\n  execution: %s\n", availability, execution)
+	if strings.Contains(extra, "usability:") {
+		usability = ""
+	}
 	entryDir := filepath.Join(root, directory, filepath.FromSlash(id))
 	if err := os.MkdirAll(entryDir, 0o755); err != nil {
 		t.Fatalf("mkdir module: %v", err)
@@ -229,8 +250,8 @@ tags: [test]
 runtimes: [%s]
 entrypoints:
   spec: %s
-%sdeprecated: false
-`, id, runtime, specName, extra)
+%s%sdeprecated: false
+`, id, runtime, specName, extra, usability)
 	path := filepath.Join(entryDir, manifestName)
 	writeTestFile(t, path, manifest, 0o644)
 	writeTestFile(t, filepath.Join(entryDir, specName), "# Test module\n", 0o644)

@@ -21,6 +21,15 @@ const modules = [
 const releaseCatalog = new Map();
 const sourceEntries = new Map();
 const currentReleaseEntries = new Map();
+const transientPackageEntries = new Set([
+  ".DS_Store",
+  ".mypy_cache",
+  ".pytest_cache",
+  ".ruff_cache",
+  "Thumbs.db",
+  "__pycache__",
+  "node_modules"
+]);
 
 async function main() {
   await fs.mkdir(publicRoot, { recursive: true });
@@ -383,6 +392,9 @@ async function collectDirectory(absoluteDir, relativeDir, members) {
   const entries = await fs.readdir(absoluteDir, { withFileTypes: true });
   entries.sort((left, right) => Buffer.compare(Buffer.from(left.name), Buffer.from(right.name)));
   for (const entry of entries) {
+    if (isTransientPackageEntry(entry.name)) {
+      continue;
+    }
     const absolutePath = path.join(absoluteDir, entry.name);
     const relativePath = relativeDir ? `${relativeDir}/${entry.name}` : entry.name;
     if (relativePath.includes("\\")) {
@@ -406,6 +418,10 @@ async function collectDirectory(absoluteDir, relativeDir, members) {
       data
     });
   }
+}
+
+function isTransientPackageEntry(name) {
+  return transientPackageEntries.has(name) || name.endsWith(".pyc") || name.endsWith(".pyo");
 }
 
 function createTarHeader(member) {

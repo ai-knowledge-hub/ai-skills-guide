@@ -1315,6 +1315,13 @@ func TestPublisherBuildsSelfContainedPluginClosure(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(pluginDir, "plugin.json"), []byte("{}\n"), 0o644); err != nil {
 		t.Fatalf("write closure plugin descriptor: %v", err)
 	}
+	cacheDir := filepath.Join(pluginDir, "tests", "__pycache__")
+	if err := os.MkdirAll(cacheDir, 0o755); err != nil {
+		t.Fatalf("create transient package cache: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(cacheDir, "ignored.pyc"), []byte("transient\n"), 0o644); err != nil {
+		t.Fatalf("write transient package cache: %v", err)
+	}
 
 	skill, err := registry.ParseManifest(filepath.Join(skillDir, "skill.yaml"))
 	if err != nil {
@@ -1340,6 +1347,12 @@ func TestPublisherBuildsSelfContainedPluginClosure(t *testing.T) {
 	wantManifest := "bundled/skills/engineering/closure-skill/skill.yaml"
 	if _, ok := entries[wantManifest]; !ok {
 		t.Fatalf("plugin archive omitted declared dependency %s", wantManifest)
+	}
+	if _, ok := entries["tests/__pycache__/"]; ok {
+		t.Fatal("plugin archive included a transient Python cache directory")
+	}
+	if _, ok := entries["tests/__pycache__/ignored.pyc"]; ok {
+		t.Fatal("plugin archive included a transient Python bytecode file")
 	}
 
 	server := newPluginReleaseServer(t, archive, pluginManifest)

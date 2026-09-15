@@ -3,7 +3,7 @@ import { execFile } from "node:child_process";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { promisify } from "node:util";
-import { gzipSync } from "node:zlib";
+import { gunzipSync, gzipSync } from "node:zlib";
 import semver from "semver";
 
 const repoRoot = path.resolve(process.env.REPOSITORY_ROOT ?? path.resolve(process.cwd(), "..", ".."));
@@ -118,7 +118,7 @@ async function persistImmutableRelease(releaseDir, manifestName, manifestBytes, 
       fs.readFile(storedManifest),
       fs.readFile(storedArtifact)
     ]);
-    if (!previousManifest.equals(manifestBytes) || !previousArtifact.equals(artifactBytes)) {
+    if (!previousManifest.equals(manifestBytes) || !archivePayloadEquals(previousArtifact, artifactBytes)) {
       throw new Error(`Immutable release collision for ${releaseID}; increment the manifest version instead of replacing published bytes`);
     }
     if (await exists(storedProjection)) {
@@ -135,6 +135,14 @@ async function persistImmutableRelease(releaseDir, manifestName, manifestBytes, 
   await fs.writeFile(storedManifest, manifestBytes, { flag: "wx" });
   await fs.writeFile(storedArtifact, artifactBytes, { flag: "wx" });
   await fs.writeFile(storedProjection, projectionBytes, { flag: "wx" });
+}
+
+function archivePayloadEquals(previousArtifact, artifactBytes) {
+  try {
+    return gunzipSync(previousArtifact).equals(gunzipSync(artifactBytes));
+  } catch {
+    return false;
+  }
 }
 
 async function validateRetainedReleases() {

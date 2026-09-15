@@ -1100,6 +1100,40 @@ func TestPublisherRetainsHistoryAndRejectsVersionMutation(t *testing.T) {
 	}
 }
 
+func TestPublisherAcceptsEquivalentGzipEncoding(t *testing.T) {
+	workingDirectory, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("get working directory: %v", err)
+	}
+	repositoryRoot := filepath.Clean(filepath.Join(workingDirectory, "..", ".."))
+	webRoot := filepath.Join(repositoryRoot, "apps", "web")
+	releaseStore := filepath.Join(t.TempDir(), "releases")
+	publicRoot := filepath.Join(t.TempDir(), "public")
+	runPublisher(t, webRoot, releaseStore, publicRoot)
+
+	archivePath := filepath.Join(
+		releaseStore,
+		"skills",
+		"engineering",
+		"implementation-strategy",
+		"0.1.0",
+		"package.tar.gz",
+	)
+	archive, err := os.ReadFile(archivePath)
+	if err != nil {
+		t.Fatalf("read generated release archive: %v", err)
+	}
+	reencoded := recompressGzip(t, archive, gzip.BestSpeed)
+	if bytes.Equal(archive, reencoded) {
+		t.Fatal("expected alternate gzip settings to produce different release bytes")
+	}
+	if err := os.WriteFile(archivePath, reencoded, 0o644); err != nil {
+		t.Fatalf("write equivalently encoded release archive: %v", err)
+	}
+
+	runPublisher(t, webRoot, releaseStore, publicRoot)
+}
+
 func TestPublisherRejectsUnsafeRetainedArchive(t *testing.T) {
 	workingDirectory, err := os.Getwd()
 	if err != nil {
@@ -1790,6 +1824,34 @@ func makeRawArchive(t *testing.T, headers []tar.Header, contents []string) []byt
 		t.Fatalf("close gzip: %v", err)
 	}
 	return buffer.Bytes()
+}
+
+func recompressGzip(t *testing.T, archive []byte, level int) []byte {
+	t.Helper()
+	reader, err := gzip.NewReader(bytes.NewReader(archive))
+	if err != nil {
+		t.Fatalf("open gzip archive: %v", err)
+	}
+	payload, err := io.ReadAll(reader)
+	if err != nil {
+		t.Fatalf("read gzip payload: %v", err)
+	}
+	if err := reader.Close(); err != nil {
+		t.Fatalf("close gzip reader: %v", err)
+	}
+
+	var output bytes.Buffer
+	writer, err := gzip.NewWriterLevel(&output, level)
+	if err != nil {
+		t.Fatalf("create gzip writer: %v", err)
+	}
+	if _, err := writer.Write(payload); err != nil {
+		t.Fatalf("write gzip payload: %v", err)
+	}
+	if err := writer.Close(); err != nil {
+		t.Fatalf("close gzip writer: %v", err)
+	}
+	return output.Bytes()
 }
 
 func rewriteArchiveManifest(t *testing.T, archive, manifest []byte, extraHeader *tar.Header, extraData []byte) []byte {

@@ -17,6 +17,7 @@ const (
 )
 
 var semverPattern = regexp.MustCompile(`^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$`)
+var packageIDPattern = regexp.MustCompile(`^[a-z0-9-]+/[a-z0-9-]+$`)
 
 type moduleDefinition struct {
 	directory string
@@ -53,7 +54,7 @@ func ValidateRepository(root string) (int, error) {
 			if err != nil {
 				return 0, err
 			}
-			if err := validatePackage(path, manifest, now); err != nil {
+			if err := validatePackage(path, manifest, now, true, false); err != nil {
 				return 0, err
 			}
 			records = append(records, manifestRecord{kind: definition.kind, path: path, manifest: manifest})
@@ -65,7 +66,35 @@ func ValidateRepository(root string) (int, error) {
 	return len(records), nil
 }
 
-func validatePackage(manifestPath string, manifest Manifest, now time.Time) error {
+// ValidatePackageManifest applies the semantic and package-layout admission
+// checks used by registry generation to one extracted package.
+func ValidatePackageManifest(manifestPath string) (Manifest, error) {
+	return validatePackageManifest(manifestPath, time.Now().UTC(), true)
+}
+
+// ValidateHistoricalPackageManifest verifies immutable package history against
+// its canonical schema and package layout without treating elapsed wall-clock
+// time as corruption. Consumers must still use ValidatePackageManifest when a
+// selected release is installed so readiness evidence is current at use time.
+func ValidateHistoricalPackageManifest(manifestPath string) (Manifest, error) {
+	return validatePackageManifest(manifestPath, time.Time{}, false)
+}
+
+func validatePackageManifest(manifestPath string, now time.Time, requireCurrentEvidence bool) (Manifest, error) {
+	if err := validateManifestSchema(manifestPath); err != nil {
+		return Manifest{}, err
+	}
+	manifest, err := ParseManifest(manifestPath)
+	if err != nil {
+		return Manifest{}, err
+	}
+	if err := validatePackage(manifestPath, manifest, now, requireCurrentEvidence, true); err != nil {
+		return Manifest{}, err
+	}
+	return manifest, nil
+}
+
+func validatePackage(manifestPath string, manifest Manifest, now time.Time, requireCurrentEvidence, requireArchiveClosure bool) error {
 	if !validSemver(manifest.Version) {
 		return fmt.Errorf("manifest %s has invalid semantic version %q", manifestPath, manifest.Version)
 	}
@@ -94,6 +123,11 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time) erro
 		if filepath.Base(manifestPath) == "plugin.yaml" && manifest.Execution.Kind == "bundle" && !manifest.Artifact.SelfContained {
 			return fmt.Errorf("manifest %s bundle artifact must declare a self-contained dependency closure", manifestPath)
 		}
+		if requireArchiveClosure && filepath.Base(manifestPath) == "plugin.yaml" && manifest.Artifact.SelfContained {
+			if err := validatePluginArchiveClosure(packageDir, manifestPath, manifest, now, requireCurrentEvidence); err != nil {
+				return err
+			}
+		}
 		artifactPaths := []struct {
 			label string
 			path  *string
@@ -115,7 +149,7 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time) erro
 		if authenticationIsRequired(manifest) && manifest.Authentication.Status == "none" {
 			return fmt.Errorf("manifest %s requires authentication but declares authentication.status none", manifestPath)
 		}
-		if manifest.Usability.Availability == "usable-now" {
+		if requireCurrentEvidence && manifest.Usability.Availability == "usable-now" {
 			if err := validateFreshEvidence(manifestPath, manifest, now); err != nil {
 				return err
 			}
@@ -130,6 +164,97 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time) erro
 		case "local-tool", "remote-integration":
 			if _, ok := manifest.Entrypoints["scripts_dir"]; !ok {
 				return fmt.Errorf("manifest %s claims usable-now %s without a scripts_dir entrypoint", manifestPath, manifest.Usability.Execution)
+			}
+		}
+	}
+	return nil
+}
+
+func validatePluginArchiveClosure(packageDir, manifestPath string, manifest Manifest, now time.Time, requireCurrentEvidence bool) error {
+	sets := []struct {
+		module       string
+		manifestName string
+		ids          []string
+	}{
+		{module: "skills", manifestName: "skill.yaml", ids: manifest.Includes.Skills},
+		{module: "agents", manifestName: "agent.yaml", ids: manifest.Includes.Agents},
+		{module: "tools-mcp", manifestName: "tool.yaml", ids: manifest.Includes.Tools},
+	}
+	bundledRoot := filepath.Join(packageDir, "bundled")
+	if entries, err := os.ReadDir(bundledRoot); err == nil {
+		allowedModules := map[string]struct{}{"skills": {}, "agents": {}, "tools-mcp": {}}
+		for _, entry := range entries {
+			if _, ok := allowedModules[entry.Name()]; !ok || !entry.IsDir() {
+				return fmt.Errorf("manifest %s self-contained closure contains unexpected bundled member %s", manifestPath, entry.Name())
+			}
+		}
+	} else if !os.IsNotExist(err) {
+		return fmt.Errorf("manifest %s inspect self-contained closure: %w", manifestPath, err)
+	}
+	for _, set := range sets {
+		expected := make(map[string]struct{}, len(set.ids))
+		for _, id := range set.ids {
+			if !packageIDPattern.MatchString(id) {
+				return fmt.Errorf("manifest %s self-contained %s dependency has invalid id %q", manifestPath, set.module, id)
+			}
+			expected[id] = struct{}{}
+			dependencyManifest := filepath.Join(bundledRoot, set.module, filepath.FromSlash(id), set.manifestName)
+			dependency, err := validatePackageManifest(dependencyManifest, now, requireCurrentEvidence)
+			if err != nil {
+				return fmt.Errorf("manifest %s self-contained dependency %s: %w", manifestPath, id, err)
+			}
+			if dependency.ID != id {
+				return fmt.Errorf("manifest %s self-contained dependency path %s contains id %s", manifestPath, id, dependency.ID)
+			}
+		}
+		moduleRoot := filepath.Join(bundledRoot, set.module)
+		if err := rejectUndeclaredBundledPackages(moduleRoot, expected); err != nil {
+			return fmt.Errorf("manifest %s self-contained closure: %w", manifestPath, err)
+		}
+	}
+	for _, hook := range manifest.Includes.Hooks {
+		found := false
+		for _, extension := range []string{".md", ".json", ".yaml"} {
+			candidate := filepath.Join(packageDir, "hooks", hook+extension)
+			info, err := os.Lstat(candidate)
+			if err == nil && info.Mode().IsRegular() {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return fmt.Errorf("manifest %s self-contained closure is missing hook %s", manifestPath, hook)
+		}
+	}
+	return nil
+}
+
+func rejectUndeclaredBundledPackages(moduleRoot string, expected map[string]struct{}) error {
+	entries, err := os.ReadDir(moduleRoot)
+	if os.IsNotExist(err) {
+		if len(expected) == 0 {
+			return nil
+		}
+		return fmt.Errorf("missing bundled module directory %s", moduleRoot)
+	}
+	if err != nil {
+		return err
+	}
+	for _, category := range entries {
+		if !category.IsDir() {
+			return fmt.Errorf("unexpected file in bundled module directory: %s", filepath.Join(moduleRoot, category.Name()))
+		}
+		packages, err := os.ReadDir(filepath.Join(moduleRoot, category.Name()))
+		if err != nil {
+			return err
+		}
+		for _, packageEntry := range packages {
+			id := category.Name() + "/" + packageEntry.Name()
+			if !packageEntry.IsDir() {
+				return fmt.Errorf("bundled dependency %s is not a directory", id)
+			}
+			if _, ok := expected[id]; !ok {
+				return fmt.Errorf("archive contains undeclared bundled dependency %s", id)
 			}
 		}
 	}

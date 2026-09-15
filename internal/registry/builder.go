@@ -49,67 +49,28 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 			return Index{}, err
 		}
 		skillDir := filepath.Dir(manifestPath)
-		if err := validatePackage(manifestPath, m, time.Now().UTC()); err != nil {
+		if err := validatePackage(manifestPath, m, time.Now().UTC(), true, false); err != nil {
 			return Index{}, err
 		}
 		sha, err := digestSkillDir(skillDir)
 		if err != nil {
 			return Index{}, err
 		}
-		relManifest, err := filepath.Rel(root, manifestPath)
+		manifestSHA, err := digestFile(manifestPath)
 		if err != nil {
-			return Index{}, fmt.Errorf("compute relative manifest path: %w", err)
+			return Index{}, err
 		}
-		relManifest = filepath.ToSlash(relManifest)
 
-		entry := SkillEntry{
-			SchemaVersion: m.SchemaVersion,
-			ID:            m.ID,
-			Name:          m.Name,
-			Description:   m.Description,
-			Category:      m.Category,
-			Latest:        m.Version,
-			Versions: []VersionEntry{{
-				Version:     m.Version,
-				ReleasedAt:  m.ReleasedAt,
-				ManifestURL: fmt.Sprintf("%s/%s", baseURL, relManifest),
-				ArtifactURL: fmt.Sprintf("%s/artifacts/%s/%s.tar.gz", baseURL, m.ID, m.Version),
-				SHA256:      sha,
-			}},
-			Runtimes:         append([]string{}, m.Runtimes...),
-			Tags:             append([]string{}, m.Tags...),
-			Readiness:        readinessFor(m),
-			SecurityReviewed: m.SecurityReviewed,
-			Deprecated:       m.Deprecated,
-			ReplacedBy:       m.ReplacedBy,
-			Usability:        declaredUsability(m),
-		}
-		if strings.HasPrefix(m.SchemaVersion, "2.") {
-			execution := m.Execution
-			artifact := m.Artifact
-			authentication := m.Authentication
-			verification := m.Verification
-			entry.Execution = &execution
-			entry.Artifact = &artifact
-			entry.Authentication = &authentication
-			entry.Verification = &verification
-		}
-		if hasOperational(m.Operational) {
-			operational := m.Operational
-			entry.Operational = &operational
-		}
-		if hasDependencies(m.Dependencies) {
-			dependencies := m.Dependencies
-			entry.Dependencies = &dependencies
-		}
-		if hasIncludes(m.Includes) {
-			includes := m.Includes
-			entry.Includes = &includes
-		}
-		if hasRequirements(m.Requires) {
-			requires := m.Requires
-			entry.Requires = &requires
-		}
+		entry := ProjectManifest(m)
+		entry.Latest = m.Version
+		entry.Versions = []VersionEntry{{
+			Version:        m.Version,
+			ReleasedAt:     m.ReleasedAt,
+			ManifestURL:    fmt.Sprintf("%s/release-manifests/%s/%s/%s.yaml", baseURL, moduleDir, m.ID, m.Version),
+			ManifestSHA256: manifestSHA,
+			ArtifactURL:    fmt.Sprintf("%s/artifacts/%s/%s.tar.gz", baseURL, m.ID, m.Version),
+			SHA256:         sha,
+		}}
 		skills = append(skills, entry)
 	}
 
@@ -127,16 +88,138 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 	}
 
 	return Index{
-		RegistryVersion: "1.2",
+		RegistryVersion: "1.3",
 		GeneratedAt:     generatedAt,
 		Skills:          skills,
 	}, nil
 }
 
+func digestFile(path string) (string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return "", fmt.Errorf("open %s for digest: %w", path, err)
+	}
+	defer file.Close()
+	hash := sha256.New()
+	if _, err := io.Copy(hash, file); err != nil {
+		return "", fmt.Errorf("digest %s: %w", path, err)
+	}
+	return hex.EncodeToString(hash.Sum(nil)), nil
+}
+
 func declaredUsability(m Manifest) UsabilityMetadata {
 	result := m.Usability
+	result.RequiresSetup = cloneNonEmptyStrings(m.Usability.RequiresSetup)
+	result.Limitations = cloneNonEmptyStrings(m.Usability.Limitations)
+	result.ExecutableHelpers = nil
+	if len(m.Usability.ExecutableHelpers) > 0 {
+		result.ExecutableHelpers = make([]ExecutableHelperMetadata, len(m.Usability.ExecutableHelpers))
+		for index, helper := range m.Usability.ExecutableHelpers {
+			result.ExecutableHelpers[index] = helper
+			result.ExecutableHelpers[index].Limitations = cloneNonEmptyStrings(helper.Limitations)
+		}
+	}
 	result.Source = "declared"
 	return result
+}
+
+func cloneNonEmptyStrings(values []string) []string {
+	if len(values) == 0 {
+		return nil
+	}
+	return append([]string(nil), values...)
+}
+
+// ProjectManifest returns every registry entry field derived from a manifest.
+// Release catalog fields (latest, versions, URLs, and checksums) are populated
+// separately by the publisher.
+func ProjectManifest(m Manifest) SkillEntry {
+	entry := SkillEntry{
+		SchemaVersion:    m.SchemaVersion,
+		ID:               m.ID,
+		Name:             m.Name,
+		Description:      m.Description,
+		Category:         m.Category,
+		Runtimes:         append([]string{}, m.Runtimes...),
+		Tags:             append([]string{}, m.Tags...),
+		Readiness:        readinessFor(m),
+		SecurityReviewed: m.SecurityReviewed,
+		Deprecated:       m.Deprecated,
+		ReplacedBy:       m.ReplacedBy,
+		Usability:        declaredUsability(m),
+	}
+	if strings.HasPrefix(m.SchemaVersion, "2.") {
+		execution := m.Execution
+		artifact := m.Artifact
+		authentication := m.Authentication
+		verification := m.Verification
+		entry.Execution = &execution
+		entry.Artifact = &artifact
+		entry.Authentication = &authentication
+		entry.Verification = &verification
+	}
+	if hasOperational(m.Operational) {
+		operational := m.Operational
+		entry.Operational = &operational
+	}
+	if hasDependencies(m.Dependencies) {
+		dependencies := m.Dependencies
+		entry.Dependencies = &dependencies
+	}
+	if hasIncludes(m.Includes) {
+		includes := m.Includes
+		entry.Includes = &includes
+	}
+	if hasRequirements(m.Requires) {
+		requires := m.Requires
+		entry.Requires = &requires
+	}
+	return ApplyLifecycleProjection(entry)
+}
+
+// ApplyLifecycleProjection suppresses readiness claims whenever entry-level
+// deprecation is effective. The manifest and verification fields remain intact
+// as audit evidence, while every user-facing usability scope becomes
+// conservative and deterministic.
+func ApplyLifecycleProjection(entry SkillEntry) SkillEntry {
+	if !entry.Deprecated {
+		return entry
+	}
+	entry.Readiness = "deprecated"
+	demoted := false
+	if isPositiveUsability(entry.Usability.Availability) {
+		entry.Usability.Availability = "not-verified"
+		demoted = true
+	}
+	for index := range entry.Usability.ExecutableHelpers {
+		if isPositiveUsability(entry.Usability.ExecutableHelpers[index].Availability) {
+			entry.Usability.ExecutableHelpers[index].Availability = "not-verified"
+			demoted = true
+		}
+	}
+	if demoted {
+		entry.Usability.Source = "inferred"
+	}
+	return entry
+}
+
+func isPositiveUsability(availability string) bool {
+	return availability == "usable-now" || availability == "setup-required"
+}
+
+// ProjectManifestForCurrentCatalog derives the operator-visible projection at
+// publication time without changing the immutable manifest or release
+// sidecar. An expired usable-now claim is retained for audit in Verification,
+// but it cannot remain advertised as current readiness.
+func ProjectManifestForCurrentCatalog(m Manifest, now time.Time) SkillEntry {
+	entry := ProjectManifest(m)
+	if m.Usability.Availability == "usable-now" {
+		if err := validateFreshEvidence(m.ID, m, now.UTC()); err != nil {
+			entry.Usability.Availability = "not-verified"
+			entry.Usability.Source = "inferred"
+		}
+	}
+	return ApplyLifecycleProjection(entry)
 }
 
 func hasIncludes(includes IncludeSet) bool {

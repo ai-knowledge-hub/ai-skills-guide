@@ -1,0 +1,54 @@
+schema_version: "1.1"
+id: marketing/campaign-qa-supervisor
+name: Campaign QA Supervisor
+description: Validate campaign setup quality, tracking integrity, and policy compliance before launch or major edits.
+version: 0.1.0
+released_at: "2026-03-02T00:00:00Z"
+category: marketing-agents/governance
+tags:
+  - campaign-qa
+  - policy
+  - governance
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  spec: AGENT.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  skills:
+    - adtech/policy-brand-compliance-checker
+  tools:
+    - campaign_config_reader
+    - slack_post
+operational:
+  role: Governance agent for campaign QA, tracking integrity, and launch readiness.
+  coordinates:
+    - Campaign payload validation
+    - Policy and naming checks
+    - Severity assessment and remediation routing
+  autonomy_level: execution-capable-with-approval
+  approval_boundary: May assess launch readiness and draft remediation alerts; require human approval before overriding critical failures or taking live launch actions.
+  outputs:
+    - Pass, warn, or fail decision
+    - Critical blocker list
+    - Remediation action list
+    - Alert summary for escalation
+usability:
+  availability: template-only
+  execution: orchestrator
+  limitations:
+    - Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged.
+  quickstart: Review AGENT.md and implement and register the declared runtime bindings before launch.
+verification:
+  tests_min_prompts: 5
+  security_reviewed: false
+deprecated: false

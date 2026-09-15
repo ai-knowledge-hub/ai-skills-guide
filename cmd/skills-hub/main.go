@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -9,6 +10,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/agents"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/installer"
@@ -254,9 +256,17 @@ func runInstall(args []string) error {
 	}
 
 	fs := flag.NewFlagSet("install", flag.ContinueOnError)
+	sourceMode := fs.String("source", "local", "package source: local|remote")
 	module := fs.String("module", "skills", "module: skills|agents|tools|plugins")
 	entriesRoot := fs.String("root", "", "module root directory (defaults by module)")
 	registryPath := fs.String("registry", "", "registry index path (defaults by module)")
+	registryURL := fs.String("registry-url", "", "HTTPS registry index URL for --source remote")
+	cacheDir := fs.String("cache-dir", defaultCacheDir(), "download cache directory for --source remote")
+	offline := fs.Bool("offline", false, "use only verified cached remote registry and artifact data")
+	var allowedOrigins stringListFlag
+	fs.Var(&allowedOrigins, "allow-origin", "additional HTTPS artifact origin allowed for redirects and downloads (repeatable)")
+	var executionRuntimes stringListFlag
+	fs.Var(&executionRuntimes, "execution-runtime", "execution capability available to a remote package, such as node22 or container (repeatable)")
 	runtimeName := fs.String("runtime", "generic", "runtime adapter: codex|claude|generic")
 	target := fs.String("target", "", "destination module directory (optional for codex/claude)")
 	skillSpecFlag := fs.String("skill", "", "skill id, optionally with @version")
@@ -285,6 +295,50 @@ func runInstall(args []string) error {
 	if err != nil {
 		return err
 	}
+	rt, err := installer.ResolveRuntimeTargetForModule(*runtimeName, moduleName, *target)
+	if err != nil {
+		return err
+	}
+
+	switch strings.ToLower(strings.TrimSpace(*sourceMode)) {
+	case "remote":
+		if strings.TrimSpace(*entriesRoot) != "" || strings.TrimSpace(*registryPath) != "" {
+			return errors.New("remote source does not accept --root or --registry; use --registry-url and optionally --cache-dir")
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+		defer cancel()
+		result, err := installer.InstallRemoteRelease(ctx, installer.RemoteInstallOptions{
+			RegistryURL:       strings.TrimSpace(*registryURL),
+			AllowedOrigins:    []string(allowedOrigins),
+			CacheDir:          *cacheDir,
+			Offline:           *offline,
+			Module:            moduleName,
+			Runtime:           rt.Runtime,
+			ExecutionRuntimes: []string(executionRuntimes),
+			ID:                id,
+			Version:           requestedVersion,
+			TargetRoot:        rt.TargetPath,
+			Force:             *force,
+		})
+		if err != nil {
+			return err
+		}
+		cacheStatus := "miss"
+		if result.FromCache {
+			cacheStatus = "hit"
+		}
+		printInstallLifecycleWarning(os.Stderr, result.Registry)
+		printInstallUsabilityWarning(os.Stderr, result.Registry)
+		fmt.Printf("Installed %s@%s to %s (runtime=%s source=remote cache=%s)\n", result.Registry.ID, result.Version, result.Destination, rt.Runtime, cacheStatus)
+		printUsabilitySummary(os.Stdout, result.Registry)
+		return nil
+	case "local":
+		if strings.TrimSpace(*registryURL) != "" || *offline || len(allowedOrigins) > 0 || len(executionRuntimes) > 0 {
+			return errors.New("local source does not accept --registry-url, --offline, --allow-origin, or --execution-runtime; remote and local-development modes are intentionally separate")
+		}
+	default:
+		return fmt.Errorf("unsupported install source %q (supported: local, remote)", *sourceMode)
+	}
 
 	idx, err := registry.LoadIndex(resolveRegistryPath(*registryPath, moduleName))
 	if err != nil {
@@ -302,13 +356,7 @@ func runInstall(args []string) error {
 		return err
 	}
 
-	if skill.Deprecated {
-		fmt.Fprintf(os.Stderr, "warning: %s is deprecated", skill.ID)
-		if skill.ReplacedBy != "" {
-			fmt.Fprintf(os.Stderr, "; prefer %s", skill.ReplacedBy)
-		}
-		fmt.Fprintln(os.Stderr)
-	}
+	printInstallLifecycleWarning(os.Stderr, skill)
 	printInstallUsabilityWarning(os.Stderr, skill)
 
 	sourceDir := filepath.Join(resolveModuleRoot(*entriesRoot, moduleName), filepath.FromSlash(skill.ID))
@@ -316,10 +364,6 @@ func runInstall(args []string) error {
 		return fmt.Errorf("local source not found for %s at %s", skill.ID, sourceDir)
 	}
 
-	rt, err := installer.ResolveRuntimeTargetForModule(*runtimeName, moduleName, *target)
-	if err != nil {
-		return err
-	}
 	dependencyModuleRoots := map[string]string{
 		"skills": resolveModuleRoot("", "skills"),
 		"agents": resolveModuleRoot("", "agents"),
@@ -408,6 +452,17 @@ func printInstallUsabilityWarning(w io.Writer, entry registry.SkillEntry) {
 	case "documentation-only":
 		fmt.Fprintf(w, "note: %s installs instructions or documentation, not executable runtime capability\n", entry.ID)
 	}
+}
+
+func printInstallLifecycleWarning(w io.Writer, entry registry.SkillEntry) {
+	if !entry.Deprecated {
+		return
+	}
+	fmt.Fprintf(w, "warning: %s is deprecated", entry.ID)
+	if entry.ReplacedBy != "" {
+		fmt.Fprintf(w, "; prefer %s", entry.ReplacedBy)
+	}
+	fmt.Fprintln(w)
 }
 
 func printPluginSummary(w io.Writer, entry registry.SkillEntry) {
@@ -558,7 +613,7 @@ func printUsage() {
 		"  search    Search entries by text/tag/category/runtime",
 		"  info      Show details for one entry",
 		"  validate  Validate local skill structure and prompt coverage",
-		"  install   Install a local module entry resolved from registry metadata",
+		"  install   Install from an explicit local or verified remote source",
 		"  run-agent Run production preflight checks for an installed agent package",
 		"",
 		"Examples:",
@@ -572,6 +627,7 @@ func printUsage() {
 		"  skills-hub install --module agents --entry marketing/weekly-performance-supervisor@latest --runtime codex",
 		"  skills-hub install --module plugins --entry marketing/performance-reporting-plugin@latest --runtime codex",
 		"  skills-hub install --skill marketing/meta-google-weekly-performance-review@0.1.0 --runtime generic --target ./my-agent/skills",
+		"  skills-hub install --source remote --registry-url https://skills.ai-knowledge-hub.org/registry/skills-index.json --entry engineering/implementation-strategy@latest --runtime codex",
 		"  skills-hub run-agent --agent marketing/weekly-performance-supervisor --bindings agents/marketing/weekly-performance-supervisor/config/tool-bindings.example.json --approve-live",
 	}
 	fmt.Println(strings.Join(lines, "\n"))
@@ -704,4 +760,27 @@ func resolveModuleRoot(explicit, module string) string {
 	default:
 		return "skills"
 	}
+}
+
+type stringListFlag []string
+
+func (values *stringListFlag) String() string {
+	return strings.Join(*values, ",")
+}
+
+func (values *stringListFlag) Set(value string) error {
+	trimmed := strings.TrimSpace(value)
+	if trimmed == "" {
+		return errors.New("origin cannot be empty")
+	}
+	*values = append(*values, trimmed)
+	return nil
+}
+
+func defaultCacheDir() string {
+	base, err := os.UserCacheDir()
+	if err != nil {
+		return filepath.Join(".", ".skills-hub-cache")
+	}
+	return filepath.Join(base, "skills-hub")
 }

@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.1",
+  "id": "adtech/advertising-signal-ownership-auditor",
+  "name": "Advertising Signal Ownership Auditor",
+  "description": "Audit collection, control, visibility, retention, and use of advertising signals from exposure through verified business outcome.",
+  "category": "adtech/analytics-engineering",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "measurement",
+    "signal-ownership",
+    "pixel",
+    "conversions-api",
+    "governance"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "May audit and recommend; privacy, consent, retention, and platform configuration changes require responsible human approval.",
+    "outputs": [
+      "Signal ownership ledger",
+      "Measurement gaps",
+      "Independent evidence plan"
+    ],
+    "use_when": "Use before campaign activation or measurement redesign to determine who owns and can verify each signal.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "shared/schemas/advertising/signal-ownership-ledger.schema.json"
+    ]
+  }
+}

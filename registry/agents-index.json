@@ -1,5 +1,5 @@
 {
-  "registry_version": "1.2",
+  "registry_version": "1.3",
   "generated_at": "2026-07-24T00:00:00Z",
   "skills": [
     {
@@ -13,7 +13,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-05-06T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/agents/adtech/ad-platform-control-plane-supervisor/agent.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/adtech/ad-platform-control-plane-supervisor/0.1.0.yaml",
+          "manifest_sha256": "e00b4a376c8035586b470e42ba51db1ca9cefe0b2256c8053e25dfaa655e1412",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/ad-platform-control-plane-supervisor/0.1.0.tar.gz",
           "sha256": "a7d7e569915c0b93e4a0d7c2591e55f15af27ef4c08d3a3b2ba343a554d03448"
         }
@@ -82,7 +83,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-03-02T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/agents/adtech/bi-insights-orchestrator/agent.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/adtech/bi-insights-orchestrator/0.1.0.yaml",
+          "manifest_sha256": "fe91b5ee919e46b545ef48c951349f49885280a0e2577db8164c5de00ec22edb",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/bi-insights-orchestrator/0.1.0.tar.gz",
           "sha256": "878da6bb61b030ea8b4e1909fd5928efe56e9d02330f0fa03e7c8815b0b09fdb"
         }
@@ -148,7 +150,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-07-24T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/agents/adtech/chatgpt-ads-experiment-supervisor/agent.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/adtech/chatgpt-ads-experiment-supervisor/0.1.0.yaml",
+          "manifest_sha256": "4847f62518f2fd9f95934decb234ae48b8d9ebbb3c8e2304bef52c4b059eef98",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/chatgpt-ads-experiment-supervisor/0.1.0.tar.gz",
           "sha256": "bc3e399f1a3193947ff3bce090ca2025389d6a8d083141d585d649a6d3223ab4"
         }
@@ -226,7 +229,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-04-26T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/agents/agentops/agent-control-plane-supervisor/agent.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/agentops/agent-control-plane-supervisor/0.1.0.yaml",
+          "manifest_sha256": "b27b89975bdd73a7f849c5288129ed2d1c3277be95a8c7f9fe4865b331a67953",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/agent-control-plane-supervisor/0.1.0.tar.gz",
           "sha256": "66f41f541602ead7581b16e6bac279b029f568f4f04ff3a3b9f6badacacca37d"
         }
@@ -293,7 +297,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-03-02T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/agents/marketing/campaign-qa-supervisor/agent.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/marketing/campaign-qa-supervisor/0.1.0.yaml",
+          "manifest_sha256": "dcbed17fd333826b9b3e3bc59e9eab3fe6f3b86b9c7c219dd3b9865f16872967",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/campaign-qa-supervisor/0.1.0.tar.gz",
           "sha256": "afbc93b2fed95db2a67774acddaa314346cb0fa10c37ae6e34688689a9589cb2"
         }
@@ -357,7 +362,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-06-27T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/agents/marketing/creative-operating-system-supervisor/agent.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/marketing/creative-operating-system-supervisor/0.1.0.yaml",
+          "manifest_sha256": "c6319e6b23c1d0fce44a731dcff405f566cf12f55873e228299086aff254c702",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-operating-system-supervisor/0.1.0.tar.gz",
           "sha256": "b4e9912595bb73a5f12a19802336cd05281551f6af94749ef1927f2b7f8d51bc"
         }
@@ -431,7 +437,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-03-02T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/agents/marketing/weekly-performance-supervisor/agent.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/marketing/weekly-performance-supervisor/0.1.0.yaml",
+          "manifest_sha256": "947c310b64c112979a160fa7c0b4a1144d1291b46bd1a1b65c80de9b43433632",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/weekly-performance-supervisor/0.1.0.tar.gz",
           "sha256": "6674ab5e979c25b457e21f48a69d5cb758424ff12bdd48c082c501282b291453"
         }

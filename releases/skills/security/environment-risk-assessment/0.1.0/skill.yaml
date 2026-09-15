@@ -1,0 +1,46 @@
+schema_version: "1.1"
+id: security/environment-risk-assessment
+name: Environment Risk Assessment
+description: Assess whether the runtime environment is safe for autonomous
+  agent execution and recommend isolation or approval boundaries.
+version: 0.1.0
+released_at: "2026-03-19T00:00:00Z"
+category: security/runtime-hardening
+tags:
+  - runtime
+  - isolation
+  - environment
+  - risk
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+operational:
+  use_when: Use when you need to assess whether the current runtime is safe for autonomous agent execution.
+  execution_mode: read-only-local-inspection
+  outputs:
+    - Environment risk review
+    - Escalation reasons
+    - Isolation recommendations
+  approval_boundary: Safe for inspection and recommendation; require human approval before changing runtime isolation or credential policies.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

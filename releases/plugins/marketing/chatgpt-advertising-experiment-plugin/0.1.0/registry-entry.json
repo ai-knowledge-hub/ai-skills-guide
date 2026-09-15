@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.1",
+  "id": "marketing/chatgpt-advertising-experiment-plugin",
+  "name": "ChatGPT Advertising Experiment Plugin",
+  "description": "Install a task-led ChatGPT Ads experiment workflow with planning skills, supervisors, read-only API access, conversion reconciliation, policy gates, and a one-command mock lab.",
+  "category": "marketing-plugins/intelligence",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "chatgpt-ads",
+    "advertiser-api",
+    "experimentation",
+    "measurement",
+    "agentic-commerce",
+    "governance"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "usability": {
+    "availability": "template-only",
+    "execution": "bundle",
+    "limitations": [
+      "Source composition and advisory hooks only; no self-contained verified runtime bundle is published.",
+      "The included OpenAI Ads client does not mutate campaigns, ad groups, ads, files, or feeds.",
+      "The bundled executor remains a reference template rather than a live OpenAI Ads writer."
+    ],
+    "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+    "source": "declared"
+  },
+  "includes": {
+    "skills": [
+      "marketing/task-map-designer",
+      "marketing/ai-output-eval-scorecard",
+      "adtech/advertising-signal-ownership-auditor",
+      "marketing/agent-share-of-choice-evaluator",
+      "agentops/ad-platform-policy-gate-designer"
+    ],
+    "agents": [
+      "adtech/chatgpt-ads-experiment-supervisor",
+      "marketing/creative-operating-system-supervisor",
+      "adtech/ad-platform-control-plane-supervisor"
+    ],
+    "tools": [
+      "adtech/conversion-event-reconciler",
+      "adtech/openai-ads-api-client",
+      "adtech/ad-platform-executor-template"
+    ],
+    "hooks": [
+      "require-measurement-before-activation"
+    ]
+  },
+  "requires": {
+    "secrets": [
+      "OPENAI_ADS_API_KEY",
+      "OPENAI_ADS_PIXEL_ID",
+      "OPENAI_ADS_CONVERSIONS_API_KEY"
+    ],
+    "approvals": [
+      "human-approval-before-live-campaign-write",
+      "human-approval-before-tracking-change"
+    ]
+  }
+}

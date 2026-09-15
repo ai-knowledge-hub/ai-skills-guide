@@ -83,6 +83,12 @@ jobs:
         working-directory: apps/web
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
       - uses: pnpm/action-setup@v4
         with:
           version: 10
@@ -97,3 +103,19 @@ jobs:
         run: pnpm lint
       - name: Build web app
         run: pnpm build
+      - name: Reject mutation or deletion of published releases
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+        run: |
+          cd ../..
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            base_sha="$PR_BASE_SHA"
+          else
+            base_sha="$PUSH_BEFORE_SHA"
+          fi
+          bash scripts/check-release-history.sh "$base_sha" "$CURRENT_SHA"
+      - name: Ensure immutable releases are committed
+        run: cd ../.. && make release-assets-check

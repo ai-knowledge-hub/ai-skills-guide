@@ -1,11 +1,56 @@
 package registry
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
+
+func TestProjectManifestForCurrentCatalogSuppressesDeprecatedUsability(t *testing.T) {
+	now := time.Date(2026, 9, 15, 8, 0, 0, 0, time.UTC)
+	for _, availability := range []string{"usable-now", "setup-required"} {
+		t.Run(availability, func(t *testing.T) {
+			manifest := Manifest{
+				SchemaVersion: "2.1",
+				ID:            "shared/deprecated-projection",
+				Deprecated:    true,
+				ReplacedBy:    "shared/replacement-projection",
+				Usability: UsabilityMetadata{
+					Availability: availability,
+					Execution:    "local-tool",
+					ExecutableHelpers: []ExecutableHelperMetadata{
+						{Entrypoint: "bin/ready", Availability: "usable-now", Execution: "local-tool"},
+						{Entrypoint: "bin/setup", Availability: "setup-required", Execution: "local-tool"},
+						{Entrypoint: "bin/unverified", Availability: "not-verified", Execution: "local-tool"},
+					},
+				},
+				Execution:      ExecutionMetadata{Kind: "cli"},
+				Authentication: AuthenticationMetadata{Status: "none"},
+				Verification: VerificationMetadata{
+					Evidence:       []string{"evidence://tests/deprecated-projection"},
+					LastVerifiedAt: now.Format(time.RFC3339),
+				},
+			}
+
+			entry := ProjectManifestForCurrentCatalog(manifest, now)
+			if entry.Readiness != "deprecated" || entry.Usability.Availability != "not-verified" || entry.Usability.Source != "inferred" {
+				t.Fatalf("deprecated root usability was not suppressed: %#v", entry)
+			}
+			for _, helper := range entry.Usability.ExecutableHelpers {
+				if helper.Availability != "not-verified" {
+					t.Fatalf("deprecated helper usability was not suppressed: %#v", helper)
+				}
+			}
+			if manifest.Usability.ExecutableHelpers[0].Availability != "usable-now" || manifest.Usability.ExecutableHelpers[1].Availability != "setup-required" {
+				t.Fatalf("catalog projection mutated manifest audit evidence: %#v", manifest.Usability.ExecutableHelpers)
+			}
+		})
+	}
+}
 
 func TestBuildSkillsIndex(t *testing.T) {
 	root := t.TempDir()
@@ -57,6 +102,10 @@ deprecated: false
 		t.Fatalf("expected 1 entry, got %d", len(idx.Skills))
 	}
 	entry := idx.Skills[0]
+	manifestSum := sha256.Sum256([]byte(mf))
+	if entry.Versions[0].ManifestSHA256 != hex.EncodeToString(manifestSum[:]) {
+		t.Fatalf("release was not bound to the exact manifest bytes: %#v", entry.Versions[0])
+	}
 	if entry.Operational == nil || entry.Operational.UseWhen != "Use when repo planning is needed." {
 		t.Fatalf("expected operational metadata in index, got %#v", entry.Operational)
 	}
@@ -136,7 +185,7 @@ deprecated: false
 	if entry.Usability.Availability != "template-only" || entry.Usability.Execution != "orchestrator" || entry.Usability.Source != "declared" {
 		t.Fatalf("unexpected agent usability: %#v", entry.Usability)
 	}
-	if !strings.Contains(entry.Versions[0].ManifestURL, "/agents/marketing/demo-agent/agent.yaml") {
+	if !strings.Contains(entry.Versions[0].ManifestURL, "/release-manifests/agents/marketing/demo-agent/0.1.0.yaml") {
 		t.Fatalf("unexpected manifest url: %s", entry.Versions[0].ManifestURL)
 	}
 	if !strings.Contains(entry.Versions[0].ArtifactURL, "/artifacts/marketing/demo-agent/0.1.0.tar.gz") {
@@ -206,7 +255,7 @@ deprecated: false
 	if entry.Dependencies == nil || len(entry.Dependencies.MCPServers) != 1 {
 		t.Fatalf("expected dependencies in index, got %#v", entry.Dependencies)
 	}
-	if !strings.Contains(entry.Versions[0].ManifestURL, "/tools-mcp/analytics/demo-tool/tool.yaml") {
+	if !strings.Contains(entry.Versions[0].ManifestURL, "/release-manifests/tools-mcp/analytics/demo-tool/0.1.0.yaml") {
 		t.Fatalf("unexpected manifest url: %s", entry.Versions[0].ManifestURL)
 	}
 	if !strings.Contains(entry.Versions[0].ArtifactURL, "/artifacts/analytics/demo-tool/0.1.0.tar.gz") {
@@ -270,7 +319,7 @@ deprecated: false
 	if entry.Requires == nil || len(entry.Requires.Secrets) != 1 {
 		t.Fatalf("expected required secrets in index, got %#v", entry.Requires)
 	}
-	if !strings.Contains(entry.Versions[0].ManifestURL, "/plugins/marketing/demo-plugin/plugin.yaml") {
+	if !strings.Contains(entry.Versions[0].ManifestURL, "/release-manifests/plugins/marketing/demo-plugin/0.1.0.yaml") {
 		t.Fatalf("unexpected manifest url: %s", entry.Versions[0].ManifestURL)
 	}
 }
@@ -391,7 +440,7 @@ deprecated: false
 		t.Fatalf("build index: %v", err)
 	}
 	entry := idx.Skills[0]
-	if idx.RegistryVersion != "1.2" || entry.SchemaVersion != "2.1" {
+	if idx.RegistryVersion != "1.3" || entry.SchemaVersion != "2.1" {
 		t.Fatalf("unexpected registry versions: %#v", entry)
 	}
 	if entry.Execution == nil || entry.Execution.Kind != "cli" || entry.Artifact == nil {

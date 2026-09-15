@@ -1,5 +1,5 @@
 {
-  "registry_version": "1.2",
+  "registry_version": "1.3",
   "generated_at": "2026-07-24T00:00:00Z",
   "skills": [
     {
@@ -13,7 +13,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-07-24T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/advertising-signal-ownership-auditor/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/adtech/advertising-signal-ownership-auditor/0.1.0.yaml",
+          "manifest_sha256": "2ec986a25dcb2c08081b3001f2cd7c330ded3a46e4562fde521a752323cd2da1",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/advertising-signal-ownership-auditor/0.1.0.tar.gz",
           "sha256": "2b7a6c873aaf0807ecff89855b68b1c0ca7acc55f51feaf856ca9429dc435945"
         }
@@ -69,7 +70,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-23T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/analyst-copilot-bigquery-redshift/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/adtech/analyst-copilot-bigquery-redshift/0.1.0.yaml",
+          "manifest_sha256": "96f920c5a5fd288dcc4d0c7efb43e50055c2739af17558cba19709a7716d2f0c",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/analyst-copilot-bigquery-redshift/0.1.0.tar.gz",
           "sha256": "1da7da73c1aa7e65738b775624c9d20d3755ee5d5969e3d17a9b10416a6a28ab"
         }
@@ -135,7 +137,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-23T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/brand-rag-memory-bootstrap/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/adtech/brand-rag-memory-bootstrap/0.1.0.yaml",
+          "manifest_sha256": "16b4cd8116b2603ca7fae74d135e9822f7485832e8bc67c1f9e12f22b890e627",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/brand-rag-memory-bootstrap/0.1.0.tar.gz",
           "sha256": "54693f4ee9cc858415c346832f3d0baa8625e7a752136579d9059b21c200228d"
         }
@@ -191,7 +194,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-27T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/dashboard-generator/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/adtech/dashboard-generator/0.1.0.yaml",
+          "manifest_sha256": "1ecf1d95f6e9af569c4192e06a47f6509eafe917e27612bcd69b837b6d3cfc77",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/dashboard-generator/0.1.0.tar.gz",
           "sha256": "660c75d1f362d78f60757c70d99096f5c92efb121184b8156713a61745c38b17"
         }
@@ -246,7 +250,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-27T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/dashboard-qa-checker/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/adtech/dashboard-qa-checker/0.1.0.yaml",
+          "manifest_sha256": "b6370a1e38cc32c68aa1641f40ff426b3518092491162bb273cc79448b846379",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/dashboard-qa-checker/0.1.0.tar.gz",
           "sha256": "5ba8aeaaeb94a3ab61334e54948e040dab945287f0703906b507047e0e9c4577"
         }
@@ -301,7 +306,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-27T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/executive-narrative-writer/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/adtech/executive-narrative-writer/0.1.0.yaml",
+          "manifest_sha256": "04c82f5a5872ca860a5535c0e7f24116b39fbfb294425164be6651dd9a47b5e9",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/executive-narrative-writer/0.1.0.tar.gz",
           "sha256": "e84bc9724bca0dc317de527752303eae8ce72fa3834cdb8f935ef866dd0666a9"
         }
@@ -356,7 +362,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-23T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/playwright-agentic-e2e/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/adtech/playwright-agentic-e2e/0.1.0.yaml",
+          "manifest_sha256": "9b615780180707b5996e08ede2a281605eb66ff67bafb111cd143f30253abfe5",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/playwright-agentic-e2e/0.1.0.tar.gz",
           "sha256": "13687efe797db3bdcce82743d1ada79edb323121b8861051aad0e5519e5fec34"
         }
@@ -414,7 +421,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-23T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/playwright-vscode-loop-codex/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/adtech/playwright-vscode-loop-codex/0.1.0.yaml",
+          "manifest_sha256": "e3503720df78a219d7ebdabf655d1d18cccd3d86b4fbd5e1f79088657460b304",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/playwright-vscode-loop-codex/0.1.0.tar.gz",
           "sha256": "2ca153e6b7164a0440a20112eeffdac5a856febb3e1328b2fbff0c8ebd7d89ed"
         }
@@ -484,7 +492,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-23T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/policy-brand-compliance-checker/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/adtech/policy-brand-compliance-checker/0.1.0.yaml",
+          "manifest_sha256": "4b2125d0d237b01645adfb2eb0b4c0d3bd8a5817a45f5c416ff80c2c9f73908b",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/policy-brand-compliance-checker/0.1.0.tar.gz",
           "sha256": "bf38ae5ab13a58c9d30e08694a0312e47837eba0b57212f2dffed3578bfad7f6"
         }
@@ -550,7 +559,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-27T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/adtech/weekly-performance-review-bi/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/adtech/weekly-performance-review-bi/0.1.0.yaml",
+          "manifest_sha256": "cd8af176c0ff4394ee422cf9d5f0bd4e8a2f854bd17fe75c8ccd3fa508ec0c9c",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/weekly-performance-review-bi/0.1.0.tar.gz",
           "sha256": "eb70f2463277e8d4a5db07fe71946af91a0eb3f89b835f874989ace4d47ea6c3"
         }
@@ -606,7 +616,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-05-06T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/ad-platform-policy-gate-designer/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/agentops/ad-platform-policy-gate-designer/0.1.0.yaml",
+          "manifest_sha256": "0cd6918f44a1a23a820ea971c2d2b85c374c9201c0b4ecdacc924b1cae79bc76",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/ad-platform-policy-gate-designer/0.1.0.tar.gz",
           "sha256": "77b3bfc60a264ee0883bfa25ebf2de60433224a5a588c99109c2a3dca282bacd"
         }
@@ -658,7 +669,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-04-26T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/agent-control-plane-review/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/agentops/agent-control-plane-review/0.1.0.yaml",
+          "manifest_sha256": "493ac2fba471a7f6e5ae5f30eb71e241fc23bd4103f978dd8a4c018221b2537a",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/agent-control-plane-review/0.1.0.tar.gz",
           "sha256": "636d10053b18841ff890cb894ae7211c12bf06e628a5d64af5fc3c30ed679844"
         }
@@ -709,7 +721,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-03-19T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/harness-regression-evaluator/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/agentops/harness-regression-evaluator/0.1.0.yaml",
+          "manifest_sha256": "df2408e2919b78a906d09c080f0b59bd15703fa996460401af7a3fa2c4b12372",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-regression-evaluator/0.1.0.tar.gz",
           "sha256": "f5fb955b5088c839977f25ffac149566ece94cf351cff4a0dd3b34c31214ff1e"
         }
@@ -759,7 +772,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-03-19T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/harness-run-reflection/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/agentops/harness-run-reflection/0.1.0.yaml",
+          "manifest_sha256": "6e58121877c21f29ccb090c238871364beb8cfe3b33158249eb1b4066e9df721",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-run-reflection/0.1.0.tar.gz",
           "sha256": "60e86f399a8c089764c8997ee9e936d9a45afef7b17a0a6f88ddedf08b3178c6"
         }
@@ -809,7 +823,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-03-19T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/agentops/harness-skill-proposal/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/agentops/harness-skill-proposal/0.1.0.yaml",
+          "manifest_sha256": "e58a8d19760efebc6eedf8d073ed52c5e2a1e9ab7a561c727aebfa025a654522",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-skill-proposal/0.1.0.tar.gz",
           "sha256": "dac3653df798f295cdf586013d7617d636ea1a74229f217ab9da9cb6c112c0e9"
         }
@@ -859,7 +874,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-03-19T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/code-change-verification/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/engineering/code-change-verification/0.1.0.yaml",
+          "manifest_sha256": "579cb130aafcbcd434e5dd3cea4f076eddf1988f4caf38637931cd67a9bb8296",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/code-change-verification/0.1.0.tar.gz",
           "sha256": "e79fdd94f3ce9f92f1d1086cdbb63d90c739fd19c8573cfa7da6d383fe927e77"
         }
@@ -914,7 +930,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-03-19T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/coverage-gap-reporter/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/engineering/coverage-gap-reporter/0.1.0.yaml",
+          "manifest_sha256": "f225cb1f4653a13269a119e83e666653f4e0eab0d3edc01f0584d961b160ee98",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/coverage-gap-reporter/0.1.0.tar.gz",
           "sha256": "9943e5b3ed46038a6592913832a719d62dd302769e95364077b432a649df8861"
         }
@@ -964,7 +981,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-03-19T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/implementation-strategy/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/engineering/implementation-strategy/0.1.0.yaml",
+          "manifest_sha256": "79bbfdb791b739c6fa8396ba27fb3de48354707f00932221f0e4b1f55e2ab199",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/implementation-strategy/0.1.0.tar.gz",
           "sha256": "e194ee91bfbeb617afb314066f472ecdf272ae8cf7e482f683d61afa26137603"
         }
@@ -1019,7 +1037,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-03-19T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/pr-review-and-draft/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/engineering/pr-review-and-draft/0.1.0.yaml",
+          "manifest_sha256": "41dce9b044b42ed9eee4b3361ddfd0ae8c4a2b6e852fbe3428b3f7964ac4b607",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/pr-review-and-draft/0.1.0.tar.gz",
           "sha256": "7af2c3b5c3580615e00edfb4fc60536e304cf161e396d0d593e27f561d3c44e2"
         }
@@ -1069,7 +1088,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-03-19T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/engineering/test-gap-analyzer/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/engineering/test-gap-analyzer/0.1.0.yaml",
+          "manifest_sha256": "701b3aa2ada3a6333f7df33c1e832b873e54a502372e8a3c02a5ad9d17e7e95d",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/test-gap-analyzer/0.1.0.tar.gz",
           "sha256": "079637a76541a7177e28cb043734a05ef7c73ab230f59c9ff6b9d2d7da7ad76f"
         }
@@ -1119,7 +1139,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-23T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/ab-test-planner-analyzer/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/marketing/ab-test-planner-analyzer/0.1.0.yaml",
+          "manifest_sha256": "9134c2cbe99a5b5fefb677f9ee7a2dc341a386d9820556d7633990015fb8fed1",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/ab-test-planner-analyzer/0.1.0.tar.gz",
           "sha256": "064fedc641ecc402f449b8752276b38556da485a6bcb178f46402b7fb689b175"
         }
@@ -1175,7 +1196,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-07-24T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/agent-share-of-choice-evaluator/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/marketing/agent-share-of-choice-evaluator/0.1.0.yaml",
+          "manifest_sha256": "50c7e3d12aba69c81f05882cec15165afc1df616be49102e9a1e18d3fe836fb2",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/agent-share-of-choice-evaluator/0.1.0.tar.gz",
           "sha256": "0a6ac20bbd39969a7a03ae7e9f31adaf31de89e9d6365a3d5072dc545c9dcc3f"
         }
@@ -1231,7 +1253,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-23T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/ai-output-eval-scorecard/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/marketing/ai-output-eval-scorecard/0.1.0.yaml",
+          "manifest_sha256": "85aa79ac363afe9c7300060e136a034698b162d4679507b0c67490531a2197f0",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/ai-output-eval-scorecard/0.1.0.tar.gz",
           "sha256": "2402b2df557d15c9efb2f2002bdea844029426517b90cfa07d1bb33d0c139c19"
         }
@@ -1290,7 +1313,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-06-27T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/creative-operating-system-audit/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/marketing/creative-operating-system-audit/0.1.0.yaml",
+          "manifest_sha256": "427fd1d313afa7959826b9b8854587d59125f699edbe528920a4d18ac4ffec8c",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-operating-system-audit/0.1.0.tar.gz",
           "sha256": "960fe27c96bcea0d26107eeff45626943845af1ff2a3fb027aedb43c4e0ce623"
         }
@@ -1342,7 +1366,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-23T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/creative-workshop-pmax-reels/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/marketing/creative-workshop-pmax-reels/0.1.0.yaml",
+          "manifest_sha256": "7e01bec4b1bd9f1fd30a7dc845f05f19886c075e006b3978adbddf1940494f9b",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-workshop-pmax-reels/0.1.0.tar.gz",
           "sha256": "cf0cdd2a705961dfcb04021e60414dcef9f4e8aec7036ece31eebcc59176aa68"
         }
@@ -1408,7 +1433,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-06-27T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/creator-strategy-brief/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/marketing/creator-strategy-brief/0.1.0.yaml",
+          "manifest_sha256": "b294024dcad6d5a3f5bf4c112032dbe08f99943a17b3bf80f65106fb9080b8d7",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creator-strategy-brief/0.1.0.tar.gz",
           "sha256": "0b8fde26ea08b0053e1b19ba310b7f79027d794b4dffa99565b756de6c815c0e"
         }
@@ -1461,7 +1487,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-23T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/cross-channel-budget-pacing-agent/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/marketing/cross-channel-budget-pacing-agent/0.1.0.yaml",
+          "manifest_sha256": "42aa9958e9550a3932790b6eba5507c664803379c544188de80ad31e2fbb2808",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/cross-channel-budget-pacing-agent/0.1.0.tar.gz",
           "sha256": "0de1bfe3285aed4cf5b5e1d9c6fe6259c96f9293278cb0d20cb52e31b6cc2f30"
         }
@@ -1517,7 +1544,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-06-27T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/cultural-timing-signal-triage/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/marketing/cultural-timing-signal-triage/0.1.0.yaml",
+          "manifest_sha256": "9e3f34289a9472da8e8326b9fc6995f5b74b3499f93ebf9cc62eba9d699ae019",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/cultural-timing-signal-triage/0.1.0.tar.gz",
           "sha256": "e7c2df1d2bbde6be68b6086fdb0e3448648683b617a7770cdc7b8de3a5739ff6"
         }
@@ -1568,7 +1596,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-23T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/dynamic-creative-rules-engine/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/marketing/dynamic-creative-rules-engine/0.1.0.yaml",
+          "manifest_sha256": "3d3a1f1b53223505acef7c8ca3898c3832aaf8debd7095822560a6739bf88ebc",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/dynamic-creative-rules-engine/0.1.0.tar.gz",
           "sha256": "be83e523fafd66c91c04aa710a23cbf55e2b12a07c7198f0046115f96229f042"
         }
@@ -1624,7 +1653,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-23T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/lifecycle-experiment-planner/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/marketing/lifecycle-experiment-planner/0.1.0.yaml",
+          "manifest_sha256": "c6ba6d564a7eb0c1bf2b0a2a89ab46ca2867a2892d3ed0109f40e0858529112b",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/lifecycle-experiment-planner/0.1.0.tar.gz",
           "sha256": "13b67707dbec7258b746a0f0908285faf449336893b839538536e66470b48808"
         }
@@ -1690,7 +1720,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-23T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/lifecycle-journey-trigger-designer/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/marketing/lifecycle-journey-trigger-designer/0.1.0.yaml",
+          "manifest_sha256": "6fd35f10d10c7eacc390898f28edbc38aecd94efd25bf8a54baab88dda700314",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/lifecycle-journey-trigger-designer/0.1.0.tar.gz",
           "sha256": "2b6fac1867c602814351bad32c9501c5f8b51dbc06afab93fd9e9882ead29efb"
         }
@@ -1746,7 +1777,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-23T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/meta-google-weekly-performance-review/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/marketing/meta-google-weekly-performance-review/0.1.0.yaml",
+          "manifest_sha256": "19e615ff44200dd366b230afacd00db5ca00ce681fd113fa5d5dd1544d20ccc4",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/meta-google-weekly-performance-review/0.1.0.tar.gz",
           "sha256": "cd10ecd93346e43de540cb06793b2355d11183548dc9d426dd12a40dbdc915a5"
         }
@@ -1812,7 +1844,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-06-27T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/product-as-media-mapper/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/marketing/product-as-media-mapper/0.1.0.yaml",
+          "manifest_sha256": "01e41ca40c74e2305065433c5044ff4e579178cc4c40467361433a5587c9efcf",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/product-as-media-mapper/0.1.0.tar.gz",
           "sha256": "ea65be97166798e582ba58e96bf625c757137abc64fd787c7aa29ec07da3502c"
         }
@@ -1862,7 +1895,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-02-23T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/seo-paid-search-synergy/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/marketing/seo-paid-search-synergy/0.1.0.yaml",
+          "manifest_sha256": "87567432e5b57601ae56b5cbea232c743f4d7f706fbba58fd51c6c1fe586140e",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/seo-paid-search-synergy/0.1.0.tar.gz",
           "sha256": "d5fab066c37b04d484b35c9111d77aff4e7d9b6a121bcc84a78a7e7a1a16fe0d"
         }
@@ -1928,7 +1962,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-07-24T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/task-map-designer/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/marketing/task-map-designer/0.1.0.yaml",
+          "manifest_sha256": "0f45e537f8b2927ccb61f14b78de07d5e3c4e71c4471dfed32d178c2d7d213fa",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/task-map-designer/0.1.0.tar.gz",
           "sha256": "503cc2f75ecfd3009b12be29b0d4ca05d2d0fbe9e35c459ddbef1fb687e38bb2"
         }
@@ -1984,7 +2019,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-06-27T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/marketing/utility-campaign-concept-designer/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/marketing/utility-campaign-concept-designer/0.1.0.yaml",
+          "manifest_sha256": "8d2ca3d10b780e95b4b3ab9dde782757c50be6deff242eea44d1e41370984f18",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/utility-campaign-concept-designer/0.1.0.tar.gz",
           "sha256": "1943052e0f6865c89c84dfd46a05cdd0973b72318918e5fc94ab5686e40135a6"
         }
@@ -2036,7 +2072,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-05-06T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/ad-platform-agent-auth-review/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/security/ad-platform-agent-auth-review/0.1.0.yaml",
+          "manifest_sha256": "c99c95b54e4c65b67326a052195ae73c3abaaa498dd0cb2a62b48601737a9691",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/ad-platform-agent-auth-review/0.1.0.tar.gz",
           "sha256": "d6020b3f786cc9b7fbbcd30e1774863f3c4cec6118e101bcc952f866bbf27e39"
         }
@@ -2088,7 +2125,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-03-19T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/dependency-supply-chain-audit/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/security/dependency-supply-chain-audit/0.1.0.yaml",
+          "manifest_sha256": "b54540882f3175f89725ab3127cc0d37808d66d7f150a4bfd71a199447475f69",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/dependency-supply-chain-audit/0.1.0.tar.gz",
           "sha256": "d81ef040c9e16240a3bab85eb9d61919c4fa70f9d3a83118bb6efe026e062139"
         }
@@ -2144,7 +2182,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-03-19T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/environment-risk-assessment/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/security/environment-risk-assessment/0.1.0.yaml",
+          "manifest_sha256": "ef7b2fede8b2588ccda2c67ba9edd6259e83e944bbbdae5e46e543b448e584f0",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/environment-risk-assessment/0.1.0.tar.gz",
           "sha256": "86b61041e2185edc1468dfb1c94c5db3891277bf1c07c6de036b76fe7f14c309"
         }
@@ -2194,7 +2233,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-03-19T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/handle-untrusted-content/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/security/handle-untrusted-content/0.1.0.yaml",
+          "manifest_sha256": "d678d86fdc92c55510d36e10eca5627a3a2d48669a6e0aa1937920b2b378a507",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/handle-untrusted-content/0.1.0.tar.gz",
           "sha256": "6a223ca81b6a6a3fe4abbf9c865cc9807146531064f1453e3e33e1173c3d25af"
         }
@@ -2244,7 +2284,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-04-26T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/marketing-agent-risk-review/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/security/marketing-agent-risk-review/0.1.0.yaml",
+          "manifest_sha256": "b376ee88a17c1f5391349433bdfed07cc993b60e62d610e0c4fac9a69a21e505",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/marketing-agent-risk-review/0.1.0.tar.gz",
           "sha256": "45d63ce78d4cf79301746cc7992cee783e4522a251e51493f4c418e2587b4989"
         }
@@ -2295,7 +2336,8 @@
         {
           "version": "0.1.0",
           "released_at": "2026-03-19T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/skills/security/secrets-and-credential-hygiene/skill.yaml",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/security/secrets-and-credential-hygiene/0.1.0.yaml",
+          "manifest_sha256": "87fee6116d2bf9523a33ad6dc556dcee388c1bbf70b34d6f5c8f39eabf34eb5b",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/secrets-and-credential-hygiene/0.1.0.tar.gz",
           "sha256": "81c552c5953a9c44451f83e183f32e4a9127dcabcc5a8877ecc876ef6afa94a3"
         }

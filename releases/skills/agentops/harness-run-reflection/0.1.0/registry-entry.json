@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.1",
+  "id": "agentops/harness-run-reflection",
+  "name": "Harness Run Reflection",
+  "description": "Review recent agent run logs to identify repeated misses, skipped skills, and inefficient loops in the harness.",
+  "category": "agentops/harness-evolution",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "reflection",
+    "harness",
+    "logs",
+    "improvement"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for harness analysis; must not widen scope into production code changes on its own.",
+    "outputs": [
+      "Reflection report",
+      "Failure patterns",
+      "Improvement candidates"
+    ],
+    "use_when": "Use when recent agent run logs need review for repeated misses, skipped skills, and inefficient loops.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  }
+}

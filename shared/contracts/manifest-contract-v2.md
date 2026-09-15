@@ -37,11 +37,11 @@ artifact, target, and current evidence.
 - Compatible clarifications may extend the 2.x schema with optional fields.
   Removing fields, weakening invariants, or changing meanings requires a new
   major schema version.
-- Registry format `1.2` carries schema `1.1`/`2.1` metadata and the
-  `not-verified` value. Updated consumers accept registry `1.1` and `1.2` but
-  fail closed on unknown versions. Consumers limited to `1.1` must use a prior
-  compatible registry snapshot or upgrade; no lossy readiness downgrade is
-  generated.
+- Registry format `1.2` introduced schema `1.1`/`2.1` metadata and the
+  `not-verified` value. Registry format `1.3` additionally binds each release to
+  an immutable versioned manifest with `manifest_sha256`. Updated catalog
+  consumers accept `1.1` through `1.3`; remote installers require `1.3` and fail
+  closed rather than applying the latest package metadata to an older release.
 
 ## Execution
 
@@ -62,6 +62,15 @@ Commands are argument arrays, not shell strings. A consumer must invoke the
 declared executable directly and must not add shell interpolation. Platform and
 runtime arrays describe supported targets; they do not attest that any target
 has been verified.
+
+Local installers map Go host operating systems to platform identifiers as
+`darwin -> macos`, `linux -> linux`, and `windows -> windows`. For execution
+runtime matching, the selected catalog adapter and native host execution are
+available by default; interpreter, container, and other execution environments
+must be selected explicitly by their declared identifier. Executable packages,
+declared executable helpers, bundles, and every executable member of a bundle
+must match both the current host platform and at least one selected execution
+runtime before installation.
 
 `instructions`, `bundle`, and `integration-template` must not declare
 `command`, `healthcheck`, or `smoke_test`. Scripts, CLIs, and orchestrators must

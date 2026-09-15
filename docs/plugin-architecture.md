@@ -63,6 +63,19 @@ Dependency behavior:
 - `includes.tools` -> runtime `tools-mcp/`
 - `includes.hooks` -> packaged under the plugin's own `hooks/`
 
+Published self-contained plugins carry their complete local closure under
+`bundled/skills/`, `bundled/agents/`, and `bundled/tools-mcp/`. Archive
+admission validates every declared embedded package and rejects missing or
+undeclared bundled package roots. The immutable archive digest therefore binds
+the plugin to the exact dependency content it ships. Remote installation also
+applies operational admission to every bundled manifest and activates those
+packages in the sibling runtime module directories. The dependency trees and
+plugin are committed as one recoverable transaction, with the plugin activated
+last. In-place upgrades of an installed multi-package closure are rejected:
+runtime readers do not participate in installer locks, so sequential directory
+replacement cannot provide safe mixed-version visibility. Supporting that path
+requires a future versioned closure with one runtime-wide activation pointer.
+
 These generated files are derived from the package `plugin.json` and stamped
 with the target runtime. They are scaffolding artifacts, not proof that the
 plugin is production approved.

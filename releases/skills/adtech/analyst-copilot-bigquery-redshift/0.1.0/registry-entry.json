@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.1",
+  "id": "adtech/analyst-copilot-bigquery-redshift",
+  "name": "Analyst Co-pilot (BigQuery + Redshift)",
+  "description": "Assist analysts with safe SQL drafting, metric validation, and stakeholder-ready summaries across BigQuery and Redshift.",
+  "category": "adtech/analytics-engineering",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "sql",
+    "analytics",
+    "bigquery",
+    "redshift"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for read-only analysis and SQL drafting; require human approval before executing queries against production warehouses.",
+    "outputs": [
+      "SQL draft",
+      "Metric logic notes",
+      "Stakeholder summary"
+    ],
+    "use_when": "Use when an analyst question needs safe SQL drafting, metric validation, and stakeholder-ready findings across BigQuery or Redshift.",
+    "execution_mode": "read-only-local-inspection"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "executable_helpers": [
+      {
+        "entrypoint": "scripts/query_safety_check.py",
+        "availability": "not-verified",
+        "execution": "local-tool",
+        "limitations": [
+          "Packaged helper exists, but current clean-client executable evidence is not recorded."
+        ],
+        "quickstart": "printf 'SELECT 1' | python3 scripts/query_safety_check.py"
+      }
+    ],
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "python3"
+    ]
+  }
+}

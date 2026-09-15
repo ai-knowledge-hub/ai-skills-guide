@@ -57,7 +57,7 @@ prove that an entry is operationally available.
 Registry admission rejects manifests that omit `usability.availability` or
 `usability.execution`; registry generation preserves those declarations and
 does not infer them from module names or directories. Current catalog manifests
-use schema `1.1`, and generated indexes use registry format `1.2`; consumers
+use schema `1.1`, and generated indexes use registry format `1.3`; consumers
 must fail closed on unsupported versions rather than reinterpret new states.
 
 See [docs/using-the-catalog.md](docs/using-the-catalog.md) for module behavior,
@@ -164,6 +164,26 @@ Release workflow and version bump definitions are documented in
 [docs/versioning-and-release.md](docs/versioning-and-release.md).
 
 ## Install New Skill Packs
+
+The default `local` source is an explicit development mode. It resolves a
+repository index and copies files from the current checkout. To install a
+published release without cloning this repository, select the `remote` source:
+
+```bash
+./bin/skills-hub install \
+  --source remote \
+  --registry-url \
+    https://skills.ai-knowledge-hub.org/registry/skills-index.json \
+  --entry engineering/implementation-strategy@latest \
+  --runtime codex
+```
+
+Remote mode accepts only HTTPS registry and artifact URLs. It verifies the
+downloaded archive against the registry SHA-256, validates its paths and
+manifest, and stages the complete package before changing the runtime. Use
+`--offline` after one successful online fetch to reuse verified cached bytes.
+See [Remote package installation](docs/remote-install.md) for source modes,
+cache behavior, trust boundaries, and recovery guidance.
 
 For Codex:
 
@@ -525,3 +545,4 @@ Static manifest/artifact URLs:
   - `/plugins/.../plugin.yaml`
   - `/tools-mcp/.../tool.yaml`
   - `/artifacts/<id>/<version>.tar.gz`
+  - `/release-manifests/<module>/<id>/<version>.yaml`

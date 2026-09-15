@@ -42,9 +42,16 @@ pnpm build
 pnpm start
 ```
 
-`pnpm prepare:assets` copies module manifests and packages tarball artifacts
-from repository source into `apps/web/public` so `manifest_url` and
-`artifact_url` links resolve in production.
+`pnpm prepare:assets` creates deterministic package candidates and admits them
+to the tracked, append-only `releases/` store. Reusing an `(id, version)` with
+different manifest or archive bytes fails the build. Every build restores all
+retained archives and versioned manifests into `apps/web/public`, then publishes
+their artifact and manifest SHA-256 digests in registry format `1.3`. Repository
+indexes retain source-tree digests for local development. Each release also
+stores its immutable registry projection, so removing mutable catalog source
+does not make a released version unresolvable. Asset preparation requires both
+Node.js and Go because retained archives pass through the installer's bounded
+extraction and admission checks before indexing.
 
 ## Routes
 

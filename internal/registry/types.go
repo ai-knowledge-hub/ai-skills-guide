@@ -147,9 +147,10 @@ type SkillEntry struct {
 }
 
 type VersionEntry struct {
-	Version     string `json:"version"`
-	ReleasedAt  string `json:"released_at"`
-	ManifestURL string `json:"manifest_url"`
-	ArtifactURL string `json:"artifact_url"`
-	SHA256      string `json:"sha256"`
+	Version        string `json:"version"`
+	ReleasedAt     string `json:"released_at"`
+	ManifestURL    string `json:"manifest_url"`
+	ManifestSHA256 string `json:"manifest_sha256,omitempty"`
+	ArtifactURL    string `json:"artifact_url"`
+	SHA256         string `json:"sha256"`
 }

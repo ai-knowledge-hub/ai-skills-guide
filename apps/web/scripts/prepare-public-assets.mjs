@@ -4,7 +4,6 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { promisify } from "node:util";
 import { gunzipSync, gzipSync } from "node:zlib";
-import semver from "semver";
 
 const repoRoot = path.resolve(process.env.REPOSITORY_ROOT ?? path.resolve(process.cwd(), "..", ".."));
 const publicRoot = path.resolve(process.env.PUBLIC_ROOT ?? path.resolve(process.cwd(), "public"));
@@ -21,6 +20,7 @@ const modules = [
 const releaseCatalog = new Map();
 const sourceEntries = new Map();
 const currentReleaseEntries = new Map();
+let retainedReleaseValidationUnavailable = false;
 const transientPackageEntries = new Set([
   ".DS_Store",
   ".mypy_cache",
@@ -166,6 +166,11 @@ async function validateRetainedReleases() {
       currentReleaseEntries.set(key, entry);
     }
   } catch (error) {
+    if (error.code === "ENOENT" && process.env.VERCEL === "1") {
+      retainedReleaseValidationUnavailable = true;
+      console.warn("Go release validator is unavailable in Vercel; using CI-validated committed release projections.");
+      return;
+    }
     const detail = error.stderr || error.stdout || error.message;
     throw new Error(`Retained release validation failed:\n${detail}`);
   }
@@ -194,7 +199,8 @@ async function restoreModuleReleases({ dir, manifest }) {
     }
     const artifactBytes = await fs.readFile(path.join(releaseDir, "package.tar.gz"));
     const registryEntry = JSON.parse(await fs.readFile(path.join(releaseDir, "registry-entry.json"), "utf-8"));
-    const currentRegistryEntry = currentReleaseEntries.get(`${dir}:${id}@${version}`);
+    const currentRegistryEntry = currentReleaseEntries.get(`${dir}:${id}@${version}`) ??
+      (retainedReleaseValidationUnavailable ? projectCurrentCatalogEntry(registryEntry) : undefined);
     if (!currentRegistryEntry) {
       throw new Error(`Release validator did not return a current projection for ${id}@${version}`);
     }
@@ -285,7 +291,7 @@ async function publishRegistryIndexes() {
 }
 
 function materializeEntry(latest, releases, baseURL) {
-  releases.sort((left, right) => semver.compareBuild(left.version, right.version));
+  releases.sort((left, right) => compareSemverBuild(left.version, right.version));
   const latestRelease = releases.find((release) => release.version === latest);
   if (!latestRelease) {
     throw new Error(`Retained release catalog does not contain selected latest version ${latest}`);
@@ -303,8 +309,93 @@ function materializeEntry(latest, releases, baseURL) {
 
 function latestReleaseVersion(releases) {
   return [...releases]
-    .sort((left, right) => semver.compareBuild(left.version, right.version))
+    .sort((left, right) => compareSemverBuild(left.version, right.version))
     .at(-1).version;
+}
+
+function compareSemverBuild(left, right) {
+  const leftVersion = parseSemver(left);
+  const rightVersion = parseSemver(right);
+  for (const key of ["major", "minor", "patch"]) {
+    if (leftVersion[key] !== rightVersion[key]) {
+      return leftVersion[key] - rightVersion[key];
+    }
+  }
+  const prereleaseOrder = compareSemverIdentifiers(leftVersion.prerelease, rightVersion.prerelease, true);
+  if (prereleaseOrder !== 0) {
+    return prereleaseOrder;
+  }
+  return compareSemverIdentifiers(leftVersion.build, rightVersion.build, false);
+}
+
+function parseSemver(version) {
+  const match = /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-([0-9A-Za-z.-]+))?(?:\+([0-9A-Za-z.-]+))?$/.exec(version);
+  if (!match) {
+    throw new Error(`Invalid semantic version in release store: ${version}`);
+  }
+  return {
+    major: Number(match[1]),
+    minor: Number(match[2]),
+    patch: Number(match[3]),
+    prerelease: match[4]?.split(".") ?? [],
+    build: match[5]?.split(".") ?? []
+  };
+}
+
+function compareSemverIdentifiers(left, right, releaseOutranksPrerelease) {
+  if (releaseOutranksPrerelease && left.length === 0 && right.length > 0) return 1;
+  if (releaseOutranksPrerelease && right.length === 0 && left.length > 0) return -1;
+  for (let index = 0; index < Math.max(left.length, right.length); index += 1) {
+    if (left[index] === undefined) return -1;
+    if (right[index] === undefined) return 1;
+    if (left[index] === right[index]) continue;
+    const leftNumeric = /^[0-9]+$/.test(left[index]);
+    const rightNumeric = /^[0-9]+$/.test(right[index]);
+    if (leftNumeric && rightNumeric) return Number(left[index]) - Number(right[index]);
+    if (leftNumeric !== rightNumeric) return leftNumeric ? -1 : 1;
+    return left[index] < right[index] ? -1 : 1;
+  }
+  return 0;
+}
+
+function projectCurrentCatalogEntry(storedEntry) {
+  const entry = structuredClone(storedEntry);
+  if (entry.usability?.availability === "usable-now" && !hasFreshEvidence(entry)) {
+    entry.usability.availability = "not-verified";
+    entry.usability.source = "inferred";
+  }
+  if (entry.deprecated) {
+    entry.readiness = "deprecated";
+    let demoted = false;
+    if (isPositiveAvailability(entry.usability?.availability)) {
+      entry.usability.availability = "not-verified";
+      demoted = true;
+    }
+    for (const helper of entry.usability?.executable_helpers ?? []) {
+      if (isPositiveAvailability(helper.availability)) {
+        helper.availability = "not-verified";
+        demoted = true;
+      }
+    }
+    if (demoted) entry.usability.source = "inferred";
+  }
+  return entry;
+}
+
+function hasFreshEvidence(entry) {
+  if (!entry.verification?.evidence?.length) return false;
+  const observedAt = Date.parse(entry.verification.last_verified_at);
+  if (!Number.isFinite(observedAt)) return false;
+  const now = Date.now();
+  if (observedAt > now + 5 * 60 * 1000) return false;
+  const executableKinds = new Set(["script", "cli", "mcp-server", "service", "orchestrator"]);
+  let lifetimeDays = executableKinds.has(entry.execution?.kind) ? 90 : 180;
+  if (entry.authentication?.status && entry.authentication.status !== "none") lifetimeDays = 30;
+  return now - observedAt <= lifetimeDays * 24 * 60 * 60 * 1000;
+}
+
+function isPositiveAvailability(availability) {
+  return availability === "usable-now" || availability === "setup-required";
 }
 
 async function exists(filePath) {

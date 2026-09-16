@@ -15,8 +15,7 @@
     "@vercel/analytics": "^1.6.1",
     "next": "14.2.11",
     "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "semver": "^7.7.4"
+    "react-dom": "18.3.1"
   },
   "devDependencies": {
     "@playwright/test": "1.41.2",

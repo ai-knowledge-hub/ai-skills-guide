@@ -1255,6 +1255,40 @@ func TestPublisherAcceptsEquivalentGzipEncoding(t *testing.T) {
 	runPublisher(t, webRoot, releaseStore, publicRoot)
 }
 
+func TestPublisherVercelBuildWithoutGoUsesCommittedReleaseProjections(t *testing.T) {
+	workingDirectory, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("get working directory: %v", err)
+	}
+	repositoryRoot := filepath.Clean(filepath.Join(workingDirectory, "..", ".."))
+	webRoot := filepath.Join(repositoryRoot, "apps", "web")
+	releaseStore := filepath.Join(t.TempDir(), "releases")
+	publicRoot := filepath.Join(t.TempDir(), "public")
+	command := publisherCommand(webRoot, releaseStore, publicRoot)
+	environment := make([]string, 0, len(command.Env)+2)
+	for _, variable := range command.Env {
+		if !strings.HasPrefix(variable, "PATH=") && !strings.HasPrefix(variable, "VERCEL=") {
+			environment = append(environment, variable)
+		}
+	}
+	command.Env = append(environment, "PATH=/nonexistent", "VERCEL=1")
+	output, err := command.CombinedOutput()
+	if err != nil {
+		t.Fatalf("publish without Go in Vercel mode: %v\n%s", err, output)
+	}
+	if !strings.Contains(string(output), "using CI-validated committed release projections") {
+		t.Fatalf("publisher did not report the constrained Vercel fallback: %s", output)
+	}
+	index, err := registry.LoadIndex(filepath.Join(publicRoot, "registry", "plugins-index.json"))
+	if err != nil {
+		t.Fatalf("load Vercel fallback registry: %v", err)
+	}
+	entry, found := registry.FindSkill(index, "marketing/content-repurposing-plugin")
+	if !found || len(entry.Versions) != 1 || entry.Versions[0].Version != "0.2.0" {
+		t.Fatalf("Vercel fallback omitted the committed plugin release: %#v", entry)
+	}
+}
+
 func TestPublisherRejectsUnsafeRetainedArchive(t *testing.T) {
 	workingDirectory, err := os.Getwd()
 	if err != nil {

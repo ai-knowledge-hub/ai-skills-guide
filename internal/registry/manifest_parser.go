@@ -167,6 +167,14 @@ func findCredentialShapedValue(value any, path string) (string, bool) {
 	return "", false
 }
 
+// ContainsCredentialShapedValue applies the manifest credential detector to
+// package metadata that is compiled outside the manifest itself. Callers must
+// not include the inspected value in any diagnostic.
+func ContainsCredentialShapedValue(value string) bool {
+	_, found := findCredentialShapedValue(value, "$")
+	return found
+}
+
 func isNonSecretCredentialValue(value string) bool {
 	trimmed := strings.Trim(value, `"'.,;:()[]{}`)
 	if bindingReferencePattern.MatchString(trimmed) {

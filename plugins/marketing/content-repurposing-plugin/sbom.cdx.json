@@ -1,0 +1,94 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "metadata": {
+    "component": {
+      "type": "application",
+      "bom-ref": "plugins:marketing/content-repurposing-plugin@0.2.0",
+      "name": "marketing/content-repurposing-plugin",
+      "version": "0.2.0"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "skills:marketing/ai-output-eval-scorecard@0.1.0",
+      "group": "marketing",
+      "name": "ai-output-eval-scorecard",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "0b1f20517d784b85873b5ab0fe75d0876be59caf83c90c63ed28fdfaee40569e"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:marketing/creative-workshop-pmax-reels@0.1.0",
+      "group": "marketing",
+      "name": "creative-workshop-pmax-reels",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "65e00edbd0bb0f6c3f09cb6ca123c8372e8300e2fb0976ecbfe1b878a8ce93fe"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:marketing/dynamic-creative-rules-engine@0.1.0",
+      "group": "marketing",
+      "name": "dynamic-creative-rules-engine",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "82a54c130fa9c9d5915591f6f1b78bd7c66a4a09743cbda0cb3fc37ff974a41d"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "plugins:marketing/content-repurposing-plugin@0.2.0",
+      "dependsOn": [
+        "skills:marketing/ai-output-eval-scorecard@0.1.0",
+        "skills:marketing/creative-workshop-pmax-reels@0.1.0",
+        "skills:marketing/dynamic-creative-rules-engine@0.1.0"
+      ]
+    },
+    {
+      "ref": "skills:marketing/ai-output-eval-scorecard@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:marketing/creative-workshop-pmax-reels@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:marketing/dynamic-creative-rules-engine@0.1.0",
+      "dependsOn": []
+    }
+  ]
+}

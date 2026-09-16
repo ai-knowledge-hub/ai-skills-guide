@@ -26,6 +26,7 @@ pnpm-debug.log*
 apps/web/public/agents/
 apps/web/public/artifacts/
 apps/web/public/plugins/
+apps/web/public/release-manifests/
 apps/web/public/registry/
 apps/web/public/skills/
 apps/web/public/tools-mcp/

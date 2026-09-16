@@ -99,7 +99,15 @@ func copyFile(src, dst string) error {
 		return fmt.Errorf("create destination directory %s: %w", filepath.Dir(dst), err)
 	}
 
-	out, err := os.Create(dst)
+	info, err := in.Stat()
+	if err != nil {
+		return fmt.Errorf("inspect source file %s: %w", src, err)
+	}
+	mode := os.FileMode(0o644)
+	if info.Mode()&0o111 != 0 {
+		mode = 0o755
+	}
+	out, err := os.OpenFile(dst, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, mode)
 	if err != nil {
 		return fmt.Errorf("create destination file %s: %w", dst, err)
 	}

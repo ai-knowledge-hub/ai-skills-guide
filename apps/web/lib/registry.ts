@@ -29,6 +29,7 @@ export type VersionEntry = {
   version: string;
   released_at: string;
   manifest_url: string;
+  manifest_sha256?: string;
   artifact_url: string;
   sha256: string;
 };
@@ -124,7 +125,7 @@ export type RegistryEntry = {
 };
 
 export type RegistryIndex = {
-  registry_version: "1.1" | "1.2";
+  registry_version: "1.1" | "1.2" | "1.3";
   generated_at: string;
   skills: RegistryEntry[];
 };
@@ -161,7 +162,7 @@ async function resolveRegistryPath(module: ModuleKey) {
 export async function loadRegistry(module: ModuleKey = "skills"): Promise<RegistryIndex> {
   const data = await fs.readFile(await resolveRegistryPath(module), "utf-8");
   const parsed = JSON.parse(data) as { registry_version?: unknown };
-  if (parsed.registry_version !== "1.1" && parsed.registry_version !== "1.2") {
+  if (parsed.registry_version !== "1.1" && parsed.registry_version !== "1.2" && parsed.registry_version !== "1.3") {
     throw new Error(`Unsupported registry_version ${String(parsed.registry_version)}; upgrade this consumer or use a compatible registry snapshot.`);
   }
   return parsed as RegistryIndex;

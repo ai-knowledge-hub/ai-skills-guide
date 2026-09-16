@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.1",
+  "id": "security/marketing-agent-risk-review",
+  "name": "Marketing Agent Risk Review",
+  "description": "Assess marketing and adtech agents for risky actions, sensitive data exposure, unsafe tool access, and missing human approval boundaries.",
+  "category": "security/runtime-hardening",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "marketing",
+    "adtech",
+    "security",
+    "approvals",
+    "data-governance"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Analysis-only; must not approve campaigns, change spend, publish content, export data, or modify permissions.",
+    "outputs": [
+      "Marketing-agent risk matrix",
+      "Required approval gates",
+      "Data-governance recommendations"
+    ],
+    "use_when": "Use when reviewing marketing or adtech agents that touch spend, audiences, product data, analytics, customer data, or publishing workflows.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  }
+}

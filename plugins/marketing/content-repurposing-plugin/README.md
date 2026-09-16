@@ -9,7 +9,7 @@ Portable bundle for content reuse workflows across channels and formats.
 
 ## Install Behavior
 
-This plugin is a packaging layer.
+This plugin is published as a self-contained, integrity-locked packaging layer.
 
 On install:
 
@@ -17,14 +17,16 @@ On install:
 - bundled skills are installed into the runtime `skills/...` directory
 - packaged hooks remain inside this plugin's `hooks/` directory
 
-Bundled skills do not live inside the plugin directory itself. That keeps the
-plugin as a reusable composition package instead of a duplicated copy of its
-dependencies.
+The release archive carries the exact bundled skill closure plus a dependency
+lock, checksum manifest, CycloneDX SBOM, and provenance record. Installation
+materializes those bundled skills into their native runtime directory without
+reading sibling repository source directories.
 
 ## Install Command
 
 ```bash
-./bin/skills-hub install --module plugins --entry marketing/content-repurposing-plugin@0.1.0 --runtime codex
+./bin/skills-hub install --source remote --module plugins \
+  --entry marketing/content-repurposing-plugin@0.2.0 --runtime codex
 ```
 
 ## Installed Dependencies

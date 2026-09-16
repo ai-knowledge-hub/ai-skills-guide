@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.1",
+  "id": "agentops/agent-control-plane-review",
+  "name": "Agent Control Plane Review",
+  "description": "Review an agent workflow for identity, gateway, policy, approval, inspection, and audit coverage before it touches production systems.",
+  "category": "agentops/harness-governance",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "agent-control",
+    "governance",
+    "identity",
+    "audit",
+    "gateway"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Analysis-only; must not grant permissions, create credentials, or enable production tool access.",
+    "outputs": [
+      "Control-plane readiness report",
+      "Missing guardrail list",
+      "Approval boundary recommendations"
+    ],
+    "use_when": "Use before deploying or expanding an agent workflow that can call tools, access data, or trigger operational actions.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  }
+}

@@ -56,7 +56,11 @@ Current agents are `template-only` orchestrator definitions. Operational install
 
 ### Plugins
 
-Current plugins are `template-only` source compositions with advisory hooks. Operational installation, dependency resolution, and runtime-manifest generation are blocked until a self-contained verified runtime bundle is published.
+Most plugins are `template-only` source compositions with advisory hooks. The
+content-repurposing plugin is the first self-contained `not-verified` bundle;
+its locked dependency closure can be installed, while its lack of current
+target-scoped evidence remains visible. Operational installation stays blocked
+for every plugin that has not published the same locked artifact records.
 
 ### Packs
 

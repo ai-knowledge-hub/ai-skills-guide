@@ -1,0 +1,56 @@
+schema_version: "1.1"
+id: marketing/weekly-performance-supervisor
+name: Weekly Performance Supervisor
+description: Orchestrate weekly performance reporting by chaining dashboard generation, QA checks, and executive narrative output.
+version: 0.1.0
+released_at: "2026-03-02T00:00:00Z"
+category: marketing-agents/performance
+tags:
+  - weekly-reporting
+  - orchestration
+  - qa-gating
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  spec: AGENT.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  skills:
+    - adtech/dashboard-generator
+    - adtech/dashboard-qa-checker
+    - adtech/executive-narrative-writer
+  tools:
+    - ga4_query
+    - warehouse_query
+operational:
+  role: Weekly reporting supervisor for QA-gated performance review workflows.
+  coordinates:
+    - Dashboard generation
+    - QA gating and blocking decisions
+    - Executive narrative drafting after approval
+  autonomy_level: semi-autonomous
+  approval_boundary: May coordinate reporting workflows and draft narratives after QA approval; require human approval before any external publish or stakeholder send.
+  outputs:
+    - Publish decision
+    - Dashboard package
+    - QA package
+    - Executive narrative
+usability:
+  availability: template-only
+  execution: orchestrator
+  limitations:
+    - Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged.
+  quickstart: Review AGENT.md and implement and register the declared runtime bindings before launch.
+verification:
+  tests_min_prompts: 5
+  security_reviewed: false
+deprecated: false

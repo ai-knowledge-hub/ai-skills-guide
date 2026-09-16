@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.1",
+  "id": "security/ad-platform-agent-auth-review",
+  "name": "Ad Platform Agent Auth Review",
+  "description": "Review DV360, Google Ads, and similar ad-platform agents for personal OAuth risk, workspace scoping, token storage, read/write separation, and approval readiness.",
+  "category": "security/runtime-hardening",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "adtech",
+    "oauth",
+    "google-ads",
+    "dv360",
+    "auth-review"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Analysis-only; must not create tokens, change OAuth scopes, approve access, or execute ad-platform writes.",
+    "outputs": [
+      "Authentication risk report",
+      "Trust-zone recommendation",
+      "Read/write separation checklist",
+      "Approval-gated execution recommendation"
+    ],
+    "use_when": "Use before an agent reads or writes to DV360, Google Ads, Meta Ads, product feeds, or commerce/analytics APIs using OAuth or service credentials.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  }
+}

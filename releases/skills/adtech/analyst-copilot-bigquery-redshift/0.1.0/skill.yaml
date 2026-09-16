@@ -1,0 +1,57 @@
+schema_version: "1.1"
+id: adtech/analyst-copilot-bigquery-redshift
+name: Analyst Co-pilot (BigQuery + Redshift)
+description: Assist analysts with safe SQL drafting, metric validation,
+  and stakeholder-ready summaries across BigQuery and Redshift.
+version: 0.1.0
+released_at: "2026-02-23T00:00:00Z"
+category: adtech/analytics-engineering
+tags:
+  - sql
+  - analytics
+  - bigquery
+  - redshift
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  scripts_dir: scripts
+  examples_dir: examples
+dependencies:
+  tools:
+    - python3
+operational:
+  use_when: Use when an analyst question needs safe SQL drafting, metric validation, and stakeholder-ready findings across BigQuery or Redshift.
+  execution_mode: read-only-local-inspection
+  outputs:
+    - SQL draft
+    - Metric logic notes
+    - Stakeholder summary
+  approval_boundary: Safe for read-only analysis and SQL drafting; require human approval before executing queries against production warehouses.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
+  executable_helpers:
+    - entrypoint: scripts/query_safety_check.py
+      availability: not-verified
+      execution: local-tool
+      limitations:
+        - Packaged helper exists, but current clean-client executable evidence is not recorded.
+      quickstart: printf 'SELECT 1' | python3 scripts/query_safety_check.py
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: true
+  security_reviewed: false
+deprecated: false

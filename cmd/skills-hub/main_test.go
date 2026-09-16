@@ -71,6 +71,21 @@ func TestPrintInstallUsabilityWarning(t *testing.T) {
 	}
 }
 
+func TestPrintInstallLifecycleWarning(t *testing.T) {
+	entry := registry.SkillEntry{
+		ID:         "shared/deprecated-example",
+		Deprecated: true,
+		ReplacedBy: "shared/replacement-example",
+	}
+	var out bytes.Buffer
+	printInstallLifecycleWarning(&out, entry)
+	for _, want := range []string{"is deprecated", "prefer shared/replacement-example"} {
+		if !strings.Contains(out.String(), want) {
+			t.Fatalf("lifecycle warning %q does not contain %q", out.String(), want)
+		}
+	}
+}
+
 func TestPrintUsabilitySummaryIncludesExecutableHelper(t *testing.T) {
 	entry := registry.SkillEntry{Usability: registry.UsabilityMetadata{
 		Availability: "documentation-only",
@@ -123,6 +138,58 @@ func TestRunInstallRejectsTemplateBeforeFilesystemWrite(t *testing.T) {
 	}
 	if _, statErr := os.Stat(target); !os.IsNotExist(statErr) {
 		t.Fatalf("template install created runtime state: %v", statErr)
+	}
+}
+
+func TestRunInstallKeepsLocalAndRemoteSourcesDistinct(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+		want string
+	}{
+		{
+			name: "local rejects remote registry",
+			args: []string{
+				"--source", "local",
+				"--registry-url", "https://registry.example/index.json",
+				"--entry", "engineering/example@1.0.0",
+				"--runtime", "generic",
+				"--target", filepath.Join(t.TempDir(), "skills"),
+			},
+			want: "local source does not accept --registry-url",
+		},
+		{
+			name: "remote rejects local root",
+			args: []string{
+				"--source", "remote",
+				"--registry-url", "https://registry.example/index.json",
+				"--root", "skills",
+				"--entry", "engineering/example@1.0.0",
+				"--runtime", "generic",
+				"--target", filepath.Join(t.TempDir(), "skills"),
+			},
+			want: "remote source does not accept --root",
+		},
+		{
+			name: "local rejects execution runtime",
+			args: []string{
+				"--source", "local",
+				"--execution-runtime", "node22",
+				"--entry", "engineering/example@1.0.0",
+				"--runtime", "generic",
+				"--target", filepath.Join(t.TempDir(), "skills"),
+			},
+			want: "local source does not accept",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			err := runInstall(test.args)
+			if err == nil || !strings.Contains(err.Error(), test.want) {
+				t.Fatalf("expected %q, got %v", test.want, err)
+			}
+		})
 	}
 }
 

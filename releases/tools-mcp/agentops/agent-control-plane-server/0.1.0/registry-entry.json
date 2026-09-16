@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.1",
+  "id": "agentops/agent-control-plane-server",
+  "name": "Agent Control Plane MCP Server",
+  "description": "Implementation specification and template for an agent control-plane MCP server; no launchable server is packaged.",
+  "category": "tools-mcp/agentops",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "mcp",
+    "governance",
+    "policy",
+    "audit",
+    "approvals"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "connected_system": "Agent control plane runtime",
+    "capabilities": [
+      "Check proposed agent actions against JSON policy rules.",
+      "Record agent action events with input and output hashes.",
+      "Create approval requests for high-risk actions.",
+      "Verify audit hash-chain continuity."
+    ],
+    "auth_required": [
+      "Agent runtime identity",
+      "Policy store access",
+      "Audit log write access"
+    ],
+    "access_level": "read-write",
+    "trust_boundary": "remote-mcp-server",
+    "approval_boundary": "Safe for policy checks and audit writes; requires human approval before executing high-risk operational actions or changing policy."
+  },
+  "usability": {
+    "availability": "template-only",
+    "execution": "integration-template",
+    "limitations": [
+      "Specification, prompts, and examples only; no launchable MCP transport is packaged."
+    ],
+    "quickstart": "Review TOOL.md as an implementation contract; do not register this package as an MCP server.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "mcp_servers": [
+      "agent-control-plane"
+    ]
+  }
+}

@@ -1,6 +1,6 @@
 {
   "registry_version": "1.3",
-  "generated_at": "2026-07-25T00:00:00Z",
+  "generated_at": "2026-09-15T00:00:00Z",
   "skills": [
     {
       "schema_version": "1.1",
@@ -380,20 +380,20 @@
       }
     },
     {
-      "schema_version": "1.1",
+      "schema_version": "2.1",
       "id": "marketing/content-repurposing-plugin",
       "name": "Content Repurposing Plugin",
       "description": "Bundle content transformation, review guidance, and publishing-oriented workflow references into a portable plugin for multi-channel reuse.",
       "category": "marketing-plugins/content",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-03-28T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/content-repurposing-plugin/0.1.0.yaml",
-          "manifest_sha256": "dd950f0871603d7e4ce80dc88c198605a0f9ce70d74269a1fa5bef01d3ca73f8",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/content-repurposing-plugin/0.1.0.tar.gz",
-          "sha256": "7d0fa219f69d4af6d1d1c03a29aa7b20c5ed1aaf7784580e005fbe980b4e1bd0"
+          "version": "0.2.0",
+          "released_at": "2026-09-15T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/content-repurposing-plugin/0.2.0.yaml",
+          "manifest_sha256": "81ddf0fe60bf7e666c2768eb347eae4dc2278c2b436c31ba1e7ec53ea2823e75",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/content-repurposing-plugin/0.2.0.tar.gz",
+          "sha256": "89a2bd1fa95db52b4914f43547f84579343b514a299933123c682f1076fe98c6"
         }
       ],
       "runtimes": [
@@ -411,13 +411,50 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "template-only",
+        "availability": "not-verified",
         "execution": "bundle",
         "limitations": [
-          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published."
+          "Publishing remains human-approved; the bundle does not grant external publishing authority."
         ],
-        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+        "quickstart": "Install the checksum-verified release and review the generated dependency lock and SBOM before enabling its hooks.",
         "source": "declared"
+      },
+      "execution": {
+        "kind": "bundle",
+        "supported_platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ],
+        "supported_runtimes": [
+          "codex",
+          "claude",
+          "generic"
+        ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": "dependencies.lock.json",
+        "checksums": "checksums.txt",
+        "sbom": "sbom.cdx.json",
+        "provenance": "provenance.json"
+      },
+      "authentication": {
+        "status": "none",
+        "methods": [
+          "none"
+        ],
+        "credential_bindings": [],
+        "scopes": [],
+        "credential_storage": "No credentials are used by this instruction bundle.",
+        "validation": "Confirm no authentication challenge is introduced by runtime wiring.",
+        "revocation": "Not applicable; remove the installed bundle to withdraw it."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/content-repurposing-plugin/standalone-bundle"
+        ],
+        "last_verified_at": "2026-09-15T00:00:00Z"
       },
       "includes": {
         "skills": [

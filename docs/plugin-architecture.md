@@ -66,8 +66,11 @@ Dependency behavior:
 Published self-contained plugins carry their complete local closure under
 `bundled/skills/`, `bundled/agents/`, and `bundled/tools-mcp/`. Archive
 admission validates every declared embedded package and rejects missing or
-undeclared bundled package roots. The immutable archive digest therefore binds
-the plugin to the exact dependency content it ships. Remote installation also
+unlocked bundled package roots. The generated dependency lock, checksum
+manifest, CycloneDX SBOM, and provenance record bind the plugin to the exact
+versions and content it ships; see
+[Artifact locks, SBOMs, and provenance](artifact-integrity.md). Remote
+installation also
 applies operational admission to every bundled manifest and activates those
 packages in the sibling runtime module directories. The dependency trees and
 plugin are committed as one recoverable transaction, with the plugin activated

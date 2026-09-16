@@ -685,21 +685,24 @@ func remotePluginInstallPlans(extractRoot, pluginTargetRoot, runtimeName string,
 		moduleDir  string
 		moduleName string
 		manifest   string
-		ids        []string
 	}{
-		{moduleDir: "skills", moduleName: "skills", manifest: "skill.yaml", ids: manifest.Includes.Skills},
-		{moduleDir: "agents", moduleName: "agents", manifest: "agent.yaml", ids: manifest.Includes.Agents},
-		{moduleDir: "tools-mcp", moduleName: "tools", manifest: "tool.yaml", ids: manifest.Includes.Tools},
+		{moduleDir: "skills", moduleName: "skills", manifest: "skill.yaml"},
+		{moduleDir: "agents", moduleName: "agents", manifest: "agent.yaml"},
+		{moduleDir: "tools-mcp", moduleName: "tools", manifest: "tool.yaml"},
 	}
 	for _, set := range sets {
-		if len(set.ids) == 0 {
+		ids, err := bundledDependencyIDs(extractRoot, set.moduleDir, set.manifest)
+		if err != nil {
+			return nil, err
+		}
+		if len(ids) == 0 {
 			continue
 		}
 		target, err := ResolvePluginDependencyTarget(runtimeName, set.moduleName, pluginTargetRoot)
 		if err != nil {
 			return nil, err
 		}
-		for _, id := range set.ids {
+		for _, id := range ids {
 			if err := validatePackageID(id); err != nil {
 				return nil, fmt.Errorf("%s dependency: %w", set.moduleName, err)
 			}
@@ -724,6 +727,39 @@ func remotePluginInstallPlans(extractRoot, pluginTargetRoot, runtimeName string,
 		}
 	}
 	return plans, nil
+}
+
+func bundledDependencyIDs(extractRoot, moduleDir, manifestName string) ([]string, error) {
+	moduleRoot := filepath.Join(extractRoot, "bundled", moduleDir)
+	categories, err := os.ReadDir(moduleRoot)
+	if os.IsNotExist(err) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("inspect bundled %s closure: %w", moduleDir, err)
+	}
+	ids := make([]string, 0)
+	for _, category := range categories {
+		if !category.IsDir() {
+			return nil, fmt.Errorf("bundled %s closure contains unexpected file %s", moduleDir, category.Name())
+		}
+		packages, err := os.ReadDir(filepath.Join(moduleRoot, category.Name()))
+		if err != nil {
+			return nil, err
+		}
+		for _, packageEntry := range packages {
+			if !packageEntry.IsDir() {
+				return nil, fmt.Errorf("bundled %s dependency %s/%s is not a directory", moduleDir, category.Name(), packageEntry.Name())
+			}
+			id := category.Name() + "/" + packageEntry.Name()
+			if _, err := os.Stat(filepath.Join(moduleRoot, filepath.FromSlash(id), manifestName)); err != nil {
+				return nil, fmt.Errorf("bundled %s dependency %s has no %s", moduleDir, id, manifestName)
+			}
+			ids = append(ids, id)
+		}
+	}
+	sort.Strings(ids)
+	return ids, nil
 }
 
 func validateExecutionCompatibility(manifest registry.Manifest, catalogRuntime string, explicitRuntimes []string) error {

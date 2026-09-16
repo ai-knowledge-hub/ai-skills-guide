@@ -224,6 +224,57 @@ func TestValidatePackageManifestRejectsMissingSelfContainedPluginDependency(t *t
 	assertAdmissionError(t, err, "self-contained dependency engineering/closure-skill")
 }
 
+func TestValidatePackageManifestRejectsV21PluginWithoutIntegrityMetadata(t *testing.T) {
+	pluginDir := filepath.Join(t.TempDir(), "plugins", "engineering", "closure-plugin")
+	manifestPath := filepath.Join(pluginDir, "plugin.yaml")
+	writeTestFile(t, manifestPath, v2PluginManifest("engineering/closure-plugin", time.Now().UTC()), 0o644)
+	writeTestFile(t, filepath.Join(pluginDir, "plugin.json"), "{}\n", 0o644)
+	dependencyDir := filepath.Join(pluginDir, "bundled", "skills", "engineering", "closure-skill")
+	writeTestFile(t, filepath.Join(dependencyDir, "skill.yaml"), `schema_version: "2.1"
+id: engineering/closure-skill
+name: Closure Skill
+description: Bundled dependency used to verify metadata admission.
+version: 1.0.0
+released_at: "2026-09-14T00:00:00Z"
+category: engineering/testing-quality
+tags: [testing]
+license: MIT
+author:
+  name: Test Maintainer
+runtimes: [generic]
+entrypoints:
+  skill_md: SKILL.md
+usability:
+  availability: documentation-only
+  execution: instructions
+execution:
+  kind: instructions
+  supported_platforms: [linux, macos, windows]
+  supported_runtimes: [generic]
+artifact:
+  self_contained: true
+  dependency_lock: null
+  checksums: null
+  sbom: null
+authentication:
+  status: none
+  methods: [none]
+  credential_bindings: []
+  scopes: []
+  credential_storage: No credentials.
+  validation: Confirm no authentication challenge.
+  revocation: Not applicable.
+verification:
+  evidence: [evidence://tests/closure-skill]
+  last_verified_at: "2026-09-14T00:00:00Z"
+deprecated: false
+`, 0o644)
+	writeTestFile(t, filepath.Join(dependencyDir, "SKILL.md"), "# Closure skill\n", 0o644)
+
+	_, err := ValidatePackageManifest(manifestPath)
+	assertAdmissionError(t, err, "must declare dependency_lock, checksums, sbom, and provenance")
+}
+
 func TestProjectManifestForCurrentCatalogDemotesExpiredReadiness(t *testing.T) {
 	verifiedAt := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
 	manifestPath := filepath.Join(t.TempDir(), "tool.yaml")

@@ -28,6 +28,12 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 				t.Fatalf("got %d entries, want %d", len(index.Skills), test.wantCount)
 			}
 			for _, entry := range index.Skills {
+				if entry.ID == "marketing/content-repurposing-plugin" {
+					if entry.SchemaVersion != "2.1" || entry.Usability.Availability != "not-verified" || entry.Usability.Execution != "bundle" {
+						t.Errorf("content repurposing release classification = %#v", entry)
+					}
+					continue
+				}
 				assertClassification(t, entry, test.availability, test.execution)
 			}
 		})

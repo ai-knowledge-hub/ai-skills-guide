@@ -562,6 +562,9 @@
         },
         "sbom": {
           "$ref": "#/$defs/artifact_file"
+        },
+        "provenance": {
+          "$ref": "#/$defs/artifact_file"
         }
       }
     },

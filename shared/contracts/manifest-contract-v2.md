@@ -88,7 +88,19 @@ Every v2 manifest declares:
 - `checksums`: repository-relative checksum manifest path, or `null` when the
   artifact format cannot carry one;
 - `sbom`: repository-relative SBOM path, or `null` when no SBOM is yet
-  available.
+  available;
+- `provenance`: repository-relative provenance record path when the artifact
+  carries one.
+
+A self-contained plugin release must provide all four artifact records. Its
+dependency lock pins every reachable local component by module, ID, semantic
+version, manifest path, dependency edges, and canonical SHA-256 content digest.
+The checksum manifest covers every regular archive member except itself, and
+the CycloneDX SBOM must enumerate the same component identities, versions, and
+digests as the lock. The provenance subject and materials must bind the same
+root and closure. Release verification recomputes these facts from the archive;
+declarations or generated metadata are not self-attesting evidence. Provenance
+is checksum-bound build metadata, not a cryptographic release signature.
 
 Paths must remain inside the package. `null` is an explicit absence, not proof
 that a requirement is unnecessary. Promotion rules may require a non-null

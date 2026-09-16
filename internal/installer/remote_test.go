@@ -16,6 +16,7 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"sort"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -1032,6 +1033,126 @@ func TestInstallRemoteReleaseAcceptsPublishedArchive(t *testing.T) {
 	assertFileContains(t, filepath.Join(result.Destination, "SKILL.md"), "Implementation Strategy")
 }
 
+func TestInstallPublishedContentRepurposingPluginWithoutSourceSiblings(t *testing.T) {
+	workingDirectory, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("get working directory: %v", err)
+	}
+	repositoryRoot := filepath.Clean(filepath.Join(workingDirectory, "..", ".."))
+	webRoot := filepath.Join(repositoryRoot, "apps", "web")
+	releaseStore := filepath.Join(t.TempDir(), "releases")
+	publicRoot := filepath.Join(t.TempDir(), "public")
+	runPublisher(t, webRoot, releaseStore, publicRoot)
+
+	const packageID = "marketing/content-repurposing-plugin"
+	index, err := registry.LoadIndex(filepath.Join(publicRoot, "registry", "plugins-index.json"))
+	if err != nil {
+		t.Fatalf("load published plugin registry: %v", err)
+	}
+	entry, found := registry.FindSkill(index, packageID)
+	if !found {
+		t.Fatalf("published registry missing %s", packageID)
+	}
+	release, err := registry.ResolveVersion(entry, "latest")
+	if err != nil {
+		t.Fatalf("resolve published plugin version: %v", err)
+	}
+	archive, err := os.ReadFile(filepath.Join(publicRoot, "artifacts", filepath.FromSlash(packageID), release.Version+".tar.gz"))
+	if err != nil {
+		t.Fatalf("read published plugin archive: %v", err)
+	}
+
+	server := httptest.NewUnstartedServer(nil)
+	server.Config.Handler = http.HandlerFunc(func(w http.ResponseWriter, request *http.Request) {
+		switch request.URL.Path {
+		case "/registry.json":
+			servedEntry := entry
+			servedEntry.Versions = append([]registry.VersionEntry(nil), entry.Versions...)
+			for versionIndex := range servedEntry.Versions {
+				servedEntry.Versions[versionIndex].ArtifactURL = server.URL + "/artifact.tar.gz"
+				servedEntry.Versions[versionIndex].ManifestURL = server.URL + "/manifest.yaml"
+			}
+			payload, marshalErr := json.Marshal(registry.Index{RegistryVersion: index.RegistryVersion, Skills: []registry.SkillEntry{servedEntry}})
+			if marshalErr != nil {
+				t.Errorf("marshal served plugin registry: %v", marshalErr)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+			_, _ = w.Write(payload)
+		case "/artifact.tar.gz":
+			_, _ = w.Write(archive)
+		default:
+			http.NotFound(w, request)
+		}
+	})
+	server.StartTLS()
+	defer server.Close()
+
+	runtimeRoot := t.TempDir()
+	result, err := InstallRemoteRelease(context.Background(), RemoteInstallOptions{
+		RegistryURL: server.URL + "/registry.json",
+		CacheDir:    filepath.Join(t.TempDir(), "cache"),
+		Module:      "plugins",
+		Runtime:     "generic",
+		ID:          packageID,
+		Version:     release.Version,
+		TargetRoot:  filepath.Join(runtimeRoot, "plugins"),
+		HTTPClient:  server.Client(),
+	})
+	if err != nil {
+		t.Fatalf("install standalone published plugin: %v", err)
+	}
+	assertFileContains(t, filepath.Join(result.Destination, "dependencies.lock.json"), "marketing/creative-workshop-pmax-reels")
+	for _, dependencyID := range []string{
+		"marketing/creative-workshop-pmax-reels",
+		"marketing/ai-output-eval-scorecard",
+		"marketing/dynamic-creative-rules-engine",
+	} {
+		assertFileContains(t, filepath.Join(runtimeRoot, "skills", filepath.FromSlash(dependencyID), "skill.yaml"), dependencyID)
+	}
+}
+
+func TestRetainedReleaseRejectsContentOutsideArtifactChecksums(t *testing.T) {
+	workingDirectory, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("get working directory: %v", err)
+	}
+	repositoryRoot := filepath.Clean(filepath.Join(workingDirectory, "..", ".."))
+	webRoot := filepath.Join(repositoryRoot, "apps", "web")
+	releaseStore := filepath.Join(t.TempDir(), "releases")
+	publicRoot := filepath.Join(t.TempDir(), "public")
+	runPublisher(t, webRoot, releaseStore, publicRoot)
+
+	const packageID = "marketing/content-repurposing-plugin"
+	const version = "0.2.0"
+	releaseDir := filepath.Join(releaseStore, "plugins", filepath.FromSlash(packageID), version)
+	archivePath := filepath.Join(releaseDir, "package.tar.gz")
+	archive, err := os.ReadFile(archivePath)
+	if err != nil {
+		t.Fatalf("read retained plugin archive: %v", err)
+	}
+	archive = rewriteArchiveEntry(
+		t,
+		archive,
+		"bundled/skills/marketing/ai-output-eval-scorecard/README.md",
+		[]byte("tampered after publication\n"),
+	)
+	if err := os.WriteFile(archivePath, archive, 0o644); err != nil {
+		t.Fatalf("write tampered retained archive: %v", err)
+	}
+
+	_, err = ValidateRetainedRelease(
+		archivePath,
+		filepath.Join(releaseDir, "plugin.yaml"),
+		"plugins",
+		packageID,
+		version,
+	)
+	if err == nil || !strings.Contains(err.Error(), "artifact checksums") {
+		t.Fatalf("expected checksum-bound closure rejection, got %v", err)
+	}
+}
+
 func TestPublisherRetainsHistoryAndRejectsVersionMutation(t *testing.T) {
 	workingDirectory, err := os.Getwd()
 	if err != nil {
@@ -1292,6 +1413,12 @@ func TestPublisherBuildsSelfContainedPluginClosure(t *testing.T) {
 
 	const skillID = "engineering/closure-skill"
 	skillManifest := strings.Replace(remoteManifest("1.0.0"), "id: engineering/remote-fixture", "id: "+skillID, 1)
+	skillManifest = strings.Replace(
+		skillManifest,
+		"usability:\n",
+		"dependencies:\n  skills: [engineering/nested-skill]\nusability:\n",
+		1,
+	)
 	skillDir := filepath.Join(fixtureRoot, "skills", filepath.FromSlash(skillID))
 	if err := os.MkdirAll(skillDir, 0o755); err != nil {
 		t.Fatalf("create closure skill: %v", err)
@@ -1302,9 +1429,25 @@ func TestPublisherBuildsSelfContainedPluginClosure(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(skillDir, "SKILL.md"), []byte("# Closure skill\n"), 0o644); err != nil {
 		t.Fatalf("write closure skill: %v", err)
 	}
+	const nestedSkillID = "engineering/nested-skill"
+	nestedManifest := strings.Replace(remoteManifest("2.0.0"), "id: engineering/remote-fixture", "id: "+nestedSkillID, 1)
+	nestedDir := filepath.Join(fixtureRoot, "skills", filepath.FromSlash(nestedSkillID))
+	if err := os.MkdirAll(nestedDir, 0o755); err != nil {
+		t.Fatalf("create nested closure skill: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(nestedDir, "skill.yaml"), []byte(nestedManifest), 0o644); err != nil {
+		t.Fatalf("write nested closure skill manifest: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(nestedDir, "SKILL.md"), []byte("# Nested closure skill\n"), 0o644); err != nil {
+		t.Fatalf("write nested closure skill: %v", err)
+	}
 
 	const pluginID = "engineering/closure-plugin"
 	pluginManifest := remotePluginManifest("1.0.0", time.Now().UTC())
+	pluginManifest = strings.Replace(pluginManifest, "  dependency_lock: null", "  dependency_lock: dependencies.lock.json", 1)
+	pluginManifest = strings.Replace(pluginManifest, "  checksums: null", "  checksums: checksums.txt", 1)
+	pluginManifest = strings.Replace(pluginManifest, "  sbom: null", "  sbom: sbom.cdx.json", 1)
+	pluginManifest = strings.Replace(pluginManifest, "  sbom: sbom.cdx.json", "  sbom: sbom.cdx.json\n  provenance: provenance.json", 1)
 	pluginDir := filepath.Join(fixtureRoot, "plugins", filepath.FromSlash(pluginID))
 	if err := os.MkdirAll(pluginDir, 0o755); err != nil {
 		t.Fatalf("create closure plugin: %v", err)
@@ -1314,6 +1457,11 @@ func TestPublisherBuildsSelfContainedPluginClosure(t *testing.T) {
 	}
 	if err := os.WriteFile(filepath.Join(pluginDir, "plugin.json"), []byte("{}\n"), 0o644); err != nil {
 		t.Fatalf("write closure plugin descriptor: %v", err)
+	}
+	for _, generated := range []string{"dependencies.lock.json", "checksums.txt", "sbom.cdx.json", "provenance.json"} {
+		if err := os.WriteFile(filepath.Join(pluginDir, generated), []byte("generated by publisher\n"), 0o644); err != nil {
+			t.Fatalf("write artifact metadata placeholder: %v", err)
+		}
 	}
 	cacheDir := filepath.Join(pluginDir, "tests", "__pycache__")
 	if err := os.MkdirAll(cacheDir, 0o755); err != nil {
@@ -1331,9 +1479,13 @@ func TestPublisherBuildsSelfContainedPluginClosure(t *testing.T) {
 	if err != nil {
 		t.Fatalf("parse closure plugin: %v", err)
 	}
+	nestedSkill, err := registry.ParseManifest(filepath.Join(nestedDir, "skill.yaml"))
+	if err != nil {
+		t.Fatalf("parse nested closure skill: %v", err)
+	}
 	writePublisherModuleIndexes(t, fixtureRoot, map[string][]registry.SkillEntry{
-		"index.json":         {sourceEntryForPublisher(skill)},
-		"skills-index.json":  {sourceEntryForPublisher(skill)},
+		"index.json":         {sourceEntryForPublisher(skill), sourceEntryForPublisher(nestedSkill)},
+		"skills-index.json":  {sourceEntryForPublisher(skill), sourceEntryForPublisher(nestedSkill)},
 		"plugins-index.json": {sourceEntryForPublisher(plugin)},
 	})
 	runPublisherForRepository(t, webRoot, fixtureRoot, toolRoot, releaseStore, publicRoot)
@@ -1348,12 +1500,140 @@ func TestPublisherBuildsSelfContainedPluginClosure(t *testing.T) {
 	if _, ok := entries[wantManifest]; !ok {
 		t.Fatalf("plugin archive omitted declared dependency %s", wantManifest)
 	}
+	wantNestedManifest := "bundled/skills/engineering/nested-skill/skill.yaml"
+	if _, ok := entries[wantNestedManifest]; !ok {
+		t.Fatalf("plugin archive omitted transitive dependency %s", wantNestedManifest)
+	}
 	if _, ok := entries["tests/__pycache__/"]; ok {
 		t.Fatal("plugin archive included a transient Python cache directory")
 	}
 	if _, ok := entries["tests/__pycache__/ignored.pyc"]; ok {
 		t.Fatal("plugin archive included a transient Python bytecode file")
 	}
+
+	validateMutation := func(t *testing.T, mutated []byte, want string) {
+		t.Helper()
+		releaseDir := t.TempDir()
+		archivePath := filepath.Join(releaseDir, "package.tar.gz")
+		manifestPath := filepath.Join(releaseDir, "plugin.yaml")
+		if err := os.WriteFile(archivePath, mutated, 0o644); err != nil {
+			t.Fatalf("write mutated archive: %v", err)
+		}
+		if err := os.WriteFile(manifestPath, []byte(pluginManifest), 0o644); err != nil {
+			t.Fatalf("write release manifest: %v", err)
+		}
+		_, err := ValidateRetainedRelease(archivePath, manifestPath, "plugins", pluginID, "1.0.0")
+		if err == nil || !strings.Contains(err.Error(), want) {
+			t.Fatalf("expected rejection containing %q, got %v", want, err)
+		}
+	}
+
+	t.Run("rejects checksummed package omitted from lock", func(t *testing.T) {
+		unlockedManifest := strings.Replace(remoteManifest("1.0.0"), "id: engineering/remote-fixture", "id: engineering/unlocked-skill", 1)
+		mutated := mutateIntegrityArchive(t, archive, nil, nil, map[string][]byte{
+			"bundled/skills/engineering/unlocked-skill/skill.yaml": []byte(unlockedManifest),
+			"bundled/skills/engineering/unlocked-skill/SKILL.md":   []byte("# Unlocked skill\n"),
+		})
+		validateMutation(t, mutated, "archive contains undeclared bundled dependency engineering/unlocked-skill")
+	})
+
+	t.Run("rejects inconsistent SBOM metadata", func(t *testing.T) {
+		var sbom map[string]any
+		if err := json.Unmarshal(archiveFile(t, archive, "sbom.cdx.json"), &sbom); err != nil {
+			t.Fatalf("decode SBOM: %v", err)
+		}
+		components := sbom["components"].([]any)
+		components[0].(map[string]any)["version"] = "9.9.9"
+		mutatedSBOM, err := json.MarshalIndent(sbom, "", "  ")
+		if err != nil {
+			t.Fatalf("encode mutated SBOM: %v", err)
+		}
+		mutated := mutateIntegrityArchive(t, archive, map[string][]byte{
+			"sbom.cdx.json": append(mutatedSBOM, '\n'),
+		}, nil, nil)
+		validateMutation(t, mutated, "SBOM contains an unlocked component")
+	})
+
+	for _, contradictoryHash := range []map[string]any{
+		{"alg": "SHA-256", "content": strings.Repeat("0", sha256.Size*2)},
+		{"alg": "SHA-512", "content": strings.Repeat("0", sha256.Size*4)},
+	} {
+		algorithm := contradictoryHash["alg"].(string)
+		t.Run("rejects contradictory SBOM "+algorithm+" hash", func(t *testing.T) {
+			var sbom map[string]any
+			if err := json.Unmarshal(archiveFile(t, archive, "sbom.cdx.json"), &sbom); err != nil {
+				t.Fatalf("decode SBOM: %v", err)
+			}
+			components := sbom["components"].([]any)
+			component := components[0].(map[string]any)
+			hashes := component["hashes"].([]any)
+			component["hashes"] = append(hashes, contradictoryHash)
+			mutatedSBOM, err := json.MarshalIndent(sbom, "", "  ")
+			if err != nil {
+				t.Fatalf("encode mutated SBOM: %v", err)
+			}
+			mutated := mutateIntegrityArchive(t, archive, map[string][]byte{
+				"sbom.cdx.json": append(mutatedSBOM, '\n'),
+			}, nil, nil)
+			validateMutation(t, mutated, "does not match its locked digest")
+		})
+	}
+
+	t.Run("rejects inconsistent SBOM root", func(t *testing.T) {
+		var sbom map[string]any
+		if err := json.Unmarshal(archiveFile(t, archive, "sbom.cdx.json"), &sbom); err != nil {
+			t.Fatalf("decode SBOM: %v", err)
+		}
+		metadata := sbom["metadata"].(map[string]any)
+		root := metadata["component"].(map[string]any)
+		root["version"] = "9.9.9"
+		mutatedSBOM, err := json.MarshalIndent(sbom, "", "  ")
+		if err != nil {
+			t.Fatalf("encode mutated SBOM: %v", err)
+		}
+		mutated := mutateIntegrityArchive(t, archive, map[string][]byte{
+			"sbom.cdx.json": append(mutatedSBOM, '\n'),
+		}, nil, nil)
+		validateMutation(t, mutated, "SBOM root component does not match the locked plugin")
+	})
+
+	t.Run("rejects inconsistent SBOM dependency graph", func(t *testing.T) {
+		var sbom map[string]any
+		if err := json.Unmarshal(archiveFile(t, archive, "sbom.cdx.json"), &sbom); err != nil {
+			t.Fatalf("decode SBOM: %v", err)
+		}
+		sbom["dependencies"] = []any{}
+		mutatedSBOM, err := json.MarshalIndent(sbom, "", "  ")
+		if err != nil {
+			t.Fatalf("encode mutated SBOM: %v", err)
+		}
+		mutated := mutateIntegrityArchive(t, archive, map[string][]byte{
+			"sbom.cdx.json": append(mutatedSBOM, '\n'),
+		}, nil, nil)
+		validateMutation(t, mutated, "SBOM dependency graph does not describe the complete locked closure")
+	})
+
+	t.Run("rejects omitted provenance", func(t *testing.T) {
+		mutated := mutateIntegrityArchive(t, archive, nil, map[string]bool{"provenance.json": true}, nil)
+		validateMutation(t, mutated, "artifact provenance")
+	})
+
+	t.Run("rejects provenance inconsistent with lock", func(t *testing.T) {
+		var provenance map[string]any
+		if err := json.Unmarshal(archiveFile(t, archive, "provenance.json"), &provenance); err != nil {
+			t.Fatalf("decode provenance: %v", err)
+		}
+		materials := provenance["materials"].([]any)
+		materials[0].(map[string]any)["sha256"] = strings.Repeat("0", sha256.Size*2)
+		mutatedProvenance, err := json.MarshalIndent(provenance, "", "  ")
+		if err != nil {
+			t.Fatalf("encode mutated provenance: %v", err)
+		}
+		mutated := mutateIntegrityArchive(t, archive, map[string][]byte{
+			"provenance.json": append(mutatedProvenance, '\n'),
+		}, nil, nil)
+		validateMutation(t, mutated, "provenance material")
+	})
 
 	server := newPluginReleaseServer(t, archive, pluginManifest)
 	defer server.Close()
@@ -1376,6 +1656,11 @@ func TestPublisherBuildsSelfContainedPluginClosure(t *testing.T) {
 		t,
 		filepath.Join(runtimeRoot, "skills", filepath.FromSlash(skillID), "SKILL.md"),
 		"Closure skill",
+	)
+	assertFileContains(
+		t,
+		filepath.Join(runtimeRoot, "skills", filepath.FromSlash(nestedSkillID), "SKILL.md"),
+		"Nested closure skill",
 	)
 }
 
@@ -1760,7 +2045,7 @@ deprecated: false
 }
 
 func remotePluginManifest(version string, verifiedAt time.Time) string {
-	return `schema_version: "2.1"
+	return `schema_version: "2.0"
 id: engineering/closure-plugin
 name: Closure Plugin
 description: Self-contained plugin used to prove deterministic dependency packaging.
@@ -1917,6 +2202,182 @@ func rewriteArchiveManifest(t *testing.T, archive, manifest []byte, extraHeader 
 	}
 	if err := gzipWriter.Close(); err != nil {
 		t.Fatalf("close rewritten gzip archive: %v", err)
+	}
+	return output.Bytes()
+}
+
+func rewriteArchiveEntry(t *testing.T, archive []byte, target string, replacement []byte) []byte {
+	t.Helper()
+	reader, err := gzip.NewReader(bytes.NewReader(archive))
+	if err != nil {
+		t.Fatalf("open source archive: %v", err)
+	}
+	defer reader.Close()
+	tarReader := tar.NewReader(reader)
+	var output bytes.Buffer
+	gzipWriter := gzip.NewWriter(&output)
+	tarWriter := tar.NewWriter(gzipWriter)
+	found := false
+	for {
+		header, err := tarReader.Next()
+		if errors.Is(err, io.EOF) {
+			break
+		}
+		if err != nil {
+			t.Fatalf("read source archive: %v", err)
+		}
+		data, err := io.ReadAll(tarReader)
+		if err != nil {
+			t.Fatalf("read source archive member: %v", err)
+		}
+		copyHeader := *header
+		if header.Name == target {
+			data = replacement
+			copyHeader.Size = int64(len(data))
+			found = true
+		}
+		if err := tarWriter.WriteHeader(&copyHeader); err != nil {
+			t.Fatalf("write rewritten archive header: %v", err)
+		}
+		if len(data) > 0 {
+			if _, err := tarWriter.Write(data); err != nil {
+				t.Fatalf("write rewritten archive member: %v", err)
+			}
+		}
+	}
+	if !found {
+		t.Fatalf("archive entry %s was not found", target)
+	}
+	if err := tarWriter.Close(); err != nil {
+		t.Fatalf("close rewritten tar archive: %v", err)
+	}
+	if err := gzipWriter.Close(); err != nil {
+		t.Fatalf("close rewritten gzip archive: %v", err)
+	}
+	return output.Bytes()
+}
+
+type integrityArchiveMember struct {
+	header tar.Header
+	data   []byte
+}
+
+func archiveFile(t *testing.T, archive []byte, target string) []byte {
+	t.Helper()
+	for _, member := range readIntegrityArchive(t, archive) {
+		if member.header.Name == target {
+			return append([]byte(nil), member.data...)
+		}
+	}
+	t.Fatalf("archive entry %s was not found", target)
+	return nil
+}
+
+func mutateIntegrityArchive(t *testing.T, archive []byte, replacements map[string][]byte, removals map[string]bool, additions map[string][]byte) []byte {
+	t.Helper()
+	members := readIntegrityArchive(t, archive)
+	found := make(map[string]bool, len(replacements))
+	updated := make([]integrityArchiveMember, 0, len(members)+len(additions))
+	for _, member := range members {
+		if removals[member.header.Name] {
+			continue
+		}
+		if replacement, ok := replacements[member.header.Name]; ok {
+			member.data = append([]byte(nil), replacement...)
+			member.header.Size = int64(len(member.data))
+			found[member.header.Name] = true
+		}
+		updated = append(updated, member)
+	}
+	for target := range replacements {
+		if !found[target] {
+			t.Fatalf("archive entry %s was not found", target)
+		}
+	}
+	additionNames := make([]string, 0, len(additions))
+	for name := range additions {
+		additionNames = append(additionNames, name)
+	}
+	sort.Strings(additionNames)
+	for _, name := range additionNames {
+		data := additions[name]
+		updated = append(updated, integrityArchiveMember{
+			header: tar.Header{Name: name, Mode: 0o644, Size: int64(len(data)), Typeflag: tar.TypeReg},
+			data:   append([]byte(nil), data...),
+		})
+	}
+	checksumLines := make([]string, 0, len(updated))
+	for _, member := range updated {
+		if member.header.Typeflag != tar.TypeReg || member.header.Name == "checksums.txt" {
+			continue
+		}
+		digest := sha256.Sum256(member.data)
+		checksumLines = append(checksumLines, hex.EncodeToString(digest[:])+"  "+member.header.Name)
+	}
+	sort.Strings(checksumLines)
+	checksumBytes := []byte(strings.Join(checksumLines, "\n") + "\n")
+	checksumFound := false
+	for index := range updated {
+		if updated[index].header.Name == "checksums.txt" {
+			updated[index].data = checksumBytes
+			updated[index].header.Size = int64(len(checksumBytes))
+			checksumFound = true
+		}
+	}
+	if !checksumFound {
+		t.Fatal("archive has no checksums.txt")
+	}
+	return writeIntegrityArchive(t, updated)
+}
+
+func readIntegrityArchive(t *testing.T, archive []byte) []integrityArchiveMember {
+	t.Helper()
+	reader, err := gzip.NewReader(bytes.NewReader(archive))
+	if err != nil {
+		t.Fatalf("open integrity archive: %v", err)
+	}
+	defer reader.Close()
+	tarReader := tar.NewReader(reader)
+	members := make([]integrityArchiveMember, 0)
+	for {
+		header, err := tarReader.Next()
+		if errors.Is(err, io.EOF) {
+			break
+		}
+		if err != nil {
+			t.Fatalf("read integrity archive: %v", err)
+		}
+		data, err := io.ReadAll(tarReader)
+		if err != nil {
+			t.Fatalf("read integrity archive member: %v", err)
+		}
+		copyHeader := *header
+		members = append(members, integrityArchiveMember{header: copyHeader, data: data})
+	}
+	return members
+}
+
+func writeIntegrityArchive(t *testing.T, members []integrityArchiveMember) []byte {
+	t.Helper()
+	var output bytes.Buffer
+	gzipWriter := gzip.NewWriter(&output)
+	tarWriter := tar.NewWriter(gzipWriter)
+	for _, member := range members {
+		header := member.header
+		if err := tarWriter.WriteHeader(&header); err != nil {
+			t.Fatalf("write integrity archive header: %v", err)
+		}
+		if len(member.data) > 0 {
+			if _, err := tarWriter.Write(member.data); err != nil {
+				t.Fatalf("write integrity archive member: %v", err)
+			}
+		}
+	}
+	if err := tarWriter.Close(); err != nil {
+		t.Fatalf("close integrity tar archive: %v", err)
+	}
+	if err := gzipWriter.Close(); err != nil {
+		t.Fatalf("close integrity gzip archive: %v", err)
 	}
 	return output.Bytes()
 }

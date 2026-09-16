@@ -1,0 +1,82 @@
+{
+  "schema_version": "2.1",
+  "id": "marketing/content-repurposing-plugin",
+  "name": "Content Repurposing Plugin",
+  "description": "Bundle content transformation, review guidance, and publishing-oriented workflow references into a portable plugin for multi-channel reuse.",
+  "category": "marketing-plugins/content",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "content",
+    "repurposing",
+    "publishing",
+    "workflow"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "usability": {
+    "availability": "not-verified",
+    "execution": "bundle",
+    "limitations": [
+      "Publishing remains human-approved; the bundle does not grant external publishing authority."
+    ],
+    "quickstart": "Install the checksum-verified release and review the generated dependency lock and SBOM before enabling its hooks.",
+    "source": "declared"
+  },
+  "execution": {
+    "kind": "bundle",
+    "supported_platforms": [
+      "linux",
+      "macos",
+      "windows"
+    ],
+    "supported_runtimes": [
+      "codex",
+      "claude",
+      "generic"
+    ]
+  },
+  "artifact": {
+    "self_contained": true,
+    "dependency_lock": "dependencies.lock.json",
+    "checksums": "checksums.txt",
+    "sbom": "sbom.cdx.json",
+    "provenance": "provenance.json"
+  },
+  "authentication": {
+    "status": "none",
+    "methods": [
+      "none"
+    ],
+    "credential_bindings": [],
+    "scopes": [],
+    "credential_storage": "No credentials are used by this instruction bundle.",
+    "validation": "Confirm no authentication challenge is introduced by runtime wiring.",
+    "revocation": "Not applicable; remove the installed bundle to withdraw it."
+  },
+  "verification": {
+    "evidence": [
+      "evidence://tests/content-repurposing-plugin/standalone-bundle"
+    ],
+    "last_verified_at": "2026-09-15T00:00:00Z"
+  },
+  "includes": {
+    "skills": [
+      "marketing/creative-workshop-pmax-reels",
+      "marketing/ai-output-eval-scorecard",
+      "marketing/dynamic-creative-rules-engine"
+    ],
+    "hooks": [
+      "content-review-before-publish"
+    ]
+  },
+  "requires": {
+    "approvals": [
+      "human-review-for-publish"
+    ]
+  }
+}

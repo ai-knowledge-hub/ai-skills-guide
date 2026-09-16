@@ -100,7 +100,7 @@ async function publishModuleManifests({ dir, manifest }) {
       throw new Error(`Current registry projection is missing for ${dir}:${id}@${version}`);
     }
     const manifestBytes = await fs.readFile(manifestPath);
-    const artifactBytes = await createPackageTarball(dir, entryDir, sourceEntry.projection);
+    const artifactBytes = await createPackageTarball(dir, entryDir, sourceEntry.projection, version);
     const releaseDir = path.join(releaseStoreRoot, dir, ...id.split("/"), version);
     await persistImmutableRelease(
       releaseDir,
@@ -337,23 +337,11 @@ function extractScalar(raw, key) {
   return match[1].trim().replace(/^['"]|['"]$/g, "");
 }
 
-async function createPackageTarball(moduleDir, sourceDir, projection) {
+async function createPackageTarball(moduleDir, sourceDir, projection, version) {
   const members = await collectArchiveMembers(sourceDir);
   if (moduleDir === "plugins" && projection.artifact?.self_contained) {
-    const closureSets = [
-      ["skills", projection.includes?.skills ?? []],
-      ["agents", projection.includes?.agents ?? []],
-      ["tools-mcp", projection.includes?.tools ?? []]
-    ];
-    for (const [dependencyModule, ids] of closureSets) {
-      for (const id of ids) {
-        const dependencyRoot = path.join(repoRoot, dependencyModule, ...id.split("/"));
-        if (!(await exists(dependencyRoot))) {
-          throw new Error(`Self-contained plugin is missing ${dependencyModule} dependency source ${id}`);
-        }
-        await collectDirectory(dependencyRoot, `bundled/${dependencyModule}/${id}`, members);
-      }
-    }
+    const components = await collectPluginClosure(projection, members);
+    addArtifactMetadata(projection, version, components, members);
   }
   members.sort((left, right) => Buffer.compare(Buffer.from(left.path), Buffer.from(right.path)));
   for (let index = 1; index < members.length; index += 1) {
@@ -380,6 +368,172 @@ async function createPackageTarball(moduleDir, sourceDir, projection) {
   archive.fill(0, 4, 8);
   archive[9] = 255;
   return archive;
+}
+
+async function collectPluginClosure(projection, members) {
+  const queue = dependencyReferences(projection, true);
+  const components = new Map();
+  while (queue.length > 0) {
+    const reference = queue.shift();
+    const key = `${reference.module}:${reference.id}`;
+    if (components.has(key)) {
+      continue;
+    }
+    const sourceEntry = sourceEntries.get(key);
+    if (!sourceEntry) {
+      throw new Error(`Self-contained plugin is missing ${reference.module} dependency source ${reference.id}`);
+    }
+    const dependencyRoot = path.join(repoRoot, reference.module, ...reference.id.split("/"));
+    if (!(await exists(dependencyRoot))) {
+      throw new Error(`Self-contained plugin is missing ${reference.module} dependency source ${reference.id}`);
+    }
+    const prefix = `bundled/${reference.module}/${reference.id}`;
+    await collectDirectory(dependencyRoot, prefix, members);
+    const component = {
+      module: reference.module,
+      id: reference.id,
+      version: sourceEntry.latest,
+      prefix,
+      projection: sourceEntry.projection
+    };
+    components.set(key, component);
+    queue.push(...dependencyReferences(sourceEntry.projection, false));
+  }
+  return [...components.values()].sort((left, right) =>
+    `${left.module}:${left.id}`.localeCompare(`${right.module}:${right.id}`)
+  );
+}
+
+function dependencyReferences(projection, includePluginComposition) {
+  const references = [];
+  const add = (module, ids) => {
+    for (const id of ids ?? []) {
+      if (id.includes("/")) {
+        references.push({ module, id });
+      }
+    }
+  };
+  add("skills", projection.dependencies?.skills);
+  add("agents", projection.dependencies?.agents);
+  add("tools-mcp", projection.dependencies?.tools);
+  if (includePluginComposition) {
+    add("skills", projection.includes?.skills);
+    add("agents", projection.includes?.agents);
+    add("tools-mcp", projection.includes?.tools);
+  }
+  return references;
+}
+
+function addArtifactMetadata(projection, version, components, members) {
+  const lockPath = projection.artifact?.dependency_lock;
+  const checksumPath = projection.artifact?.checksums;
+  const sbomPath = projection.artifact?.sbom;
+  const provenancePath = projection.artifact?.provenance;
+  if (!lockPath || !checksumPath || !sbomPath || !provenancePath) {
+    throw new Error(`Self-contained plugin ${projection.id} must declare dependency_lock, checksums, sbom, and provenance paths`);
+  }
+  for (const generatedPath of [lockPath, checksumPath, sbomPath, provenancePath]) {
+    const index = members.findIndex((member) => member.path === generatedPath);
+    if (index >= 0) {
+      members.splice(index, 1);
+    }
+  }
+
+  const lockedComponents = components.map((component) => ({
+    module: component.module,
+    id: component.id,
+    version: component.version,
+    content_sha256: digestMemberSet(members, `${component.prefix}/`),
+    manifest_path: `${component.prefix}/${manifestNameForModule(component.module)}`,
+    dependencies: dependencyReferences(component.projection, false)
+      .map((reference) => `${reference.module}:${reference.id}`)
+      .sort()
+  }));
+  const rootReference = `plugins:${projection.id}@${version}`;
+  const lock = {
+    lock_version: "1.0",
+    root: {
+      module: "plugins",
+      id: projection.id,
+      version
+    },
+    components: lockedComponents
+  };
+  const lockBytes = jsonBytes(lock);
+  members.push(fileMember(lockPath, lockBytes));
+
+  const closureDigest = digestMemberSet(members);
+  const componentReferences = new Map(lockedComponents.map((component) => [
+    `${component.module}:${component.id}`,
+    `${component.module}:${component.id}@${component.version}`
+  ]));
+  const rootDependencies = [...new Set(dependencyReferences(projection, true)
+    .map((reference) => componentReferences.get(`${reference.module}:${reference.id}`)))]
+    .filter(Boolean)
+    .sort();
+  const sbom = {
+    bomFormat: "CycloneDX",
+    specVersion: "1.5",
+    version: 1,
+    metadata: {
+      component: { type: "application", "bom-ref": rootReference, name: projection.id, version: lock.root.version }
+    },
+    components: lockedComponents.map((component) => ({
+      type: "library",
+      "bom-ref": `${component.module}:${component.id}@${component.version}`,
+      group: component.id.split("/")[0],
+      name: component.id.split("/")[1],
+      version: component.version,
+      hashes: [{ alg: "SHA-256", content: component.content_sha256 }],
+      properties: [{ name: "ai.skills.module", value: component.module }]
+    })),
+    dependencies: [
+      { ref: rootReference, dependsOn: rootDependencies },
+      ...lockedComponents.map((component) => ({
+        ref: `${component.module}:${component.id}@${component.version}`,
+        dependsOn: component.dependencies.map((dependency) => componentReferences.get(dependency)).sort()
+      }))
+    ]
+  };
+  members.push(fileMember(sbomPath, jsonBytes(sbom)));
+  members.push(fileMember(provenancePath, jsonBytes({
+    provenance_version: "1.0",
+    subject: { module: "plugins", id: projection.id, version: lock.root.version, closure_sha256: closureDigest },
+    builder: "ai-skills-guide/prepare-public-assets",
+    materials: lockedComponents.map((component) => ({
+      ref: `${component.module}:${component.id}@${component.version}`,
+      sha256: component.content_sha256
+    }))
+  })));
+
+  const checksumLines = members
+    .filter((member) => member.type === "0" && member.path !== checksumPath)
+    .sort((left, right) => Buffer.compare(Buffer.from(left.path), Buffer.from(right.path)))
+    .map((member) => `${createHash("sha256").update(member.data).digest("hex")}  ${member.path}`);
+  members.push(fileMember(checksumPath, Buffer.from(`${checksumLines.join("\n")}\n`)));
+}
+
+function manifestNameForModule(module) {
+  return { skills: "skill.yaml", agents: "agent.yaml", "tools-mcp": "tool.yaml" }[module];
+}
+
+function digestMemberSet(members, prefix = "") {
+  const lines = members
+    .filter((member) => member.type === "0" && member.path.startsWith(prefix))
+    .map((member) => {
+      const relativePath = member.path.slice(prefix.length);
+      return `${createHash("sha256").update(member.data).digest("hex")} ${member.mode.toString(8)} ${member.size} ${relativePath}`;
+    })
+    .sort();
+  return createHash("sha256").update(`${lines.join("\n")}\n`).digest("hex");
+}
+
+function fileMember(relativePath, data) {
+  return { path: relativePath, mode: 0o644, size: data.length, type: "0", data };
+}
+
+function jsonBytes(value) {
+  return Buffer.from(`${JSON.stringify(value, null, 2)}\n`);
 }
 
 async function collectArchiveMembers(sourceDir) {

@@ -44,6 +44,7 @@ type ArtifactMetadata struct {
 	DependencyLock *string `json:"dependency_lock"`
 	Checksums      *string `json:"checksums"`
 	SBOM           *string `json:"sbom"`
+	Provenance     *string `json:"provenance,omitempty"`
 }
 
 type AuthenticationMetadata struct {

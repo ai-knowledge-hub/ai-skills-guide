@@ -1,0 +1,24 @@
+{
+  "provenance_version": "1.0",
+  "subject": {
+    "module": "plugins",
+    "id": "marketing/content-repurposing-plugin",
+    "version": "0.2.0",
+    "closure_sha256": "b9b1f03ee1c1d60930d45400c3769862116a22566b90ec6035500dd7431d327f"
+  },
+  "builder": "ai-skills-guide/prepare-public-assets",
+  "materials": [
+    {
+      "ref": "skills:marketing/ai-output-eval-scorecard@0.1.0",
+      "sha256": "0b1f20517d784b85873b5ab0fe75d0876be59caf83c90c63ed28fdfaee40569e"
+    },
+    {
+      "ref": "skills:marketing/creative-workshop-pmax-reels@0.1.0",
+      "sha256": "65e00edbd0bb0f6c3f09cb6ca123c8372e8300e2fb0976ecbfe1b878a8ce93fe"
+    },
+    {
+      "ref": "skills:marketing/dynamic-creative-rules-engine@0.1.0",
+      "sha256": "82a54c130fa9c9d5915591f6f1b78bd7c66a4a09743cbda0cb3fc37ff974a41d"
+    }
+  ]
+}

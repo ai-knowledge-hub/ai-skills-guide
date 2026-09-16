@@ -221,14 +221,14 @@ For generic runtimes:
   --target ./my-agent/skills
 ```
 
-## Use Plugin Templates
+## Use Plugin Packages
 
-Current plugin entries are `template-only` source compositions. The operational
-`skills-hub install --module plugins` path rejects them before writing runtime
-files, resolving dependencies, or generating Codex/Claude registration
-manifests. Review each plugin's `README.md`, `plugin.json`, referenced modules,
-hooks, secrets, and approval rules in the repository, then implement and verify
-a self-contained bundle before changing its availability.
+Most plugin entries remain `template-only` source compositions, and the
+operational installer rejects those before writing runtime files. The
+content-repurposing plugin is the first `not-verified`, self-contained release:
+its complete local closure, dependency lock, checksums, SBOM, and provenance
+are verified before installation. Other plugins may follow only after their
+declared closure and hooks meet the same artifact contract.
 
 ## Use Agent Packages (Step-by-step)
 

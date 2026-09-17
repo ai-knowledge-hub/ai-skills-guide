@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"sync"
@@ -40,12 +41,35 @@ func validateManifestSchema(manifestPath string) error {
 	return nil
 }
 
+func validateAuthDriverSchema(driverPath string) error {
+	manifestSchemasOnce.Do(compileManifestSchemas)
+	if manifestSchemasErr != nil {
+		return fmt.Errorf("compile canonical manifest schemas: %w", manifestSchemasErr)
+	}
+	payload, err := os.ReadFile(driverPath)
+	if err != nil {
+		return fmt.Errorf("open authentication driver %s: %w", driverPath, err)
+	}
+	var document any
+	decoder := json.NewDecoder(bytes.NewReader(payload))
+	if err := decoder.Decode(&document); err != nil {
+		return fmt.Errorf("decode authentication driver %s: %w", driverPath, err)
+	}
+	if err := decoder.Decode(&struct{}{}); err != io.EOF {
+		return fmt.Errorf("authentication driver %s contains trailing data", driverPath)
+	}
+	if err := manifestSchemas["auth-driver.schema.json"].Validate(document); err != nil {
+		return fmt.Errorf("authentication driver %s does not satisfy auth-driver.schema.json: %w", driverPath, err)
+	}
+	return nil
+}
+
 func compileManifestSchemas() {
 	compiler := jsonschema.NewCompiler()
 	compiler.UseRegexpEngine(compileECMAScriptRegexp)
 	compiler.AssertFormat()
-	manifestSchemas = make(map[string]*jsonschema.Schema, 4)
-	for _, name := range []string{"skill.schema.json", "agent.schema.json", "tool.schema.json", "plugin.schema.json"} {
+	manifestSchemas = make(map[string]*jsonschema.Schema, 5)
+	for _, name := range []string{"skill.schema.json", "agent.schema.json", "tool.schema.json", "plugin.schema.json", "auth-driver.schema.json"} {
 		data, err := manifestschemas.ManifestFiles.ReadFile(name)
 		if err != nil {
 			manifestSchemasErr = err

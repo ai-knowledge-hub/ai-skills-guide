@@ -65,6 +65,9 @@ type installTreePlan struct {
 	SourceDir  string
 	TargetRoot string
 	ID         string
+	Module     string
+	Version    string
+	Entry      registry.SkillEntry
 }
 
 type closureInstallOperation struct {
@@ -214,6 +217,37 @@ func InstallRemoteRelease(ctx context.Context, options RemoteInstallOptions) (Re
 		if err != nil {
 			return RemoteInstallResult{}, fmt.Errorf("plugin dependency admission failed: %w; the release was not installed", err)
 		}
+	}
+	runtimeContractSHA256, err := RuntimeContractSHA256(manifestEntry, version.Version)
+	if err != nil {
+		return RemoteInstallResult{}, fmt.Errorf("install receipt preparation failed: %w; the release was not installed", err)
+	}
+	closure := make([]InstallReceiptMember, 0, len(installPlans))
+	for _, plan := range installPlans {
+		if plan.Module == "plugins" {
+			continue
+		}
+		contractDigest, digestErr := RuntimeContractSHA256(plan.Entry, plan.Version)
+		if digestErr != nil {
+			return RemoteInstallResult{}, fmt.Errorf("plugin dependency receipt preparation failed: %w; the release was not installed", digestErr)
+		}
+		if writeErr := WriteInstallReceipt(plan.SourceDir, InstallReceipt{
+			Source: "bundled", Module: plan.Module, ID: plan.ID, Version: plan.Version,
+			Runtime: options.Runtime, RuntimeContractSHA256: contractDigest, ParentArtifactSHA256: strings.ToLower(version.SHA256),
+		}); writeErr != nil {
+			return RemoteInstallResult{}, fmt.Errorf("plugin dependency receipt preparation failed: %w; the release was not installed", writeErr)
+		}
+		memberReceipt, verifyErr := VerifyInstallReceipt(plan.SourceDir, plan.Module, plan.ID, plan.Version, options.Runtime, "", contractDigest)
+		if verifyErr != nil {
+			return RemoteInstallResult{}, fmt.Errorf("plugin dependency receipt verification failed: %w; the release was not installed", verifyErr)
+		}
+		closure = append(closure, InstallReceiptMember{Module: plan.Module, ID: plan.ID, Version: plan.Version, RuntimeContractSHA256: contractDigest, TreeSHA256: memberReceipt.TreeSHA256})
+	}
+	if err := WriteInstallReceipt(extractRoot, InstallReceipt{
+		Source: "remote", Module: options.Module, ID: entry.ID, Version: version.Version,
+		Runtime: options.Runtime, ArtifactSHA256: strings.ToLower(version.SHA256), RuntimeContractSHA256: runtimeContractSHA256, Closure: closure,
+	}); err != nil {
+		return RemoteInstallResult{}, fmt.Errorf("install receipt preparation failed: %w; the release was not installed", err)
 	}
 	if cacheRegistry {
 		selectors := []string{normalizedVersionSelector(options.Version)}
@@ -680,7 +714,7 @@ func remotePluginInstallPlans(extractRoot, pluginTargetRoot, runtimeName string,
 	// The plugin is transaction operation zero. Upgrades deactivate that path
 	// before changing dependencies, and recovery restores it only after every
 	// dependency has returned to its previous version.
-	plans = append(plans, installTreePlan{SourceDir: extractRoot, TargetRoot: pluginTargetRoot, ID: manifest.ID})
+	plans = append(plans, installTreePlan{SourceDir: extractRoot, TargetRoot: pluginTargetRoot, ID: manifest.ID, Module: "plugins", Version: manifest.Version, Entry: registry.ProjectManifest(manifest)})
 	sets := []struct {
 		moduleDir  string
 		moduleName string
@@ -723,7 +757,7 @@ func remotePluginInstallPlans(extractRoot, pluginTargetRoot, runtimeName string,
 			if err := ValidateOperationalInstall(registry.ProjectManifest(dependency)); err != nil {
 				return nil, fmt.Errorf("%s dependency %s: %w", set.moduleName, id, err)
 			}
-			plans = append(plans, installTreePlan{SourceDir: sourceDir, TargetRoot: target.TargetPath, ID: id})
+			plans = append(plans, installTreePlan{SourceDir: sourceDir, TargetRoot: target.TargetPath, ID: id, Module: set.moduleName, Version: dependency.Version, Entry: registry.ProjectManifest(dependency)})
 		}
 	}
 	return plans, nil

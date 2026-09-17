@@ -23,6 +23,27 @@ const (
 var semverPattern = regexp.MustCompile(`^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$`)
 var packageIDPattern = regexp.MustCompile(`^[a-z0-9-]+/[a-z0-9-]+$`)
 
+var authenticationDriverFlows = map[string]string{
+	"api-key": "credential-binding", "bearer-token": "credential-binding",
+	"oauth-authorization-code-pkce": "interactive-browser", "oauth-device-flow": "device-code",
+	"oauth-client-credentials": "non-interactive-service", "service-account": "non-interactive-service",
+	"workload-identity": "non-interactive-workload", "brokered": "brokered", "custom": "custom",
+}
+
+type authenticationDriverDocument struct {
+	SchemaVersion string                              `json:"schema_version"`
+	Method        string                              `json:"method"`
+	Flow          string                              `json:"flow"`
+	Runtimes      []string                            `json:"runtimes"`
+	Bootstrap     authenticationDriverCommandDocument `json:"bootstrap"`
+	Credential    authenticationDriverCommandDocument `json:"credential"`
+	Status        authenticationDriverCommandDocument `json:"status"`
+}
+
+type authenticationDriverCommandDocument struct {
+	Command []string `json:"command"`
+}
+
 type moduleDefinition struct {
 	directory string
 	manifest  string
@@ -151,6 +172,9 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time, requ
 		if err := validateExecutionPaths(packageDir, manifestPath, manifest.Execution); err != nil {
 			return err
 		}
+		if err := validateAuthenticationDrivers(packageDir, manifestPath, manifest.Authentication, manifest.Runtimes); err != nil {
+			return err
+		}
 		if authenticationIsRequired(manifest) && manifest.Authentication.Status == "none" {
 			return fmt.Errorf("manifest %s requires authentication but declares authentication.status none", manifestPath)
 		}
@@ -169,6 +193,64 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time, requ
 		case "local-tool", "remote-integration":
 			if _, ok := manifest.Entrypoints["scripts_dir"]; !ok {
 				return fmt.Errorf("manifest %s claims usable-now %s without a scripts_dir entrypoint", manifestPath, manifest.Usability.Execution)
+			}
+		}
+	}
+	return nil
+}
+
+func validateAuthenticationDrivers(packageDir, manifestPath string, authentication AuthenticationMetadata, runtimes []string) error {
+	if authentication.Status == "none" {
+		return nil
+	}
+	for _, method := range authentication.Methods {
+		if method == "none" {
+			continue
+		}
+		driverPath := filepath.Join(packageDir, "auth", method+".json")
+		_, statErr := os.Stat(driverPath)
+		required := method != "api-key" && method != "bearer-token"
+		if os.IsNotExist(statErr) && !required {
+			continue
+		}
+		if statErr != nil {
+			return fmt.Errorf("manifest %s authentication method %s requires a packaged driver: %w", manifestPath, method, statErr)
+		}
+		if err := validateAuthDriverSchema(driverPath); err != nil {
+			return err
+		}
+		payload, err := os.ReadFile(driverPath)
+		if err != nil {
+			return err
+		}
+		var driver authenticationDriverDocument
+		if err := json.Unmarshal(payload, &driver); err != nil {
+			return fmt.Errorf("decode authentication driver %s: %w", driverPath, err)
+		}
+		if driver.SchemaVersion != "skills-hub.auth-driver/v1" || driver.Method != method || driver.Flow != authenticationDriverFlows[method] {
+			return fmt.Errorf("authentication driver %s does not match method %s and its required flow", driverPath, method)
+		}
+		for _, runtimeName := range runtimes {
+			if !containsString(driver.Runtimes, runtimeName) {
+				return fmt.Errorf("authentication driver %s does not support declared runtime %s", driverPath, runtimeName)
+			}
+		}
+		commands := []struct {
+			name    string
+			command []string
+		}{{"bootstrap", driver.Bootstrap.Command}, {"credential", driver.Credential.Command}, {"status", driver.Status.Command}}
+		for _, declared := range commands {
+			if err := validateContainedPath(packageDir, declared.command[0], false); err != nil {
+				return fmt.Errorf("authentication driver %s %s command: %w", driverPath, declared.name, err)
+			}
+			info, err := os.Stat(filepath.Join(packageDir, filepath.FromSlash(declared.command[0])))
+			if err != nil || info.Mode()&0o111 == 0 {
+				return fmt.Errorf("authentication driver %s %s command is not executable", driverPath, declared.name)
+			}
+			for _, argument := range declared.command[1:] {
+				if strings.ContainsRune(argument, '\x00') || ContainsCredentialShapedValue(argument) {
+					return fmt.Errorf("authentication driver %s %s command contains unsafe material", driverPath, declared.name)
+				}
 			}
 		}
 	}

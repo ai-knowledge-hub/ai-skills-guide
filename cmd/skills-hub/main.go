@@ -15,6 +15,7 @@ import (
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/agents"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/installer"
 	pluginvalidate "github.com/ai-knowledge-hub/ai-skills-guide/internal/plugins"
+	"github.com/ai-knowledge-hub/ai-skills-guide/internal/readiness"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/skills"
 )
@@ -40,6 +41,12 @@ func main() {
 		err = runValidate(args)
 	case "install":
 		err = runInstall(args)
+	case "auth":
+		err = runAuth(args)
+	case "doctor":
+		err = runDoctor(args)
+	case "smoke":
+		err = runSmoke(args)
 	case "run-agent":
 		err = runAgent(args)
 	case "help", "-h", "--help":
@@ -59,6 +66,9 @@ func runList(args []string) error {
 	fs := flag.NewFlagSet("list", flag.ContinueOnError)
 	module := fs.String("module", "skills", "module: skills|agents|tools|plugins")
 	registryPath := fs.String("registry", "", "registry index path (defaults by module)")
+	readinessRuntime := fs.String("runtime", "", "derive local evidence-backed status for this runtime")
+	readinessTarget := fs.String("target", "", "installed module directory used for local status")
+	stateDir := fs.String("state-dir", defaultStateDir(), "local readiness evidence directory")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -71,12 +81,34 @@ func runList(args []string) error {
 	if err != nil {
 		return err
 	}
+	var installed installer.RuntimeTarget
+	if strings.TrimSpace(*readinessRuntime) != "" {
+		installed, err = installer.ResolveRuntimeTargetForModule(*readinessRuntime, moduleName, *readinessTarget)
+		if err != nil {
+			return err
+		}
+	}
 	for _, s := range idx.Skills {
 		status := "active"
 		if s.Deprecated {
 			status = "deprecated"
 		}
-		fmt.Printf("%s\t%s\t%s\t%s\t%s\n", s.ID, status, s.Usability.Availability, s.Latest, s.Name)
+		localStatus := ""
+		if installed.TargetPath != "" {
+			ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+			derived, deriveErr := readiness.DeriveCatalogStatus(ctx, readiness.InspectOptions{StateDir: *stateDir, Module: moduleName, Entry: s, Version: s.Latest, PackageDir: filepath.Join(installed.TargetPath, filepath.FromSlash(s.ID)), TargetRoot: installed.TargetPath, Runtime: installed.Runtime})
+			cancel()
+			if deriveErr != nil {
+				localStatus = "not-verified"
+			} else {
+				localStatus = derived.Availability
+			}
+		}
+		fmt.Printf("%s\t%s\t%s\t%s\t%s", s.ID, status, s.Usability.Availability, s.Latest, s.Name)
+		if localStatus != "" {
+			fmt.Printf("\t%s", localStatus)
+		}
+		fmt.Println()
 	}
 	return nil
 }
@@ -121,6 +153,9 @@ func runInfo(args []string) error {
 	entriesRoot := fs.String("root", "", "module root directory (defaults by module)")
 	skillSpec := fs.String("skill", "", "skill id, optionally with @version")
 	entrySpec := fs.String("entry", "", "entry id, optionally with @version")
+	readinessRuntime := fs.String("runtime", "", "derive local evidence-backed status for this runtime")
+	readinessTarget := fs.String("target", "", "installed module directory used for local status")
+	stateDir := fs.String("state-dir", defaultStateDir(), "local readiness evidence directory")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -171,6 +206,28 @@ func runInfo(args []string) error {
 	fmt.Printf("runtimes: %s\n", strings.Join(skill.Runtimes, ", "))
 	printUsabilitySummary(os.Stdout, skill)
 	fmt.Printf("deprecated: %t\n", skill.Deprecated)
+	if strings.TrimSpace(*readinessRuntime) != "" {
+		installed, targetErr := installer.ResolveRuntimeTargetForModule(*readinessRuntime, moduleName, *readinessTarget)
+		if targetErr != nil {
+			return targetErr
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		derived, deriveErr := readiness.DeriveCatalogStatus(ctx, readiness.InspectOptions{StateDir: *stateDir, Module: moduleName, Entry: skill, Version: resolvedVersion.Version, PackageDir: filepath.Join(installed.TargetPath, filepath.FromSlash(skill.ID)), TargetRoot: installed.TargetPath, Runtime: installed.Runtime})
+		cancel()
+		if deriveErr != nil {
+			return deriveErr
+		}
+		fmt.Printf("local_status: %s\n", derived.Availability)
+		if derived.EvidenceScope != "" {
+			fmt.Printf("local_status_scope: %s\n", derived.EvidenceScope)
+		}
+		if !derived.ExpiresAt.IsZero() {
+			fmt.Printf("local_status_expires_at: %s\n", derived.ExpiresAt.UTC().Format(time.RFC3339))
+		}
+		if derived.Reason != "" {
+			fmt.Printf("local_status_reason: %s\n", derived.Reason)
+		}
+	}
 	if skill.ReplacedBy != "" {
 		fmt.Printf("replaced_by: %s\n", skill.ReplacedBy)
 	}
@@ -386,11 +443,18 @@ func runInstall(args []string) error {
 			return err
 		}
 	}
+	manifestNames := map[string]string{"skills": "skill.yaml", "agents": "agent.yaml", "tools": "tool.yaml", "plugins": "plugin.yaml"}
+	validatedManifest, err := registry.ValidatePackageManifest(filepath.Join(sourceDir, manifestNames[moduleName]))
+	if err != nil {
+		return fmt.Errorf("local package admission failed: %w", err)
+	}
+	if validatedManifest.ID != skill.ID || validatedManifest.Version != resolvedVersion.Version {
+		return fmt.Errorf("local package identity does not match selected %s@%s", skill.ID, resolvedVersion.Version)
+	}
 	destination, err := installer.InstallSkill(sourceDir, rt.TargetPath, skill.ID, *force)
 	if err != nil {
 		return err
 	}
-
 	var runtimeArtifacts []string
 	var dependencyResult installer.DependencyInstallResult
 	if moduleName == "plugins" {
@@ -409,6 +473,16 @@ func runInstall(args []string) error {
 		if err != nil {
 			return err
 		}
+	}
+	runtimeContractSHA256, err := installer.RuntimeContractSHA256(skill, resolvedVersion.Version)
+	if err != nil {
+		return err
+	}
+	if err := installer.WriteInstallReceipt(destination, installer.InstallReceipt{
+		Source: "local", Module: moduleName, ID: skill.ID, Version: resolvedVersion.Version,
+		Runtime: rt.Runtime, RuntimeContractSHA256: runtimeContractSHA256, Closure: dependencyResult.Closure,
+	}); err != nil {
+		return err
 	}
 
 	fmt.Printf("Installed %s@%s to %s (runtime=%s)\n", skill.ID, resolvedVersion.Version, destination, rt.Runtime)
@@ -614,6 +688,9 @@ func printUsage() {
 		"  info      Show details for one entry",
 		"  validate  Validate local skill structure and prompt coverage",
 		"  install   Install from an explicit local or verified remote source",
+		"  auth      Configure or inspect runtime-owned authentication bindings",
+		"  doctor    Diagnose installation, platform, and authentication readiness",
+		"  smoke     Run the declared non-destructive smoke check and record evidence",
 		"  run-agent Run production preflight checks for an installed agent package",
 		"",
 		"Examples:",
@@ -628,6 +705,10 @@ func printUsage() {
 		"  skills-hub install --module plugins --entry marketing/performance-reporting-plugin@latest --runtime codex",
 		"  skills-hub install --skill marketing/meta-google-weekly-performance-review@0.1.0 --runtime generic --target ./my-agent/skills",
 		"  skills-hub install --source remote --registry-url https://skills.ai-knowledge-hub.org/registry/skills-index.json --entry engineering/implementation-strategy@latest --runtime codex",
+		"  skills-hub auth configure ads/example@latest --module tools --binding PROVIDER_API_KEY=env:PROVIDER_API_KEY --generation PROVIDER_API_KEY=env:PROVIDER_API_KEY_GENERATION --validator-command provider-auth-check",
+		"  skills-hub auth status ads/example@latest --module tools",
+		"  skills-hub doctor ads/example@latest --module tools --runtime codex",
+		"  skills-hub smoke ads/example@latest --module tools --runtime codex",
 		"  skills-hub run-agent --agent marketing/weekly-performance-supervisor --bindings agents/marketing/weekly-performance-supervisor/config/tool-bindings.example.json --approve-live",
 	}
 	fmt.Println(strings.Join(lines, "\n"))

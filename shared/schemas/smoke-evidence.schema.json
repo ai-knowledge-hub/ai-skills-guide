@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skills.ai-knowledge-hub.org/schemas/smoke-evidence.schema.json",
+  "title": "Skills Hub smoke evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_id",
+    "contract_version",
+    "evidence_scope",
+    "test_id",
+    "test_version",
+    "producer",
+    "entry_id",
+    "entry_version",
+    "artifact_sha256",
+    "dependency_lock_sha256",
+    "install_source",
+    "module",
+    "runtime",
+    "platform",
+    "command",
+    "environment_id",
+    "configuration_class",
+    "coverage",
+    "started_at",
+    "observed_at",
+    "expires_at",
+    "result",
+    "promotion_eligible"
+  ],
+  "properties": {
+    "schema_version": { "const": "skills-hub.smoke-evidence/v1" },
+    "contract_id": { "const": "operational-readiness" },
+    "contract_version": { "const": "1.0.3" },
+    "evidence_scope": { "const": "executable" },
+    "test_id": { "const": "skills-hub/declared-smoke" },
+    "test_version": { "const": "1" },
+    "producer": { "const": "skills-hub" },
+    "entry_id": { "type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9-]+$" },
+    "entry_version": { "type": "string", "minLength": 1 },
+    "artifact_sha256": { "type": "string", "pattern": "^([a-f0-9]{64})?$" },
+    "dependency_lock_sha256": {
+      "type": "string",
+      "pattern": "^(not-applicable|not-evaluated|[a-f0-9]{64})$"
+    },
+    "install_source": { "enum": ["local", "remote", "unknown"] },
+    "module": { "enum": ["skills", "agents", "tools", "plugins"] },
+    "runtime": { "enum": ["codex", "claude", "generic"] },
+    "platform": { "enum": ["linux", "macos", "windows"] },
+    "command": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "credential_binding_keys": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[A-Z][A-Z0-9_]*$" },
+      "additionalProperties": { "type": "string", "pattern": "^[1-9][0-9]*:[^\\r\\n]+$" }
+    },
+    "provider_principal": { "type": "string", "minLength": 1 },
+    "provider_account": { "type": "string", "minLength": 1 },
+    "provider_target_fingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "attestation_reference": { "type": "string", "minLength": 1 },
+    "granted_scopes": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "validator_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "execution_runtime_fingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "environment_id": { "type": "string", "pattern": "^[a-f0-9]{32}$" },
+    "configuration_class": { "type": "string", "minLength": 1 },
+    "coverage": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "install-receipt",
+          "installed-tree",
+          "declared-smoke-test",
+          "authoritative-provider-identity"
+        ]
+      },
+      "minItems": 3,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "allOf": [
+        { "contains": { "const": "install-receipt" } },
+        { "contains": { "const": "installed-tree" } },
+        { "contains": { "const": "declared-smoke-test" } }
+      ]
+    },
+    "started_at": { "type": "string", "format": "date-time" },
+    "observed_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" },
+    "result": { "enum": ["passed", "failed"] },
+    "promotion_eligible": { "type": "boolean" },
+    "failure_reason": { "type": "string", "minLength": 1 }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "result": { "const": "passed" } }, "required": ["result"] },
+      "then": {
+        "required": ["execution_runtime_fingerprint"],
+        "properties": {
+          "command": { "minItems": 1 },
+          "observed_at": { "type": "string", "format": "date-time" },
+          "expires_at": { "type": "string", "format": "date-time" }
+        }
+      },
+      "else": {
+        "required": ["failure_reason"],
+        "properties": { "promotion_eligible": { "const": false } }
+      }
+    },
+    {
+      "if": {
+        "properties": { "configuration_class": { "pattern": "^authenticated:" } },
+        "required": ["configuration_class"]
+      },
+      "then": {
+        "required": [
+          "credential_binding_keys",
+          "provider_principal",
+          "provider_account",
+          "provider_target_fingerprint",
+          "attestation_reference",
+          "granted_scopes",
+          "validator_sha256"
+        ],
+        "properties": {
+          "coverage": {
+            "contains": { "const": "authoritative-provider-identity" }
+          }
+        }
+      },
+      "else": {
+        "properties": { "coverage": { "maxItems": 3 } }
+      }
+    }
+  ]
+}

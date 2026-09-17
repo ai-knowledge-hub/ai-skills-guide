@@ -87,7 +87,9 @@ Remote installation completes these stages in order:
 7. For plugins, validate every bundled dependency for the selected runtime and
    operational install path, then prepare runtime-specific package files in
    staging.
-8. Rename the complete staged tree into its destination. Plugin dependencies
+8. Add a non-secret install receipt binding the package identity, artifact
+   digest, runtime contract, and normalized installed-tree digest.
+9. Rename the complete staged tree into its destination. Plugin dependencies
    are activated in their sibling runtime module directories before the plugin
    becomes visible. The full closure shares a durable transaction, so a failed
    or interrupted activation restores every previous dependency before
@@ -97,6 +99,10 @@ Remote installation completes these stages in order:
 
 No downloaded package byte reaches a final runtime directory before the plugin
 and its complete dependency closure pass verification and validation.
+
+`skills-hub doctor` and `skills-hub smoke` require this receipt and recompute
+the installed-tree digest. Packages installed by an older CLI must be
+reinstalled before those commands can produce current readiness evidence.
 
 ## Cache and offline operation
 

@@ -474,6 +474,11 @@ governance.example.json \
   --audit-log ./tmp/weekly-performance-supervisor-run.json
 ```
 
+For packages with a versioned authentication contract, use `auth configure`,
+`auth status`, `doctor`, and `smoke` after installation. See
+[Authentication and Runtime Readiness](docs/authentication-readiness.md) for
+the credential-binding and provider-validation protocol.
+
 Runtime target defaults:
 
 - `--runtime codex`:

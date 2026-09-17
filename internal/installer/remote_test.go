@@ -169,6 +169,52 @@ func TestInstallRemoteReleaseRequiresDeclaredExecutionRuntime(t *testing.T) {
 	}
 }
 
+func TestInstallRemoteReleaseRejectsMissingTypedAuthDriverBeforeMutation(t *testing.T) {
+	manifest := strings.Replace(
+		strings.Replace(
+			remoteUsableNowManifest("1.0.0", time.Now().UTC()),
+			"supported_platforms: [linux]",
+			"supported_platforms: [linux, macos, windows]",
+			1,
+		),
+		`authentication:
+  status: none
+  methods: [none]
+  credential_bindings: []
+  scopes: []
+  credential_storage: No credentials.
+  validation: Confirm no authentication challenge.
+  revocation: Not applicable.`,
+		`authentication:
+  status: required
+  methods: [oauth-device-flow]
+  credential_bindings: [PROVIDER_TOKEN]
+  scopes: [read]
+  credential_storage: Runtime-owned secure credential store.
+  validation: Perform a non-destructive provider identity request.
+  revocation: Revoke the provider grant and remove the runtime binding.`,
+		1,
+	)
+	archive := makeArchive(t, map[string]string{
+		"skill.yaml": manifest, "SKILL.md": "# Fixture\n", "bin/tool": "fixture\n",
+		"checksums.txt": "fixture\n", "sbom.cdx.json": "{}\n",
+	})
+	server := newReleaseServer(t, archive, "1.0.0", nil)
+	defer server.Close()
+	targetRoot := filepath.Join(t.TempDir(), "runtime", "skills")
+
+	_, err := InstallRemoteRelease(context.Background(), remoteOptions(
+		server,
+		filepath.Join(t.TempDir(), "cache"),
+		targetRoot,
+		"1.0.0",
+	))
+	if err == nil || !strings.Contains(err.Error(), "requires a packaged driver") {
+		t.Fatalf("expected missing authentication driver rejection, got %v", err)
+	}
+	assertPathAbsent(t, targetRoot)
+}
+
 func TestInstallRemoteReleaseRejectsTemplateOnlyArchiveManifest(t *testing.T) {
 	manifest := strings.Replace(
 		remoteManifest("1.0.0"),
@@ -294,6 +340,23 @@ func TestInstallRemotePluginReleaseActivatesValidatedDependencyClosure(t *testin
 		filepath.Join(runtimeRoot, "skills", filepath.FromSlash(dependencyID), "SKILL.md"),
 		"Bundled closure skill",
 	)
+	pluginReceipt, err := VerifyInstallReceipt(result.Destination, "plugins", "engineering/closure-plugin", "1.0.0", "generic", "", "")
+	if err != nil {
+		t.Fatalf("verify plugin receipt: %v", err)
+	}
+	if len(pluginReceipt.Closure) != 1 || pluginReceipt.Closure[0].ID != dependencyID {
+		t.Fatalf("plugin receipt does not bind its installed closure: %#v", pluginReceipt.Closure)
+	}
+	if err := VerifyInstallClosure(result.Destination, pluginRoot, pluginReceipt, result.Registry.Includes); err != nil {
+		t.Fatalf("verify installed plugin closure: %v", err)
+	}
+	dependencyPath := filepath.Join(runtimeRoot, "skills", filepath.FromSlash(dependencyID), "SKILL.md")
+	if err := os.WriteFile(dependencyPath, []byte("mutated\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := VerifyInstallClosure(result.Destination, pluginRoot, pluginReceipt, result.Registry.Includes); err == nil {
+		t.Fatal("mutated activated dependency passed closure verification")
+	}
 }
 
 func TestInstallRemotePluginReleaseRejectsTemplateDependencyBeforeMutation(t *testing.T) {

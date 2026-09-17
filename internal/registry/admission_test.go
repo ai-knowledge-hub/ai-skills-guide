@@ -214,6 +214,41 @@ func TestValidatePackageManifestRejectsCanonicalSchemaViolations(t *testing.T) {
 	}
 }
 
+func TestValidateAuthenticationDriversBeforeAdmission(t *testing.T) {
+	authentication := AuthenticationMetadata{Status: "required", Methods: []string{"oauth-device-flow"}}
+	root := t.TempDir()
+	manifestPath := filepath.Join(root, "tool.yaml")
+	if err := validateAuthenticationDrivers(root, manifestPath, authentication, []string{"codex"}); err == nil || !strings.Contains(err.Error(), "requires a packaged driver") {
+		t.Fatalf("missing typed authentication driver was accepted: %v", err)
+	}
+
+	writeTestFile(t, filepath.Join(root, "bin", "auth-driver"), "fixture\n", 0o755)
+	driverPath := filepath.Join(root, "auth", "oauth-device-flow.json")
+	validDriver := `{
+  "schema_version": "skills-hub.auth-driver/v1",
+  "method": "oauth-device-flow",
+  "flow": "device-code",
+  "runtimes": ["codex"],
+  "bootstrap": {"command": ["bin/auth-driver", "bootstrap"]},
+  "credential": {"command": ["bin/auth-driver", "credential"]},
+  "status": {"command": ["bin/auth-driver", "status"]}
+}`
+	writeTestFile(t, driverPath, validDriver, 0o644)
+	if err := validateAuthenticationDrivers(root, manifestPath, authentication, []string{"codex"}); err != nil {
+		t.Fatalf("valid typed authentication driver rejected: %v", err)
+	}
+
+	writeTestFile(t, driverPath, strings.Replace(validDriver, `"runtimes": ["codex"]`, `"runtimes": ["claude"]`, 1), 0o644)
+	if err := validateAuthenticationDrivers(root, manifestPath, authentication, []string{"codex"}); err == nil || !strings.Contains(err.Error(), "does not support declared runtime") {
+		t.Fatalf("runtime-incompatible authentication driver was accepted: %v", err)
+	}
+
+	writeTestFile(t, driverPath, strings.Replace(validDriver, `"flow": "device-code"`, `"flow": "interactive-browser"`, 1), 0o644)
+	if err := validateAuthenticationDrivers(root, manifestPath, authentication, []string{"codex"}); err == nil || !strings.Contains(err.Error(), "does not match method") {
+		t.Fatalf("wrong-flow authentication driver was accepted: %v", err)
+	}
+}
+
 func TestValidatePackageManifestRejectsMissingSelfContainedPluginDependency(t *testing.T) {
 	pluginDir := filepath.Join(t.TempDir(), "plugins", "engineering", "closure-plugin")
 	manifestPath := filepath.Join(pluginDir, "plugin.yaml")

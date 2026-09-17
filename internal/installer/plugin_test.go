@@ -90,6 +90,7 @@ func TestInstallPluginDependenciesSkipsExistingWithoutForce(t *testing.T) {
 	mustWriteIndex(t, skillsIndexPath, registry.Index{Skills: []registry.SkillEntry{{ID: "marketing/demo-skill"}}})
 	existingTarget := filepath.Join(root, "runtime", "skills", "marketing", "demo-skill")
 	mustMkdirAll(t, existingTarget)
+	mustWriteFile(t, filepath.Join(existingTarget, "SKILL.md"), "# Demo skill\n")
 
 	entry := registry.SkillEntry{
 		ID: "marketing/demo-plugin",

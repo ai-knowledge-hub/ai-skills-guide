@@ -1170,7 +1170,7 @@ func TestValidateCompiledRelativePathRejectsEscapes(t *testing.T) {
 func extractRuntimeCompilerFixture(t *testing.T) string {
 	t.Helper()
 	dir := t.TempDir()
-	archive := filepath.Join("..", "..", "apps", "web", "public", "artifacts", "marketing", "content-repurposing-plugin", "0.2.0.tar.gz")
+	archive := filepath.Join("..", "..", "releases", "plugins", "marketing", "content-repurposing-plugin", "0.2.0", "package.tar.gz")
 	if err := extractVerifiedTarGz(archive, dir); err != nil {
 		t.Fatalf("extract runtime compiler fixture: %v", err)
 	}

@@ -71,6 +71,21 @@ func TestPrintInstallUsabilityWarning(t *testing.T) {
 	}
 }
 
+func TestPrintInstallLifecycleWarning(t *testing.T) {
+	entry := registry.SkillEntry{
+		ID:         "shared/deprecated-example",
+		Deprecated: true,
+		ReplacedBy: "shared/replacement-example",
+	}
+	var out bytes.Buffer
+	printInstallLifecycleWarning(&out, entry)
+	for _, want := range []string{"is deprecated", "prefer shared/replacement-example"} {
+		if !strings.Contains(out.String(), want) {
+			t.Fatalf("lifecycle warning %q does not contain %q", out.String(), want)
+		}
+	}
+}
+
 func TestPrintUsabilitySummaryIncludesExecutableHelper(t *testing.T) {
 	entry := registry.SkillEntry{Usability: registry.UsabilityMetadata{
 		Availability: "documentation-only",
@@ -123,6 +138,96 @@ func TestRunInstallRejectsTemplateBeforeFilesystemWrite(t *testing.T) {
 	}
 	if _, statErr := os.Stat(target); !os.IsNotExist(statErr) {
 		t.Fatalf("template install created runtime state: %v", statErr)
+	}
+}
+
+func TestRunInstallKeepsLocalAndRemoteSourcesDistinct(t *testing.T) {
+	tests := []struct {
+		name string
+		args []string
+		want string
+	}{
+		{
+			name: "local rejects remote registry",
+			args: []string{
+				"--source", "local",
+				"--registry-url", "https://registry.example/index.json",
+				"--entry", "engineering/example@1.0.0",
+				"--runtime", "generic",
+				"--target", filepath.Join(t.TempDir(), "skills"),
+			},
+			want: "local source does not accept --registry-url",
+		},
+		{
+			name: "remote rejects local root",
+			args: []string{
+				"--source", "remote",
+				"--registry-url", "https://registry.example/index.json",
+				"--root", "skills",
+				"--entry", "engineering/example@1.0.0",
+				"--runtime", "generic",
+				"--target", filepath.Join(t.TempDir(), "skills"),
+			},
+			want: "remote source does not accept --root",
+		},
+		{
+			name: "local rejects execution runtime",
+			args: []string{
+				"--source", "local",
+				"--execution-runtime", "node22",
+				"--entry", "engineering/example@1.0.0",
+				"--runtime", "generic",
+				"--target", filepath.Join(t.TempDir(), "skills"),
+			},
+			want: "local source does not accept",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			err := runInstall(test.args)
+			if err == nil || !strings.Contains(err.Error(), test.want) {
+				t.Fatalf("expected %q, got %v", test.want, err)
+			}
+		})
+	}
+}
+
+func TestRunAuthConfigureAcceptsOnlyRuntimeOwnedReferences(t *testing.T) {
+	root := t.TempDir()
+	secret := "runtime-only-credential-payload"
+	t.Setenv("PRIVATE_PROVIDER_KEY", secret)
+	t.Setenv("PRIVATE_PROVIDER_KEY_GENERATION", "generation-1")
+	registryPath := filepath.Join(root, "tools-index.json")
+	entry := registry.SkillEntry{
+		ID: "ads/example-tool", Latest: "1.0.0", Versions: []registry.VersionEntry{{Version: "1.0.0"}},
+		Authentication: &registry.AuthenticationMetadata{
+			Status: "required", Methods: []string{"api-key"}, CredentialBindings: []string{"PROVIDER_API_KEY"}, Scopes: []string{"read"},
+		},
+	}
+	if err := registry.WriteIndex(registryPath, registry.Index{RegistryVersion: "1.3", Skills: []registry.SkillEntry{entry}}); err != nil {
+		t.Fatal(err)
+	}
+	stateDir := filepath.Join(root, "state")
+	if err := runAuth([]string{
+		"configure", "ads/example-tool@1.0.0", "--module", "tools", "--registry", registryPath,
+		"--state-dir", stateDir, "--method", "api-key",
+		"--binding", "PROVIDER_API_KEY=env:PRIVATE_PROVIDER_KEY",
+		"--generation", "PROVIDER_API_KEY=env:PRIVATE_PROVIDER_KEY_GENERATION",
+		"--validator-command", os.Args[0],
+	}); err != nil {
+		t.Fatal(err)
+	}
+	profiles, err := filepath.Glob(filepath.Join(stateDir, "auth", "tools", "ads", "*.json"))
+	if err != nil || len(profiles) != 1 {
+		t.Fatalf("authentication profile paths = %v, %v", profiles, err)
+	}
+	payload, err := os.ReadFile(profiles[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(payload), secret) {
+		t.Fatal("authentication profile contains credential payload")
 	}
 }
 

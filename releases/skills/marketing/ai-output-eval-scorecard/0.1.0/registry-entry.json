@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.1",
+  "id": "marketing/ai-output-eval-scorecard",
+  "name": "AI Output Eval Scorecard",
+  "description": "Score AI-generated marketing outputs across accuracy, clarity, brand fit, policy compliance, actionability, and creative operating system fit.",
+  "category": "marketing-tools/compliance",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "evaluation",
+    "governance",
+    "qa",
+    "llm-judge",
+    "risk-control",
+    "anti-slop",
+    "creative-operating-system"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for evaluation and recommendation; require human approval before approving externally visible copy.",
+    "outputs": [
+      "Scorecard",
+      "Verdict",
+      "Rewrite recommendations",
+      "Creative operating system scores"
+    ],
+    "use_when": "Use when AI-generated marketing outputs need repeatable scoring across quality, compliance, actionability, and creative operating system fit.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "python3"
+    ]
+  }
+}

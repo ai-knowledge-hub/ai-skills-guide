@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: help doctor validate manifests registry test-scripts test ci-local cli-build cli-test web-dev web-build web-lint web-e2e release-cut
+.PHONY: help doctor validate manifests registry release-assets-check test-scripts test ci-local cli-build cli-test web-dev web-build web-lint web-e2e release-cut
 
 help:
 	@echo "Targets:"
@@ -8,6 +8,7 @@ help:
 	@echo "  make validate      - Validate module structure and standards"
 	@echo "  make manifests     - Validate skill/agent/tool manifests and registry schemas"
 	@echo "  make registry      - Generate skills, agents, tools, and compatibility indexes"
+	@echo "  make release-assets-check - Verify immutable release artifacts are committed"
 	@echo "  make test-scripts  - Run deterministic script checks"
 	@echo "  make test          - Run all local tests (validate + test-scripts)"
 	@echo "  make ci-local      - Run local checks similar to CI"
@@ -40,8 +41,13 @@ manifests:
 registry:
 	go run ./cmd/registry-builder
 
+release-assets-check:
+	cd apps/web && node scripts/prepare-public-assets.mjs
+	@test -z "$$(git status --short --untracked-files=all -- releases)" || (git status --short --untracked-files=all -- releases; echo "Release store changed; commit new versions or increment a colliding version."; exit 1)
+
 test-scripts:
 	bash scripts/test-skill-scripts.sh
+	bash scripts/test-release-history.sh
 
 test: validate test-scripts
 

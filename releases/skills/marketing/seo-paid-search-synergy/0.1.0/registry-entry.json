@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.1",
+  "id": "marketing/seo-paid-search-synergy",
+  "name": "SEO to Paid Search Synergy",
+  "description": "Turn top-performing SEO themes into paid search opportunities with keyword clustering and launch-ready recommendations.",
+  "category": "marketing-tools/seo-sem",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "seo",
+    "paid-search",
+    "keyword-strategy",
+    "campaign-planning"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for planning and opportunity analysis; require human approval before launching paid search changes.",
+    "outputs": [
+      "Keyword clusters",
+      "Ad group recommendations",
+      "Experiment plan"
+    ],
+    "use_when": "Use when SEO winners need to be translated into paid search opportunities and test-ready keyword structures.",
+    "execution_mode": "may-run-local-verification"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "executable_helpers": [
+      {
+        "entrypoint": "scripts/extract_seo_winners.py",
+        "availability": "not-verified",
+        "execution": "local-tool",
+        "limitations": [
+          "Packaged helper exists, but current clean-client executable evidence is not recorded."
+        ],
+        "quickstart": "python3 scripts/extract_seo_winners.py < examples/input.json"
+      }
+    ],
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "python3"
+    ]
+  }
+}

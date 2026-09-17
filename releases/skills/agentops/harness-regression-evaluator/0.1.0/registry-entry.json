@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.1",
+  "id": "agentops/harness-regression-evaluator",
+  "name": "Harness Regression Evaluator",
+  "description": "Evaluate proposed harness changes against benchmark prompts and red-team scenarios before adoption.",
+  "category": "agentops/harness-evaluation",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "evaluation",
+    "benchmarks",
+    "harness",
+    "regression"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for harness evaluation; require human approval before applying accepted harness changes.",
+    "outputs": [
+      "Evaluation summary",
+      "Regression findings",
+      "Adopt or reject recommendation"
+    ],
+    "use_when": "Use when proposed harness changes need benchmark and red-team evaluation before adoption.",
+    "execution_mode": "may-run-local-verification"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  }
+}

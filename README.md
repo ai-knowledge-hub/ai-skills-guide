@@ -57,7 +57,7 @@ prove that an entry is operationally available.
 Registry admission rejects manifests that omit `usability.availability` or
 `usability.execution`; registry generation preserves those declarations and
 does not infer them from module names or directories. Current catalog manifests
-use schema `1.1`, and generated indexes use registry format `1.2`; consumers
+use schema `1.1`, and generated indexes use registry format `1.3`; consumers
 must fail closed on unsupported versions rather than reinterpret new states.
 
 See [docs/using-the-catalog.md](docs/using-the-catalog.md) for module behavior,
@@ -165,6 +165,26 @@ Release workflow and version bump definitions are documented in
 
 ## Install New Skill Packs
 
+The default `local` source is an explicit development mode. It resolves a
+repository index and copies files from the current checkout. To install a
+published release without cloning this repository, select the `remote` source:
+
+```bash
+./bin/skills-hub install \
+  --source remote \
+  --registry-url \
+    https://skills.ai-knowledge-hub.org/registry/skills-index.json \
+  --entry engineering/implementation-strategy@latest \
+  --runtime codex
+```
+
+Remote mode accepts only HTTPS registry and artifact URLs. It verifies the
+downloaded archive against the registry SHA-256, validates its paths and
+manifest, and stages the complete package before changing the runtime. Use
+`--offline` after one successful online fetch to reuse verified cached bytes.
+See [Remote package installation](docs/remote-install.md) for source modes,
+cache behavior, trust boundaries, and recovery guidance.
+
 For Codex:
 
 ```bash
@@ -201,14 +221,14 @@ For generic runtimes:
   --target ./my-agent/skills
 ```
 
-## Use Plugin Templates
+## Use Plugin Packages
 
-Current plugin entries are `template-only` source compositions. The operational
-`skills-hub install --module plugins` path rejects them before writing runtime
-files, resolving dependencies, or generating Codex/Claude registration
-manifests. Review each plugin's `README.md`, `plugin.json`, referenced modules,
-hooks, secrets, and approval rules in the repository, then implement and verify
-a self-contained bundle before changing its availability.
+Most plugin entries remain `template-only` source compositions, and the
+operational installer rejects those before writing runtime files. The
+content-repurposing plugin is the first `not-verified`, self-contained release:
+its complete local closure, dependency lock, checksums, SBOM, and provenance
+are verified before installation. Other plugins may follow only after their
+declared closure and hooks meet the same artifact contract.
 
 ## Use Agent Packages (Step-by-step)
 
@@ -454,6 +474,11 @@ governance.example.json \
   --audit-log ./tmp/weekly-performance-supervisor-run.json
 ```
 
+For packages with a versioned authentication contract, use `auth configure`,
+`auth status`, `doctor`, and `smoke` after installation. See
+[Authentication and Runtime Readiness](docs/authentication-readiness.md) for
+the credential-binding and provider-validation protocol.
+
 Runtime target defaults:
 
 - `--runtime codex`:
@@ -525,3 +550,4 @@ Static manifest/artifact URLs:
   - `/plugins/.../plugin.yaml`
   - `/tools-mcp/.../tool.yaml`
   - `/artifacts/<id>/<version>.tar.gz`
+  - `/release-manifests/<module>/<id>/<version>.yaml`

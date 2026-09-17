@@ -1,0 +1,59 @@
+{
+  "schema_version": "1.1",
+  "id": "adtech/ad-platform-control-plane-supervisor",
+  "name": "Ad Platform Control Plane Supervisor",
+  "description": "Advisory supervisor for DV360 and Google Ads agents, coordinating auth review, policy gates, executor readiness, approvals, audit, and rollback planning.",
+  "category": "adtech-agents/governance",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "adtech",
+    "control-plane",
+    "dv360",
+    "google-ads",
+    "governance"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "May recommend readiness and governance changes; must not approve live writes, grant credentials, or execute ad-platform changes.",
+    "role": "Governance supervisor for ad-platform agents that read, propose, approve, and execute campaign changes.",
+    "coordinates": [
+      "Ad-platform auth review",
+      "Policy gate design",
+      "Executor-readiness review",
+      "Audit and rollback checklist"
+    ],
+    "autonomy_level": "advisory",
+    "outputs": [
+      "Deployment readiness decision",
+      "Auth and policy gap list",
+      "Approval map",
+      "Executor and rollback checklist"
+    ]
+  },
+  "usability": {
+    "availability": "template-only",
+    "execution": "orchestrator",
+    "limitations": [
+      "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged."
+    ],
+    "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "skills": [
+      "security/ad-platform-agent-auth-review",
+      "agentops/ad-platform-policy-gate-designer",
+      "agentops/agent-control-plane-review"
+    ],
+    "tools": [
+      "ad_platform_executor_template",
+      "agent_control_plane_server"
+    ]
+  }
+}

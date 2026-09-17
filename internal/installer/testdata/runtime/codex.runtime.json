@@ -1,0 +1,44 @@
+{
+  "schema_version": "skills-hub.runtime-package/v1",
+  "runtime": "codex",
+  "source_lock": "dependencies.lock.json",
+  "package": {
+    "id": "marketing/content-repurposing-plugin",
+    "name": "Content Repurposing Plugin",
+    "version": "0.2.0",
+    "description": "Bundle content transformation, review guidance, and publishing-oriented workflow references into a portable plugin for multi-channel reuse."
+  },
+  "registrations": {
+    "skills": [
+      {
+        "id": "marketing/ai-output-eval-scorecard",
+        "version": "0.1.0",
+        "path": "./skills/ai-output-eval-scorecard",
+        "enforcement": "native"
+      },
+      {
+        "id": "marketing/creative-workshop-pmax-reels",
+        "version": "0.1.0",
+        "path": "./skills/creative-workshop-pmax-reels",
+        "enforcement": "native"
+      },
+      {
+        "id": "marketing/dynamic-creative-rules-engine",
+        "version": "0.1.0",
+        "path": "./skills/dynamic-creative-rules-engine",
+        "enforcement": "native"
+      }
+    ],
+    "agents": [],
+    "mcp_servers": [],
+    "config": [],
+    "hooks": [
+      {
+        "id": "content-review-before-publish",
+        "path": "./hooks/content-review-before-publish.md",
+        "enforcement": "advisory",
+        "reason": "the source hook is guidance, not an executable native hook definition"
+      }
+    ]
+  }
+}

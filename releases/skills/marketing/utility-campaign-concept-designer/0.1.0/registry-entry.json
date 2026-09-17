@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.1",
+  "id": "marketing/utility-campaign-concept-designer",
+  "name": "Utility Campaign Concept Designer",
+  "description": "Convert a campaign brief into useful interventions that help people, shift behavior, or solve a real friction before generating messages.",
+  "category": "marketing-tools/creative-ops",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "utility",
+    "creative-concepts",
+    "empowerment",
+    "cannes-2026",
+    "anti-slop"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for concepting; require brand, legal, and operations approval before production or public use.",
+    "outputs": [
+      "Utility-led concept territories",
+      "Behavioral hypothesis",
+      "Proof and feasibility notes",
+      "Risk flags"
+    ],
+    "use_when": "Use when a team wants campaign concepts that do something useful rather than only communicate a message.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  }
+}

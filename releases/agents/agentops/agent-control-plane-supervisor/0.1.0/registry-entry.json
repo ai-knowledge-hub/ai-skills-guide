@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.1",
+  "id": "agentops/agent-control-plane-supervisor",
+  "name": "Agent Control Plane Supervisor",
+  "description": "Advisory supervisor for reviewing, routing, and documenting governed marketing agent workflows before production deployment.",
+  "category": "agentops/harness-governance",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "governance",
+    "control-plane",
+    "approvals",
+    "audit",
+    "agentops"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "May recommend policy and approval changes; must not grant access, execute actions, or alter production policy.",
+    "role": "Governance supervisor for agent identity, policy, approval, and audit readiness.",
+    "coordinates": [
+      "Control-plane review",
+      "Marketing-agent risk review",
+      "Approval-boundary recommendations",
+      "Audit-readiness summary"
+    ],
+    "autonomy_level": "advisory",
+    "outputs": [
+      "Deployment readiness decision",
+      "Missing control list",
+      "Policy and approval recommendations",
+      "Audit evidence checklist"
+    ]
+  },
+  "usability": {
+    "availability": "template-only",
+    "execution": "orchestrator",
+    "limitations": [
+      "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged."
+    ],
+    "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "skills": [
+      "agentops/agent-control-plane-review",
+      "security/marketing-agent-risk-review"
+    ],
+    "tools": [
+      "agent_control_plane_server"
+    ]
+  }
+}

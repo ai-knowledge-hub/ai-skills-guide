@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.1",
+  "id": "marketing/lifecycle-experiment-planner",
+  "name": "Lifecycle Experiment Planner",
+  "description": "Design lifecycle A/B tests with hypothesis checks, sample-size guidance, and stopping criteria.",
+  "category": "marketing-tools/lifecycle-crm",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "experimentation",
+    "ab-testing",
+    "lifecycle",
+    "statistics"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for planning; require human approval before launching lifecycle experiments or changing user journeys.",
+    "outputs": [
+      "Hypothesis plan",
+      "Sample-size guidance",
+      "Stop criteria"
+    ],
+    "use_when": "Use when a lifecycle experiment needs statistical assumptions, stop rules, and guardrail metrics defined clearly.",
+    "execution_mode": "may-run-local-verification"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "executable_helpers": [
+      {
+        "entrypoint": "scripts/sample_size.py",
+        "availability": "not-verified",
+        "execution": "local-tool",
+        "limitations": [
+          "Packaged helper exists, but current clean-client executable evidence is not recorded."
+        ],
+        "quickstart": "python3 scripts/sample_size.py 0.05 0.01"
+      }
+    ],
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "python3"
+    ]
+  }
+}

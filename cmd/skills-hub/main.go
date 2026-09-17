@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -9,10 +10,12 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/agents"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/installer"
 	pluginvalidate "github.com/ai-knowledge-hub/ai-skills-guide/internal/plugins"
+	"github.com/ai-knowledge-hub/ai-skills-guide/internal/readiness"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/skills"
 )
@@ -38,6 +41,12 @@ func main() {
 		err = runValidate(args)
 	case "install":
 		err = runInstall(args)
+	case "auth":
+		err = runAuth(args)
+	case "doctor":
+		err = runDoctor(args)
+	case "smoke":
+		err = runSmoke(args)
 	case "run-agent":
 		err = runAgent(args)
 	case "help", "-h", "--help":
@@ -57,6 +66,9 @@ func runList(args []string) error {
 	fs := flag.NewFlagSet("list", flag.ContinueOnError)
 	module := fs.String("module", "skills", "module: skills|agents|tools|plugins")
 	registryPath := fs.String("registry", "", "registry index path (defaults by module)")
+	readinessRuntime := fs.String("runtime", "", "derive local evidence-backed status for this runtime")
+	readinessTarget := fs.String("target", "", "installed module directory used for local status")
+	stateDir := fs.String("state-dir", defaultStateDir(), "local readiness evidence directory")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -69,12 +81,34 @@ func runList(args []string) error {
 	if err != nil {
 		return err
 	}
+	var installed installer.RuntimeTarget
+	if strings.TrimSpace(*readinessRuntime) != "" {
+		installed, err = installer.ResolveRuntimeTargetForModule(*readinessRuntime, moduleName, *readinessTarget)
+		if err != nil {
+			return err
+		}
+	}
 	for _, s := range idx.Skills {
 		status := "active"
 		if s.Deprecated {
 			status = "deprecated"
 		}
-		fmt.Printf("%s\t%s\t%s\t%s\t%s\n", s.ID, status, s.Usability.Availability, s.Latest, s.Name)
+		localStatus := ""
+		if installed.TargetPath != "" {
+			ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+			derived, deriveErr := readiness.DeriveCatalogStatus(ctx, readiness.InspectOptions{StateDir: *stateDir, Module: moduleName, Entry: s, Version: s.Latest, PackageDir: filepath.Join(installed.TargetPath, filepath.FromSlash(s.ID)), TargetRoot: installed.TargetPath, Runtime: installed.Runtime})
+			cancel()
+			if deriveErr != nil {
+				localStatus = "not-verified"
+			} else {
+				localStatus = derived.Availability
+			}
+		}
+		fmt.Printf("%s\t%s\t%s\t%s\t%s", s.ID, status, s.Usability.Availability, s.Latest, s.Name)
+		if localStatus != "" {
+			fmt.Printf("\t%s", localStatus)
+		}
+		fmt.Println()
 	}
 	return nil
 }
@@ -119,6 +153,9 @@ func runInfo(args []string) error {
 	entriesRoot := fs.String("root", "", "module root directory (defaults by module)")
 	skillSpec := fs.String("skill", "", "skill id, optionally with @version")
 	entrySpec := fs.String("entry", "", "entry id, optionally with @version")
+	readinessRuntime := fs.String("runtime", "", "derive local evidence-backed status for this runtime")
+	readinessTarget := fs.String("target", "", "installed module directory used for local status")
+	stateDir := fs.String("state-dir", defaultStateDir(), "local readiness evidence directory")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -169,6 +206,28 @@ func runInfo(args []string) error {
 	fmt.Printf("runtimes: %s\n", strings.Join(skill.Runtimes, ", "))
 	printUsabilitySummary(os.Stdout, skill)
 	fmt.Printf("deprecated: %t\n", skill.Deprecated)
+	if strings.TrimSpace(*readinessRuntime) != "" {
+		installed, targetErr := installer.ResolveRuntimeTargetForModule(*readinessRuntime, moduleName, *readinessTarget)
+		if targetErr != nil {
+			return targetErr
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		derived, deriveErr := readiness.DeriveCatalogStatus(ctx, readiness.InspectOptions{StateDir: *stateDir, Module: moduleName, Entry: skill, Version: resolvedVersion.Version, PackageDir: filepath.Join(installed.TargetPath, filepath.FromSlash(skill.ID)), TargetRoot: installed.TargetPath, Runtime: installed.Runtime})
+		cancel()
+		if deriveErr != nil {
+			return deriveErr
+		}
+		fmt.Printf("local_status: %s\n", derived.Availability)
+		if derived.EvidenceScope != "" {
+			fmt.Printf("local_status_scope: %s\n", derived.EvidenceScope)
+		}
+		if !derived.ExpiresAt.IsZero() {
+			fmt.Printf("local_status_expires_at: %s\n", derived.ExpiresAt.UTC().Format(time.RFC3339))
+		}
+		if derived.Reason != "" {
+			fmt.Printf("local_status_reason: %s\n", derived.Reason)
+		}
+	}
 	if skill.ReplacedBy != "" {
 		fmt.Printf("replaced_by: %s\n", skill.ReplacedBy)
 	}
@@ -254,9 +313,17 @@ func runInstall(args []string) error {
 	}
 
 	fs := flag.NewFlagSet("install", flag.ContinueOnError)
+	sourceMode := fs.String("source", "local", "package source: local|remote")
 	module := fs.String("module", "skills", "module: skills|agents|tools|plugins")
 	entriesRoot := fs.String("root", "", "module root directory (defaults by module)")
 	registryPath := fs.String("registry", "", "registry index path (defaults by module)")
+	registryURL := fs.String("registry-url", "", "HTTPS registry index URL for --source remote")
+	cacheDir := fs.String("cache-dir", defaultCacheDir(), "download cache directory for --source remote")
+	offline := fs.Bool("offline", false, "use only verified cached remote registry and artifact data")
+	var allowedOrigins stringListFlag
+	fs.Var(&allowedOrigins, "allow-origin", "additional HTTPS artifact origin allowed for redirects and downloads (repeatable)")
+	var executionRuntimes stringListFlag
+	fs.Var(&executionRuntimes, "execution-runtime", "execution capability available to a remote package, such as node22 or container (repeatable)")
 	runtimeName := fs.String("runtime", "generic", "runtime adapter: codex|claude|generic")
 	target := fs.String("target", "", "destination module directory (optional for codex/claude)")
 	skillSpecFlag := fs.String("skill", "", "skill id, optionally with @version")
@@ -285,6 +352,50 @@ func runInstall(args []string) error {
 	if err != nil {
 		return err
 	}
+	rt, err := installer.ResolveRuntimeTargetForModule(*runtimeName, moduleName, *target)
+	if err != nil {
+		return err
+	}
+
+	switch strings.ToLower(strings.TrimSpace(*sourceMode)) {
+	case "remote":
+		if strings.TrimSpace(*entriesRoot) != "" || strings.TrimSpace(*registryPath) != "" {
+			return errors.New("remote source does not accept --root or --registry; use --registry-url and optionally --cache-dir")
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+		defer cancel()
+		result, err := installer.InstallRemoteRelease(ctx, installer.RemoteInstallOptions{
+			RegistryURL:       strings.TrimSpace(*registryURL),
+			AllowedOrigins:    []string(allowedOrigins),
+			CacheDir:          *cacheDir,
+			Offline:           *offline,
+			Module:            moduleName,
+			Runtime:           rt.Runtime,
+			ExecutionRuntimes: []string(executionRuntimes),
+			ID:                id,
+			Version:           requestedVersion,
+			TargetRoot:        rt.TargetPath,
+			Force:             *force,
+		})
+		if err != nil {
+			return err
+		}
+		cacheStatus := "miss"
+		if result.FromCache {
+			cacheStatus = "hit"
+		}
+		printInstallLifecycleWarning(os.Stderr, result.Registry)
+		printInstallUsabilityWarning(os.Stderr, result.Registry)
+		fmt.Printf("Installed %s@%s to %s (runtime=%s source=remote cache=%s)\n", result.Registry.ID, result.Version, result.Destination, rt.Runtime, cacheStatus)
+		printUsabilitySummary(os.Stdout, result.Registry)
+		return nil
+	case "local":
+		if strings.TrimSpace(*registryURL) != "" || *offline || len(allowedOrigins) > 0 || len(executionRuntimes) > 0 {
+			return errors.New("local source does not accept --registry-url, --offline, --allow-origin, or --execution-runtime; remote and local-development modes are intentionally separate")
+		}
+	default:
+		return fmt.Errorf("unsupported install source %q (supported: local, remote)", *sourceMode)
+	}
 
 	idx, err := registry.LoadIndex(resolveRegistryPath(*registryPath, moduleName))
 	if err != nil {
@@ -302,13 +413,7 @@ func runInstall(args []string) error {
 		return err
 	}
 
-	if skill.Deprecated {
-		fmt.Fprintf(os.Stderr, "warning: %s is deprecated", skill.ID)
-		if skill.ReplacedBy != "" {
-			fmt.Fprintf(os.Stderr, "; prefer %s", skill.ReplacedBy)
-		}
-		fmt.Fprintln(os.Stderr)
-	}
+	printInstallLifecycleWarning(os.Stderr, skill)
 	printInstallUsabilityWarning(os.Stderr, skill)
 
 	sourceDir := filepath.Join(resolveModuleRoot(*entriesRoot, moduleName), filepath.FromSlash(skill.ID))
@@ -316,10 +421,6 @@ func runInstall(args []string) error {
 		return fmt.Errorf("local source not found for %s at %s", skill.ID, sourceDir)
 	}
 
-	rt, err := installer.ResolveRuntimeTargetForModule(*runtimeName, moduleName, *target)
-	if err != nil {
-		return err
-	}
 	dependencyModuleRoots := map[string]string{
 		"skills": resolveModuleRoot("", "skills"),
 		"agents": resolveModuleRoot("", "agents"),
@@ -342,11 +443,18 @@ func runInstall(args []string) error {
 			return err
 		}
 	}
+	manifestNames := map[string]string{"skills": "skill.yaml", "agents": "agent.yaml", "tools": "tool.yaml", "plugins": "plugin.yaml"}
+	validatedManifest, err := registry.ValidatePackageManifest(filepath.Join(sourceDir, manifestNames[moduleName]))
+	if err != nil {
+		return fmt.Errorf("local package admission failed: %w", err)
+	}
+	if validatedManifest.ID != skill.ID || validatedManifest.Version != resolvedVersion.Version {
+		return fmt.Errorf("local package identity does not match selected %s@%s", skill.ID, resolvedVersion.Version)
+	}
 	destination, err := installer.InstallSkill(sourceDir, rt.TargetPath, skill.ID, *force)
 	if err != nil {
 		return err
 	}
-
 	var runtimeArtifacts []string
 	var dependencyResult installer.DependencyInstallResult
 	if moduleName == "plugins" {
@@ -365,6 +473,16 @@ func runInstall(args []string) error {
 		if err != nil {
 			return err
 		}
+	}
+	runtimeContractSHA256, err := installer.RuntimeContractSHA256(skill, resolvedVersion.Version)
+	if err != nil {
+		return err
+	}
+	if err := installer.WriteInstallReceipt(destination, installer.InstallReceipt{
+		Source: "local", Module: moduleName, ID: skill.ID, Version: resolvedVersion.Version,
+		Runtime: rt.Runtime, RuntimeContractSHA256: runtimeContractSHA256, Closure: dependencyResult.Closure,
+	}); err != nil {
+		return err
 	}
 
 	fmt.Printf("Installed %s@%s to %s (runtime=%s)\n", skill.ID, resolvedVersion.Version, destination, rt.Runtime)
@@ -408,6 +526,17 @@ func printInstallUsabilityWarning(w io.Writer, entry registry.SkillEntry) {
 	case "documentation-only":
 		fmt.Fprintf(w, "note: %s installs instructions or documentation, not executable runtime capability\n", entry.ID)
 	}
+}
+
+func printInstallLifecycleWarning(w io.Writer, entry registry.SkillEntry) {
+	if !entry.Deprecated {
+		return
+	}
+	fmt.Fprintf(w, "warning: %s is deprecated", entry.ID)
+	if entry.ReplacedBy != "" {
+		fmt.Fprintf(w, "; prefer %s", entry.ReplacedBy)
+	}
+	fmt.Fprintln(w)
 }
 
 func printPluginSummary(w io.Writer, entry registry.SkillEntry) {
@@ -558,7 +687,10 @@ func printUsage() {
 		"  search    Search entries by text/tag/category/runtime",
 		"  info      Show details for one entry",
 		"  validate  Validate local skill structure and prompt coverage",
-		"  install   Install a local module entry resolved from registry metadata",
+		"  install   Install from an explicit local or verified remote source",
+		"  auth      Configure or inspect runtime-owned authentication bindings",
+		"  doctor    Diagnose installation, platform, and authentication readiness",
+		"  smoke     Run the declared non-destructive smoke check and record evidence",
 		"  run-agent Run production preflight checks for an installed agent package",
 		"",
 		"Examples:",
@@ -572,6 +704,11 @@ func printUsage() {
 		"  skills-hub install --module agents --entry marketing/weekly-performance-supervisor@latest --runtime codex",
 		"  skills-hub install --module plugins --entry marketing/performance-reporting-plugin@latest --runtime codex",
 		"  skills-hub install --skill marketing/meta-google-weekly-performance-review@0.1.0 --runtime generic --target ./my-agent/skills",
+		"  skills-hub install --source remote --registry-url https://skills.ai-knowledge-hub.org/registry/skills-index.json --entry engineering/implementation-strategy@latest --runtime codex",
+		"  skills-hub auth configure ads/example@latest --module tools --binding PROVIDER_API_KEY=env:PROVIDER_API_KEY --generation PROVIDER_API_KEY=env:PROVIDER_API_KEY_GENERATION --validator-command provider-auth-check",
+		"  skills-hub auth status ads/example@latest --module tools",
+		"  skills-hub doctor ads/example@latest --module tools --runtime codex",
+		"  skills-hub smoke ads/example@latest --module tools --runtime codex",
 		"  skills-hub run-agent --agent marketing/weekly-performance-supervisor --bindings agents/marketing/weekly-performance-supervisor/config/tool-bindings.example.json --approve-live",
 	}
 	fmt.Println(strings.Join(lines, "\n"))
@@ -704,4 +841,27 @@ func resolveModuleRoot(explicit, module string) string {
 	default:
 		return "skills"
 	}
+}
+
+type stringListFlag []string
+
+func (values *stringListFlag) String() string {
+	return strings.Join(*values, ",")
+}
+
+func (values *stringListFlag) Set(value string) error {
+	trimmed := strings.TrimSpace(value)
+	if trimmed == "" {
+		return errors.New("origin cannot be empty")
+	}
+	*values = append(*values, trimmed)
+	return nil
+}
+
+func defaultCacheDir() string {
+	base, err := os.UserCacheDir()
+	if err != nil {
+		return filepath.Join(".", ".skills-hub-cache")
+	}
+	return filepath.Join(base, "skills-hub")
 }

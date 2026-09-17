@@ -106,7 +106,14 @@ Build separate indexes from each top-level folder:
 
 Each index entry must contain:
 - `id`, `name`, `description`, `category`, `latest`, `versions`, `runtimes`, `tags`, `deprecated`
-- version fields: `version`, `released_at`, `manifest_url`, `artifact_url`, `sha256`
+- version fields: `version`, `released_at`, `manifest_url`,
+  `manifest_sha256`, `artifact_url`, `sha256`
+
+Repository indexes use `sha256` as a source-tree change digest. During web
+publication, the generated registry copies replace it with the digest of the
+exact immutable archive bytes at `artifact_url`. The versioned manifest URL and
+`manifest_sha256` bind admission metadata to the selected release rather than
+the latest package projection.
 
 ## Domain Routing Strategy
 - `skills.ai-knowledge-hub.org` serves `/skills`

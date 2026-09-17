@@ -1,13 +1,11 @@
 package installer
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
 )
@@ -37,37 +35,7 @@ func InstallSkill(sourceDir, targetRoot, skillID string, force bool) (string, er
 }
 
 func PreparePluginRuntimeArtifacts(destinationDir, runtime string) ([]string, error) {
-	normalizedRuntime := strings.ToLower(strings.TrimSpace(runtime))
-	if normalizedRuntime != "codex" && normalizedRuntime != "claude" {
-		return nil, nil
-	}
-
-	sourceManifest := filepath.Join(destinationDir, "plugin.json")
-	payload, err := os.ReadFile(sourceManifest)
-	if err != nil {
-		return nil, fmt.Errorf("read plugin manifest %s: %w", sourceManifest, err)
-	}
-
-	var manifest map[string]any
-	if err := json.Unmarshal(payload, &manifest); err != nil {
-		return nil, fmt.Errorf("parse plugin manifest %s: %w", sourceManifest, err)
-	}
-	manifest["runtime"] = normalizedRuntime
-
-	runtimeDir := filepath.Join(destinationDir, "."+normalizedRuntime+"-plugin")
-	if err := os.MkdirAll(runtimeDir, 0o755); err != nil {
-		return nil, fmt.Errorf("create runtime manifest dir %s: %w", runtimeDir, err)
-	}
-
-	rendered, err := json.MarshalIndent(manifest, "", "  ")
-	if err != nil {
-		return nil, fmt.Errorf("render runtime manifest: %w", err)
-	}
-	runtimeManifestPath := filepath.Join(runtimeDir, "plugin.json")
-	if err := os.WriteFile(runtimeManifestPath, append(rendered, '\n'), 0o644); err != nil {
-		return nil, fmt.Errorf("write runtime manifest %s: %w", runtimeManifestPath, err)
-	}
-	return []string{runtimeManifestPath}, nil
+	return CompilePluginRuntimePackage(destinationDir, runtime)
 }
 
 func copyTree(src, dst string) error {
@@ -99,7 +67,15 @@ func copyFile(src, dst string) error {
 		return fmt.Errorf("create destination directory %s: %w", filepath.Dir(dst), err)
 	}
 
-	out, err := os.Create(dst)
+	info, err := in.Stat()
+	if err != nil {
+		return fmt.Errorf("inspect source file %s: %w", src, err)
+	}
+	mode := os.FileMode(0o644)
+	if info.Mode()&0o111 != 0 {
+		mode = 0o755
+	}
+	out, err := os.OpenFile(dst, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, mode)
 	if err != nil {
 		return fmt.Errorf("create destination file %s: %w", dst, err)
 	}

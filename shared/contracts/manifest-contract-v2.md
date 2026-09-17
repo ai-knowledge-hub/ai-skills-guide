@@ -37,11 +37,11 @@ artifact, target, and current evidence.
 - Compatible clarifications may extend the 2.x schema with optional fields.
   Removing fields, weakening invariants, or changing meanings requires a new
   major schema version.
-- Registry format `1.2` carries schema `1.1`/`2.1` metadata and the
-  `not-verified` value. Updated consumers accept registry `1.1` and `1.2` but
-  fail closed on unknown versions. Consumers limited to `1.1` must use a prior
-  compatible registry snapshot or upgrade; no lossy readiness downgrade is
-  generated.
+- Registry format `1.2` introduced schema `1.1`/`2.1` metadata and the
+  `not-verified` value. Registry format `1.3` additionally binds each release to
+  an immutable versioned manifest with `manifest_sha256`. Updated catalog
+  consumers accept `1.1` through `1.3`; remote installers require `1.3` and fail
+  closed rather than applying the latest package metadata to an older release.
 
 ## Execution
 
@@ -63,6 +63,15 @@ declared executable directly and must not add shell interpolation. Platform and
 runtime arrays describe supported targets; they do not attest that any target
 has been verified.
 
+Local installers map Go host operating systems to platform identifiers as
+`darwin -> macos`, `linux -> linux`, and `windows -> windows`. For execution
+runtime matching, the selected catalog adapter and native host execution are
+available by default; interpreter, container, and other execution environments
+must be selected explicitly by their declared identifier. Executable packages,
+declared executable helpers, bundles, and every executable member of a bundle
+must match both the current host platform and at least one selected execution
+runtime before installation.
+
 `instructions`, `bundle`, and `integration-template` must not declare
 `command`, `healthcheck`, or `smoke_test`. Scripts, CLIs, and orchestrators must
 declare a command and smoke test but no service healthcheck. MCP servers and
@@ -79,7 +88,19 @@ Every v2 manifest declares:
 - `checksums`: repository-relative checksum manifest path, or `null` when the
   artifact format cannot carry one;
 - `sbom`: repository-relative SBOM path, or `null` when no SBOM is yet
-  available.
+  available;
+- `provenance`: repository-relative provenance record path when the artifact
+  carries one.
+
+A self-contained plugin release must provide all four artifact records. Its
+dependency lock pins every reachable local component by module, ID, semantic
+version, manifest path, dependency edges, and canonical SHA-256 content digest.
+The checksum manifest covers every regular archive member except itself, and
+the CycloneDX SBOM must enumerate the same component identities, versions, and
+digests as the lock. The provenance subject and materials must bind the same
+root and closure. Release verification recomputes these facts from the archive;
+declarations or generated metadata are not self-attesting evidence. Provenance
+is checksum-bound build metadata, not a cryptographic release signature.
 
 Paths must remain inside the package. `null` is an explicit absence, not proof
 that a requirement is unnecessary. Promotion rules may require a non-null

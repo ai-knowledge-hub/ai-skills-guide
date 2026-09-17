@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.1",
+  "id": "adtech/policy-brand-compliance-checker",
+  "name": "Policy + Brand Compliance Checker",
+  "description": "Validate ad copy, landing URLs, and UTM tracking for policy and brand compliance before campaign launch.",
+  "category": "adtech/compliance",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "policy",
+    "brand-safety",
+    "utm",
+    "prelaunch-qa"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for analysis and recommendation; require human approval before changing live assets or overriding blocked findings.",
+    "outputs": [
+      "Findings table",
+      "Severity ranking",
+      "Launch recommendation"
+    ],
+    "use_when": "Use when ad copy, URLs, or tracking conventions need policy and brand validation before launch.",
+    "execution_mode": "may-run-local-verification"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "executable_helpers": [
+      {
+        "entrypoint": "scripts/utm_lint.py",
+        "availability": "not-verified",
+        "execution": "local-tool",
+        "limitations": [
+          "Packaged helper exists, but current clean-client executable evidence is not recorded."
+        ],
+        "quickstart": "python3 scripts/utm_lint.py < examples/input.json"
+      }
+    ],
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "python3"
+    ]
+  }
+}

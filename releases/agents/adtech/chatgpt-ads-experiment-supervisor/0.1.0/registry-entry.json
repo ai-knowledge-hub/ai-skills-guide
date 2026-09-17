@@ -1,0 +1,68 @@
+{
+  "schema_version": "1.1",
+  "id": "adtech/chatgpt-ads-experiment-supervisor",
+  "name": "ChatGPT Ads Experiment Supervisor",
+  "description": "Coordinate task-led ChatGPT advertising experiments across creative, policy, measurement ownership, platform inspection, reconciliation, and memory.",
+  "category": "adtech-agents/experimentation",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "chatgpt-ads",
+    "experiment-supervisor",
+    "measurement",
+    "agentic-commerce",
+    "governance"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "May plan, inspect approved read-only data, and reconcile supplied evidence; live campaign writes require the existing policy gate, executor, and human approval.",
+    "role": "Experiment supervisor for task-led conversational advertising and agent-mediated commerce.",
+    "coordinates": [
+      "Task hypothesis design",
+      "Creative and compliance readiness",
+      "Signal ownership and measurement",
+      "Mock or read-only platform inspection",
+      "Event reconciliation and experiment memory"
+    ],
+    "autonomy_level": "advisory",
+    "outputs": [
+      "Experiment plan",
+      "Readiness decision",
+      "Reconciled evidence",
+      "Experiment memory record"
+    ]
+  },
+  "usability": {
+    "availability": "template-only",
+    "execution": "orchestrator",
+    "limitations": [
+      "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged.",
+      "The supervisor is advisory and does not execute campaign writes."
+    ],
+    "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "agents": [
+      "marketing/creative-operating-system-supervisor",
+      "adtech/ad-platform-control-plane-supervisor"
+    ],
+    "skills": [
+      "marketing/task-map-designer",
+      "marketing/ai-output-eval-scorecard",
+      "adtech/advertising-signal-ownership-auditor",
+      "marketing/agent-share-of-choice-evaluator",
+      "agentops/ad-platform-policy-gate-designer"
+    ],
+    "tools": [
+      "adtech/conversion-event-reconciler",
+      "adtech/openai-ads-api-client",
+      "adtech/ad-platform-executor-template"
+    ]
+  }
+}

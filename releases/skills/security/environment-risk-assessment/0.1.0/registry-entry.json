@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.1",
+  "id": "security/environment-risk-assessment",
+  "name": "Environment Risk Assessment",
+  "description": "Assess whether the runtime environment is safe for autonomous agent execution and recommend isolation or approval boundaries.",
+  "category": "security/runtime-hardening",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "runtime",
+    "isolation",
+    "environment",
+    "risk"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for inspection and recommendation; require human approval before changing runtime isolation or credential policies.",
+    "outputs": [
+      "Environment risk review",
+      "Escalation reasons",
+      "Isolation recommendations"
+    ],
+    "use_when": "Use when you need to assess whether the current runtime is safe for autonomous agent execution.",
+    "execution_mode": "read-only-local-inspection"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  }
+}

@@ -143,6 +143,191 @@ func TestBuildIndexRejectsStaleEvidenceForDeclaredUsableNow(t *testing.T) {
 	assertAdmissionError(t, err, "claims usable-now with evidence older than")
 }
 
+func TestBuildIndexSuppressesDeprecatedRootAndHelperUsability(t *testing.T) {
+	root := t.TempDir()
+	entryDir := filepath.Join(root, "tools-mcp", "shared", "deprecated-tool")
+	if err := os.MkdirAll(filepath.Join(entryDir, "bin"), 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	manifest := v2ExecutableManifest("shared/deprecated-tool", time.Now().UTC())
+	manifest = strings.Replace(manifest, `schema_version: "2.0"`, `schema_version: "2.1"`, 1)
+	manifest = strings.Replace(
+		manifest,
+		"  quickstart: bin/tool\n",
+		"  quickstart: bin/tool\n  executable_helpers:\n    - entrypoint: bin/tool\n      availability: usable-now\n      execution: local-tool\n      limitations: [Deprecated helper.]\n",
+		1,
+	)
+	manifest = strings.Replace(
+		manifest,
+		"deprecated: false\n",
+		"deprecated: true\nreplaced_by: shared/replacement-tool\n",
+		1,
+	)
+	writeTestFile(t, filepath.Join(entryDir, "tool.yaml"), manifest, 0o644)
+	for _, file := range []string{"TOOL.md", "checksums.txt", "sbom.cdx.json", "bin/tool"} {
+		writeTestFile(t, filepath.Join(entryDir, filepath.FromSlash(file)), "fixture\n", 0o755)
+	}
+
+	index, err := BuildToolsIndex(root)
+	if err != nil {
+		t.Fatalf("build deprecated tool index: %v", err)
+	}
+	entry := index.Skills[0]
+	if entry.Readiness != "deprecated" || entry.Usability.Availability != "not-verified" || entry.Usability.Source != "inferred" {
+		t.Fatalf("deprecated catalog entry retained positive usability: %#v", entry)
+	}
+	if len(entry.Usability.ExecutableHelpers) != 1 || entry.Usability.ExecutableHelpers[0].Availability != "not-verified" {
+		t.Fatalf("deprecated catalog helper retained positive usability: %#v", entry.Usability.ExecutableHelpers)
+	}
+}
+
+func TestValidatePackageManifestRejectsCanonicalSchemaViolations(t *testing.T) {
+	for _, test := range []struct {
+		name   string
+		mutate func(string) string
+	}{
+		{
+			name: "unknown property",
+			mutate: func(manifest string) string {
+				return manifest + "unknown_contract_field: true\n"
+			},
+		},
+		{
+			name: "unknown availability",
+			mutate: func(manifest string) string {
+				return strings.Replace(manifest, "availability: usable-now", "availability: future-ready", 1)
+			},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			root := t.TempDir()
+			entryDir := filepath.Join(root, "tools-mcp", "shared", "schema-bypass")
+			manifestPath := filepath.Join(entryDir, "tool.yaml")
+			writeTestFile(t, manifestPath, test.mutate(v2ExecutableManifest("shared/schema-bypass", time.Now().UTC())), 0o644)
+			for _, file := range []string{"TOOL.md", "checksums.txt", "sbom.cdx.json", "bin/tool"} {
+				writeTestFile(t, filepath.Join(entryDir, filepath.FromSlash(file)), "fixture\n", 0o755)
+			}
+
+			_, err := ValidatePackageManifest(manifestPath)
+			assertAdmissionError(t, err, "does not satisfy tool.schema.json")
+		})
+	}
+}
+
+func TestValidateAuthenticationDriversBeforeAdmission(t *testing.T) {
+	authentication := AuthenticationMetadata{Status: "required", Methods: []string{"oauth-device-flow"}}
+	root := t.TempDir()
+	manifestPath := filepath.Join(root, "tool.yaml")
+	if err := validateAuthenticationDrivers(root, manifestPath, authentication, []string{"codex"}); err == nil || !strings.Contains(err.Error(), "requires a packaged driver") {
+		t.Fatalf("missing typed authentication driver was accepted: %v", err)
+	}
+
+	writeTestFile(t, filepath.Join(root, "bin", "auth-driver"), "fixture\n", 0o755)
+	driverPath := filepath.Join(root, "auth", "oauth-device-flow.json")
+	validDriver := `{
+  "schema_version": "skills-hub.auth-driver/v1",
+  "method": "oauth-device-flow",
+  "flow": "device-code",
+  "runtimes": ["codex"],
+  "bootstrap": {"command": ["bin/auth-driver", "bootstrap"]},
+  "credential": {"command": ["bin/auth-driver", "credential"]},
+  "status": {"command": ["bin/auth-driver", "status"]}
+}`
+	writeTestFile(t, driverPath, validDriver, 0o644)
+	if err := validateAuthenticationDrivers(root, manifestPath, authentication, []string{"codex"}); err != nil {
+		t.Fatalf("valid typed authentication driver rejected: %v", err)
+	}
+
+	writeTestFile(t, driverPath, strings.Replace(validDriver, `"runtimes": ["codex"]`, `"runtimes": ["claude"]`, 1), 0o644)
+	if err := validateAuthenticationDrivers(root, manifestPath, authentication, []string{"codex"}); err == nil || !strings.Contains(err.Error(), "does not support declared runtime") {
+		t.Fatalf("runtime-incompatible authentication driver was accepted: %v", err)
+	}
+
+	writeTestFile(t, driverPath, strings.Replace(validDriver, `"flow": "device-code"`, `"flow": "interactive-browser"`, 1), 0o644)
+	if err := validateAuthenticationDrivers(root, manifestPath, authentication, []string{"codex"}); err == nil || !strings.Contains(err.Error(), "does not match method") {
+		t.Fatalf("wrong-flow authentication driver was accepted: %v", err)
+	}
+}
+
+func TestValidatePackageManifestRejectsMissingSelfContainedPluginDependency(t *testing.T) {
+	pluginDir := filepath.Join(t.TempDir(), "plugins", "engineering", "closure-plugin")
+	manifestPath := filepath.Join(pluginDir, "plugin.yaml")
+	writeTestFile(t, manifestPath, v2PluginManifest("engineering/closure-plugin", time.Now().UTC()), 0o644)
+	writeTestFile(t, filepath.Join(pluginDir, "plugin.json"), "{}\n", 0o644)
+
+	_, err := ValidatePackageManifest(manifestPath)
+	assertAdmissionError(t, err, "self-contained dependency engineering/closure-skill")
+}
+
+func TestValidatePackageManifestRejectsV21PluginWithoutIntegrityMetadata(t *testing.T) {
+	pluginDir := filepath.Join(t.TempDir(), "plugins", "engineering", "closure-plugin")
+	manifestPath := filepath.Join(pluginDir, "plugin.yaml")
+	writeTestFile(t, manifestPath, v2PluginManifest("engineering/closure-plugin", time.Now().UTC()), 0o644)
+	writeTestFile(t, filepath.Join(pluginDir, "plugin.json"), "{}\n", 0o644)
+	dependencyDir := filepath.Join(pluginDir, "bundled", "skills", "engineering", "closure-skill")
+	writeTestFile(t, filepath.Join(dependencyDir, "skill.yaml"), `schema_version: "2.1"
+id: engineering/closure-skill
+name: Closure Skill
+description: Bundled dependency used to verify metadata admission.
+version: 1.0.0
+released_at: "2026-09-14T00:00:00Z"
+category: engineering/testing-quality
+tags: [testing]
+license: MIT
+author:
+  name: Test Maintainer
+runtimes: [generic]
+entrypoints:
+  skill_md: SKILL.md
+usability:
+  availability: documentation-only
+  execution: instructions
+execution:
+  kind: instructions
+  supported_platforms: [linux, macos, windows]
+  supported_runtimes: [generic]
+artifact:
+  self_contained: true
+  dependency_lock: null
+  checksums: null
+  sbom: null
+authentication:
+  status: none
+  methods: [none]
+  credential_bindings: []
+  scopes: []
+  credential_storage: No credentials.
+  validation: Confirm no authentication challenge.
+  revocation: Not applicable.
+verification:
+  evidence: [evidence://tests/closure-skill]
+  last_verified_at: "2026-09-14T00:00:00Z"
+deprecated: false
+`, 0o644)
+	writeTestFile(t, filepath.Join(dependencyDir, "SKILL.md"), "# Closure skill\n", 0o644)
+
+	_, err := ValidatePackageManifest(manifestPath)
+	assertAdmissionError(t, err, "must declare dependency_lock, checksums, sbom, and provenance")
+}
+
+func TestProjectManifestForCurrentCatalogDemotesExpiredReadiness(t *testing.T) {
+	verifiedAt := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	manifestPath := filepath.Join(t.TempDir(), "tool.yaml")
+	writeTestFile(t, manifestPath, v2ExecutableManifest("shared/stale-projection", verifiedAt), 0o644)
+	manifest, err := ParseManifest(manifestPath)
+	if err != nil {
+		t.Fatalf("parse historical manifest: %v", err)
+	}
+
+	entry := ProjectManifestForCurrentCatalog(manifest, verifiedAt.Add(executableEvidenceLifetime+time.Second))
+	if entry.Usability.Availability != "not-verified" || entry.Usability.Source != "inferred" {
+		t.Fatalf("expired readiness was still advertised: %#v", entry.Usability)
+	}
+	if entry.Verification == nil || entry.Verification.LastVerifiedAt != verifiedAt.Format(time.RFC3339) {
+		t.Fatalf("historical verification was not preserved: %#v", entry.Verification)
+	}
+}
+
 func TestBuildIndexRejectsUsableNowWithoutEvidence(t *testing.T) {
 	root := t.TempDir()
 	entryDir := filepath.Join(root, "tools-mcp", "shared", "unevidenced-tool")
@@ -267,6 +452,9 @@ version: 1.0.0
 released_at: "2026-09-13T00:00:00Z"
 category: tools-mcp/test
 tags: [test]
+license: MIT
+author:
+  name: Test Maintainer
 runtimes: [codex]
 entrypoints:
   spec: TOOL.md
@@ -296,6 +484,50 @@ authentication:
   revocation: Not applicable.
 verification:
   evidence: [evidence://tests/v2-tool/smoke]
+  last_verified_at: %q
+deprecated: false
+`, id, verifiedAt.Format(time.RFC3339))
+}
+
+func v2PluginManifest(id string, verifiedAt time.Time) string {
+	return fmt.Sprintf(`schema_version: "2.1"
+id: %s
+name: Closure Plugin
+description: Self-contained plugin used to verify exact archived dependency closure.
+version: 1.0.0
+released_at: "2026-09-14T00:00:00Z"
+category: engineering-plugins/maintenance
+tags: [testing]
+license: MIT
+author:
+  name: Test Maintainer
+runtimes: [generic]
+entrypoints:
+  spec: plugin.json
+includes:
+  skills: [engineering/closure-skill]
+usability:
+  availability: usable-now
+  execution: bundle
+execution:
+  kind: bundle
+  supported_platforms: [linux]
+  supported_runtimes: [generic]
+artifact:
+  self_contained: true
+  dependency_lock: null
+  checksums: null
+  sbom: null
+authentication:
+  status: none
+  methods: [none]
+  credential_bindings: []
+  scopes: []
+  credential_storage: No credentials.
+  validation: Confirm no authentication challenge.
+  revocation: Not applicable.
+verification:
+  evidence: [evidence://tests/closure-plugin]
   last_verified_at: %q
 deprecated: false
 `, id, verifiedAt.Format(time.RFC3339))

@@ -1,0 +1,50 @@
+schema_version: "1.1"
+id: warehouse/bigquery-mcp-query-runner
+name: BigQuery MCP Query Runner
+description: Implementation specification and template for a read-only BigQuery MCP query runner; no launchable server is packaged.
+version: 0.1.0
+released_at: "2026-03-02T00:00:00Z"
+category: tools-mcp/warehouse
+tags:
+  - bigquery
+  - mcp
+  - sql
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  spec: TOOL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  mcp_servers:
+    - bigquery
+operational:
+  connected_system: Google BigQuery
+  capabilities:
+    - Execute parameterized read-only SQL templates for analytics workflows.
+    - Return typed warehouse rows for BI transformations and reporting.
+    - Enforce query guardrails such as timeout, limits, and statement restrictions.
+  auth_required:
+    - BigQuery dataset access via authenticated MCP runtime
+  access_level: read-only
+  trust_boundary: remote-mcp-server
+  approval_boundary: Safe for parameterized read-only queries; require human approval before broadening dataset scope or enabling any non-read-only SQL path.
+usability:
+  availability: template-only
+  execution: integration-template
+  limitations:
+    - Specification, prompts, and examples only; no launchable MCP transport is packaged.
+  quickstart: Review TOOL.md as an implementation contract; do not register this package as an MCP server.
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

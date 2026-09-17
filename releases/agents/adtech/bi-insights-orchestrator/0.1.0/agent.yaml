@@ -1,0 +1,56 @@
+schema_version: "1.1"
+id: adtech/bi-insights-orchestrator
+name: BI Insights Orchestrator
+description: Orchestrate warehouse and ad platform data analysis into standardized BI insights with QA-aware controls.
+version: 0.1.0
+released_at: "2026-03-02T00:00:00Z"
+category: adtech-agents/analytics
+tags:
+  - bi
+  - analytics
+  - orchestration
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  spec: AGENT.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  skills:
+    - adtech/analyst-copilot-bigquery-redshift
+    - adtech/dashboard-generator
+    - adtech/dashboard-qa-checker
+  tools:
+    - bigquery_sql
+    - ga4_query
+operational:
+  role: Analytics orchestration agent for warehouse-backed BI reporting.
+  coordinates:
+    - Warehouse and platform metric collection
+    - KPI normalization across sources
+    - Dashboard and insight generation
+  autonomy_level: semi-autonomous
+  approval_boundary: May coordinate read-only data analysis and draft reporting outputs; require human approval before any publish or stakeholder-distribution decision.
+  outputs:
+    - Normalized KPI table
+    - Anomaly summary with evidence
+    - Publish recommendation
+    - Risks and data limitations
+usability:
+  availability: template-only
+  execution: orchestrator
+  limitations:
+    - Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged.
+  quickstart: Review AGENT.md and implement and register the declared runtime bindings before launch.
+verification:
+  tests_min_prompts: 5
+  security_reviewed: false
+deprecated: false

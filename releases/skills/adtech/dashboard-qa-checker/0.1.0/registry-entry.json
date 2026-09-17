@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.1",
+  "id": "adtech/dashboard-qa-checker",
+  "name": "Dashboard QA Checker",
+  "description": "Validate dashboard datasets with freshness, completeness, reconciliation, anomaly, and schema drift checks before publish.",
+  "category": "adtech/analytics-engineering",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "qa",
+    "dashboard",
+    "data-quality",
+    "anomaly-detection"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for read-only QA evaluation; require human approval before overriding critical failures.",
+    "outputs": [
+      "QA result",
+      "Blocking reasons",
+      "Alert payload"
+    ],
+    "use_when": "Use when a dashboard or BI package needs freshness, completeness, reconciliation, and anomaly checks before publish.",
+    "execution_mode": "may-run-local-verification"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "python3"
+    ]
+  }
+}

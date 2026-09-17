@@ -1,0 +1,40 @@
+{
+  "schema_version": "1.1",
+  "id": "marketing/product-as-media-mapper",
+  "name": "Product As Media Mapper",
+  "description": "Identify product, app, commerce, service, packaging, data, and owned-channel surfaces that can become campaign media.",
+  "category": "marketing-tools/creative-ops",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "product-as-media",
+    "owned-surfaces",
+    "commerce",
+    "cannes-2026"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for planning; require product, engineering, legal, and operations approval before altering product or customer-service surfaces.",
+    "outputs": [
+      "Surface inventory",
+      "Product-as-media concept map",
+      "Feasibility and risk score"
+    ],
+    "use_when": "Use when a campaign should use owned product or service surfaces as the campaign platform.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  }
+}

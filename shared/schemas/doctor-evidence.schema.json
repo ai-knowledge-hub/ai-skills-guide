@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skills.ai-knowledge-hub.org/schemas/doctor-evidence.schema.json",
+  "title": "Skills Hub doctor evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "contract_id", "contract_version", "evidence_scope",
+    "test_id", "test_version", "producer", "entry_id", "entry_version",
+    "module", "runtime", "platform", "artifact_sha256",
+    "runtime_contract_sha256", "dependency_lock_sha256", "install_source",
+    "environment_id", "observed_at", "expires_at", "ready",
+    "setup_required", "authentication", "configuration_class", "result",
+    "checks"
+  ],
+  "properties": {
+    "schema_version": { "const": "skills-hub.doctor-evidence/v1" },
+    "contract_id": { "const": "operational-readiness" },
+    "contract_version": { "const": "1.0.3" },
+    "evidence_scope": { "const": "setup" },
+    "test_id": { "const": "skills-hub/doctor" },
+    "test_version": { "type": "string", "minLength": 1 },
+    "producer": { "type": "string", "minLength": 1 },
+    "entry_id": { "type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9-]+$" },
+    "entry_version": { "type": "string", "minLength": 1 },
+    "module": { "enum": ["skills", "agents", "tools", "plugins"] },
+    "runtime": { "enum": ["codex", "claude", "generic"] },
+    "platform": { "enum": ["linux", "macos", "windows"] },
+    "artifact_sha256": { "type": "string", "pattern": "^([a-f0-9]{64})?$" },
+    "runtime_contract_sha256": { "type": "string", "pattern": "^([a-f0-9]{64})?$" },
+    "dependency_lock_sha256": { "type": "string", "pattern": "^(not-applicable|not-evaluated|[a-f0-9]{64})$" },
+    "install_source": { "enum": ["local", "remote", "unknown"] },
+    "environment_id": { "type": "string", "pattern": "^[a-f0-9]{32}$" },
+    "observed_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" },
+    "ready": { "type": "boolean" },
+    "setup_required": { "type": "boolean" },
+    "authentication": { "type": "object" },
+    "credential_binding_keys": {
+      "type": "object",
+      "propertyNames": { "pattern": "^[A-Z][A-Z0-9_]*$" },
+      "additionalProperties": { "type": "string", "pattern": "^[1-9][0-9]*:[^\\r\\n]+$" }
+    },
+    "configuration_class": { "type": "string", "minLength": 1 },
+    "result": { "enum": ["passed", "failed"] },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "status"],
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "status": { "enum": ["pass", "fail"] },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "ready": { "const": true } }, "required": ["ready"] },
+      "then": { "properties": { "result": { "const": "passed" } } },
+      "else": { "properties": { "result": { "const": "failed" } } }
+    }
+  ]
+}

@@ -13,12 +13,16 @@ func LoadIndex(path string) (Index, error) {
 	if err != nil {
 		return Index{}, fmt.Errorf("read registry index %s: %w", path, err)
 	}
+	return ParseIndex(data, path)
+}
+
+func ParseIndex(data []byte, source string) (Index, error) {
 	var idx Index
 	if err := json.Unmarshal(data, &idx); err != nil {
-		return Index{}, fmt.Errorf("parse registry index %s: %w", path, err)
+		return Index{}, fmt.Errorf("parse registry index %s: %w", source, err)
 	}
-	if idx.RegistryVersion != "1.1" && idx.RegistryVersion != "1.2" {
-		return Index{}, fmt.Errorf("unsupported registry_version %q in %s; upgrade the consumer or use a compatible registry snapshot", idx.RegistryVersion, path)
+	if idx.RegistryVersion != "1.1" && idx.RegistryVersion != "1.2" && idx.RegistryVersion != "1.3" {
+		return Index{}, fmt.Errorf("unsupported registry_version %q in %s; upgrade the consumer or use a compatible registry snapshot", idx.RegistryVersion, source)
 	}
 	return idx, nil
 }

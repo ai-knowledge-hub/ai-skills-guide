@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skills.ai-knowledge-hub.org/schemas/auth-driver.schema.json",
+  "title": "Skills Hub packaged authentication driver",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "method", "flow", "runtimes", "bootstrap",
+    "credential", "status"
+  ],
+  "properties": {
+    "schema_version": { "const": "skills-hub.auth-driver/v1" },
+    "method": {
+      "enum": [
+        "api-key", "bearer-token", "oauth-authorization-code-pkce",
+        "oauth-device-flow", "oauth-client-credentials", "service-account",
+        "workload-identity", "brokered", "custom"
+      ]
+    },
+    "flow": {
+      "enum": [
+        "credential-binding", "interactive-browser", "device-code",
+        "non-interactive-service", "non-interactive-workload", "brokered",
+        "custom"
+      ]
+    },
+    "runtimes": {
+      "type": "array",
+      "items": { "enum": ["codex", "claude", "generic"] },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "bootstrap": { "$ref": "#/$defs/command" },
+    "credential": { "$ref": "#/$defs/command" },
+    "status": { "$ref": "#/$defs/command" }
+  },
+  "$defs": {
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command"],
+      "properties": {
+        "command": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        }
+      }
+    }
+  }
+}

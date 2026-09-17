@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.1",
+  "id": "marketing/cultural-timing-signal-triage",
+  "name": "Cultural Timing Signal Triage",
+  "description": "Decide whether a live cultural moment is worth acting on, and define the safe, fast, brand-fit response path.",
+  "category": "marketing-tools/creative-ops",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "cultural-timing",
+    "real-time-marketing",
+    "risk-review",
+    "approvals"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for triage; require human approval before public response, paid media activation, creator outreach, or legal-risk claims.",
+    "outputs": [
+      "Go/no-go recommendation",
+      "Timing window",
+      "Brand permission check",
+      "Risk and approval path"
+    ],
+    "use_when": "Use when a brand notices a live moment and needs a fast go/no-go recommendation with guardrails.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  }
+}

@@ -80,8 +80,11 @@ replacement cannot provide safe mixed-version visibility. Supporting that path
 requires a future versioned closure with one runtime-wide activation pointer.
 
 These generated files are derived from the package `plugin.json` and stamped
-with the target runtime. They are scaffolding artifacts, not proof that the
-plugin is production approved.
+with the target runtime. For schema 2.1 self-contained releases, the installer
+instead compiles the complete dependency lock into native runtime layouts and a
+portable registration contract; see
+[Runtime package compilation](runtime-compilation.md). Runtime compilation is
+not proof that the plugin is production approved.
 
 ## Current boundaries
 

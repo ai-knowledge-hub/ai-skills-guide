@@ -1088,27 +1088,38 @@ func TestInstallPublishedContentRepurposingPluginWithoutSourceSiblings(t *testin
 	server.StartTLS()
 	defer server.Close()
 
-	runtimeRoot := t.TempDir()
-	result, err := InstallRemoteRelease(context.Background(), RemoteInstallOptions{
-		RegistryURL: server.URL + "/registry.json",
-		CacheDir:    filepath.Join(t.TempDir(), "cache"),
-		Module:      "plugins",
-		Runtime:     "generic",
-		ID:          packageID,
-		Version:     release.Version,
-		TargetRoot:  filepath.Join(runtimeRoot, "plugins"),
-		HTTPClient:  server.Client(),
-	})
-	if err != nil {
-		t.Fatalf("install standalone published plugin: %v", err)
-	}
-	assertFileContains(t, filepath.Join(result.Destination, "dependencies.lock.json"), "marketing/creative-workshop-pmax-reels")
-	for _, dependencyID := range []string{
-		"marketing/creative-workshop-pmax-reels",
-		"marketing/ai-output-eval-scorecard",
-		"marketing/dynamic-creative-rules-engine",
-	} {
-		assertFileContains(t, filepath.Join(runtimeRoot, "skills", filepath.FromSlash(dependencyID), "skill.yaml"), dependencyID)
+	for _, runtimeName := range []string{"codex", "claude", "generic"} {
+		t.Run(runtimeName, func(t *testing.T) {
+			runtimeRoot := t.TempDir()
+			result, err := InstallRemoteRelease(context.Background(), RemoteInstallOptions{
+				RegistryURL: server.URL + "/registry.json",
+				CacheDir:    filepath.Join(t.TempDir(), "cache"),
+				Module:      "plugins",
+				Runtime:     runtimeName,
+				ID:          packageID,
+				Version:     release.Version,
+				TargetRoot:  filepath.Join(runtimeRoot, "plugins"),
+				HTTPClient:  server.Client(),
+			})
+			if err != nil {
+				t.Fatalf("install standalone published plugin: %v", err)
+			}
+			assertFileContains(t, filepath.Join(result.Destination, "dependencies.lock.json"), "marketing/creative-workshop-pmax-reels")
+			assertFileContains(t, filepath.Join(result.Destination, ".runtime", runtimeName+".json"), `"schema_version": "skills-hub.runtime-package/v1"`)
+			if runtimeName == "codex" {
+				assertFileContains(t, filepath.Join(result.Destination, "plugin.json"), agentPluginManifestSchema)
+			} else if runtimeName == "claude" {
+				assertFileContains(t, filepath.Join(result.Destination, ".claude-plugin", "plugin.json"), `"skills": "./skills/"`)
+			}
+			for _, dependencyID := range []string{
+				"marketing/creative-workshop-pmax-reels",
+				"marketing/ai-output-eval-scorecard",
+				"marketing/dynamic-creative-rules-engine",
+			} {
+				assertFileContains(t, filepath.Join(runtimeRoot, "skills", filepath.FromSlash(dependencyID), "skill.yaml"), dependencyID)
+				assertFileContains(t, filepath.Join(result.Destination, "skills", filepath.Base(dependencyID), "SKILL.md"), "name:")
+			}
+		})
 	}
 }
 

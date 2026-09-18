@@ -127,8 +127,10 @@ test("tools route and detail smoke", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Operational Summary" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Capabilities" })).toBeVisible();
   await expect(page.getByText("remote-mcp-server")).toBeVisible();
-  await expect(page.getByText("Template only", { exact: true })).toBeVisible();
-  await expect(page.getByText("no launchable MCP transport", { exact: false })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Reference template" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Install (Codex)" })).toHaveCount(0);
+  const ga4Usability = page.locator(".detail-panel").filter({ has: page.getByRole("heading", { name: "How You Can Use This" }) }).first();
+  await expect(ga4Usability.getByText("Setup required", { exact: true }).first()).toBeVisible();
+  await expect(ga4Usability.getByText("remote-integration", { exact: false })).toBeVisible();
+  await expect(ga4Usability.getByText("GA4_CREDENTIAL runtime binding", { exact: false })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Install (Codex)" })).toBeVisible();
+  await expect(page.locator(".copy-button")).toHaveCount(3);
 });

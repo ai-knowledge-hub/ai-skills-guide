@@ -51,13 +51,14 @@ var (
 )
 
 type authDriverDocument struct {
-	SchemaVersion string               `json:"schema_version"`
-	Method        string               `json:"method"`
-	Flow          string               `json:"flow"`
-	Runtimes      []string             `json:"runtimes"`
-	Bootstrap     authDriverCommandDoc `json:"bootstrap"`
-	Credential    authDriverCommandDoc `json:"credential"`
-	Status        authDriverCommandDoc `json:"status"`
+	SchemaVersion  string               `json:"schema_version"`
+	CredentialMode string               `json:"credential_mode"`
+	Method         string               `json:"method"`
+	Flow           string               `json:"flow"`
+	Runtimes       []string             `json:"runtimes"`
+	Bootstrap      authDriverCommandDoc `json:"bootstrap"`
+	Credential     authDriverCommandDoc `json:"credential"`
+	Status         authDriverCommandDoc `json:"status"`
 }
 
 type authDriverCommandDoc struct {
@@ -105,15 +106,16 @@ type DriverCommand struct {
 }
 
 type AuthDriver struct {
-	SchemaVersion string        `json:"schema_version"`
-	Method        string        `json:"method"`
-	Flow          string        `json:"flow"`
-	PackageDir    string        `json:"package_dir"`
-	TargetRoot    string        `json:"target_root"`
-	Runtime       string        `json:"runtime"`
-	Bootstrap     DriverCommand `json:"bootstrap"`
-	Credential    DriverCommand `json:"credential"`
-	Status        DriverCommand `json:"status"`
+	SchemaVersion  string        `json:"schema_version"`
+	CredentialMode string        `json:"credential_mode,omitempty"`
+	Method         string        `json:"method"`
+	Flow           string        `json:"flow"`
+	PackageDir     string        `json:"package_dir"`
+	TargetRoot     string        `json:"target_root"`
+	Runtime        string        `json:"runtime"`
+	Bootstrap      DriverCommand `json:"bootstrap"`
+	Credential     DriverCommand `json:"credential"`
+	Status         DriverCommand `json:"status"`
 }
 
 // Profile contains only non-secret configuration. Credential payloads remain
@@ -328,6 +330,11 @@ func Configure(opts ConfigureOptions) (Profile, error) {
 		if err != nil {
 			return Profile{}, err
 		}
+		if driver.CredentialMode == "external-env" {
+			if err := configureExternalBindings(&profile, auth.CredentialBindings, opts.Bindings, opts.Generations); err != nil {
+				return Profile{}, err
+			}
+		}
 		bootstrapEnv, err := explicitBootstrapEnvironment(auth.CredentialBindings, opts.Bindings)
 		if err != nil {
 			return Profile{}, err
@@ -351,33 +358,15 @@ func Configure(opts ConfigureOptions) (Profile, error) {
 		profile.ExpectedAccount = result.Account
 		profile.Driver = &driver
 		profile.BootstrapComplete = true
-		for _, name := range auth.CredentialBindings {
-			profile.Bindings[name] = BindingSource{Type: "driver", Reference: name}
+		if driver.CredentialMode != "external-env" {
+			for _, name := range auth.CredentialBindings {
+				profile.Bindings[name] = BindingSource{Type: "driver", Reference: name}
+			}
 		}
 	} else {
 		profile.BootstrapComplete = true
-		for _, name := range auth.CredentialBindings {
-			if !safeCredentialBindingName(name) {
-				return Profile{}, fmt.Errorf("credential binding %s is unsafe for process environment injection", name)
-			}
-			reference := strings.TrimSpace(opts.Bindings[name])
-			if reference == "" {
-				return Profile{}, fmt.Errorf("missing runtime binding for %s; use --binding %s=env:VARIABLE", name, name)
-			}
-			if !strings.HasPrefix(reference, "env:") || !validEnvironmentName(strings.TrimPrefix(reference, "env:")) {
-				return Profile{}, fmt.Errorf("binding %s must reference a runtime environment name as env:VARIABLE", name)
-			}
-			generation := strings.TrimSpace(opts.Generations[name])
-			if !strings.HasPrefix(generation, "env:") || !validEnvironmentName(strings.TrimPrefix(generation, "env:")) {
-				return Profile{}, fmt.Errorf("binding %s requires a non-secret generation as env:VARIABLE", name)
-			}
-			if strings.TrimPrefix(reference, "env:") == strings.TrimPrefix(generation, "env:") {
-				return Profile{}, fmt.Errorf("binding %s credential and generation references must be distinct", name)
-			}
-			profile.Bindings[name] = BindingSource{
-				Type: "env", Reference: strings.TrimPrefix(reference, "env:"),
-				GenerationReference: strings.TrimPrefix(generation, "env:"),
-			}
+		if err := configureExternalBindings(&profile, auth.CredentialBindings, opts.Bindings, opts.Generations); err != nil {
+			return Profile{}, err
 		}
 	}
 	for name := range opts.Bindings {
@@ -405,6 +394,33 @@ func Configure(opts ConfigureOptions) (Profile, error) {
 		return Profile{}, err
 	}
 	return saved, nil
+}
+
+func configureExternalBindings(profile *Profile, names []string, references, generations map[string]string) error {
+	for _, name := range names {
+		if !safeCredentialBindingName(name) {
+			return fmt.Errorf("credential binding %s is unsafe for process environment injection", name)
+		}
+		reference := strings.TrimSpace(references[name])
+		if reference == "" {
+			return fmt.Errorf("missing runtime binding for %s; use --binding %s=env:VARIABLE", name, name)
+		}
+		if !strings.HasPrefix(reference, "env:") || !validEnvironmentName(strings.TrimPrefix(reference, "env:")) {
+			return fmt.Errorf("binding %s must reference a runtime environment name as env:VARIABLE", name)
+		}
+		generation := strings.TrimSpace(generations[name])
+		if !strings.HasPrefix(generation, "env:") || !validEnvironmentName(strings.TrimPrefix(generation, "env:")) {
+			return fmt.Errorf("binding %s requires a non-secret generation as env:VARIABLE", name)
+		}
+		if strings.TrimPrefix(reference, "env:") == strings.TrimPrefix(generation, "env:") {
+			return fmt.Errorf("binding %s credential and generation references must be distinct", name)
+		}
+		profile.Bindings[name] = BindingSource{
+			Type: "env", Reference: strings.TrimPrefix(reference, "env:"),
+			GenerationReference: strings.TrimPrefix(generation, "env:"),
+		}
+	}
+	return nil
 }
 
 func Status(ctx context.Context, opts InspectOptions) (AuthReport, error) {
@@ -907,6 +923,14 @@ func resolveAuthentication(ctx context.Context, opts InspectOptions) (resolvedAu
 		if err := validatePinnedDriver(*profile.Driver); err != nil {
 			return resolvedAuth{}, err
 		}
+		for _, binding := range profile.Bindings {
+			if profile.Driver.CredentialMode == "external-env" && binding.Type != "env" {
+				return resolvedAuth{}, errors.New("authentication profile bindings do not match the driver credential mode")
+			}
+			if profile.Driver.CredentialMode == "driver" && binding.Type != "driver" {
+				return resolvedAuth{}, errors.New("authentication profile bindings do not match the driver credential mode")
+			}
+		}
 		contractDigest, digestErr := installer.RuntimeContractSHA256(opts.Entry, opts.Version)
 		if digestErr != nil {
 			return resolvedAuth{}, digestErr
@@ -1126,7 +1150,11 @@ func loadAuthDriver(opts ConfigureOptions, method string) (AuthDriver, error) {
 	if err != nil {
 		return AuthDriver{}, fmt.Errorf("status command: %w", err)
 	}
-	return AuthDriver{SchemaVersion: document.SchemaVersion, Method: method, Flow: document.Flow, PackageDir: opts.PackageDir, TargetRoot: opts.TargetRoot, Runtime: opts.Runtime, Bootstrap: bootstrap, Credential: credential, Status: status}, nil
+	credentialMode := document.CredentialMode
+	if credentialMode == "" {
+		credentialMode = "driver"
+	}
+	return AuthDriver{SchemaVersion: document.SchemaVersion, CredentialMode: credentialMode, Method: method, Flow: document.Flow, PackageDir: opts.PackageDir, TargetRoot: opts.TargetRoot, Runtime: opts.Runtime, Bootstrap: bootstrap, Credential: credential, Status: status}, nil
 }
 
 func pinDriverCommand(packageDir string, document authDriverCommandDoc) (DriverCommand, error) {
@@ -1160,6 +1188,9 @@ func pinDriverCommand(packageDir string, document authDriverCommandDoc) (DriverC
 
 func validatePinnedDriver(driver AuthDriver) error {
 	if driver.SchemaVersion != "skills-hub.auth-driver/v1" || strings.TrimSpace(driver.PackageDir) == "" || strings.TrimSpace(driver.Runtime) == "" {
+		return errors.New("authentication profile driver is invalid")
+	}
+	if driver.CredentialMode != "" && driver.CredentialMode != "driver" && driver.CredentialMode != "external-env" {
 		return errors.New("authentication profile driver is invalid")
 	}
 	for _, command := range []DriverCommand{driver.Bootstrap, driver.Credential, driver.Status} {

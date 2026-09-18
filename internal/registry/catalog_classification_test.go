@@ -81,7 +81,7 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 		"adtech/openai-ads-adapter-template":   {"template-only", "integration-template"},
 		"adtech/openai-ads-api-client":         {"not-verified", "remote-integration"},
 		"agentops/agent-control-plane-server":  {"template-only", "integration-template"},
-		"analytics/ga4-mcp-connector":          {"template-only", "integration-template"},
+		"analytics/ga4-mcp-connector":          {"setup-required", "remote-integration"},
 		"warehouse/bigquery-mcp-query-runner":  {"template-only", "integration-template"},
 	}
 	if len(tools.Skills) != len(wantTools) {
@@ -91,6 +91,12 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 		want, ok := wantTools[entry.ID]
 		if !ok {
 			t.Fatalf("unexpected tool %q", entry.ID)
+		}
+		if entry.ID == "analytics/ga4-mcp-connector" {
+			if entry.SchemaVersion != "2.0" || entry.Usability.Source != "declared" || entry.Usability.Availability != "setup-required" || entry.Usability.Execution != "remote-integration" || len(entry.Usability.Limitations) == 0 {
+				t.Errorf("GA4 executable classification = %#v", entry)
+			}
+			continue
 		}
 		assertClassification(t, entry, want[0], want[1])
 	}

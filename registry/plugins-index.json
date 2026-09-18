@@ -16,7 +16,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/agentops/harness-governance-plugin/0.1.0.yaml",
           "manifest_sha256": "79db864502276f205cabb24645351a4d0ad08fcdab0e3161563fca549fce7b74",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-governance-plugin/0.1.0.tar.gz",
-          "sha256": "846d37baad4abe262529de7783de763a0a84c9a2302b488ee12c2d050b700860"
+          "sha256": "da15d5f86427b499eed2ede8c9270b338a281269c513dad3486099107b6f1ea3"
         }
       ],
       "runtimes": [
@@ -72,7 +72,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/engineering/code-maintenance-plugin/0.1.0.yaml",
           "manifest_sha256": "14c7e7439429cc92324086168a066a6be6dcbd46110a57bd49e31c637f9e7d25",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/code-maintenance-plugin/0.1.0.tar.gz",
-          "sha256": "4699d7a4181e6c6de1964acc67680763ae834a966c3bb141a5bab80a9580474a"
+          "sha256": "d1892d0f43dcbaab36999ec84833acf31fce2cabe347ccd8ad258460e7a12dd3"
         }
       ],
       "runtimes": [
@@ -130,7 +130,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/ad-creative-plugin/0.1.0.yaml",
           "manifest_sha256": "ba8e4bb10675c478a1a7e2f94e4baf067c5df3d4bc40130f10b23e6760463a4b",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/ad-creative-plugin/0.1.0.tar.gz",
-          "sha256": "4ad6b09546944da5ac15e5e9c0b13941117338096f40ba778466ef4ada5a0622"
+          "sha256": "1edfa594bb19324baffb0cdbe2829a590aa8f7829985cdeacb129d1eec625f76"
         }
       ],
       "runtimes": [
@@ -193,7 +193,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/campaign-audit-plugin/0.1.0.yaml",
           "manifest_sha256": "4de4150e315d0ef5c7ac2a7cc138155029c2060a6a27ae652b51456a507a54fb",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/campaign-audit-plugin/0.1.0.tar.gz",
-          "sha256": "9e89bd90ffee58eb1482b391cabb35a75fb7ce6abcd5855888e897d70d968d3c"
+          "sha256": "52a94c9f0b068ec961edb8b5e3bbf32c4296ab2fda325807a98ee8cb369dab24"
         }
       ],
       "runtimes": [
@@ -259,7 +259,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/chatgpt-advertising-experiment-plugin/0.1.0.yaml",
           "manifest_sha256": "d99aaa5b7a48960e407f49f702e73c0b60abb6324a4c5f0b06a090fe458199db",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/chatgpt-advertising-experiment-plugin/0.1.0.tar.gz",
-          "sha256": "ad3dfb9e7e43fd72d69fc1b35e9dca9f8fd7292352e4b0f7dac15ea21d593801"
+          "sha256": "c029d38d883bc9974665b31e3f7f5491565a0fcda76bea3f2acb85e2e355f8ef"
         }
       ],
       "runtimes": [
@@ -337,7 +337,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/competitive-intelligence-plugin/0.1.0.yaml",
           "manifest_sha256": "ddccddc140794e7ba3ef180f06d91a10b3c27ef8341e5a1b2cf23185b7dd3fbf",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/competitive-intelligence-plugin/0.1.0.tar.gz",
-          "sha256": "d4966fd13614a86c9109fda99629444fca72129091d8002afca71e6dcd32adff"
+          "sha256": "a21491e62fa3894ef5175776c28f0b7f319f5867a292b9f33e47ae51154ae9d8"
         }
       ],
       "runtimes": [
@@ -393,7 +393,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/content-repurposing-plugin/0.2.0.yaml",
           "manifest_sha256": "81ddf0fe60bf7e666c2768eb347eae4dc2278c2b436c31ba1e7ec53ea2823e75",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/content-repurposing-plugin/0.2.0.tar.gz",
-          "sha256": "89a2bd1fa95db52b4914f43547f84579343b514a299933123c682f1076fe98c6"
+          "sha256": "5796cb920f15a3d6654f151b73fb56178ef9390b9e392c3b8b37f7c2bb275494"
         }
       ],
       "runtimes": [
@@ -486,7 +486,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/creative-operating-system-plugin/0.1.0.yaml",
           "manifest_sha256": "d461ad41446137a0ef5004d50f68920c92dba8ec97b31e2220e99f32c4c5fe89",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-operating-system-plugin/0.1.0.tar.gz",
-          "sha256": "e5c2dfc93d5252c1d1b20e953c55b92420afbfda6d0cb408b428f488e3cd05e4"
+          "sha256": "f361e690edefb02b76fc0dd8fe66324b248c8447ba36e0828b975f4c79ba5a94"
         }
       ],
       "runtimes": [
@@ -553,7 +553,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/page-speed-technical-seo-plugin/0.1.0.yaml",
           "manifest_sha256": "757e7099f654aa4faa5ef4e2f67e918950b6c5d0c08aa6da9886dcab610ea714",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/page-speed-technical-seo-plugin/0.1.0.tar.gz",
-          "sha256": "45af98d1e141aa611fd51a8b95528fcddcb5982863a91f46de113dc96ef05c67"
+          "sha256": "c1b19c891fb61cfca715fa49cbc4480de2d0a6ecaa7dc69c8c666563cb70f709"
         }
       ],
       "runtimes": [
@@ -615,7 +615,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/performance-reporting-plugin/0.1.0.yaml",
           "manifest_sha256": "6d87cac21b8188bd0f445de4f1b46a9bab91c38224b38ede8e3de72f76ecd2ae",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/performance-reporting-plugin/0.1.0.tar.gz",
-          "sha256": "99d9ad36f3b2c815ddffe3540c8bf8f9a726edcbd6e06161fc1e2ceafa173030"
+          "sha256": "959e3607aa032b270397c07da84958f51e718f0c12f2e3f82310a7fb6d4666c4"
         }
       ],
       "runtimes": [
@@ -685,7 +685,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/security/runtime-safety-plugin/0.1.0.yaml",
           "manifest_sha256": "c195cfee57dbe18ba286383880621cfafceedd4e468561b6cbdb14aa60e08edd",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/runtime-safety-plugin/0.1.0.tar.gz",
-          "sha256": "5daf7b72c6518500b58f0f9bdbfe67b8748b2765a5062989b0033726c1070c1a"
+          "sha256": "6a3cff2cebfaf347d50fd5a79f19b30cd6efd513b871f965e7bc21b2b0038ccf"
         }
       ],
       "runtimes": [

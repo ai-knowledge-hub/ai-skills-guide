@@ -10,6 +10,11 @@
   ],
   "properties": {
     "schema_version": { "const": "skills-hub.auth-driver/v1" },
+    "credential_mode": {
+      "enum": ["driver", "external-env"],
+      "default": "driver",
+      "description": "Whether credential resolution is performed by the driver or by explicit runtime environment references."
+    },
     "method": {
       "enum": [
         "api-key", "bearer-token", "oauth-authorization-code-pkce",

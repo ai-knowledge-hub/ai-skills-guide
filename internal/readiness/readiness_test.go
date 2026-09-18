@@ -193,6 +193,58 @@ func writeAuthDriverFixture(t *testing.T, packageDir, method string) {
 	}
 }
 
+func TestPackagedDriverCanKeepCredentialsInExplicitEnvironmentStore(t *testing.T) {
+	root := t.TempDir()
+	packageDir := filepath.Join(root, "installed", "fixture")
+	writeAuthDriverFixture(t, packageDir, "service-account")
+	driverPath := filepath.Join(packageDir, "auth", "service-account.json")
+	payload, err := os.ReadFile(driverPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var document map[string]any
+	if err := json.Unmarshal(payload, &document); err != nil {
+		t.Fatal(err)
+	}
+	document["credential_mode"] = "external-env"
+	payload, _ = json.Marshal(document)
+	if err := os.WriteFile(driverPath, payload, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	entry := authenticatedEntry()
+	entry.Authentication.Methods = []string{"service-account"}
+	contractDigest, err := installer.RuntimeContractSHA256(entry, "1.0.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := installer.WriteInstallReceipt(packageDir, installer.InstallReceipt{
+		Source: "local", Module: "tools", ID: entry.ID, Version: "1.0.0", Runtime: "generic", RuntimeContractSHA256: contractDigest,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PRIVATE_PROVIDER_KEY", testSecret)
+	t.Setenv("PRIVATE_PROVIDER_KEY_GENERATION", "generation-1")
+	profile, err := Configure(ConfigureOptions{
+		StateDir: filepath.Join(root, "state"), Module: "tools", Entry: entry, Version: "1.0.0", Method: "service-account",
+		Bindings:    map[string]string{"PROVIDER_API_KEY": "env:PRIVATE_PROVIDER_KEY"},
+		Generations: map[string]string{"PROVIDER_API_KEY": "env:PRIVATE_PROVIDER_KEY_GENERATION"},
+		PackageDir:  packageDir, TargetRoot: filepath.Dir(packageDir), Runtime: "generic",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if profile.Driver == nil || profile.Driver.CredentialMode != "external-env" || profile.Bindings["PROVIDER_API_KEY"].Type != "env" {
+		t.Fatalf("external driver profile = %#v", profile)
+	}
+	report, err := Status(context.Background(), InspectOptions{
+		StateDir: filepath.Join(root, "state"), Module: "tools", Entry: entry, Version: "1.0.0",
+		Now: time.Date(2026, 9, 17, 10, 0, 0, 0, time.UTC),
+	})
+	if err != nil || !report.Authenticated {
+		t.Fatalf("external driver status = %#v, %v", report, err)
+	}
+}
+
 func TestStatusDistinguishesAuthenticationStates(t *testing.T) {
 	now := time.Date(2026, 9, 17, 10, 0, 0, 0, time.UTC)
 	tests := []struct {

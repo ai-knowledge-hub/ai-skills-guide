@@ -57,6 +57,10 @@ python3 -m unittest discover -s "$ROOT/tools-mcp/adtech/conversion-event-reconci
 echo "[check] OpenAI Ads API client tests"
 python3 -m unittest discover -s "$ROOT/tools-mcp/adtech/openai-ads-api-client/tests" -p 'test_*.py'
 
+echo "[check] GA4 MCP server tests"
+command -v node >/dev/null 2>&1 || { echo "[ERROR] node is required for GA4 MCP tests"; exit 1; }
+node --test "$ROOT/tools-mcp/analytics/ga4-mcp-connector/tests/ga4_mcp_server.test.mjs"
+
 echo "[check] ChatGPT advertising plugin mock lab"
 python3 -m unittest discover -s "$ROOT/plugins/marketing/chatgpt-advertising-experiment-plugin/tests" -p 'test_*.py'
 

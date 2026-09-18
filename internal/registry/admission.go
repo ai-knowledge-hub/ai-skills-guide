@@ -31,13 +31,14 @@ var authenticationDriverFlows = map[string]string{
 }
 
 type authenticationDriverDocument struct {
-	SchemaVersion string                              `json:"schema_version"`
-	Method        string                              `json:"method"`
-	Flow          string                              `json:"flow"`
-	Runtimes      []string                            `json:"runtimes"`
-	Bootstrap     authenticationDriverCommandDocument `json:"bootstrap"`
-	Credential    authenticationDriverCommandDocument `json:"credential"`
-	Status        authenticationDriverCommandDocument `json:"status"`
+	SchemaVersion  string                              `json:"schema_version"`
+	CredentialMode string                              `json:"credential_mode"`
+	Method         string                              `json:"method"`
+	Flow           string                              `json:"flow"`
+	Runtimes       []string                            `json:"runtimes"`
+	Bootstrap      authenticationDriverCommandDocument `json:"bootstrap"`
+	Credential     authenticationDriverCommandDocument `json:"credential"`
+	Status         authenticationDriverCommandDocument `json:"status"`
 }
 
 type authenticationDriverCommandDocument struct {
@@ -229,6 +230,9 @@ func validateAuthenticationDrivers(packageDir, manifestPath string, authenticati
 		}
 		if driver.SchemaVersion != "skills-hub.auth-driver/v1" || driver.Method != method || driver.Flow != authenticationDriverFlows[method] {
 			return fmt.Errorf("authentication driver %s does not match method %s and its required flow", driverPath, method)
+		}
+		if driver.CredentialMode != "" && driver.CredentialMode != "driver" && driver.CredentialMode != "external-env" {
+			return fmt.Errorf("authentication driver %s has an unsupported credential mode", driverPath)
 		}
 		for _, runtimeName := range runtimes {
 			if !containsString(driver.Runtimes, runtimeName) {

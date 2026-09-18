@@ -52,7 +52,7 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 		if err := validatePackage(manifestPath, m, time.Now().UTC(), true, false); err != nil {
 			return Index{}, err
 		}
-		sha, err := digestSkillDir(skillDir)
+		sha, err := digestPublishedArtifact(root, moduleDir, m, skillDir)
 		if err != nil {
 			return Index{}, err
 		}
@@ -92,6 +92,26 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 		GeneratedAt:     generatedAt,
 		Skills:          skills,
 	}, nil
+}
+
+// digestPublishedArtifact binds a registry release to the exact bytes a
+// remote installer downloads. During initial release creation the retained
+// archive does not exist yet, so the source-tree digest remains a bootstrap
+// value; publication must rebuild the tracked registry after persisting the
+// final immutable archive.
+func digestPublishedArtifact(root, moduleDir string, manifest Manifest, sourceDir string) (string, error) {
+	archivePath := filepath.Join(root, "releases", moduleDir, filepath.FromSlash(manifest.ID), manifest.Version, "package.tar.gz")
+	info, err := os.Stat(archivePath)
+	if err == nil {
+		if !info.Mode().IsRegular() {
+			return "", fmt.Errorf("retained release is not a regular file: %s", archivePath)
+		}
+		return digestFile(archivePath)
+	}
+	if !os.IsNotExist(err) {
+		return "", fmt.Errorf("inspect retained release %s: %w", archivePath, err)
+	}
+	return digestSkillDir(sourceDir)
 }
 
 func digestFile(path string) (string, error) {

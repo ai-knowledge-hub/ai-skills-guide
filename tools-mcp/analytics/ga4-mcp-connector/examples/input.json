@@ -1,6 +1,9 @@
 {
   "property_id": "123456789",
-  "date_range": "2026-02-23 to 2026-03-01",
+  "start_date": "2026-02-23",
+  "end_date": "2026-03-01",
   "dimensions": ["sessionDefaultChannelGroup"],
-  "metrics": ["sessions", "conversions", "totalRevenue"]
+  "metrics": ["sessions", "conversions", "totalRevenue"],
+  "page_size": 100,
+  "max_rows": 500
 }

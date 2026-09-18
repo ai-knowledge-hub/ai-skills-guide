@@ -1,6 +1,6 @@
 {
   "registry_version": "1.3",
-  "generated_at": "2026-07-25T00:00:00Z",
+  "generated_at": "2026-09-17T00:00:00Z",
   "skills": [
     {
       "schema_version": "1.1",
@@ -16,7 +16,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/ads/meta-ads-mcp-connector/0.1.0.yaml",
           "manifest_sha256": "8038a743883b038b316b0683ca2cf01115189f65245aad2a93054fac5c896495",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/ads/meta-ads-mcp-connector/0.1.0.tar.gz",
-          "sha256": "59ee95875cdcdaebeffe92da2c5462ec46055094da776f111a9cb2636d158905"
+          "sha256": "0c4c7042422ba3189b9d9f6c256c3e4224fe7e0cc1c7c4a5d131f959279bcb1c"
         }
       ],
       "runtimes": [
@@ -75,7 +75,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/adtech/ad-platform-executor-template/0.1.0.yaml",
           "manifest_sha256": "9bc313e09df337bc33b844d6e09074d27a395645068bebe60df02296ec0a93f4",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/ad-platform-executor-template/0.1.0.tar.gz",
-          "sha256": "3776a8633629bbd79531e06155647433c88898d0f9a6fc211fa9a5d7f5964996"
+          "sha256": "69eedf78c211a4833641744345db878782d8a2951258969f7b158fb8882c3846"
         }
       ],
       "runtimes": [
@@ -145,7 +145,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/adtech/conversion-event-reconciler/0.1.0.yaml",
           "manifest_sha256": "58a9e854b242a0c39a16328f55e9541c800ee01a090e603e506a9f663a625d54",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/conversion-event-reconciler/0.1.0.tar.gz",
-          "sha256": "5a33d7fef1c300d83b400e14a6f4ff8c56137bd943722c46cdfae34781ed3976"
+          "sha256": "efd779e28b02dc947377dc3b6d025fea045f1134fe086ea0e00061cb10c58eec"
         }
       ],
       "runtimes": [
@@ -207,7 +207,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/adtech/openai-ads-adapter-template/0.1.0.yaml",
           "manifest_sha256": "11bd25d0a8e0615983dc977e8426680cc2cf5e02a1a21c5f42f4798ca4c8f230",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/openai-ads-adapter-template/0.1.0.tar.gz",
-          "sha256": "b3bbb691f98a1e3ab6bedfc8a5068073ff04ce8ddbcff7e5b81df3d9626c57ee"
+          "sha256": "85a0cf2f35863bd057125e874b6a0685e0bbfaac448c042ef0d96732f828685e"
         }
       ],
       "runtimes": [
@@ -272,7 +272,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/adtech/openai-ads-api-client/0.1.0.yaml",
           "manifest_sha256": "e837f60e3ded12b01b29b533e00622c41b29c06235edbf5a1197b704b1de8400",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/openai-ads-api-client/0.1.0.tar.gz",
-          "sha256": "ba5496b419bbbaec2a8756fd2abc194a6a750b360f889444b51f7b7fb15ab63a"
+          "sha256": "683f7b6bc8eaa026424e463cbfcf76a21d6d313dbb50cc63713b3703c7e9822c"
         }
       ],
       "runtimes": [
@@ -348,7 +348,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/agentops/agent-control-plane-server/0.1.0.yaml",
           "manifest_sha256": "86b0b602e7b061cf39c812a0e58281499d915a8e388d75b31128bcfa9e0ec088",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/agent-control-plane-server/0.1.0.tar.gz",
-          "sha256": "b8538fd4344377ea2adf36e984fe907eff02b0b06a156807400f2f995f869f6e"
+          "sha256": "ef933ed8250da19629a95b68c3fd976bef69d27d423fc54d647f1ea6ef8ef7cf"
         }
       ],
       "runtimes": [
@@ -399,20 +399,20 @@
       }
     },
     {
-      "schema_version": "1.1",
+      "schema_version": "2.0",
       "id": "analytics/ga4-mcp-connector",
       "name": "GA4 MCP Connector",
-      "description": "Implementation specification and template for a GA4 MCP query connector; no launchable server is packaged.",
+      "description": "Launchable read-only GA4 Data API MCP server with bounded queries, property isolation, typed authentication, and normalized source metadata.",
       "category": "tools-mcp/analytics",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-03-02T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/analytics/ga4-mcp-connector/0.1.0.yaml",
-          "manifest_sha256": "ef983e25d15db8248a46a8b128ffb691648440af151ac250d787bd4b57e8376b",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/analytics/ga4-mcp-connector/0.1.0.tar.gz",
-          "sha256": "72b9154ff65c0418adc15d318955c0c80e566fb0c2454281f90ee4fd7072b36c"
+          "version": "0.2.0",
+          "released_at": "2026-09-17T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/analytics/ga4-mcp-connector/0.2.0.yaml",
+          "manifest_sha256": "1b430183e498910549e4e5139a08800cf44fe37e32998a54b06a89bb34a5c993",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/analytics/ga4-mcp-connector/0.2.0.tar.gz",
+          "sha256": "80efc8f9e5176097781da84595a9271b34cc5f1661b098422664cf739e154b84"
         }
       ],
       "runtimes": [
@@ -423,7 +423,8 @@
       "tags": [
         "ga4",
         "mcp",
-        "analytics"
+        "analytics",
+        "read-only"
       ],
       "readiness": "experimental",
       "security_reviewed": false,
@@ -431,29 +432,91 @@
       "operational": {
         "connected_system": "Google Analytics 4",
         "capabilities": [
-          "Pull sessions, users, conversions, and revenue by allowed dimensions.",
-          "Query fixed date windows for period comparisons and dashboard inputs.",
-          "Return normalized analytics payloads for downstream skills and agents."
+          "Run bounded read-only reports for explicitly allowed GA4 properties.",
+          "Return normalized dimensions, metrics, pagination, and source freshness.",
+          "Live-verify bearer or service-account identity and property access."
         ],
         "auth_required": [
-          "GA4 property access via authenticated MCP runtime"
+          "GA4 read-only OAuth credential with access to each allowed property"
         ],
         "access_level": "read-only",
         "trust_boundary": "remote-mcp-server",
-        "approval_boundary": "Safe for read-only analytics retrieval; require human approval before combining with any workflow that writes back to ad platforms or reporting systems."
+        "approval_boundary": "Read-only report retrieval only; property, field, date, pagination, timeout, and response-size bounds are enforced before results are returned."
       },
       "usability": {
-        "availability": "template-only",
-        "execution": "integration-template",
-        "limitations": [
-          "Specification, prompts, and examples only; no launchable MCP transport is packaged."
+        "availability": "setup-required",
+        "execution": "remote-integration",
+        "requires_setup": [
+          "Node.js 22 or newer.",
+          "GA4_CREDENTIAL runtime binding and GA4_ALLOWED_PROPERTY_IDS configuration.",
+          "Google Analytics Data API enabled with read access to each allowed property."
         ],
-        "quickstart": "Review TOOL.md as an implementation contract; do not register this package as an MCP server.",
+        "limitations": [
+          "The connector does not expose GA4 administration or mutation endpoints.",
+          "Reports are limited to the packaged dimension and metric allowlists."
+        ],
+        "quickstart": "Configure GA4_CREDENTIAL, set GA4_ALLOWED_PROPERTY_IDS, then register .mcp.json with Codex, Claude, or a generic MCP client.",
         "source": "declared"
       },
+      "execution": {
+        "kind": "mcp-server",
+        "command": [
+          "node",
+          "scripts/ga4_mcp_server.mjs"
+        ],
+        "healthcheck": [
+          "node",
+          "scripts/ga4_mcp_server.mjs",
+          "--healthcheck"
+        ],
+        "smoke_test": [
+          "node",
+          "scripts/ga4_mcp_server.mjs",
+          "--smoke"
+        ],
+        "supported_platforms": [
+          "linux",
+          "macos"
+        ],
+        "supported_runtimes": [
+          "node22"
+        ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": null,
+        "checksums": null,
+        "sbom": null
+      },
+      "authentication": {
+        "status": "required",
+        "methods": [
+          "bearer-token",
+          "service-account"
+        ],
+        "credential_bindings": [
+          "GA4_CREDENTIAL"
+        ],
+        "scopes": [
+          "https://www.googleapis.com/auth/analytics.readonly"
+        ],
+        "setup_url": "https://console.cloud.google.com/apis/library/analyticsdata.googleapis.com",
+        "credential_storage": "Credential JSON remains in an explicitly bound runtime environment source and is never written into the package or readiness profile.",
+        "validation": "The packaged driver obtains an access token, verifies principal, scopes, and lifetime with Google's token-info endpoint, and uses that same token for a one-row read-only report against the selected property.",
+        "revocation": "Revoke user grants in the Google Account or disable and rotate the service-account key in Google Cloud IAM."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/ga4-mcp/json-rpc",
+          "evidence://tests/ga4-mcp/pagination-quota-timeout-malformed-revoked",
+          "evidence://tests/ga4-mcp/property-isolation-auth-driver",
+          "evidence://tests/ga4-mcp/provider-attested-identity-aggregate-result-bound"
+        ],
+        "last_verified_at": "2026-09-17T00:00:00Z"
+      },
       "dependencies": {
-        "mcp_servers": [
-          "ga4"
+        "apis": [
+          "Google Analytics Data API v1beta"
         ]
       }
     },
@@ -471,7 +534,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/warehouse/bigquery-mcp-query-runner/0.1.0.yaml",
           "manifest_sha256": "d6f8666a1904086170daed90d230dc5be79eaa815896d2f1e8535ab2fb470f20",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/warehouse/bigquery-mcp-query-runner/0.1.0.tar.gz",
-          "sha256": "5062178debd2aa7a7be639f1972cd3d54c7b9548b323bc58c36bbb18de030b31"
+          "sha256": "6bbc736a1d4f89690a8e122e18cd335d51f9a07475ec12d17ff0eabf0e45eeef"
         }
       ],
       "runtimes": [

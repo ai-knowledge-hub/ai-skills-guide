@@ -1,7 +1,9 @@
 # Test Prompts
 
-1. Query GA4 sessions and conversions for the last 7 days.
-2. Compare current and previous week metrics by channel.
-3. Validate metric/dimension allowlist enforcement.
-4. Return structured error for invalid property id.
-5. Provide normalized output for downstream dashboard skill.
+1. Query sessions and conversions for an allowed property over an explicit seven-day range.
+2. Compare two explicit weekly windows by `sessionDefaultChannelGroup` without exceeding 500 rows per call.
+3. Reject a metric or dimension outside the packaged allowlist before contacting Google.
+4. Reject an otherwise valid query for a property outside `GA4_ALLOWED_PROPERTY_IDS`.
+5. Return normalized rows, pagination state, provider identity, API version, and retrieval freshness.
+6. Reject a credential envelope that attempts to self-declare its principal or granted scopes.
+7. Reject individually valid pages when the final JSON-RPC response, including text and structured MCP representations, would exceed 2 MiB.

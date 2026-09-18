@@ -23,6 +23,31 @@ func TestResolveRuntimeTargetExplicitTargetWins(t *testing.T) {
 	}
 }
 
+func TestGA4ReleaseArchiveLaunchesAsNativeMCPServer(t *testing.T) {
+	node, err := exec.LookPath("node")
+	if err != nil {
+		t.Fatalf("node is required for the GA4 MCP launch regression: %v", err)
+	}
+	destination := t.TempDir()
+	archive := filepath.Join("..", "..", "releases", "tools-mcp", "analytics", "ga4-mcp-connector", "0.2.0", "package.tar.gz")
+	if err := extractVerifiedTarGz(archive, destination); err != nil {
+		t.Fatalf("extract clean GA4 release: %v", err)
+	}
+	health := exec.Command(node, "scripts/ga4_mcp_server.mjs", "--healthcheck")
+	health.Dir = destination
+	output, err := health.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"status":"ok"`)) {
+		t.Fatalf("GA4 release healthcheck failed: %v\n%s", err, output)
+	}
+	command := exec.Command(node, "scripts/ga4_mcp_server.mjs")
+	command.Dir = destination
+	command.Stdin = strings.NewReader("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}}\n{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\",\"params\":{}}\n")
+	output, err = command.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"name":"ga4-mcp-connector"`)) || !bytes.Contains(output, []byte(`"name":"ga4_run_report"`)) {
+		t.Fatalf("GA4 release MCP handshake failed: %v\n%s", err, output)
+	}
+}
+
 func TestResolveRuntimeTargetCodexFromEnv(t *testing.T) {
 	t.Setenv("CODEX_HOME", "/tmp/codex-home")
 	target, err := ResolveRuntimeTarget("codex", "")

@@ -48,6 +48,31 @@ func TestGA4ReleaseArchiveLaunchesAsNativeMCPServer(t *testing.T) {
 	}
 }
 
+func TestBigQueryReleaseArchiveLaunchesAsNativeMCPServer(t *testing.T) {
+	node, err := exec.LookPath("node")
+	if err != nil {
+		t.Fatalf("node is required for the BigQuery MCP launch regression: %v", err)
+	}
+	destination := t.TempDir()
+	archive := filepath.Join("..", "..", "releases", "tools-mcp", "warehouse", "bigquery-mcp-query-runner", "0.2.0", "package.tar.gz")
+	if err := extractVerifiedTarGz(archive, destination); err != nil {
+		t.Fatalf("extract clean BigQuery release: %v", err)
+	}
+	health := exec.Command(node, "scripts/bigquery_mcp_server.mjs", "--healthcheck")
+	health.Dir = destination
+	output, err := health.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"status":"ok"`)) {
+		t.Fatalf("BigQuery release healthcheck failed: %v\n%s", err, output)
+	}
+	command := exec.Command(node, "scripts/bigquery_mcp_server.mjs")
+	command.Dir = destination
+	command.Stdin = strings.NewReader("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}}\n{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\",\"params\":{}}\n")
+	output, err = command.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"name":"bigquery-mcp-query-runner"`)) || !bytes.Contains(output, []byte(`"name":"bigquery_run_query"`)) {
+		t.Fatalf("BigQuery release MCP handshake failed: %v\n%s", err, output)
+	}
+}
+
 func TestResolveRuntimeTargetCodexFromEnv(t *testing.T) {
 	t.Setenv("CODEX_HOME", "/tmp/codex-home")
 	target, err := ResolveRuntimeTarget("codex", "")

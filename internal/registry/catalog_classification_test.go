@@ -82,7 +82,7 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 		"adtech/openai-ads-api-client":         {"not-verified", "remote-integration"},
 		"agentops/agent-control-plane-server":  {"template-only", "integration-template"},
 		"analytics/ga4-mcp-connector":          {"setup-required", "remote-integration"},
-		"warehouse/bigquery-mcp-query-runner":  {"template-only", "integration-template"},
+		"warehouse/bigquery-mcp-query-runner":  {"setup-required", "remote-integration"},
 	}
 	if len(tools.Skills) != len(wantTools) {
 		t.Fatalf("got %d tools, want %d", len(tools.Skills), len(wantTools))
@@ -92,9 +92,9 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 		if !ok {
 			t.Fatalf("unexpected tool %q", entry.ID)
 		}
-		if entry.ID == "analytics/ga4-mcp-connector" {
+		if entry.ID == "analytics/ga4-mcp-connector" || entry.ID == "warehouse/bigquery-mcp-query-runner" {
 			if entry.SchemaVersion != "2.0" || entry.Usability.Source != "declared" || entry.Usability.Availability != "setup-required" || entry.Usability.Execution != "remote-integration" || len(entry.Usability.Limitations) == 0 {
-				t.Errorf("GA4 executable classification = %#v", entry)
+				t.Errorf("executable integration classification = %#v", entry)
 			}
 			continue
 		}

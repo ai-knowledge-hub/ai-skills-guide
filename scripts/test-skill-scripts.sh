@@ -61,6 +61,9 @@ echo "[check] GA4 MCP server tests"
 command -v node >/dev/null 2>&1 || { echo "[ERROR] node is required for GA4 MCP tests"; exit 1; }
 node --test "$ROOT/tools-mcp/analytics/ga4-mcp-connector/tests/ga4_mcp_server.test.mjs"
 
+echo "[check] BigQuery MCP server tests"
+node --test "$ROOT/tools-mcp/warehouse/bigquery-mcp-query-runner/tests/bigquery_mcp_server.test.mjs"
+
 echo "[check] ChatGPT advertising plugin mock lab"
 python3 -m unittest discover -s "$ROOT/plugins/marketing/chatgpt-advertising-experiment-plugin/tests" -p 'test_*.py'
 

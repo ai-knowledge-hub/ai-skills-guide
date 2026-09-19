@@ -102,6 +102,18 @@ environment identity, non-secret binding keys, provider identity and scope
 observations, validator and execution-runtime fingerprints, timestamps, and a
 bounded result reason.
 
+Evidence published outside the runtime's private evidence store may be a
+redacted summary. It must omit provider principals, account or tenant
+identifiers, provider target fingerprints, provider receipt or job identifiers,
+granted scopes, credential-generation values, and stable local environment
+identifiers, and list every omission in `redacted_fields`. A redacted summary is
+not target-bound evidence: it uses `publication_class:
+public-redacted-summary`, `configuration_class: redacted-summary`, and
+`promotion_eligible: false`, and it must not claim authoritative provider
+identity coverage. Exact target-bound evidence remains in the private runtime
+evidence store and must never be committed or packaged. Promotion requires a
+separate privacy-safe commitment verifiable by an approved audit authority.
+
 Local-development installations are identified as `local` and do not claim a
 published artifact digest. Only a checksum-verified remote installation can
 produce smoke evidence bound to a released artifact.

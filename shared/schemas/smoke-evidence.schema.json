@@ -62,6 +62,26 @@
     "provider_account": { "type": "string", "minLength": 1 },
     "provider_target_fingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
     "attestation_reference": { "type": "string", "minLength": 1 },
+    "publication_class": {
+      "enum": ["public-redacted-summary"]
+    },
+    "redaction_reason": { "type": "string", "minLength": 1 },
+    "redacted_fields": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "credential_binding_keys",
+          "provider_principal",
+          "provider_account",
+          "provider_target_fingerprint",
+          "attestation_reference",
+          "granted_scopes",
+          "environment_id"
+        ]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
     "granted_scopes": {
       "type": "array",
       "items": { "type": "string", "minLength": 1 },
@@ -69,7 +89,12 @@
     },
     "validator_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
     "execution_runtime_fingerprint": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-    "environment_id": { "type": "string", "pattern": "^[a-f0-9]{32}$" },
+    "environment_id": {
+      "oneOf": [
+        { "type": "string", "pattern": "^[a-f0-9]{32}$" },
+        { "const": "redacted" }
+      ]
+    },
     "configuration_class": { "type": "string", "minLength": 1 },
     "coverage": {
       "type": "array",
@@ -137,6 +162,60 @@
       "else": {
         "properties": { "coverage": { "maxItems": 3 } }
       }
+    },
+    {
+      "if": { "required": ["redacted_fields"] },
+      "then": {
+        "required": ["publication_class", "redaction_reason"],
+        "properties": {
+          "publication_class": { "const": "public-redacted-summary" },
+          "promotion_eligible": { "const": false },
+          "configuration_class": { "const": "redacted-summary" },
+          "environment_id": { "const": "redacted" },
+          "redacted_fields": {
+            "minItems": 7,
+            "maxItems": 7,
+            "allOf": [
+              { "contains": { "const": "credential_binding_keys" } },
+              { "contains": { "const": "provider_principal" } },
+              { "contains": { "const": "provider_account" } },
+              { "contains": { "const": "provider_target_fingerprint" } },
+              { "contains": { "const": "attestation_reference" } },
+              { "contains": { "const": "granted_scopes" } },
+              { "contains": { "const": "environment_id" } }
+            ]
+          },
+          "coverage": {
+            "maxItems": 3,
+            "not": {
+              "contains": { "const": "authoritative-provider-identity" }
+            }
+          }
+        },
+        "not": {
+          "anyOf": [
+            { "required": ["credential_binding_keys"] },
+            { "required": ["provider_principal"] },
+            { "required": ["provider_account"] },
+            { "required": ["provider_target_fingerprint"] },
+            { "required": ["attestation_reference"] },
+            { "required": ["granted_scopes"] }
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "anyOf": [
+          { "required": ["publication_class"] },
+          { "required": ["redaction_reason"] },
+          {
+            "properties": { "environment_id": { "const": "redacted" } },
+            "required": ["environment_id"]
+          }
+        ]
+      },
+      "then": { "required": ["redacted_fields"] }
     }
   ]
 }

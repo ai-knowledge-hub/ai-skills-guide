@@ -1,0 +1,10 @@
+{
+  "schema_version": "skills-hub.auth-driver/v1",
+  "credential_mode": "external-env",
+  "method": "workload-identity",
+  "flow": "non-interactive-workload",
+  "runtimes": ["codex", "claude", "generic"],
+  "bootstrap": {"command": ["scripts/bigquery_auth_driver.mjs", "workload-identity", "bootstrap"]},
+  "credential": {"command": ["scripts/bigquery_auth_driver.mjs", "workload-identity", "credential"]},
+  "status": {"command": ["scripts/bigquery_auth_driver.mjs", "workload-identity", "status"]}
+}

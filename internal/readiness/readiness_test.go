@@ -3,8 +3,10 @@ package readiness
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -38,6 +40,8 @@ func TestReadinessHelperProcess(t *testing.T) {
 		_, _ = os.Stdout.WriteString(`{"value":"` + testSecret + `","generation":"generation-1"}`)
 	case "status":
 		_, _ = os.Stdout.WriteString(defaultObservationJSON())
+	case "unknown-secret-field":
+		_, _ = os.Stdout.WriteString(`{"ya29.secret-token-value":"ignored"}`)
 	case "validate", "both":
 		if os.Getenv("PROVIDER_API_KEY") != testSecret {
 			os.Exit(4)
@@ -51,6 +55,33 @@ func TestReadinessHelperProcess(t *testing.T) {
 		os.Exit(6)
 	}
 	os.Exit(0)
+}
+
+func TestRunDriverJSONRedactsDecoderDetails(t *testing.T) {
+	const secret = "ya29.secret-token-value"
+	command, err := filepath.Abs(os.Args[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+	digest, err := fileSHA256(command)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var response credentialResponse
+	err = runDriverJSON(context.Background(), DriverCommand{
+		Command: command,
+		Args:    []string{"-test.run=TestReadinessHelperProcess", "--", "--readiness-mode=unknown-secret-field"},
+		SHA256:  digest,
+	}, nil, nil, &response)
+	if err == nil {
+		t.Fatal("expected invalid driver response rejection")
+	}
+	if got, want := err.Error(), "packaged authentication driver returned an invalid response"; got != want {
+		t.Fatalf("driver error = %q, want %q", got, want)
+	}
+	if strings.Contains(err.Error(), secret) {
+		t.Fatal("driver error exposed credential-shaped response content")
+	}
 }
 
 func helperProcessArg(name string) string {
@@ -207,6 +238,7 @@ func TestPackagedDriverCanKeepCredentialsInExplicitEnvironmentStore(t *testing.T
 		t.Fatal(err)
 	}
 	document["credential_mode"] = "external-env"
+	document["credential"] = map[string]any{"command": []string{installHelperExecutable(t, packageDir), "-test.run=TestReadinessHelperProcess", "--", "--readiness-mode=external-credential-must-not-run"}}
 	payload, _ = json.Marshal(document)
 	if err := os.WriteFile(driverPath, payload, 0o644); err != nil {
 		t.Fatal(err)
@@ -462,6 +494,90 @@ func TestSmokeUsesVerifiedCredentialSnapshotAndPersistsRedactedEvidence(t *testi
 	})
 	if err != nil || derived.Availability != "not-verified" {
 		t.Fatalf("forged evidence status = %#v, %v", derived, err)
+	}
+}
+
+func TestPublishedBigQuerySandboxEvidenceMatchesRetainedArtifact(t *testing.T) {
+	evidencePath := filepath.Join("..", "..", "apps", "web", "public", "evidence", "tools-mcp", "warehouse", "bigquery-mcp-query-runner", "0.2.0", "sandbox-smoke.json")
+	payload, err := os.ReadFile(evidencePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := validateSmokeEvidencePayload(payload); err != nil {
+		t.Fatalf("published sandbox evidence is invalid: %v", err)
+	}
+	var evidence SmokeEvidence
+	if err := json.Unmarshal(payload, &evidence); err != nil {
+		t.Fatal(err)
+	}
+	if evidence.Result != "passed" || evidence.PromotionEligible || evidence.InstallSource != "remote" {
+		t.Fatalf("published sandbox evidence does not preserve its clean-client result: %#v", evidence)
+	}
+	if evidence.PublicationClass != "public-redacted-summary" || evidence.RedactionReason == "" || evidence.ConfigurationClass != "redacted-summary" || evidence.EnvironmentID != "redacted" {
+		t.Fatalf("published sandbox evidence is not classified as a non-promotional redacted summary: %#v", evidence)
+	}
+	wantRedactedFields := []string{"credential_binding_keys", "provider_principal", "provider_account", "provider_target_fingerprint", "attestation_reference", "granted_scopes", "environment_id"}
+	if !sameStringSlice(evidence.RedactedFields, wantRedactedFields) {
+		t.Fatalf("published sandbox evidence redacted fields = %v, want %v", evidence.RedactedFields, wantRedactedFields)
+	}
+	if len(evidence.CredentialKeys) != 0 || evidence.ProviderIdentity != "" || evidence.ProviderAccount != "" || evidence.ProviderTargetFingerprint != "" || evidence.AttestationReference != "" || len(evidence.GrantedScopes) != 0 {
+		t.Fatal("published sandbox summary retains unverifiable private provider bindings")
+	}
+	wantSummaryCoverage := []string{"install-receipt", "installed-tree", "declared-smoke-test"}
+	if !sameStringSlice(evidence.Coverage, wantSummaryCoverage) {
+		t.Fatalf("published sandbox summary coverage = %v, want %v", evidence.Coverage, wantSummaryCoverage)
+	}
+	mutations := map[string]func(*SmokeEvidence){
+		"promotion":           func(candidate *SmokeEvidence) { candidate.PromotionEligible = true },
+		"provider account":    func(candidate *SmokeEvidence) { candidate.ProviderAccount = "unredacted-project" },
+		"constructed target":  func(candidate *SmokeEvidence) { candidate.ProviderTargetFingerprint = strings.Repeat("a", 64) },
+		"private attestation": func(candidate *SmokeEvidence) { candidate.AttestationReference = "private-job-reference" },
+		"missing redaction classification": func(candidate *SmokeEvidence) {
+			candidate.PublicationClass = ""
+			candidate.RedactedFields = nil
+		},
+		"provider identity coverage": func(candidate *SmokeEvidence) {
+			candidate.Coverage = append(candidate.Coverage, "authoritative-provider-identity")
+		},
+	}
+	for name, mutate := range mutations {
+		candidate := evidence
+		mutate(&candidate)
+		candidatePayload, marshalErr := json.Marshal(candidate)
+		if marshalErr != nil {
+			t.Fatal(marshalErr)
+		}
+		if err := validateSmokeEvidencePayload(candidatePayload); err == nil {
+			t.Fatalf("public evidence schema accepted redacted summary mutation %q", name)
+		}
+	}
+	archivePath := filepath.Join("..", "..", "releases", "tools-mcp", "warehouse", "bigquery-mcp-query-runner", "0.2.0", "package.tar.gz")
+	archive, err := os.ReadFile(archivePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	digest := fmt.Sprintf("%x", sha256.Sum256(archive))
+	if evidence.ArtifactSHA256 != digest {
+		t.Fatalf("published evidence artifact digest = %s, retained archive = %s", evidence.ArtifactSHA256, digest)
+	}
+	index, err := registry.LoadIndex(filepath.Join("..", "..", "registry", "tools-index.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	entry, ok := registry.FindSkill(index, "warehouse/bigquery-mcp-query-runner")
+	if !ok {
+		t.Fatal("BigQuery registry entry is missing")
+	}
+	resolved, err := registry.ResolveVersion(entry, "0.2.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if resolved.SHA256 != digest {
+		t.Fatalf("registry artifact digest = %s, retained archive = %s", resolved.SHA256, digest)
+	}
+	const evidenceURL = "https://skills.ai-knowledge-hub.org/evidence/tools-mcp/warehouse/bigquery-mcp-query-runner/0.2.0/sandbox-smoke.json"
+	if entry.Verification == nil || !contains(entry.Verification.Evidence, evidenceURL) {
+		t.Fatal("BigQuery registry entry does not publish its sandbox evidence URL")
 	}
 }
 

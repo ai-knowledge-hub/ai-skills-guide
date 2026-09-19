@@ -1,0 +1,10 @@
+{
+  "schema_version": "skills-hub.auth-driver/v1",
+  "credential_mode": "external-env",
+  "method": "bearer-token",
+  "flow": "credential-binding",
+  "runtimes": ["codex", "claude", "generic"],
+  "bootstrap": {"command": ["scripts/bigquery_auth_driver.mjs", "bearer-token", "bootstrap"]},
+  "credential": {"command": ["scripts/bigquery_auth_driver.mjs", "bearer-token", "credential"]},
+  "status": {"command": ["scripts/bigquery_auth_driver.mjs", "bearer-token", "status"]}
+}

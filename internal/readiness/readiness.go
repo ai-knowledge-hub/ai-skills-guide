@@ -265,6 +265,9 @@ type SmokeEvidence struct {
 	ProviderAccount             string            `json:"provider_account,omitempty"`
 	ProviderTargetFingerprint   string            `json:"provider_target_fingerprint,omitempty"`
 	AttestationReference        string            `json:"attestation_reference,omitempty"`
+	PublicationClass            string            `json:"publication_class,omitempty"`
+	RedactionReason             string            `json:"redaction_reason,omitempty"`
+	RedactedFields              []string          `json:"redacted_fields,omitempty"`
 	GrantedScopes               []string          `json:"granted_scopes,omitempty"`
 	ValidatorSHA256             string            `json:"validator_sha256,omitempty"`
 	ExecutionRuntimeFingerprint string            `json:"execution_runtime_fingerprint,omitempty"`
@@ -1670,7 +1673,7 @@ func subprocessEnvironment(bindings []string) []string {
 }
 
 func bindingGenerationsCurrent(ctx context.Context, resolved resolvedAuth) bool {
-	if resolved.Driver != nil {
+	if resolved.Driver != nil && resolved.Driver.CredentialMode == "driver" {
 		for name, expected := range resolved.Generations {
 			var credential credentialResponse
 			if err := runDriverJSON(ctx, resolved.Driver.Credential, map[string]string{"binding": name}, nil, &credential); err != nil || credential.Generation != expected {

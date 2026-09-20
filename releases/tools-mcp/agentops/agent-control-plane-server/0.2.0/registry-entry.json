@@ -1,0 +1,117 @@
+{
+  "schema_version": "2.0",
+  "id": "agentops/agent-control-plane-server",
+  "name": "Agent Control Plane MCP Server",
+  "description": "Launchable local MCP authority for tenant-scoped policy decisions, exact human approvals, signed execution grants, ordered action records, restart recovery, and tamper-evident audit verification.",
+  "category": "tools-mcp/agentops",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "mcp",
+    "governance",
+    "policy",
+    "audit",
+    "approvals"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "connected_system": "Local agent control plane",
+    "capabilities": [
+      "Authenticate separate proposing-agent and executor identities and enforce tenant, capability, and provider-account scope.",
+      "Evaluate versioned policy outside the model and fail closed for unmatched actions.",
+      "Create exact approval requests and revalidate separately recorded human decisions.",
+      "Issue short-lived signed execution grants for downstream governed executors.",
+      "Revalidate current policy, approval, and executor scope while atomically claiming a grant at the external effect boundary.",
+      "Persist authenticated state, hashed receipt references, compacted recovery intents, idempotent action evidence, and a signed hash-chained audit log."
+    ],
+    "auth_required": [
+      "Runtime-owned signed identity and independent signing keys",
+      "Absolute private control-plane store path"
+    ],
+    "access_level": "read-write",
+    "trust_boundary": "local-tool",
+    "approval_boundary": "The MCP runtime can request approval but cannot install policy or decide approvals; administrator authority is available only through the separate operator entrypoint."
+  },
+  "usability": {
+    "availability": "setup-required",
+    "execution": "local-tool",
+    "requires_setup": [
+      "Node.js 22 or newer.",
+      "CONTROL_PLANE_STORE, signed identity, identity public key, audit key, and role-specific grant keys: issuer key pair for agents or public key only for executors.",
+      "A separately scoped administrator identity to install policy and record human approval decisions."
+    ],
+    "limitations": [
+      "This server does not execute provider mutations; governed executors must verify grants at their own effect boundary.",
+      "The deterministic local store assumes one filesystem host and does not provide multi-host consensus.",
+      "Key rotation requires an explicit operator migration; silent fallback to an old or unknown key is not supported."
+    ],
+    "quickstart": "Create signed runtime and administrator identities, install a tenant policy with the operator CLI, then register .mcp.json.",
+    "source": "declared"
+  },
+  "execution": {
+    "kind": "mcp-server",
+    "command": [
+      "node",
+      "scripts/agent_control_plane_server.mjs"
+    ],
+    "healthcheck": [
+      "node",
+      "scripts/agent_control_plane_server.mjs",
+      "--healthcheck"
+    ],
+    "smoke_test": [
+      "node",
+      "scripts/agent_control_plane_server.mjs",
+      "--smoke"
+    ],
+    "supported_platforms": [
+      "linux",
+      "macos"
+    ],
+    "supported_runtimes": [
+      "node22"
+    ]
+  },
+  "artifact": {
+    "self_contained": true,
+    "dependency_lock": null,
+    "checksums": null,
+    "sbom": null
+  },
+  "authentication": {
+    "status": "required",
+    "methods": [
+      "custom"
+    ],
+    "credential_bindings": [
+      "CONTROL_PLANE_IDENTITY",
+      "CONTROL_PLANE_IDENTITY_PUBLIC_KEY",
+      "CONTROL_PLANE_GRANT_ROLE_KEY",
+      "CONTROL_PLANE_AUDIT_KEY",
+      "CONTROL_PLANE_STORE"
+    ],
+    "scopes": [
+      "tenant",
+      "capability",
+      "provider-account"
+    ],
+    "setup_url": "https://github.com/ai-knowledge-hub/ai-skills-guide/tree/main/tools-mcp/agentops/agent-control-plane-server",
+    "credential_storage": "Keys and signed identities remain in runtime-owned bindings. Executors reject the grant private key. The package stores no secrets, raw provider receipts, or provider credentials.",
+    "validation": "The packaged driver verifies identity signature, role, tenant, scope, absolute expiry, store access, and the complete audit chain.",
+    "revocation": "Remove or replace the runtime identity binding, rotate the identity key, activate a replacement policy, and stop any executor that trusts the old grant key."
+  },
+  "verification": {
+    "evidence": [
+      "evidence://tests/agent-control-plane/clean-client-mcp-launch",
+      "evidence://tests/agent-control-plane/identity-policy-approval-binding",
+      "evidence://tests/agent-control-plane/idempotency-ordering-restart-recovery",
+      "evidence://tests/agent-control-plane/audit-deletion-substitution-reordering"
+    ],
+    "last_verified_at": "2026-09-20T00:00:00Z"
+  }
+}

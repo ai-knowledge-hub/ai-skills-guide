@@ -75,7 +75,7 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 		t.Fatalf("build tools index: %v", err)
 	}
 	wantTools := map[string][2]string{
-		"ads/meta-ads-mcp-connector":           {"template-only", "integration-template"},
+		"ads/meta-ads-mcp-connector":           {"setup-required", "remote-integration"},
 		"adtech/ad-platform-executor-template": {"template-only", "integration-template"},
 		"adtech/conversion-event-reconciler":   {"not-verified", "local-tool"},
 		"adtech/openai-ads-adapter-template":   {"template-only", "integration-template"},
@@ -92,7 +92,7 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 		if !ok {
 			t.Fatalf("unexpected tool %q", entry.ID)
 		}
-		if entry.ID == "analytics/ga4-mcp-connector" || entry.ID == "warehouse/bigquery-mcp-query-runner" {
+		if entry.ID == "ads/meta-ads-mcp-connector" || entry.ID == "analytics/ga4-mcp-connector" || entry.ID == "warehouse/bigquery-mcp-query-runner" {
 			if entry.SchemaVersion != "2.0" || entry.Usability.Source != "declared" || entry.Usability.Availability != "setup-required" || entry.Usability.Execution != "remote-integration" || len(entry.Usability.Limitations) == 0 {
 				t.Errorf("executable integration classification = %#v", entry)
 			}

@@ -1,6 +1,6 @@
 {
   "registry_version": "1.3",
-  "generated_at": "2026-09-19T00:00:00Z",
+  "generated_at": "2026-09-20T00:00:00Z",
   "skills": [
     {
       "schema_version": "2.0",
@@ -400,20 +400,20 @@
       }
     },
     {
-      "schema_version": "1.1",
+      "schema_version": "2.0",
       "id": "agentops/agent-control-plane-server",
       "name": "Agent Control Plane MCP Server",
-      "description": "Implementation specification and template for an agent control-plane MCP server; no launchable server is packaged.",
+      "description": "Launchable local MCP authority for tenant-scoped policy decisions, exact human approvals, signed execution grants, ordered action records, restart recovery, and tamper-evident audit verification.",
       "category": "tools-mcp/agentops",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-04-26T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/agentops/agent-control-plane-server/0.1.0.yaml",
-          "manifest_sha256": "86b0b602e7b061cf39c812a0e58281499d915a8e388d75b31128bcfa9e0ec088",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/agent-control-plane-server/0.1.0.tar.gz",
-          "sha256": "ef933ed8250da19629a95b68c3fd976bef69d27d423fc54d647f1ea6ef8ef7cf"
+          "version": "0.2.0",
+          "released_at": "2026-09-20T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/agentops/agent-control-plane-server/0.2.0.yaml",
+          "manifest_sha256": "97b20aab76f04ae2b263b03860ebafb6aa1352c8d543f2551b6e5c9c498ed7cb",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/agent-control-plane-server/0.2.0.tar.gz",
+          "sha256": "cc62376a41adec2522af1d36a420b35438d2493e2bcee1532442108fefef14c8"
         }
       ],
       "runtimes": [
@@ -432,35 +432,99 @@
       "security_reviewed": false,
       "deprecated": false,
       "operational": {
-        "connected_system": "Agent control plane runtime",
+        "connected_system": "Local agent control plane",
         "capabilities": [
-          "Check proposed agent actions against JSON policy rules.",
-          "Record agent action events with input and output hashes.",
-          "Create approval requests for high-risk actions.",
-          "Verify audit hash-chain continuity."
+          "Authenticate separate proposing-agent and executor identities and enforce tenant, capability, and provider-account scope.",
+          "Evaluate versioned policy outside the model and fail closed for unmatched actions.",
+          "Create exact approval requests and revalidate separately recorded human decisions.",
+          "Issue short-lived signed execution grants for downstream governed executors.",
+          "Revalidate current policy, approval, and executor scope while atomically claiming a grant at the external effect boundary.",
+          "Persist authenticated state, hashed receipt references, compacted recovery intents, idempotent action evidence, and a signed hash-chained audit log."
         ],
         "auth_required": [
-          "Agent runtime identity",
-          "Policy store access",
-          "Audit log write access"
+          "Runtime-owned signed identity and independent signing keys",
+          "Absolute private control-plane store path"
         ],
         "access_level": "read-write",
-        "trust_boundary": "remote-mcp-server",
-        "approval_boundary": "Safe for policy checks and audit writes; requires human approval before executing high-risk operational actions or changing policy."
+        "trust_boundary": "local-tool",
+        "approval_boundary": "The MCP runtime can request approval but cannot install policy or decide approvals; administrator authority is available only through the separate operator entrypoint."
       },
       "usability": {
-        "availability": "template-only",
-        "execution": "integration-template",
-        "limitations": [
-          "Specification, prompts, and examples only; no launchable MCP transport is packaged."
+        "availability": "setup-required",
+        "execution": "local-tool",
+        "requires_setup": [
+          "Node.js 22 or newer.",
+          "CONTROL_PLANE_STORE, signed identity, identity public key, audit key, and role-specific grant keys: issuer key pair for agents or public key only for executors.",
+          "A separately scoped administrator identity to install policy and record human approval decisions."
         ],
-        "quickstart": "Review TOOL.md as an implementation contract; do not register this package as an MCP server.",
+        "limitations": [
+          "This server does not execute provider mutations; governed executors must verify grants at their own effect boundary.",
+          "The deterministic local store assumes one filesystem host and does not provide multi-host consensus.",
+          "Key rotation requires an explicit operator migration; silent fallback to an old or unknown key is not supported."
+        ],
+        "quickstart": "Create signed runtime and administrator identities, install a tenant policy with the operator CLI, then register .mcp.json.",
         "source": "declared"
       },
-      "dependencies": {
-        "mcp_servers": [
-          "agent-control-plane"
+      "execution": {
+        "kind": "mcp-server",
+        "command": [
+          "node",
+          "scripts/agent_control_plane_server.mjs"
+        ],
+        "healthcheck": [
+          "node",
+          "scripts/agent_control_plane_server.mjs",
+          "--healthcheck"
+        ],
+        "smoke_test": [
+          "node",
+          "scripts/agent_control_plane_server.mjs",
+          "--smoke"
+        ],
+        "supported_platforms": [
+          "linux",
+          "macos"
+        ],
+        "supported_runtimes": [
+          "node22"
         ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": null,
+        "checksums": null,
+        "sbom": null
+      },
+      "authentication": {
+        "status": "required",
+        "methods": [
+          "custom"
+        ],
+        "credential_bindings": [
+          "CONTROL_PLANE_IDENTITY",
+          "CONTROL_PLANE_IDENTITY_PUBLIC_KEY",
+          "CONTROL_PLANE_GRANT_ROLE_KEY",
+          "CONTROL_PLANE_AUDIT_KEY",
+          "CONTROL_PLANE_STORE"
+        ],
+        "scopes": [
+          "tenant",
+          "capability",
+          "provider-account"
+        ],
+        "setup_url": "https://github.com/ai-knowledge-hub/ai-skills-guide/tree/main/tools-mcp/agentops/agent-control-plane-server",
+        "credential_storage": "Keys and signed identities remain in runtime-owned bindings. Executors reject the grant private key. The package stores no secrets, raw provider receipts, or provider credentials.",
+        "validation": "The packaged driver verifies identity signature, role, tenant, scope, absolute expiry, store access, and the complete audit chain.",
+        "revocation": "Remove or replace the runtime identity binding, rotate the identity key, activate a replacement policy, and stop any executor that trusts the old grant key."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/agent-control-plane/clean-client-mcp-launch",
+          "evidence://tests/agent-control-plane/identity-policy-approval-binding",
+          "evidence://tests/agent-control-plane/idempotency-ordering-restart-recovery",
+          "evidence://tests/agent-control-plane/audit-deletion-substitution-reordering"
+        ],
+        "last_verified_at": "2026-09-20T00:00:00Z"
       }
     },
     {

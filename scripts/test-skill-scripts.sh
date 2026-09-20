@@ -64,6 +64,9 @@ node --test "$ROOT/tools-mcp/analytics/ga4-mcp-connector/tests/ga4_mcp_server.te
 echo "[check] BigQuery MCP server tests"
 node --test "$ROOT/tools-mcp/warehouse/bigquery-mcp-query-runner/tests/bigquery_mcp_server.test.mjs"
 
+echo "[check] Meta Ads MCP server tests"
+node --test "$ROOT/tools-mcp/ads/meta-ads-mcp-connector/tests/meta_ads_mcp_server.test.mjs"
+
 echo "[check] ChatGPT advertising plugin mock lab"
 python3 -m unittest discover -s "$ROOT/plugins/marketing/chatgpt-advertising-experiment-plugin/tests" -p 'test_*.py'
 

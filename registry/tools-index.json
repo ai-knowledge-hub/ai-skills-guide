@@ -1,22 +1,22 @@
 {
   "registry_version": "1.3",
-  "generated_at": "2026-09-18T00:00:00Z",
+  "generated_at": "2026-09-19T00:00:00Z",
   "skills": [
     {
-      "schema_version": "1.1",
+      "schema_version": "2.0",
       "id": "ads/meta-ads-mcp-connector",
       "name": "Meta Ads MCP Connector",
-      "description": "Implementation specification and template for a read-only Meta Ads MCP connector; no launchable server is packaged.",
+      "description": "Launchable account-scoped Meta Marketing API MCP server for bounded read-only insights with provider-verified identity and normalized diagnostics.",
       "category": "tools-mcp/ads",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-03-02T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/ads/meta-ads-mcp-connector/0.1.0.yaml",
-          "manifest_sha256": "8038a743883b038b316b0683ca2cf01115189f65245aad2a93054fac5c896495",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/ads/meta-ads-mcp-connector/0.1.0.tar.gz",
-          "sha256": "0c4c7042422ba3189b9d9f6c256c3e4224fe7e0cc1c7c4a5d131f959279bcb1c"
+          "version": "0.2.0",
+          "released_at": "2026-09-19T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/ads/meta-ads-mcp-connector/0.2.0.yaml",
+          "manifest_sha256": "5140f9e2ed4afaaec4360ea3b56cd039fd64ccc671c44831c6e83bf29f80f1f0",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/ads/meta-ads-mcp-connector/0.2.0.tar.gz",
+          "sha256": "3dfbe1eecdf4f6587fa041fd0e27ee56c6951a76b881bca94209182bd0c2c61e"
         }
       ],
       "runtimes": [
@@ -27,7 +27,8 @@
       "tags": [
         "meta-ads",
         "mcp",
-        "paid-social"
+        "paid-social",
+        "read-only"
       ],
       "readiness": "experimental",
       "security_reviewed": false,
@@ -35,29 +36,93 @@
       "operational": {
         "connected_system": "Meta Ads",
         "capabilities": [
-          "Pull campaign, ad set, and ad metrics for fixed reporting windows.",
-          "Return spend, delivery, click, and conversion fields in normalized rows.",
-          "Preserve source timestamps for QA and freshness validation."
+          "Read bounded account, campaign, ad set, and ad-level Insights reports for explicitly allowed ad accounts.",
+          "Preserve provider reporting dates, account timezone, currency, and account attribution settings.",
+          "Live-verify the Meta application, token principal, permissions, expiry, business, and ad-account relationship."
         ],
         "auth_required": [
-          "Meta Ads account scope via authenticated MCP runtime"
+          "Meta access token plus application credentials with ads_read and business_management permissions"
         ],
         "access_level": "read-only",
         "trust_boundary": "remote-mcp-server",
-        "approval_boundary": "Safe for reporting queries only; require human approval before pairing with any workflow that can modify campaigns, budgets, or creative state."
+        "approval_boundary": "Insights GET requests only; business, account, fields, breakdowns, dates, pagination, timeout, and response-size limits are enforced before results are returned."
       },
       "usability": {
-        "availability": "template-only",
-        "execution": "integration-template",
-        "limitations": [
-          "Specification, prompts, and examples only; no launchable MCP transport is packaged."
+        "availability": "setup-required",
+        "execution": "remote-integration",
+        "requires_setup": [
+          "Node.js 22 or newer.",
+          "META_ADS_CREDENTIAL and META_ADS_POLICY runtime bindings.",
+          "A Meta app and token with access to the configured business and sandbox or live ad account."
         ],
-        "quickstart": "Review TOOL.md as an implementation contract; do not register this package as an MCP server.",
+        "limitations": [
+          "The connector exposes no campaign, budget, creative, audience, or account mutation operation.",
+          "Reports are limited to the packaged field and breakdown allowlists and the runtime owner's policy budgets.",
+          "Provider promotion requires a current clean-client smoke observation against an approved sandbox ad account."
+        ],
+        "quickstart": "Bind META_ADS_CREDENTIAL and META_ADS_POLICY, then register .mcp.json with Codex, Claude, or a generic MCP client.",
         "source": "declared"
       },
+      "execution": {
+        "kind": "mcp-server",
+        "command": [
+          "node",
+          "scripts/meta_ads_mcp_server.mjs"
+        ],
+        "healthcheck": [
+          "node",
+          "scripts/meta_ads_mcp_server.mjs",
+          "--healthcheck"
+        ],
+        "smoke_test": [
+          "node",
+          "scripts/meta_ads_mcp_server.mjs",
+          "--smoke"
+        ],
+        "supported_platforms": [
+          "linux",
+          "macos"
+        ],
+        "supported_runtimes": [
+          "node22"
+        ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": null,
+        "checksums": null,
+        "sbom": null
+      },
+      "authentication": {
+        "status": "required",
+        "methods": [
+          "bearer-token"
+        ],
+        "credential_bindings": [
+          "META_ADS_CREDENTIAL",
+          "META_ADS_POLICY"
+        ],
+        "scopes": [
+          "ads_read",
+          "business_management"
+        ],
+        "setup_url": "https://developers.facebook.com/apps/",
+        "credential_storage": "Access tokens and application credentials remain in explicitly bound runtime environment sources and are never written into the package or readiness profile.",
+        "validation": "The packaged driver uses Meta debug_token to verify application binding, principal, permissions, and lifetime, then verifies the selected ad account and owning business with that same token.",
+        "revocation": "Invalidate the token in Meta Business Settings, remove the system user or app from the ad account, or rotate the Meta application secret."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/meta-ads-mcp/json-rpc-clean-client-launch",
+          "evidence://tests/meta-ads-mcp/provider-app-principal-scope-expiry",
+          "evidence://tests/meta-ads-mcp/business-account-isolation",
+          "evidence://tests/meta-ads-mcp/pagination-rate-limit-timeout-wire-bounds"
+        ],
+        "last_verified_at": "2026-09-19T00:00:00Z"
+      },
       "dependencies": {
-        "mcp_servers": [
-          "meta-ads"
+        "apis": [
+          "Meta Marketing API"
         ]
       }
     },

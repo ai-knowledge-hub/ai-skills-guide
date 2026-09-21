@@ -9,8 +9,10 @@ import {
   checkPolicy,
   contextFromEnv,
   getApproval,
+  getExecutionClaim,
   publicError,
   recordAction,
+  revalidateExecutionClaim,
   requestApproval,
   validateExecutionGrant,
   verifyAuditChain,
@@ -58,6 +60,16 @@ const tools = Object.freeze([
     inputSchema: { type: "object", additionalProperties: false, required: ["grant"], properties: { grant: { type: "object" } } },
   },
   {
+    name: "get_execution_claim",
+    description: "Recover the exact durable effect-boundary claim for the same executor and signed grant after local process loss.",
+    inputSchema: { type: "object", additionalProperties: false, required: ["grant"], properties: { grant: { type: "object" } } },
+  },
+  {
+    name: "revalidate_execution_claim",
+    description: "Recheck current grant, policy, approval, identity, and scope for an existing exact claim without creating another claim.",
+    inputSchema: { type: "object", additionalProperties: false, required: ["grant"], properties: { grant: { type: "object" } } },
+  },
+  {
     name: "verify_audit_chain",
     description: "Verify sequence, tenant binding, previous hashes, and event hashes for the complete tenant audit chain.",
     inputSchema: { type: "object", additionalProperties: false },
@@ -82,7 +94,7 @@ export async function handleRequest(request, options = {}) {
   if (!request || typeof request !== "object" || Array.isArray(request) || request.jsonrpc !== "2.0" || (request.id !== undefined && !validID(request.id)) || typeof request.method !== "string") {
     throw new ControlPlaneError("INVALID_REQUEST", "invalid JSON-RPC request");
   }
-  if (request.method === "initialize") return { protocolVersion: request.params?.protocolVersion ?? "2024-11-05", capabilities: { tools: {} }, serverInfo: { name: "agent-control-plane-server", version: "0.2.0" } };
+  if (request.method === "initialize") return { protocolVersion: request.params?.protocolVersion ?? "2024-11-05", capabilities: { tools: {} }, serverInfo: { name: "agent-control-plane-server", version: "0.2.1" } };
   if (request.method === "notifications/initialized") return null;
   if (request.method === "ping") return {};
   if (request.method === "tools/list") return { tools };
@@ -97,6 +109,8 @@ export async function handleRequest(request, options = {}) {
       case "authorize_action": return responseResult(await authorizeAction(ctx, args));
       case "record_agent_action": return responseResult(await recordAction(ctx, args));
       case "validate_execution_grant": return responseResult(await validateExecutionGrant(ctx, args));
+      case "get_execution_claim": return responseResult(await getExecutionClaim(ctx, args));
+      case "revalidate_execution_claim": return responseResult(await revalidateExecutionClaim(ctx, args));
       case "verify_audit_chain": return responseResult(await verifyAuditChain(ctx));
       default: throw new ControlPlaneError("TOOL_NOT_FOUND", "unknown control-plane tool");
     }

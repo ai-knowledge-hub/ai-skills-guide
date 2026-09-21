@@ -1,10 +1,14 @@
 {
+  "schema_version": "ad-platform.execution-receipt/v1",
+  "execution_id": "exec_11111111111111111111111111111111",
+  "grant_id": "grant_11111111111111111111111111111111",
+  "plan_id": "plan-123",
+  "target": {"provider": "google_ads", "account_id": "1234567890", "resource_type": "campaign_budget", "resource_id": "22222"},
   "status": "executed",
-  "platform": "dv360",
-  "entity_id": "li_456",
-  "api_request_id": "req_789",
-  "pre_image_hash": "sha256:pre",
-  "post_image_hash": "sha256:post",
-  "rollback_patch_id": "rollback_123",
-  "audit_event_id": "evt_456"
+  "pre_image_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "post_image_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "rollback_patch_hash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "provider_receipt": "google-ads:redacted-request-reference",
+  "recorded_at": "2026-09-20T12:00:00.000Z",
+  "reconciled": false
 }

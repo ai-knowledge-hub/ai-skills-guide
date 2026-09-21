@@ -70,6 +70,9 @@ node --test "$ROOT/tools-mcp/ads/meta-ads-mcp-connector/tests/meta_ads_mcp_serve
 echo "[check] Agent Control Plane MCP server tests"
 node --test "$ROOT/tools-mcp/agentops/agent-control-plane-server/tests/agent_control_plane_server.test.mjs"
 
+echo "[check] Governed Ad Platform Executor tests"
+node --test "$ROOT/tools-mcp/adtech/ad-platform-executor-template/tests/ad_platform_executor.test.mjs"
+
 echo "[check] ChatGPT advertising plugin mock lab"
 python3 -m unittest discover -s "$ROOT/plugins/marketing/chatgpt-advertising-experiment-plugin/tests" -p 'test_*.py'
 

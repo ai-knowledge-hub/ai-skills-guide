@@ -42,6 +42,14 @@ The grant is an input to a governed executor, not proof that an external effect 
 
 Requires a separately signed `executor_runtime` identity with `CONTROL_PLANE_GRANT_ROLE_KEY` bound to the grant public key. The same binding carries the private key only in an `agent_runtime` issuer profile; role-aware startup rejects that key type for executors. Immediately before the provider effect the executor revalidates the grant signature and authenticated persisted grant, executor tenant/capability/account scope, current policy digest, approval status and expiry, and grant expiry. It then atomically persists a single-use execution claim. Concurrent or later claims fail closed. This durable claim is the effect-boundary handoff for governed executors.
 
+## `get_execution_claim`
+
+Recovers an already committed claim only for the same signed grant and exact `executor_runtime` identity. It accepts an expired grant for historical reconciliation and terminal bookkeeping, but does not authorize a new provider effect. A different executor, altered grant, missing claim, or grant with a terminal action record is rejected.
+
+## `revalidate_execution_claim`
+
+Checks an existing exact claim without creating another one, while requiring the grant, current policy, approval, executor identity, capability and account scope to remain current. Governed executors must call this immediately before transitioning a prepared or claimed operation into an external effect. Failed revalidation closes the operation without effect; expiry-tolerant claim lookup remains limited to reconciliation and terminal recording.
+
 ## `record_agent_action`
 
 Records the executor-observed lifecycle and requires both the authenticated single-use claim and the same separately signed `executor_runtime` identity whose tenant, capability, and provider-account scope cover the grant. The proposing `agent_runtime` identity cannot call this operation successfully. An optional `executing` observation may be followed by exactly one terminal state: `executed`, `failed`, or `cancelled`. A terminal record may also reconcile a crash after the provider effect but before an `executing` observation. Exact retries are idempotent; conflicting duplicates and terminal resurrection fail closed.

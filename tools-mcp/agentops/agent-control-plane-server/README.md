@@ -71,6 +71,8 @@ The audit verifier detects gaps, deletion—including tail deletion—substituti
 - `get_approval`
 - `authorize_action`
 - `validate_execution_grant`
+- `get_execution_claim`
+- `revalidate_execution_claim`
 - `record_agent_action`
 - `verify_audit_chain`
 

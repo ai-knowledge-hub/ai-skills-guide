@@ -1,7 +1,8 @@
 # Test Prompts
 
-1. Validate an approved DV360 bid-change plan before execution and explain each required check.
-2. Describe how the executor should handle two queued targeting updates for the same DV360 line item.
-3. Define the API boundary for applying a Google Ads budget change only after policy approval.
-4. Produce a structured failure response for an expired execution grant.
-5. Explain how rollback evidence should be recorded after a campaign status change.
+1. Preview a closed Google Ads campaign-budget plan and stop without claiming an execution grant.
+2. Attempt to replace the approved account and resource ID while preserving the rest of the grant; reject before any provider call.
+3. Execute the same approved DV360 line-item status change concurrently and demonstrate one provider mutation and one durable receipt.
+4. Reconcile a timeout after a provider mutation when current state matches the proposed post-image, without replaying the write.
+5. Reject rollback when another authorized writer changed provider state after the original verified execution.
+6. Prove that an unexpected post-write third state is not overwritten and requires reconciliation or separately authorized rollback.

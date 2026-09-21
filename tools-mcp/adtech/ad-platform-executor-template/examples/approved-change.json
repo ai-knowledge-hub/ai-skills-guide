@@ -1,21 +1,24 @@
 {
-  "change_plan_id": "plan_123",
-  "policy_decision": "allow_with_approval",
-  "approval_id": "approval_abc",
-  "execution_grant": {
-    "workspace_id": "client-123",
-    "platform": "dv360",
-    "advertiser_id": "987654",
-    "entity_type": "line_item",
-    "entity_id": "li_456",
-    "allowed_action": "apply_bid_delta",
-    "max_delta_percent": 10,
-    "expires_at": "2026-05-06T18:00:00Z"
+  "plan": {
+    "schema_version": "ad-platform.change-plan/v2",
+    "plan_id": "plan-123",
+    "action_id": "action-123",
+    "provider": "google_ads",
+    "account_id": "1234567890",
+    "resource_type": "campaign_budget",
+    "resource_id": "22222",
+    "operation": "set_budget_micros",
+    "proposed_diff": {"field": "budget_micros", "from": 1000000, "to": 900000},
+    "generated_at": "2026-09-20T11:59:00.000Z",
+    "expires_at": "2026-09-20T12:05:00.000Z"
   },
-  "proposed_diff": {
-    "field": "bid",
-    "from": 1.2,
-    "to": 1.08,
-    "delta_percent": -10
+  "grant": {
+    "schema_version": "control-plane.execution-grant/v1",
+    "grant_id": "grant_11111111111111111111111111111111",
+    "action_id": "action-123",
+    "capability": "ad_platform.execute",
+    "target": {"provider": "google_ads", "account_id": "1234567890", "resource_type": "campaign_budget", "resource_id": "22222"},
+    "inputs_hash": "sha256:replace-with-canonical-plan-digest",
+    "signature": "replace-with-control-plane-signature"
   }
 }

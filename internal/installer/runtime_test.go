@@ -104,7 +104,7 @@ func TestAgentControlPlaneReleaseArchiveLaunchesAsNativeMCPServer(t *testing.T) 
 		t.Fatalf("node is required for the Agent Control Plane MCP launch regression: %v", err)
 	}
 	destination := t.TempDir()
-	archive := filepath.Join("..", "..", "releases", "tools-mcp", "agentops", "agent-control-plane-server", "0.2.0", "package.tar.gz")
+	archive := filepath.Join("..", "..", "releases", "tools-mcp", "agentops", "agent-control-plane-server", "0.2.1", "package.tar.gz")
 	if err := extractVerifiedTarGz(archive, destination); err != nil {
 		t.Fatalf("extract clean Agent Control Plane release: %v", err)
 	}
@@ -120,6 +120,31 @@ func TestAgentControlPlaneReleaseArchiveLaunchesAsNativeMCPServer(t *testing.T) 
 	output, err = command.CombinedOutput()
 	if err != nil || !bytes.Contains(output, []byte(`"name":"agent-control-plane-server"`)) || !bytes.Contains(output, []byte(`"name":"authorize_action"`)) {
 		t.Fatalf("Agent Control Plane release MCP handshake failed: %v\n%s", err, output)
+	}
+}
+
+func TestAdPlatformExecutorReleaseArchiveLaunchesAsNativeMCPServer(t *testing.T) {
+	node, err := exec.LookPath("node")
+	if err != nil {
+		t.Fatalf("node is required for the governed executor launch regression: %v", err)
+	}
+	destination := t.TempDir()
+	archive := filepath.Join("..", "..", "releases", "tools-mcp", "adtech", "ad-platform-executor-template", "0.2.0", "package.tar.gz")
+	if err := extractVerifiedTarGz(archive, destination); err != nil {
+		t.Fatalf("extract clean governed executor release: %v", err)
+	}
+	health := exec.Command(node, "scripts/ad_platform_executor_server.mjs", "--healthcheck")
+	health.Dir = destination
+	output, err := health.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"status":"ok"`)) {
+		t.Fatalf("governed executor release healthcheck failed: %v\n%s", err, output)
+	}
+	command := exec.Command(node, "scripts/ad_platform_executor_server.mjs")
+	command.Dir = destination
+	command.Stdin = strings.NewReader("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}}\n{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\",\"params\":{}}\n")
+	output, err = command.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"name":"governed-ad-platform-executor"`)) || !bytes.Contains(output, []byte(`"name":"execute_approved_change"`)) {
+		t.Fatalf("governed executor release MCP handshake failed: %v\n%s", err, output)
 	}
 }
 

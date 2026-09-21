@@ -76,7 +76,7 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 	}
 	wantTools := map[string][2]string{
 		"ads/meta-ads-mcp-connector":           {"setup-required", "remote-integration"},
-		"adtech/ad-platform-executor-template": {"template-only", "integration-template"},
+		"adtech/ad-platform-executor-template": {"setup-required", "remote-integration"},
 		"adtech/conversion-event-reconciler":   {"not-verified", "local-tool"},
 		"adtech/openai-ads-adapter-template":   {"template-only", "integration-template"},
 		"adtech/openai-ads-api-client":         {"not-verified", "remote-integration"},
@@ -92,7 +92,7 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 		if !ok {
 			t.Fatalf("unexpected tool %q", entry.ID)
 		}
-		if entry.ID == "ads/meta-ads-mcp-connector" || entry.ID == "analytics/ga4-mcp-connector" || entry.ID == "warehouse/bigquery-mcp-query-runner" || entry.ID == "agentops/agent-control-plane-server" {
+		if entry.ID == "ads/meta-ads-mcp-connector" || entry.ID == "adtech/ad-platform-executor-template" || entry.ID == "analytics/ga4-mcp-connector" || entry.ID == "warehouse/bigquery-mcp-query-runner" || entry.ID == "agentops/agent-control-plane-server" {
 			if entry.SchemaVersion != "2.0" || entry.Usability.Source != "declared" || entry.Usability.Availability != "setup-required" || entry.Usability.Execution != want[1] || len(entry.Usability.Limitations) == 0 {
 				t.Errorf("executable integration classification = %#v", entry)
 			}

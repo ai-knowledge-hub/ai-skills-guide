@@ -19,8 +19,10 @@ import {
   decideApproval,
   digest,
   getApproval,
+  getExecutionClaim,
   installPolicy,
   recordAction,
+  revalidateExecutionClaim,
   recoverTransactions,
   requestApproval,
   signIdentity,
@@ -249,9 +251,12 @@ test("executor revalidates current policy and approval at the external effect bo
   assert.equal(validation.valid, true);
   assert.equal(validation.executor_id, "google-ads-executor");
   assert.match(validation.claim_id, /^claim_[a-f0-9]{32}$/);
+  assert.equal((await revalidateExecutionClaim(executor, { grant })).current, true);
   await assert.rejects(() => validateExecutionGrant(executor, { grant }), (error) => error.code === "ACTION_ALREADY_CLAIMED");
   await assert.rejects(() => validateExecutionGrant(runtime, { grant }), (error) => error.code === "AUTH_FORBIDDEN");
   await installPolicy(admin, policy({ version: "v2", rules: [{ ...policy().rules[0], effect: "deny", approver_roles: undefined, approval_ttl_seconds: undefined }] }));
+  assert.equal((await getExecutionClaim(executor, { grant })).claim_id, validation.claim_id);
+  await assert.rejects(() => revalidateExecutionClaim(executor, { grant }), (error) => error.code === "POLICY_CHANGED");
   await assert.rejects(() => validateExecutionGrant(executor, { grant }), (error) => error.code === "POLICY_CHANGED");
 });
 
@@ -275,8 +280,15 @@ test("the effect-boundary claim is atomic, single-use, and recoverable after an 
   assert.equal(results.filter((result) => result.status === "fulfilled").length, 1);
   assert.equal(results.filter((result) => result.status === "rejected" && result.reason.code === "ACTION_ALREADY_CLAIMED").length, 1);
   const owner = results[0].status === "fulfilled" ? firstExecutor : secondExecutor;
+  const nonOwner = owner === firstExecutor ? secondExecutor : firstExecutor;
+  const recovered = await getExecutionClaim({ ...owner, now: () => new Date("2026-09-20T12:00:00.000Z") }, { grant });
+  assert.equal(recovered.claim_id, results.find((result) => result.status === "fulfilled").value.claim_id);
+  assert.equal(recovered.recovered, true);
+  await assert.rejects(() => revalidateExecutionClaim({ ...owner, now: () => new Date("2026-09-20T12:00:00.000Z") }, { grant }), (error) => error.code === "GRANT_EXPIRED");
+  await assert.rejects(() => getExecutionClaim(nonOwner, { grant }), (error) => error.code === "SCOPE_MISMATCH");
   const reconciled = await recordAction(owner, { grant, status: "executed", outputs_hash: digest({ provider_state: "reconciled" }), provider_receipt: "provider-reconciliation-001" });
   assert.equal(reconciled.status, "executed");
+  await assert.rejects(() => getExecutionClaim(owner, { grant }), (error) => error.code === "ACTION_ALREADY_RECORDED");
   await assert.rejects(() => validateExecutionGrant(owner, { grant }), (error) => error.code === "ACTION_ALREADY_RECORDED");
 });
 
@@ -296,6 +308,7 @@ test("an interrupted effect-boundary claim recovers as claimed at every durable 
       const restarted = executorContext(storeRoot);
       await recoverTransactions(restarted);
       await assert.rejects(() => validateExecutionGrant(restarted, { grant }), (error) => error.code === "ACTION_ALREADY_CLAIMED");
+      assert.equal((await getExecutionClaim(restarted, { grant })).grant_id, grant.grant_id);
       assert.equal((await recordAction(restarted, { grant, status: "cancelled", outputs_hash: null, provider_receipt: `reconciled-${faultPoint}` })).status, "cancelled");
     });
   }
@@ -455,7 +468,7 @@ test("MCP protocol exposes bounded governance tools and returns structured denia
   const initialized = await handleRequest({ jsonrpc: "2.0", id: 1, method: "initialize", params: {} }, { context: runtime });
   assert.equal(initialized.serverInfo.name, "agent-control-plane-server");
   const listed = await handleRequest({ jsonrpc: "2.0", id: 2, method: "tools/list", params: {} }, { context: runtime });
-  assert.deepEqual(listed.tools.map((tool) => tool.name), ["check_policy", "request_approval", "get_approval", "authorize_action", "record_agent_action", "validate_execution_grant", "verify_audit_chain"]);
+  assert.deepEqual(listed.tools.map((tool) => tool.name), ["check_policy", "request_approval", "get_approval", "authorize_action", "record_agent_action", "validate_execution_grant", "get_execution_claim", "revalidate_execution_claim", "verify_audit_chain"]);
   const denied = await handleRequest({ jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "check_policy", arguments: proposal({ target: { ...TARGET, account_id: "acct-other" } }) } }, { context: runtime });
   assert.equal(denied.isError, true);
   assert.equal(denied.structuredContent.error.code, "SCOPE_MISMATCH");
@@ -485,5 +498,5 @@ test("launchable stdio process completes initialize and tools/list on a clean lo
   await once(child, "exit");
   assert.equal(child.exitCode, 0);
   assert.equal(responses[0].result.serverInfo.name, "agent-control-plane-server");
-  assert.equal(responses[1].result.tools.length, 7);
+  assert.equal(responses[1].result.tools.length, 9);
 });

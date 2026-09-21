@@ -1,0 +1,130 @@
+{
+  "schema_version": "2.0",
+  "id": "adtech/ad-platform-executor-template",
+  "name": "Governed Ad Platform Executor",
+  "description": "Launchable MCP executor for exact control-plane-authorized Google Ads and DV360 mutations with state revalidation, serialization, receipts, reconciliation, and rollback.",
+  "category": "tools-mcp/adtech",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "adtech",
+    "executor",
+    "dv360",
+    "google-ads",
+    "governance"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "connected_system": "Google Ads API v25 and Display & Video 360 API v4",
+    "capabilities": [
+      "Preview closed provider-native change plans without acquiring execution authority.",
+      "Re-read current state and atomically claim an exact short-lived control-plane grant at the effect boundary.",
+      "Serialize each provider resource and apply bounded status, budget, or bid updates.",
+      "Persist authenticated intents and receipts, verify post-write state, and reconcile ambiguous effects.",
+      "Apply a verified rollback patch only under a separate exact rollback grant."
+    ],
+    "auth_required": [
+      "Runtime-owned provider credential and closed executor policy",
+      "Separately installed Agent Control Plane with an executor identity and grant public key",
+      "Private local executor and control-plane stores with independent audit keys"
+    ],
+    "access_level": "read-write",
+    "trust_boundary": "remote-mcp-server",
+    "approval_boundary": "Mutations require an exact single-use control-plane grant; rollback requires a separate exact grant. Preview never grants execution authority."
+  },
+  "usability": {
+    "availability": "setup-required",
+    "execution": "remote-integration",
+    "requires_setup": [
+      "Node.js 22 or newer and the Agent Control Plane 0.2.1 package.",
+      "Provider OAuth access with Google Ads or DV360 mutation permission for explicitly allowlisted sandbox targets.",
+      "Runtime-owned executor policy, credential, signed executor identity, public grant key, stores, and audit keys."
+    ],
+    "limitations": [
+      "Only campaign status, campaign-budget amount, ad-group status or CPC bid, and DV360 line-item status or max-average-CPM bid are supported.",
+      "Provider mutation APIs do not guarantee idempotency; ambiguous outcomes stop for reconciliation rather than replay.",
+      "Conflicting post-write state is never overwritten automatically; it requires reconciliation and a separately authorized rollback where appropriate.",
+      "CI uses deterministic provider simulations; live sandbox mutation evidence remains separately gated."
+    ],
+    "quickstart": "Configure sandbox allowlists and the executor identity, preview a closed plan, then execute only the exact control-plane grant for that plan.",
+    "source": "declared"
+  },
+  "execution": {
+    "kind": "mcp-server",
+    "command": [
+      "node",
+      "scripts/ad_platform_executor_server.mjs"
+    ],
+    "healthcheck": [
+      "node",
+      "scripts/ad_platform_executor_server.mjs",
+      "--healthcheck"
+    ],
+    "smoke_test": [
+      "node",
+      "scripts/ad_platform_executor_server.mjs",
+      "--smoke"
+    ],
+    "supported_platforms": [
+      "linux",
+      "macos"
+    ],
+    "supported_runtimes": [
+      "node22"
+    ]
+  },
+  "artifact": {
+    "self_contained": true,
+    "dependency_lock": null,
+    "checksums": null,
+    "sbom": null
+  },
+  "authentication": {
+    "status": "required",
+    "methods": [
+      "custom"
+    ],
+    "credential_bindings": [
+      "AD_PLATFORM_PROVIDER_CREDENTIAL",
+      "AD_PLATFORM_EXECUTOR_POLICY",
+      "AD_PLATFORM_EXECUTOR_STORE",
+      "AD_PLATFORM_EXECUTOR_AUDIT_KEY",
+      "CONTROL_PLANE_PACKAGE_ROOT",
+      "CONTROL_PLANE_PACKAGE_INTEGRITY",
+      "CONTROL_PLANE_STORE",
+      "CONTROL_PLANE_IDENTITY",
+      "CONTROL_PLANE_IDENTITY_PUBLIC_KEY",
+      "CONTROL_PLANE_GRANT_ROLE_KEY",
+      "CONTROL_PLANE_AUDIT_KEY"
+    ],
+    "scopes": [
+      "provider-read",
+      "provider-mutate",
+      "control-plane-claim",
+      "control-plane-record"
+    ],
+    "setup_url": "https://github.com/ai-knowledge-hub/ai-skills-guide/tree/main/tools-mcp/adtech/ad-platform-executor-template",
+    "credential_storage": "Provider and control-plane credentials remain in runtime-owned bindings. The package stores authenticated plans, state snapshots, and receipt references, never tokens.",
+    "validation": "The driver verifies the pinned control-plane install receipt and tree, signed executor authority, complete control-plane audit chain, and a read-only probe against the first allowlisted provider-native target.",
+    "revocation": "Revoke provider OAuth access, replace the executor identity or policy, rotate audit keys, and stop executors that trust the former grant key."
+  },
+  "verification": {
+    "evidence": [
+      "evidence://tests/ad-platform-executor/authority-substitution-and-stale-state",
+      "evidence://tests/ad-platform-executor/idempotency-concurrency-and-crash-recovery",
+      "evidence://tests/ad-platform-executor/ambiguous-effect-reconciliation",
+      "evidence://tests/ad-platform-executor/post-write-verification-and-rollback"
+    ],
+    "last_verified_at": "2026-09-20T00:00:00Z"
+  },
+  "dependencies": {
+    "tools": [
+      "agentops/agent-control-plane-server"
+    ]
+  }
+}

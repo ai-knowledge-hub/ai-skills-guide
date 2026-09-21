@@ -772,6 +772,48 @@ export async function validateExecutionGrant(ctx, input) {
   });
 }
 
+export async function getExecutionClaim(ctx, input) {
+  requireExecutor(ctx);
+  const value = plain(input, "execution claim lookup");
+  exact(value, ["grant"], "execution claim lookup");
+  const grant = verifyGrant(value.grant, ctx.grantPublicKey, { now: ctx.now, requireCurrent: false });
+  if (grant.tenant_id !== ctx.identity.tenant_id || !ctx.identity.capabilities.includes(grant.capability) || !scopeAllows(ctx.identity, grant.target)) throw new ControlPlaneError("SCOPE_MISMATCH", "executor identity does not cover the execution grant");
+  return withTenantLock(ctx, async () => {
+    const persisted = await readDomain(ctx, "grants", grant.grant_id);
+    if (canonicalJSON(persisted) !== canonicalJSON(grant)) throw new ControlPlaneError("GRANT_INVALID", "execution grant does not match the authoritative record");
+    const claimID = `claim_${digest({ grant_id: grant.grant_id }).slice(7, 39)}`;
+    const claim = await readDomain(ctx, "execution-claims", claimID);
+    if (claim.grant_id !== grant.grant_id || claim.tenant_id !== grant.tenant_id || claim.actor_id !== grant.actor_id || claim.executor_id !== ctx.identity.actor_id || claim.decision_id !== grant.decision_id || claim.policy_digest !== grant.policy_digest || canonicalJSON(claim.target) !== canonicalJSON(grant.target) || claim.inputs_hash !== grant.inputs_hash) throw new ControlPlaneError("SCOPE_MISMATCH", "execution claim does not bind the exact grant and executor");
+    const actions = await readAuthenticatedRecords(ctx, "actions", [grant.grant_id]);
+    if (actions.some((record) => ["executed", "failed", "cancelled"].includes(record.status))) throw new ControlPlaneError("ACTION_ALREADY_RECORDED", "the execution grant already has a terminal action record");
+    return { valid: true, claim_id: claim.claim_id, grant_id: grant.grant_id, tenant_id: grant.tenant_id, actor_id: grant.actor_id, executor_id: ctx.identity.actor_id, policy_digest: grant.policy_digest, approval_id: grant.approval_id, target: grant.target, inputs_hash: grant.inputs_hash, expires_at: grant.expires_at, recovered: true };
+  });
+}
+
+export async function revalidateExecutionClaim(ctx, input) {
+  requireExecutor(ctx);
+  const value = plain(input, "execution claim revalidation");
+  exact(value, ["grant"], "execution claim revalidation");
+  const grant = verifyGrant(value.grant, ctx.grantPublicKey, { now: ctx.now });
+  if (grant.tenant_id !== ctx.identity.tenant_id || !ctx.identity.capabilities.includes(grant.capability) || !scopeAllows(ctx.identity, grant.target)) throw new ControlPlaneError("SCOPE_MISMATCH", "executor identity does not cover the execution grant");
+  return withTenantLock(ctx, async () => {
+    const persisted = await readDomain(ctx, "grants", grant.grant_id);
+    if (canonicalJSON(persisted) !== canonicalJSON(grant)) throw new ControlPlaneError("GRANT_INVALID", "execution grant does not match the authoritative record");
+    const claimID = `claim_${digest({ grant_id: grant.grant_id }).slice(7, 39)}`;
+    const claim = await readDomain(ctx, "execution-claims", claimID);
+    if (claim.grant_id !== grant.grant_id || claim.tenant_id !== grant.tenant_id || claim.actor_id !== grant.actor_id || claim.executor_id !== ctx.identity.actor_id || claim.decision_id !== grant.decision_id || claim.policy_digest !== grant.policy_digest || canonicalJSON(claim.target) !== canonicalJSON(grant.target) || claim.inputs_hash !== grant.inputs_hash) throw new ControlPlaneError("SCOPE_MISMATCH", "execution claim does not bind the exact grant and executor");
+    const actions = await readAuthenticatedRecords(ctx, "actions", [grant.grant_id]);
+    if (actions.some((record) => ["executed", "failed", "cancelled"].includes(record.status))) throw new ControlPlaneError("ACTION_ALREADY_RECORDED", "the execution grant already has a terminal action record");
+    const active = await activePolicyLocked(ctx);
+    if (active.activation.policy_digest !== grant.policy_digest) throw new ControlPlaneError("POLICY_CHANGED", "policy changed after the execution grant was claimed");
+    if (grant.approval_id !== null) {
+      const approval = await readDomain(ctx, "approval-decisions", grant.approval_id);
+      if (approval.decision !== "approved" || new Date(approval.expires_at) <= ctx.now()) throw new ControlPlaneError("APPROVAL_EXPIRED", "execution approval is no longer valid");
+    }
+    return { valid: true, current: true, claim_id: claim.claim_id, grant_id: grant.grant_id, tenant_id: grant.tenant_id, actor_id: grant.actor_id, executor_id: ctx.identity.actor_id, policy_digest: grant.policy_digest, approval_id: grant.approval_id, target: grant.target, inputs_hash: grant.inputs_hash, expires_at: grant.expires_at };
+  });
+}
+
 export async function recordAction(ctx, input) {
   requireExecutor(ctx);
   const value = plain(input, "action record");

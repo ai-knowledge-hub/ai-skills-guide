@@ -1,6 +1,6 @@
 {
   "registry_version": "1.3",
-  "generated_at": "2026-09-20T00:00:00Z",
+  "generated_at": "2026-09-21T00:00:00Z",
   "skills": [
     {
       "schema_version": "2.0",
@@ -127,20 +127,20 @@
       }
     },
     {
-      "schema_version": "1.1",
+      "schema_version": "2.0",
       "id": "adtech/ad-platform-executor-template",
-      "name": "Ad Platform Executor Template",
-      "description": "MCP/tool template for a narrow DV360 and Google Ads executor that applies only approved, policy-checked campaign changes and records rollback evidence.",
+      "name": "Governed Ad Platform Executor",
+      "description": "Launchable MCP executor for exact control-plane-authorized Google Ads and DV360 mutations with state revalidation, serialization, receipts, reconciliation, and rollback.",
       "category": "tools-mcp/adtech",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-05-06T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/adtech/ad-platform-executor-template/0.1.0.yaml",
-          "manifest_sha256": "9bc313e09df337bc33b844d6e09074d27a395645068bebe60df02296ec0a93f4",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/ad-platform-executor-template/0.1.0.tar.gz",
-          "sha256": "69eedf78c211a4833641744345db878782d8a2951258969f7b158fb8882c3846"
+          "version": "0.2.0",
+          "released_at": "2026-09-20T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/adtech/ad-platform-executor-template/0.2.0.yaml",
+          "manifest_sha256": "dc5092fec1fd232a1e52648d82af51ff19da5af1210a5ebdcec15ee0227965d7",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/ad-platform-executor-template/0.2.0.tar.gz",
+          "sha256": "3a5f2b88136d485b71f59057d2676bffe097cf813e94ac1b925ae15ab569512f"
         }
       ],
       "runtimes": [
@@ -153,46 +153,117 @@
         "executor",
         "dv360",
         "google-ads",
-        "rollback"
+        "governance"
       ],
       "readiness": "experimental",
       "security_reviewed": false,
       "deprecated": false,
       "operational": {
-        "connected_system": "DV360 and Google Ads API execution layer",
+        "connected_system": "Google Ads API v25 and Display \u0026 Video 360 API v4",
         "capabilities": [
-          "Read current campaign or line item state before execution.",
-          "Validate approved change plans against policy and current platform state.",
-          "Apply bounded bid, budget, targeting, or status changes.",
-          "Verify post-write state and create rollback patches."
+          "Preview closed provider-native change plans without acquiring execution authority.",
+          "Re-read current state and atomically claim an exact short-lived control-plane grant at the effect boundary.",
+          "Serialize each provider resource and apply bounded status, budget, or bid updates.",
+          "Persist authenticated intents and receipts, verify post-write state, and reconcile ambiguous effects.",
+          "Apply a verified rollback patch only under a separate exact rollback grant."
         ],
         "auth_required": [
-          "Brokered Google API credentials",
-          "Scoped execution grant",
-          "Approval token for medium and high-risk writes"
+          "Runtime-owned provider credential and closed executor policy",
+          "Separately installed Agent Control Plane with an executor identity and grant public key",
+          "Private local executor and control-plane stores with independent audit keys"
         ],
         "access_level": "read-write",
         "trust_boundary": "remote-mcp-server",
-        "approval_boundary": "Applies only policy-approved bounded writes; high-risk changes require human approval and rollback evidence."
+        "approval_boundary": "Mutations require an exact single-use control-plane grant; rollback requires a separate exact grant. Preview never grants execution authority."
       },
       "usability": {
-        "availability": "template-only",
-        "execution": "integration-template",
-        "limitations": [
-          "Reference executor contract only; no connected ad-platform implementation is packaged."
+        "availability": "setup-required",
+        "execution": "remote-integration",
+        "requires_setup": [
+          "Node.js 22 or newer and the Agent Control Plane 0.2.1 package.",
+          "Provider OAuth access with Google Ads or DV360 mutation permission for explicitly allowlisted sandbox targets.",
+          "Runtime-owned executor policy, credential, signed executor identity, public grant key, stores, and audit keys."
         ],
-        "quickstart": "Review TOOL.md and implement the approved provider operations before registration.",
+        "limitations": [
+          "Only campaign status, campaign-budget amount, ad-group status or CPC bid, and DV360 line-item status or max-average-CPM bid are supported.",
+          "Provider mutation APIs do not guarantee idempotency; ambiguous outcomes stop for reconciliation rather than replay.",
+          "Conflicting post-write state is never overwritten automatically; it requires reconciliation and a separately authorized rollback where appropriate.",
+          "CI uses deterministic provider simulations; live sandbox mutation evidence remains separately gated."
+        ],
+        "quickstart": "Configure sandbox allowlists and the executor identity, preview a closed plan, then execute only the exact control-plane grant for that plan.",
         "source": "declared"
+      },
+      "execution": {
+        "kind": "mcp-server",
+        "command": [
+          "node",
+          "scripts/ad_platform_executor_server.mjs"
+        ],
+        "healthcheck": [
+          "node",
+          "scripts/ad_platform_executor_server.mjs",
+          "--healthcheck"
+        ],
+        "smoke_test": [
+          "node",
+          "scripts/ad_platform_executor_server.mjs",
+          "--smoke"
+        ],
+        "supported_platforms": [
+          "linux",
+          "macos"
+        ],
+        "supported_runtimes": [
+          "node22"
+        ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": null,
+        "checksums": null,
+        "sbom": null
+      },
+      "authentication": {
+        "status": "required",
+        "methods": [
+          "custom"
+        ],
+        "credential_bindings": [
+          "AD_PLATFORM_PROVIDER_CREDENTIAL",
+          "AD_PLATFORM_EXECUTOR_POLICY",
+          "AD_PLATFORM_EXECUTOR_STORE",
+          "AD_PLATFORM_EXECUTOR_AUDIT_KEY",
+          "CONTROL_PLANE_PACKAGE_ROOT",
+          "CONTROL_PLANE_PACKAGE_INTEGRITY",
+          "CONTROL_PLANE_STORE",
+          "CONTROL_PLANE_IDENTITY",
+          "CONTROL_PLANE_IDENTITY_PUBLIC_KEY",
+          "CONTROL_PLANE_GRANT_ROLE_KEY",
+          "CONTROL_PLANE_AUDIT_KEY"
+        ],
+        "scopes": [
+          "provider-read",
+          "provider-mutate",
+          "control-plane-claim",
+          "control-plane-record"
+        ],
+        "setup_url": "https://github.com/ai-knowledge-hub/ai-skills-guide/tree/main/tools-mcp/adtech/ad-platform-executor-template",
+        "credential_storage": "Provider and control-plane credentials remain in runtime-owned bindings. The package stores authenticated plans, state snapshots, and receipt references, never tokens.",
+        "validation": "The driver verifies the pinned control-plane install receipt and tree, signed executor authority, complete control-plane audit chain, and a read-only probe against the first allowlisted provider-native target.",
+        "revocation": "Revoke provider OAuth access, replace the executor identity or policy, rotate audit keys, and stop executors that trust the former grant key."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/ad-platform-executor/authority-substitution-and-stale-state",
+          "evidence://tests/ad-platform-executor/idempotency-concurrency-and-crash-recovery",
+          "evidence://tests/ad-platform-executor/ambiguous-effect-reconciliation",
+          "evidence://tests/ad-platform-executor/post-write-verification-and-rollback"
+        ],
+        "last_verified_at": "2026-09-20T00:00:00Z"
       },
       "dependencies": {
         "tools": [
-          "authorization_broker",
-          "policy_engine",
-          "audit_log"
-        ],
-        "apis": [
-          "Google Ads API",
-          "Display \u0026 Video 360 API"
+          "agentops/agent-control-plane-server"
         ]
       }
     },
@@ -405,15 +476,15 @@
       "name": "Agent Control Plane MCP Server",
       "description": "Launchable local MCP authority for tenant-scoped policy decisions, exact human approvals, signed execution grants, ordered action records, restart recovery, and tamper-evident audit verification.",
       "category": "tools-mcp/agentops",
-      "latest": "0.2.0",
+      "latest": "0.2.1",
       "versions": [
         {
-          "version": "0.2.0",
-          "released_at": "2026-09-20T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/agentops/agent-control-plane-server/0.2.0.yaml",
-          "manifest_sha256": "97b20aab76f04ae2b263b03860ebafb6aa1352c8d543f2551b6e5c9c498ed7cb",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/agent-control-plane-server/0.2.0.tar.gz",
-          "sha256": "cc62376a41adec2522af1d36a420b35438d2493e2bcee1532442108fefef14c8"
+          "version": "0.2.1",
+          "released_at": "2026-09-21T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/agentops/agent-control-plane-server/0.2.1.yaml",
+          "manifest_sha256": "78262eda351586d087d5c14324a570b7da355b9d5b0ef15ced97473d21ede2dc",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/agent-control-plane-server/0.2.1.tar.gz",
+          "sha256": "47346df4b3422c16b08df0ddc5973cb4fc536de5263f35cba51e7879cb34b850"
         }
       ],
       "runtimes": [
@@ -439,6 +510,7 @@
           "Create exact approval requests and revalidate separately recorded human decisions.",
           "Issue short-lived signed execution grants for downstream governed executors.",
           "Revalidate current policy, approval, and executor scope while atomically claiming a grant at the external effect boundary.",
+          "Recover an exact durable claim for historical reconciliation, then separately revalidate current authority before any not-yet-started provider effect.",
           "Persist authenticated state, hashed receipt references, compacted recovery intents, idempotent action evidence, and a signed hash-chained audit log."
         ],
         "auth_required": [

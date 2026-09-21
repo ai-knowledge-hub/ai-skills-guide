@@ -333,17 +333,17 @@
       "schema_version": "1.1",
       "id": "adtech/openai-ads-adapter-template",
       "name": "OpenAI Ads Adapter Template",
-      "description": "Mock-first read-only adapter contract for OpenAI Ads accounts, campaigns, ads, insights, and product feeds.",
+      "description": "Deprecated reference contract retained for migration; use the executable OpenAI Ads API Client.",
       "category": "tools-mcp/adtech",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-07-24T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/adtech/openai-ads-adapter-template/0.1.0.yaml",
-          "manifest_sha256": "11bd25d0a8e0615983dc977e8426680cc2cf5e02a1a21c5f42f4798ca4c8f230",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/openai-ads-adapter-template/0.1.0.tar.gz",
-          "sha256": "85a0cf2f35863bd057125e874b6a0685e0bbfaac448c042ef0d96732f828685e"
+          "version": "0.2.0",
+          "released_at": "2026-09-21T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/adtech/openai-ads-adapter-template/0.2.0.yaml",
+          "manifest_sha256": "5a4451137b97a637d7b166d4d918e6a8a9c84961dc82672d1c0a24fae34ec4a9",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/openai-ads-adapter-template/0.2.0.tar.gz",
+          "sha256": "085ebd2f1da6766a38e883faa0279e03421473bf6cb380d2775e622154c55f7c"
         }
       ],
       "runtimes": [
@@ -358,9 +358,10 @@
         "campaign-insights",
         "product-feeds"
       ],
-      "readiness": "experimental",
+      "readiness": "deprecated",
       "security_reviewed": false,
-      "deprecated": false,
+      "deprecated": true,
+      "replaced_by": "adtech/openai-ads-api-client",
       "operational": {
         "connected_system": "OpenAI Ads API or local mock fixtures",
         "capabilities": [
@@ -380,9 +381,10 @@
         "availability": "template-only",
         "execution": "integration-template",
         "limitations": [
-          "Reference adapter contract only; no connected executable integration is packaged."
+          "Deprecated reference contract only; no executable integration is packaged.",
+          "New installations and plugin references must use adtech/openai-ads-api-client."
         ],
-        "quickstart": "Use adtech/openai-ads-api-client for an executable mock or live read-only integration.",
+        "quickstart": "Replace this package with adtech/openai-ads-api-client and follow its migration guidance.",
         "source": "declared"
       },
       "dependencies": {
@@ -395,20 +397,20 @@
       }
     },
     {
-      "schema_version": "1.1",
+      "schema_version": "2.1",
       "id": "adtech/openai-ads-api-client",
       "name": "OpenAI Ads API Client",
-      "description": "Dry-run-first client for mock or live read-only OpenAI Ads account, campaign, ad, and insights retrieval plus non-persisting Conversions API validation.",
+      "description": "Preferred executable client for bounded mock or live read-only OpenAI Ads retrieval and non-persisting Conversions API validation.",
       "category": "tools-mcp/adtech",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-07-25T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/adtech/openai-ads-api-client/0.1.0.yaml",
-          "manifest_sha256": "e837f60e3ded12b01b29b533e00622c41b29c06235edbf5a1197b704b1de8400",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/openai-ads-api-client/0.1.0.tar.gz",
-          "sha256": "683f7b6bc8eaa026424e463cbfcf76a21d6d313dbb50cc63713b3703c7e9822c"
+          "version": "0.2.0",
+          "released_at": "2026-09-21T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/adtech/openai-ads-api-client/0.2.0.yaml",
+          "manifest_sha256": "98d89e9e452c8517bd097c8d56ae56ad5cbb038bf69ebc43ffcb691c77bae7bd",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/openai-ads-api-client/0.2.0.tar.gz",
+          "sha256": "87609167e07529940acabc3db858a078ea7df1a5236f8287595f1be29daf45f4"
         }
       ],
       "runtimes": [
@@ -429,36 +431,84 @@
       "operational": {
         "connected_system": "OpenAI Advertiser API and Ads Conversions API",
         "capabilities": [
-          "Read ad-account metadata.",
-          "List campaigns and ads.",
-          "Retrieve account, campaign, ad-group, or ad insights.",
-          "Validate conversion event batches locally or through validate-only server mode."
+          "Read bounded ad-account metadata, campaigns, ads, and account or entity insights.",
+          "Verify an account-scoped Ads API key against the provider ad-account endpoint.",
+          "Validate conversion batches locally or through non-persisting provider validation."
         ],
         "auth_required": [
           "OPENAI_ADS_API_KEY for live Advertiser API reads",
-          "OPENAI_ADS_PIXEL_ID and OPENAI_ADS_CONVERSIONS_API_KEY for remote conversion validation"
+          "OPENAI_ADS_PIXEL_ID and OPENAI_ADS_CONVERSIONS_API_KEY for optional remote conversion validation"
         ],
         "access_level": "read-only",
         "trust_boundary": "third-party-hosted",
-        "approval_boundary": "Advertiser operations are GET-only; Conversions API requests always force validate_only true and cannot persist events."
+        "approval_boundary": "Advertiser operations are GET-only; bounded Conversions API requests force validate_only true and cannot persist events."
       },
       "usability": {
-        "availability": "not-verified",
-        "execution": "remote-integration",
+        "availability": "setup-required",
+        "execution": "local-tool",
         "requires_setup": [
-          "For live reads, create an account-scoped Ads API key in OpenAI Ads Manager and configure the API base URL.",
-          "Keep API keys in environment variables outside agent context.",
-          "Write-capable operations require explicit approval outside this client."
+          "Python 3.9 or newer.",
+          "For live reads, create an account-scoped key in OpenAI Ads Manager and bind OPENAI_ADS_API_KEY outside agent context.",
+          "Configure separate pixel and Conversions API credentials only when provider-side validate-only checks are required."
         ],
         "limitations": [
-          "Mock mode is local and read-only; live mode depends on an external API contract.",
-          "No published clean-client installation and live-readiness evidence is recorded yet.",
-          "Campaign, ad-group, ad, file, and feed mutations are intentionally excluded.",
-          "Conversion validation is dry-run only and does not persist events.",
-          "Automatic pagination, retries, and rate-limit backoff are not included in this first client."
+          "Mock mode is immediately runnable, but provider-backed readiness requires an available account-scoped API key.",
+          "The provider account endpoint attests the account binding, not the individual human owner of an API key.",
+          "Campaign, ad-group, ad, file, feed, and persisted conversion mutations are intentionally excluded.",
+          "Automatic pagination, retries, and rate-limit backoff are not included."
         ],
         "quickstart": "python3 scripts/openai_ads_client.py --mode mock account",
         "source": "declared"
+      },
+      "execution": {
+        "kind": "cli",
+        "command": [
+          "python3",
+          "scripts/openai_ads_client.py"
+        ],
+        "smoke_test": [
+          "python3",
+          "scripts/openai_ads_client.py",
+          "--mode",
+          "mock",
+          "account"
+        ],
+        "supported_platforms": [
+          "linux",
+          "macos"
+        ],
+        "supported_runtimes": [
+          "python3"
+        ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": null,
+        "checksums": null,
+        "sbom": null
+      },
+      "authentication": {
+        "status": "optional",
+        "methods": [
+          "api-key"
+        ],
+        "credential_bindings": [
+          "OPENAI_ADS_API_KEY"
+        ],
+        "scopes": [],
+        "setup_url": "https://developers.openai.com/ads/api-reference/authentication",
+        "credential_storage": "The account-scoped API key remains in an explicitly bound runtime environment source and is never written into the package or readiness profile.",
+        "validation": "The packaged driver calls GET /ad_account and accepts only the provider-returned account identifier as identity evidence.",
+        "revocation": "Revoke or rotate the account-scoped API key in OpenAI Ads Manager and remove its runtime binding."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/openai-ads-client/mock-clean-client-launch",
+          "evidence://tests/openai-ads-client/read-only-request-boundary",
+          "evidence://tests/openai-ads-client/provider-account-attestation",
+          "evidence://tests/openai-ads-client/conversions-validate-only"
+        ],
+        "last_verified_at": "2026-09-21T00:00:00Z"
       },
       "dependencies": {
         "tools": [

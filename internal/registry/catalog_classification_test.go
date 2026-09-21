@@ -79,7 +79,7 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 		"adtech/ad-platform-executor-template": {"setup-required", "remote-integration"},
 		"adtech/conversion-event-reconciler":   {"not-verified", "local-tool"},
 		"adtech/openai-ads-adapter-template":   {"template-only", "integration-template"},
-		"adtech/openai-ads-api-client":         {"not-verified", "remote-integration"},
+		"adtech/openai-ads-api-client":         {"setup-required", "local-tool"},
 		"agentops/agent-control-plane-server":  {"setup-required", "local-tool"},
 		"analytics/ga4-mcp-connector":          {"setup-required", "remote-integration"},
 		"warehouse/bigquery-mcp-query-runner":  {"setup-required", "remote-integration"},
@@ -91,6 +91,18 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 		want, ok := wantTools[entry.ID]
 		if !ok {
 			t.Fatalf("unexpected tool %q", entry.ID)
+		}
+		if entry.ID == "adtech/openai-ads-adapter-template" {
+			if !entry.Deprecated || entry.ReplacedBy != "adtech/openai-ads-api-client" || entry.Readiness != "deprecated" || entry.Usability.Source != "declared" || entry.Usability.Availability != "template-only" {
+				t.Errorf("deprecated OpenAI Ads adapter projection = %#v", entry)
+			}
+			continue
+		}
+		if entry.ID == "adtech/openai-ads-api-client" {
+			if entry.SchemaVersion != "2.1" || entry.Deprecated || entry.Usability.Source != "declared" || entry.Usability.Availability != "setup-required" || entry.Usability.Execution != "local-tool" || entry.Execution == nil || entry.Execution.Kind != "cli" || entry.Authentication == nil || entry.Authentication.Status != "optional" {
+				t.Errorf("preferred OpenAI Ads client classification = %#v", entry)
+			}
+			continue
 		}
 		if entry.ID == "ads/meta-ads-mcp-connector" || entry.ID == "adtech/ad-platform-executor-template" || entry.ID == "analytics/ga4-mcp-connector" || entry.ID == "warehouse/bigquery-mcp-query-runner" || entry.ID == "agentops/agent-control-plane-server" {
 			if entry.SchemaVersion != "2.0" || entry.Usability.Source != "declared" || entry.Usability.Availability != "setup-required" || entry.Usability.Execution != want[1] || len(entry.Usability.Limitations) == 0 {

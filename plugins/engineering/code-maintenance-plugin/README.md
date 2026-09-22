@@ -11,7 +11,7 @@ Portable bundle for governed engineering maintenance workflows.
 
 ## Install Behavior
 
-This plugin is a packaging layer.
+This plugin is published as a self-contained, integrity-locked packaging layer.
 
 On install:
 
@@ -21,13 +21,15 @@ On install:
 - no tools are installed for this plugin
 - packaged hooks remain inside this plugin's `hooks/` directory
 
-Bundled skills do not live inside the plugin directory itself. That avoids
-source duplication and keeps the plugin focused on orchestration and policy.
+The release archive carries the pinned skill closure, dependency lock,
+checksums, SBOM, and provenance. Installation never depends on sibling source
+directories.
 
 ## Install Command
 
 ```bash
-./bin/skills-hub install --module plugins --entry engineering/code-maintenance-plugin@0.1.0 --runtime codex
+./bin/skills-hub install --module plugins --entry engineering/code-maintenance-plugin@0.2.0 \
+  --runtime codex --execution-runtime node22
 ```
 
 ## Installed Dependencies
@@ -43,6 +45,18 @@ Skills installed into `skills/...`:
 
 Hooks kept inside this plugin package:
 - `verification-before-complete`
+
+This Markdown hook is compiled as visible advisory guidance unless a runtime
+provides an equivalent native enforcement mapping.
+
+## First Use
+
+```bash
+node scripts/first_use.mjs examples/first-use-input.json
+```
+
+The command emits a bounded plan with an explicit verification step and does
+not authorize merge.
 
 ## Use Case
 

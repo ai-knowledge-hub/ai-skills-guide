@@ -76,4 +76,7 @@ node --test "$ROOT/tools-mcp/adtech/ad-platform-executor-template/tests/ad_platf
 echo "[check] ChatGPT advertising plugin mock lab"
 python3 -m unittest discover -s "$ROOT/plugins/marketing/chatgpt-advertising-experiment-plugin/tests" -p 'test_*.py'
 
+echo "[check] local plugin wave first-use scenarios"
+node --test "$ROOT/plugins/local_plugin_wave.test.mjs"
+
 echo "All skill scripts passed deterministic checks."

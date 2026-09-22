@@ -1,0 +1,118 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "metadata": {
+    "component": {
+      "type": "application",
+      "bom-ref": "plugins:security/runtime-safety-plugin@0.2.0",
+      "name": "security/runtime-safety-plugin",
+      "version": "0.2.0"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "skills:security/dependency-supply-chain-audit@0.1.0",
+      "group": "security",
+      "name": "dependency-supply-chain-audit",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "5df9d8a73cf84c5b2d42736ef6a709095b9454db4abf9a3c62236b42d037b4a0"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:security/environment-risk-assessment@0.1.0",
+      "group": "security",
+      "name": "environment-risk-assessment",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "a147e3269b5dba2b8913bd774ab447f58090974d66df13dad085aecf117e50af"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:security/handle-untrusted-content@0.1.0",
+      "group": "security",
+      "name": "handle-untrusted-content",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "fcd8143b73aa5db90c48125e8997f503ab19d2e4b719803baeeaf5a103295b6b"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:security/secrets-and-credential-hygiene@0.1.0",
+      "group": "security",
+      "name": "secrets-and-credential-hygiene",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "4dd0b029e7ec6664a0057e1f75ed63646028d57fc508696050a38d3479420084"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "plugins:security/runtime-safety-plugin@0.2.0",
+      "dependsOn": [
+        "skills:security/dependency-supply-chain-audit@0.1.0",
+        "skills:security/environment-risk-assessment@0.1.0",
+        "skills:security/handle-untrusted-content@0.1.0",
+        "skills:security/secrets-and-credential-hygiene@0.1.0"
+      ]
+    },
+    {
+      "ref": "skills:security/dependency-supply-chain-audit@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:security/environment-risk-assessment@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:security/handle-untrusted-content@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:security/secrets-and-credential-hygiene@0.1.0",
+      "dependsOn": []
+    }
+  ]
+}

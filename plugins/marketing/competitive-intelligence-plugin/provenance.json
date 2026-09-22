@@ -1,0 +1,24 @@
+{
+  "provenance_version": "1.0",
+  "subject": {
+    "module": "plugins",
+    "id": "marketing/competitive-intelligence-plugin",
+    "version": "0.2.0",
+    "closure_sha256": "bc7cf90ca99a6e8c03ea727442fb708c557d770509563d33cc3c661c2ca0cb3c"
+  },
+  "builder": "ai-skills-guide/prepare-public-assets",
+  "materials": [
+    {
+      "ref": "skills:adtech/brand-rag-memory-bootstrap@0.1.0",
+      "sha256": "813c0ff3ed32cc39ec137aaffbe10915ac646c2a0beb0bec9bfa6f33ca30eca9"
+    },
+    {
+      "ref": "skills:marketing/ai-output-eval-scorecard@0.1.0",
+      "sha256": "0b1f20517d784b85873b5ab0fe75d0876be59caf83c90c63ed28fdfaee40569e"
+    },
+    {
+      "ref": "skills:security/handle-untrusted-content@0.1.0",
+      "sha256": "fcd8143b73aa5db90c48125e8997f503ab19d2e4b719803baeeaf5a103295b6b"
+    }
+  ]
+}

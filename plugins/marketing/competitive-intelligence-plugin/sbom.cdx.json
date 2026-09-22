@@ -1,0 +1,94 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "metadata": {
+    "component": {
+      "type": "application",
+      "bom-ref": "plugins:marketing/competitive-intelligence-plugin@0.2.0",
+      "name": "marketing/competitive-intelligence-plugin",
+      "version": "0.2.0"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "skills:adtech/brand-rag-memory-bootstrap@0.1.0",
+      "group": "adtech",
+      "name": "brand-rag-memory-bootstrap",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "813c0ff3ed32cc39ec137aaffbe10915ac646c2a0beb0bec9bfa6f33ca30eca9"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:marketing/ai-output-eval-scorecard@0.1.0",
+      "group": "marketing",
+      "name": "ai-output-eval-scorecard",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "0b1f20517d784b85873b5ab0fe75d0876be59caf83c90c63ed28fdfaee40569e"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:security/handle-untrusted-content@0.1.0",
+      "group": "security",
+      "name": "handle-untrusted-content",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "fcd8143b73aa5db90c48125e8997f503ab19d2e4b719803baeeaf5a103295b6b"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "plugins:marketing/competitive-intelligence-plugin@0.2.0",
+      "dependsOn": [
+        "skills:adtech/brand-rag-memory-bootstrap@0.1.0",
+        "skills:marketing/ai-output-eval-scorecard@0.1.0",
+        "skills:security/handle-untrusted-content@0.1.0"
+      ]
+    },
+    {
+      "ref": "skills:adtech/brand-rag-memory-bootstrap@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:marketing/ai-output-eval-scorecard@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:security/handle-untrusted-content@0.1.0",
+      "dependsOn": []
+    }
+  ]
+}

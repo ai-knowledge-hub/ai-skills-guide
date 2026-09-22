@@ -1,0 +1,222 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "metadata": {
+    "component": {
+      "type": "application",
+      "bom-ref": "plugins:marketing/creative-operating-system-plugin@0.2.0",
+      "name": "marketing/creative-operating-system-plugin",
+      "version": "0.2.0"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "agents:marketing/creative-operating-system-supervisor@0.2.0",
+      "group": "marketing",
+      "name": "creative-operating-system-supervisor",
+      "version": "0.2.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "8af63993e4ac5d930bb9814233f638d60112d088416f5ec82b650a209fb4eafe"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "agents"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:adtech/brand-rag-memory-bootstrap@0.1.0",
+      "group": "adtech",
+      "name": "brand-rag-memory-bootstrap",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "813c0ff3ed32cc39ec137aaffbe10915ac646c2a0beb0bec9bfa6f33ca30eca9"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:marketing/ai-output-eval-scorecard@0.1.0",
+      "group": "marketing",
+      "name": "ai-output-eval-scorecard",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "0b1f20517d784b85873b5ab0fe75d0876be59caf83c90c63ed28fdfaee40569e"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:marketing/creative-operating-system-audit@0.1.0",
+      "group": "marketing",
+      "name": "creative-operating-system-audit",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "4f1bbaea55d449bf7a937e7bffec103249754c659ad107271fce4bfb87af98bf"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:marketing/creator-strategy-brief@0.1.0",
+      "group": "marketing",
+      "name": "creator-strategy-brief",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "459b015b80f48d64451d9e4e846a2787125f04f5ed832afdbf795139133ea030"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:marketing/cultural-timing-signal-triage@0.1.0",
+      "group": "marketing",
+      "name": "cultural-timing-signal-triage",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "a3134db7902624fb604b6cdf75ba7e0d02a56795c8ac81cfcb01f7705decd705"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:marketing/product-as-media-mapper@0.1.0",
+      "group": "marketing",
+      "name": "product-as-media-mapper",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "66ad1ce2eff519052e3523cd858cde0cb5e49039c39cbd7f0b98b6fccf30be17"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:marketing/utility-campaign-concept-designer@0.1.0",
+      "group": "marketing",
+      "name": "utility-campaign-concept-designer",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "c43d1756c86962c09601641a3b61ceea7f031bee1b1d7b1ba42a613efb50cb79"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "plugins:marketing/creative-operating-system-plugin@0.2.0",
+      "dependsOn": [
+        "agents:marketing/creative-operating-system-supervisor@0.2.0",
+        "skills:adtech/brand-rag-memory-bootstrap@0.1.0",
+        "skills:marketing/ai-output-eval-scorecard@0.1.0",
+        "skills:marketing/creative-operating-system-audit@0.1.0",
+        "skills:marketing/creator-strategy-brief@0.1.0",
+        "skills:marketing/cultural-timing-signal-triage@0.1.0",
+        "skills:marketing/product-as-media-mapper@0.1.0",
+        "skills:marketing/utility-campaign-concept-designer@0.1.0"
+      ]
+    },
+    {
+      "ref": "agents:marketing/creative-operating-system-supervisor@0.2.0",
+      "dependsOn": [
+        "skills:adtech/brand-rag-memory-bootstrap@0.1.0",
+        "skills:marketing/ai-output-eval-scorecard@0.1.0",
+        "skills:marketing/creative-operating-system-audit@0.1.0",
+        "skills:marketing/creator-strategy-brief@0.1.0",
+        "skills:marketing/cultural-timing-signal-triage@0.1.0",
+        "skills:marketing/product-as-media-mapper@0.1.0",
+        "skills:marketing/utility-campaign-concept-designer@0.1.0"
+      ]
+    },
+    {
+      "ref": "skills:adtech/brand-rag-memory-bootstrap@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:marketing/ai-output-eval-scorecard@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:marketing/creative-operating-system-audit@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:marketing/creator-strategy-brief@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:marketing/cultural-timing-signal-triage@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:marketing/product-as-media-mapper@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:marketing/utility-campaign-concept-designer@0.1.0",
+      "dependsOn": []
+    }
+  ]
+}

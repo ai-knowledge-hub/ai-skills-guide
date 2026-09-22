@@ -1155,14 +1155,15 @@ func TestInstallPublishedContentRepurposingPluginWithoutSourceSiblings(t *testin
 		t.Run(runtimeName, func(t *testing.T) {
 			runtimeRoot := t.TempDir()
 			result, err := InstallRemoteRelease(context.Background(), RemoteInstallOptions{
-				RegistryURL: server.URL + "/registry.json",
-				CacheDir:    filepath.Join(t.TempDir(), "cache"),
-				Module:      "plugins",
-				Runtime:     runtimeName,
-				ID:          packageID,
-				Version:     release.Version,
-				TargetRoot:  filepath.Join(runtimeRoot, "plugins"),
-				HTTPClient:  server.Client(),
+				RegistryURL:       server.URL + "/registry.json",
+				CacheDir:          filepath.Join(t.TempDir(), "cache"),
+				Module:            "plugins",
+				Runtime:           runtimeName,
+				ID:                packageID,
+				Version:           release.Version,
+				TargetRoot:        filepath.Join(runtimeRoot, "plugins"),
+				HTTPClient:        server.Client(),
+				ExecutionRuntimes: []string{"node22"},
 			})
 			if err != nil {
 				t.Fatalf("install standalone published plugin: %v", err)
@@ -1186,6 +1187,144 @@ func TestInstallPublishedContentRepurposingPluginWithoutSourceSiblings(t *testin
 	}
 }
 
+func TestInstallPublishedLocalPluginWaveWithoutSourceSiblings(t *testing.T) {
+	workingDirectory, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("get working directory: %v", err)
+	}
+	repositoryRoot := filepath.Clean(filepath.Join(workingDirectory, "..", ".."))
+	webRoot := filepath.Join(repositoryRoot, "apps", "web")
+	releaseStore := filepath.Join(t.TempDir(), "releases")
+	publicRoot := filepath.Join(t.TempDir(), "public")
+	runPublisher(t, webRoot, releaseStore, publicRoot)
+
+	testCases := []struct {
+		id     string
+		skills []string
+		agents []string
+	}{
+		{id: "agentops/harness-governance-plugin", skills: []string{"agentops/harness-run-reflection", "agentops/harness-skill-proposal", "agentops/harness-regression-evaluator"}},
+		{id: "engineering/code-maintenance-plugin", skills: []string{"engineering/implementation-strategy", "engineering/code-change-verification", "engineering/test-gap-analyzer", "engineering/coverage-gap-reporter", "engineering/pr-review-and-draft"}},
+		{id: "marketing/content-repurposing-plugin", skills: []string{"marketing/creative-workshop-pmax-reels", "marketing/ai-output-eval-scorecard", "marketing/dynamic-creative-rules-engine"}},
+		{id: "marketing/competitive-intelligence-plugin", skills: []string{"adtech/brand-rag-memory-bootstrap", "marketing/ai-output-eval-scorecard", "security/handle-untrusted-content"}},
+		{id: "marketing/creative-operating-system-plugin", skills: []string{"adtech/brand-rag-memory-bootstrap", "marketing/creative-operating-system-audit", "marketing/utility-campaign-concept-designer", "marketing/product-as-media-mapper", "marketing/cultural-timing-signal-triage", "marketing/creator-strategy-brief", "marketing/ai-output-eval-scorecard"}, agents: []string{"marketing/creative-operating-system-supervisor"}},
+		{id: "security/runtime-safety-plugin", skills: []string{"security/handle-untrusted-content", "security/dependency-supply-chain-audit", "security/secrets-and-credential-hygiene", "security/environment-risk-assessment"}},
+	}
+
+	index, err := registry.LoadIndex(filepath.Join(publicRoot, "registry", "plugins-index.json"))
+	if err != nil {
+		t.Fatalf("load published plugin registry: %v", err)
+	}
+	for _, testCase := range testCases {
+		t.Run(strings.ReplaceAll(testCase.id, "/", "_"), func(t *testing.T) {
+			entry, found := registry.FindSkill(index, testCase.id)
+			if !found {
+				t.Fatalf("published registry missing %s", testCase.id)
+			}
+			release, err := registry.ResolveVersion(entry, "latest")
+			if err != nil {
+				t.Fatalf("resolve published plugin version: %v", err)
+			}
+			archive, err := os.ReadFile(filepath.Join(publicRoot, "artifacts", filepath.FromSlash(testCase.id), release.Version+".tar.gz"))
+			if err != nil {
+				t.Fatalf("read published plugin archive: %v", err)
+			}
+
+			server := httptest.NewUnstartedServer(nil)
+			server.Config.Handler = http.HandlerFunc(func(w http.ResponseWriter, request *http.Request) {
+				switch request.URL.Path {
+				case "/registry.json":
+					servedEntry := entry
+					servedEntry.Versions = append([]registry.VersionEntry(nil), entry.Versions...)
+					for versionIndex := range servedEntry.Versions {
+						servedEntry.Versions[versionIndex].ArtifactURL = server.URL + "/artifact.tar.gz"
+						servedEntry.Versions[versionIndex].ManifestURL = server.URL + "/manifest.yaml"
+					}
+					payload, marshalErr := json.Marshal(registry.Index{RegistryVersion: index.RegistryVersion, Skills: []registry.SkillEntry{servedEntry}})
+					if marshalErr != nil {
+						w.WriteHeader(http.StatusInternalServerError)
+						return
+					}
+					_, _ = w.Write(payload)
+				case "/artifact.tar.gz":
+					_, _ = w.Write(archive)
+				default:
+					http.NotFound(w, request)
+				}
+			})
+			server.StartTLS()
+			defer server.Close()
+
+			for _, runtimeName := range []string{"codex", "claude", "generic"} {
+				t.Run(runtimeName, func(t *testing.T) {
+					runtimeRoot := t.TempDir()
+					options := RemoteInstallOptions{
+						RegistryURL: server.URL + "/registry.json",
+						CacheDir:    filepath.Join(t.TempDir(), "cache"), Module: "plugins", Runtime: runtimeName,
+						ID: testCase.id, Version: release.Version, TargetRoot: filepath.Join(runtimeRoot, "plugins"), HTTPClient: server.Client(),
+					}
+					if _, deniedErr := InstallRemoteRelease(context.Background(), options); deniedErr == nil || !strings.Contains(deniedErr.Error(), "--execution-runtime") {
+						t.Fatalf("install without declared Node capability was not rejected: %v", deniedErr)
+					}
+					options.ExecutionRuntimes = []string{"node22"}
+					result, installErr := InstallRemoteRelease(context.Background(), options)
+					if installErr != nil {
+						t.Fatalf("install standalone published plugin: %v", installErr)
+					}
+					assertFileContains(t, filepath.Join(result.Destination, "dependencies.lock.json"), testCase.skills[0])
+					assertFileContains(t, filepath.Join(result.Destination, ".runtime", runtimeName+".json"), `"schema_version": "skills-hub.runtime-package/v1"`)
+					assertFileContains(t, filepath.Join(result.Destination, ".runtime", runtimeName+".json"), `"enforcement": "advisory"`)
+					if testCase.id == "marketing/creative-operating-system-plugin" {
+						contract := readCompiledRuntimeContract(t, filepath.Join(result.Destination, ".runtime", runtimeName+".json"))
+						if len(contract.Registrations.Agents) != 1 {
+							t.Fatalf("creative plugin agent registrations = %#v", contract.Registrations.Agents)
+						}
+						wantEnforcement := "advisory"
+						if runtimeName == "claude" {
+							wantEnforcement = "native"
+						}
+						if contract.Registrations.Agents[0].Enforcement != wantEnforcement {
+							t.Fatalf("%s supervisor registration = %#v, want %s", runtimeName, contract.Registrations.Agents[0], wantEnforcement)
+						}
+					}
+					for _, dependencyID := range testCase.skills {
+						assertFileContains(t, filepath.Join(runtimeRoot, "skills", filepath.FromSlash(dependencyID), "skill.yaml"), dependencyID)
+					}
+					for _, dependencyID := range testCase.agents {
+						assertFileContains(t, filepath.Join(runtimeRoot, "agents", filepath.FromSlash(dependencyID), "agent.yaml"), dependencyID)
+					}
+					if runtimeName == "codex" {
+						assertFileContains(t, filepath.Join(result.Destination, "plugin.json"), agentPluginManifestSchema)
+					}
+					if runtimeName == "claude" {
+						assertFileContains(t, filepath.Join(result.Destination, ".claude-plugin", "plugin.json"), `"skills": "./skills/"`)
+					}
+
+					commandArgs := []string{
+						filepath.Join(result.Destination, "scripts", "first_use.mjs"),
+						filepath.Join(result.Destination, "examples", "first-use-input.json"),
+					}
+					if testCase.id == "marketing/content-repurposing-plugin" {
+						commandArgs = append(commandArgs, filepath.Join(t.TempDir(), "deliverable"))
+					}
+					command := exec.Command("node", commandArgs...)
+					output, commandErr := command.CombinedOutput()
+					if commandErr != nil {
+						t.Fatalf("installed first-use command failed: %v\n%s", commandErr, output)
+					}
+					if testCase.id == "marketing/content-repurposing-plugin" {
+						if !strings.Contains(string(output), `"publish_authorized":false`) {
+							t.Fatalf("installed content first-use result lost its authority boundary: %s", output)
+						}
+					} else if !strings.Contains(string(output), `"schema_version": "local-plugin.first-use/v1"`) {
+						t.Fatalf("installed first-use result has the wrong contract: %s", output)
+					}
+				})
+			}
+		})
+	}
+}
+
 func TestRetainedReleaseRejectsContentOutsideArtifactChecksums(t *testing.T) {
 	workingDirectory, err := os.Getwd()
 	if err != nil {
@@ -1198,7 +1337,7 @@ func TestRetainedReleaseRejectsContentOutsideArtifactChecksums(t *testing.T) {
 	runPublisher(t, webRoot, releaseStore, publicRoot)
 
 	const packageID = "marketing/content-repurposing-plugin"
-	const version = "0.2.0"
+	const version = "0.3.0"
 	releaseDir := filepath.Join(releaseStore, "plugins", filepath.FromSlash(packageID), version)
 	archivePath := filepath.Join(releaseDir, "package.tar.gz")
 	archive, err := os.ReadFile(archivePath)
@@ -1358,7 +1497,7 @@ func TestPublisherVercelBuildWithoutGoUsesCommittedReleaseProjections(t *testing
 		t.Fatalf("load Vercel fallback registry: %v", err)
 	}
 	entry, found := registry.FindSkill(index, "marketing/content-repurposing-plugin")
-	if !found || len(entry.Versions) != 1 || entry.Versions[0].Version != "0.2.0" {
+	if !found || len(entry.Versions) != 1 || entry.Versions[0].Version != "0.3.0" {
 		t.Fatalf("Vercel fallback omitted the committed plugin release: %#v", entry)
 	}
 }

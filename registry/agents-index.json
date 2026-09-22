@@ -1,6 +1,6 @@
 {
   "registry_version": "1.3",
-  "generated_at": "2026-07-24T00:00:00Z",
+  "generated_at": "2026-09-22T00:00:00Z",
   "skills": [
     {
       "schema_version": "1.1",
@@ -357,15 +357,15 @@
       "name": "Creative Operating System Supervisor",
       "description": "Coordinate the Creative Operating System workflow from brand memory and utility concepts to creator briefs, cultural timing, and final quality evaluation.",
       "category": "marketing-agents/creative-ops",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-06-27T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/marketing/creative-operating-system-supervisor/0.1.0.yaml",
-          "manifest_sha256": "c6319e6b23c1d0fce44a731dcff405f566cf12f55873e228299086aff254c702",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-operating-system-supervisor/0.1.0.tar.gz",
-          "sha256": "96324d5780076f81d8ee4952ca4dc142e374e059198d8999de6d13af6d65a586"
+          "version": "0.2.0",
+          "released_at": "2026-09-22T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/marketing/creative-operating-system-supervisor/0.2.0.yaml",
+          "manifest_sha256": "c10181cfe415b6a30bee018a93e93628ee902f33c622e1b8617b5aae44923d66",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-operating-system-supervisor/0.2.0.tar.gz",
+          "sha256": "d2b09333d305dc51ed75f12c7ff5117c13ed0956079008f24d6efc745bb5f1d5"
         }
       ],
       "runtimes": [
@@ -406,12 +406,12 @@
         ]
       },
       "usability": {
-        "availability": "template-only",
+        "availability": "not-verified",
         "execution": "orchestrator",
         "limitations": [
-          "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged."
+          "Produces plans and routing recommendations only; external activation and product changes remain human-approved."
         ],
-        "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+        "quickstart": "Use Claude for native plugin-agent discovery; Codex and generic installations expose this definition as advisory guidance only.",
         "source": "declared"
       },
       "dependencies": {

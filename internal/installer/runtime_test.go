@@ -23,6 +23,30 @@ func TestResolveRuntimeTargetExplicitTargetWins(t *testing.T) {
 	}
 }
 
+func TestOpenAIAdsClientReleaseArchiveRunsCredentialFreeMockSmoke(t *testing.T) {
+	python, err := exec.LookPath("python3")
+	if err != nil {
+		t.Fatalf("python3 is required for the OpenAI Ads client launch regression: %v", err)
+	}
+	destination := t.TempDir()
+	archive := filepath.Join("..", "..", "releases", "tools-mcp", "adtech", "openai-ads-api-client", "0.2.0", "package.tar.gz")
+	if err := extractVerifiedTarGz(archive, destination); err != nil {
+		t.Fatalf("extract clean OpenAI Ads client release: %v", err)
+	}
+	command := exec.Command(python, "scripts/openai_ads_client.py", "--mode", "mock", "account")
+	command.Dir = destination
+	command.Env = []string{}
+	output, err := command.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"id": "adacct_mock"`)) {
+		t.Fatalf("OpenAI Ads client release mock smoke failed: %v\n%s", err, output)
+	}
+	for _, relative := range []string{"auth/api-key.json", "scripts/openai_ads_auth_driver.py"} {
+		if _, err := os.Stat(filepath.Join(destination, filepath.FromSlash(relative))); err != nil {
+			t.Fatalf("OpenAI Ads client release omitted %s: %v", relative, err)
+		}
+	}
+}
+
 func TestGA4ReleaseArchiveLaunchesAsNativeMCPServer(t *testing.T) {
 	node, err := exec.LookPath("node")
 	if err != nil {

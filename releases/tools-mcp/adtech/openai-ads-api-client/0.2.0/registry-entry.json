@@ -1,0 +1,113 @@
+{
+  "schema_version": "2.1",
+  "id": "adtech/openai-ads-api-client",
+  "name": "OpenAI Ads API Client",
+  "description": "Preferred executable client for bounded mock or live read-only OpenAI Ads retrieval and non-persisting Conversions API validation.",
+  "category": "tools-mcp/adtech",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "openai-ads",
+    "advertiser-api",
+    "campaign-insights",
+    "conversions-api",
+    "read-only"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "connected_system": "OpenAI Advertiser API and Ads Conversions API",
+    "capabilities": [
+      "Read bounded ad-account metadata, campaigns, ads, and account or entity insights.",
+      "Verify an account-scoped Ads API key against the provider ad-account endpoint.",
+      "Validate conversion batches locally or through non-persisting provider validation."
+    ],
+    "auth_required": [
+      "OPENAI_ADS_API_KEY for live Advertiser API reads",
+      "OPENAI_ADS_PIXEL_ID and OPENAI_ADS_CONVERSIONS_API_KEY for optional remote conversion validation"
+    ],
+    "access_level": "read-only",
+    "trust_boundary": "third-party-hosted",
+    "approval_boundary": "Advertiser operations are GET-only; bounded Conversions API requests force validate_only true and cannot persist events."
+  },
+  "usability": {
+    "availability": "setup-required",
+    "execution": "local-tool",
+    "requires_setup": [
+      "Python 3.9 or newer.",
+      "For live reads, create an account-scoped key in OpenAI Ads Manager and bind OPENAI_ADS_API_KEY outside agent context.",
+      "Configure separate pixel and Conversions API credentials only when provider-side validate-only checks are required."
+    ],
+    "limitations": [
+      "Mock mode is immediately runnable, but provider-backed readiness requires an available account-scoped API key.",
+      "The provider account endpoint attests the account binding, not the individual human owner of an API key.",
+      "Campaign, ad-group, ad, file, feed, and persisted conversion mutations are intentionally excluded.",
+      "Automatic pagination, retries, and rate-limit backoff are not included."
+    ],
+    "quickstart": "python3 scripts/openai_ads_client.py --mode mock account",
+    "source": "declared"
+  },
+  "execution": {
+    "kind": "cli",
+    "command": [
+      "python3",
+      "scripts/openai_ads_client.py"
+    ],
+    "smoke_test": [
+      "python3",
+      "scripts/openai_ads_client.py",
+      "--mode",
+      "mock",
+      "account"
+    ],
+    "supported_platforms": [
+      "linux",
+      "macos"
+    ],
+    "supported_runtimes": [
+      "python3"
+    ]
+  },
+  "artifact": {
+    "self_contained": true,
+    "dependency_lock": null,
+    "checksums": null,
+    "sbom": null
+  },
+  "authentication": {
+    "status": "optional",
+    "methods": [
+      "api-key"
+    ],
+    "credential_bindings": [
+      "OPENAI_ADS_API_KEY"
+    ],
+    "scopes": [],
+    "setup_url": "https://developers.openai.com/ads/api-reference/authentication",
+    "credential_storage": "The account-scoped API key remains in an explicitly bound runtime environment source and is never written into the package or readiness profile.",
+    "validation": "The packaged driver calls GET /ad_account and accepts only the provider-returned account identifier as identity evidence.",
+    "revocation": "Revoke or rotate the account-scoped API key in OpenAI Ads Manager and remove its runtime binding."
+  },
+  "verification": {
+    "evidence": [
+      "evidence://tests/openai-ads-client/mock-clean-client-launch",
+      "evidence://tests/openai-ads-client/read-only-request-boundary",
+      "evidence://tests/openai-ads-client/provider-account-attestation",
+      "evidence://tests/openai-ads-client/conversions-validate-only"
+    ],
+    "last_verified_at": "2026-09-21T00:00:00Z"
+  },
+  "dependencies": {
+    "tools": [
+      "python3"
+    ],
+    "apis": [
+      "OpenAI Advertiser API",
+      "OpenAI Ads Conversions API"
+    ]
+  }
+}

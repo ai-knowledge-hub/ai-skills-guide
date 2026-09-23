@@ -1,0 +1,92 @@
+{
+  "schema_version": "2.1",
+  "id": "security/runtime-safety-plugin",
+  "name": "Runtime Safety Plugin",
+  "description": "Package untrusted-content handling, dependency audit, secret hygiene, and environment-risk assessment into one conservative security review workflow plugin.",
+  "category": "security-plugins/runtime-safety",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "security",
+    "runtime-safety",
+    "secrets",
+    "supply-chain"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "usability": {
+    "availability": "usable-now",
+    "execution": "bundle",
+    "limitations": [
+      "Live remediation remains human-approved; the packaged Markdown hook is advisory on runtimes without a native enforcement mapping."
+    ],
+    "quickstart": "Run `node scripts/first_use.mjs examples/first-use-input.json` after installation to produce a conservative runtime-risk decision.",
+    "executable_helpers": [
+      {
+        "entrypoint": "scripts/first_use.mjs",
+        "availability": "usable-now",
+        "execution": "local-tool",
+        "limitations": [
+          "Requires a declared Node.js 22 execution capability; it never performs remediation."
+        ],
+        "quickstart": "node scripts/first_use.mjs examples/first-use-input.json"
+      }
+    ],
+    "source": "declared"
+  },
+  "execution": {
+    "kind": "bundle",
+    "supported_platforms": [
+      "linux",
+      "macos",
+      "windows"
+    ],
+    "supported_runtimes": [
+      "node22"
+    ]
+  },
+  "artifact": {
+    "self_contained": true,
+    "dependency_lock": "dependencies.lock.json",
+    "checksums": "checksums.txt",
+    "sbom": "sbom.cdx.json",
+    "provenance": "provenance.json"
+  },
+  "authentication": {
+    "status": "none",
+    "methods": [
+      "none"
+    ],
+    "credential_bindings": [],
+    "scopes": [],
+    "credential_storage": "No credentials are used by this instruction bundle.",
+    "validation": "Confirm no authentication challenge is introduced by runtime wiring.",
+    "revocation": "Not applicable; remove the installed bundle to withdraw it."
+  },
+  "verification": {
+    "evidence": [
+      "evidence://tests/local-plugin-wave/runtime-safety-first-use"
+    ],
+    "last_verified_at": "2026-09-22T00:00:00Z"
+  },
+  "includes": {
+    "skills": [
+      "security/handle-untrusted-content",
+      "security/dependency-supply-chain-audit",
+      "security/secrets-and-credential-hygiene",
+      "security/environment-risk-assessment"
+    ],
+    "hooks": [
+      "quarantine-suspicious-instructions"
+    ]
+  },
+  "requires": {
+    "approvals": [
+      "human-review-for-live-remediation"
+    ]
+  }
+}

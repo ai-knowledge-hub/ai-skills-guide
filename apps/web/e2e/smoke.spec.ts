@@ -95,7 +95,7 @@ test("new plugin domains smoke", async ({ page }) => {
   await page.goto(sampleEngineeringPluginPath);
   await expect(page.getByRole("heading", { name: "Code Maintenance Plugin" })).toBeVisible();
   await expect(page.getByText("Engineering Plugins / Maintenance")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Referenced Skills" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Installed Skills" })).toBeVisible();
   await expect(page.getByRole("link", { name: "engineering/code-change-verification" })).toBeVisible();
   await expect(page.getByRole("link", { name: "verification-before-complete" })).toBeVisible();
 
@@ -110,7 +110,7 @@ test("new plugin domains smoke", async ({ page }) => {
   await page.goto(sampleHarnessPluginPath);
   await expect(page.getByRole("heading", { name: "Harness Governance Plugin" })).toBeVisible();
   await expect(page.getByText("AgentOps Plugins / Governance")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Referenced Skills" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Installed Skills" })).toBeVisible();
   await expect(page.getByRole("link", { name: "agentops/harness-run-reflection" })).toBeVisible();
   const harnessRequirements = page.locator(".detail-panel").filter({ has: page.getByRole("heading", { name: "Requirements" }) }).first();
   await expect(harnessRequirements.getByText("human-approval-for-harness-update")).toBeVisible();

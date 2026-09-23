@@ -10,7 +10,7 @@ Portable bundle for governed harness improvement.
 
 ## Install Behavior
 
-This plugin is a packaging layer.
+This plugin is published as a self-contained, integrity-locked packaging layer.
 
 On install:
 
@@ -20,14 +20,15 @@ On install:
 - no tools are installed for this plugin
 - packaged hooks remain inside this plugin's `hooks/` directory
 
-Bundled harness skills do not live inside the plugin directory itself. That
-avoids duplication and keeps the plugin focused on governance rather than
-self-contained policy forks.
+The release archive carries the pinned skill closure, dependency lock,
+checksums, SBOM, and provenance. Installation never depends on sibling source
+directories.
 
 ## Install Command
 
 ```bash
-./bin/skills-hub install --module plugins --entry agentops/harness-governance-plugin@0.1.0 --runtime codex
+./bin/skills-hub install --module plugins --entry agentops/harness-governance-plugin@0.2.0 \
+  --runtime codex --execution-runtime node22
 ```
 
 ## Installed Dependencies
@@ -41,6 +42,17 @@ Skills installed into `skills/...`:
 
 Hooks kept inside this plugin package:
 - `require-human-approval-for-harness-adoption`
+
+This Markdown hook is compiled as visible advisory guidance unless a runtime
+provides an equivalent native enforcement mapping.
+
+## First Use
+
+```bash
+node scripts/first_use.mjs examples/first-use-input.json
+```
+
+The command emits a bounded decision record and never authorizes adoption.
 
 ## Use Case
 

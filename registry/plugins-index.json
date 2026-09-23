@@ -1,22 +1,22 @@
 {
   "registry_version": "1.3",
-  "generated_at": "2026-09-15T00:00:00Z",
+  "generated_at": "2026-09-22T00:00:00Z",
   "skills": [
     {
-      "schema_version": "1.1",
+      "schema_version": "2.1",
       "id": "agentops/harness-governance-plugin",
       "name": "Harness Governance Plugin",
       "description": "Package harness reflection, proposal drafting, and regression evaluation into one governed harness-improvement plugin with explicit human gates.",
       "category": "agentops-plugins/governance",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-03-31T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/agentops/harness-governance-plugin/0.1.0.yaml",
-          "manifest_sha256": "79db864502276f205cabb24645351a4d0ad08fcdab0e3161563fca549fce7b74",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-governance-plugin/0.1.0.tar.gz",
-          "sha256": "da15d5f86427b499eed2ede8c9270b338a281269c513dad3486099107b6f1ea3"
+          "version": "0.2.0",
+          "released_at": "2026-09-22T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/agentops/harness-governance-plugin/0.2.0.yaml",
+          "manifest_sha256": "563365f7e639d7b503de1d6824bc5284106e0970211a2b7ded1fc66dd1085e63",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/harness-governance-plugin/0.2.0.tar.gz",
+          "sha256": "7531ccb29ff7987f780990087eac6a03aa1db386e12fc83c6184b72784da1113"
         }
       ],
       "runtimes": [
@@ -34,13 +34,59 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "template-only",
+        "availability": "usable-now",
         "execution": "bundle",
         "limitations": [
-          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published."
+          "Harness adoption remains human-approved; the packaged Markdown hook is advisory on runtimes without a native enforcement mapping."
         ],
-        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+        "quickstart": "Run `node scripts/first_use.mjs examples/first-use-input.json` after installation to produce a governed proposal decision.",
+        "executable_helpers": [
+          {
+            "entrypoint": "scripts/first_use.mjs",
+            "availability": "usable-now",
+            "execution": "local-tool",
+            "limitations": [
+              "Requires a declared Node.js 22 execution capability; it never authorizes harness adoption."
+            ],
+            "quickstart": "node scripts/first_use.mjs examples/first-use-input.json"
+          }
+        ],
         "source": "declared"
+      },
+      "execution": {
+        "kind": "bundle",
+        "supported_platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ],
+        "supported_runtimes": [
+          "node22"
+        ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": "dependencies.lock.json",
+        "checksums": "checksums.txt",
+        "sbom": "sbom.cdx.json",
+        "provenance": "provenance.json"
+      },
+      "authentication": {
+        "status": "none",
+        "methods": [
+          "none"
+        ],
+        "credential_bindings": [],
+        "scopes": [],
+        "credential_storage": "No credentials are used by this instruction bundle.",
+        "validation": "Confirm no authentication challenge is introduced by runtime wiring.",
+        "revocation": "Not applicable; remove the installed bundle to withdraw it."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/local-plugin-wave/harness-governance-first-use"
+        ],
+        "last_verified_at": "2026-09-22T00:00:00Z"
       },
       "includes": {
         "skills": [
@@ -59,20 +105,20 @@
       }
     },
     {
-      "schema_version": "1.1",
+      "schema_version": "2.1",
       "id": "engineering/code-maintenance-plugin",
       "name": "Code Maintenance Plugin",
       "description": "Package repo planning, verification, test-gap analysis, coverage review, and PR drafting into one governed maintenance workflow plugin.",
       "category": "engineering-plugins/maintenance",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-03-31T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/engineering/code-maintenance-plugin/0.1.0.yaml",
-          "manifest_sha256": "14c7e7439429cc92324086168a066a6be6dcbd46110a57bd49e31c637f9e7d25",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/code-maintenance-plugin/0.1.0.tar.gz",
-          "sha256": "d1892d0f43dcbaab36999ec84833acf31fce2cabe347ccd8ad258460e7a12dd3"
+          "version": "0.2.0",
+          "released_at": "2026-09-22T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/engineering/code-maintenance-plugin/0.2.0.yaml",
+          "manifest_sha256": "87c1e764e78615a7c3650a83c2010c97f36e39b38ee584900178531aef94e2bf",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/code-maintenance-plugin/0.2.0.tar.gz",
+          "sha256": "7d170bcd18bb15c58eacd99fc8a0def78498ca795e62eae9fc951301b308f93a"
         }
       ],
       "runtimes": [
@@ -90,13 +136,59 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "template-only",
+        "availability": "usable-now",
         "execution": "bundle",
         "limitations": [
-          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published."
+          "Merge remains human-approved; the packaged Markdown hook is advisory on runtimes without a native enforcement mapping."
         ],
-        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+        "quickstart": "Run `node scripts/first_use.mjs examples/first-use-input.json` after installation to produce a bounded maintenance plan.",
+        "executable_helpers": [
+          {
+            "entrypoint": "scripts/first_use.mjs",
+            "availability": "usable-now",
+            "execution": "local-tool",
+            "limitations": [
+              "Requires a declared Node.js 22 execution capability; it never authorizes merge."
+            ],
+            "quickstart": "node scripts/first_use.mjs examples/first-use-input.json"
+          }
+        ],
         "source": "declared"
+      },
+      "execution": {
+        "kind": "bundle",
+        "supported_platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ],
+        "supported_runtimes": [
+          "node22"
+        ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": "dependencies.lock.json",
+        "checksums": "checksums.txt",
+        "sbom": "sbom.cdx.json",
+        "provenance": "provenance.json"
+      },
+      "authentication": {
+        "status": "none",
+        "methods": [
+          "none"
+        ],
+        "credential_bindings": [],
+        "scopes": [],
+        "credential_storage": "No credentials are used by this instruction bundle.",
+        "validation": "Confirm no authentication challenge is introduced by runtime wiring.",
+        "revocation": "Not applicable; remove the installed bundle to withdraw it."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/local-plugin-wave/code-maintenance-first-use"
+        ],
+        "last_verified_at": "2026-09-22T00:00:00Z"
       },
       "includes": {
         "skills": [
@@ -324,20 +416,20 @@
       }
     },
     {
-      "schema_version": "1.1",
+      "schema_version": "2.1",
       "id": "marketing/competitive-intelligence-plugin",
       "name": "Competitive Intelligence Plugin",
       "description": "Bundle competitor signal collection, evidence review, and insight packaging into a reusable plugin for marketing strategy teams.",
       "category": "marketing-plugins/intelligence",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-03-29T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/competitive-intelligence-plugin/0.1.0.yaml",
-          "manifest_sha256": "ddccddc140794e7ba3ef180f06d91a10b3c27ef8341e5a1b2cf23185b7dd3fbf",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/competitive-intelligence-plugin/0.1.0.tar.gz",
-          "sha256": "a21491e62fa3894ef5175776c28f0b7f319f5867a292b9f33e47ae51154ae9d8"
+          "version": "0.2.0",
+          "released_at": "2026-09-22T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/competitive-intelligence-plugin/0.2.0.yaml",
+          "manifest_sha256": "a5a54df531917bafe7472de7fc1f429adb53b4add5002158f41720f10ce5a070",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/competitive-intelligence-plugin/0.2.0.tar.gz",
+          "sha256": "e28d55a9c43ef2d42f8e28452c6f6e62d7c6afb5366ba5a3a9927a6bd552321f"
         }
       ],
       "runtimes": [
@@ -355,13 +447,59 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "template-only",
+        "availability": "usable-now",
         "execution": "bundle",
         "limitations": [
-          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published."
+          "External claims remain human-reviewed; the packaged Markdown hook is advisory on runtimes without a native enforcement mapping."
         ],
-        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+        "quickstart": "Run `node scripts/first_use.mjs examples/first-use-input.json` after installation to produce an evidence-labelled signal digest.",
+        "executable_helpers": [
+          {
+            "entrypoint": "scripts/first_use.mjs",
+            "availability": "usable-now",
+            "execution": "local-tool",
+            "limitations": [
+              "Requires a declared Node.js 22 execution capability; it never authorizes publication."
+            ],
+            "quickstart": "node scripts/first_use.mjs examples/first-use-input.json"
+          }
+        ],
         "source": "declared"
+      },
+      "execution": {
+        "kind": "bundle",
+        "supported_platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ],
+        "supported_runtimes": [
+          "node22"
+        ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": "dependencies.lock.json",
+        "checksums": "checksums.txt",
+        "sbom": "sbom.cdx.json",
+        "provenance": "provenance.json"
+      },
+      "authentication": {
+        "status": "none",
+        "methods": [
+          "none"
+        ],
+        "credential_bindings": [],
+        "scopes": [],
+        "credential_storage": "No credentials are used by this instruction bundle.",
+        "validation": "Confirm no authentication challenge is introduced by runtime wiring.",
+        "revocation": "Not applicable; remove the installed bundle to withdraw it."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/local-plugin-wave/competitive-intelligence-first-use"
+        ],
+        "last_verified_at": "2026-09-22T00:00:00Z"
       },
       "includes": {
         "skills": [
@@ -385,15 +523,15 @@
       "name": "Content Repurposing Plugin",
       "description": "Bundle content transformation, review guidance, and publishing-oriented workflow references into a portable plugin for multi-channel reuse.",
       "category": "marketing-plugins/content",
-      "latest": "0.2.0",
+      "latest": "0.3.0",
       "versions": [
         {
-          "version": "0.2.0",
-          "released_at": "2026-09-15T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/content-repurposing-plugin/0.2.0.yaml",
-          "manifest_sha256": "81ddf0fe60bf7e666c2768eb347eae4dc2278c2b436c31ba1e7ec53ea2823e75",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/content-repurposing-plugin/0.2.0.tar.gz",
-          "sha256": "5796cb920f15a3d6654f151b73fb56178ef9390b9e392c3b8b37f7c2bb275494"
+          "version": "0.3.0",
+          "released_at": "2026-09-22T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/content-repurposing-plugin/0.3.0.yaml",
+          "manifest_sha256": "9a5ca63200291d2a9a39e00e3ae019a6b179936b9cc19cf738c6edb35eea511d",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/content-repurposing-plugin/0.3.0.tar.gz",
+          "sha256": "8ccc418be535658bccb1c2e630c2c547602414a00ad2a6b14f39ace5c4f0920b"
         }
       ],
       "runtimes": [
@@ -411,12 +549,23 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "not-verified",
+        "availability": "usable-now",
         "execution": "bundle",
         "limitations": [
           "Publishing remains human-approved; the bundle does not grant external publishing authority."
         ],
-        "quickstart": "Install the checksum-verified release and review the generated dependency lock and SBOM before enabling its hooks.",
+        "quickstart": "Run `node scripts/first_use.mjs examples/first-use-input.json \u003coutput-directory\u003e` to create the documented multi-format deliverable without installing dependencies.",
+        "executable_helpers": [
+          {
+            "entrypoint": "scripts/first_use.mjs",
+            "availability": "usable-now",
+            "execution": "local-tool",
+            "limitations": [
+              "Requires a declared Node.js 22 execution capability; generated content remains human-review-required."
+            ],
+            "quickstart": "node scripts/first_use.mjs examples/first-use-input.json \u003coutput-directory\u003e"
+          }
+        ],
         "source": "declared"
       },
       "execution": {
@@ -427,9 +576,7 @@
           "windows"
         ],
         "supported_runtimes": [
-          "codex",
-          "claude",
-          "generic"
+          "node22"
         ]
       },
       "artifact": {
@@ -452,9 +599,10 @@
       },
       "verification": {
         "evidence": [
-          "evidence://tests/content-repurposing-plugin/standalone-bundle"
+          "evidence://tests/local-plugin-wave/content-repurposing-first-use",
+          "evidence://tests/local-plugin-wave/clean-client-runtime-matrix"
         ],
-        "last_verified_at": "2026-09-15T00:00:00Z"
+        "last_verified_at": "2026-09-22T00:00:00Z"
       },
       "includes": {
         "skills": [
@@ -473,20 +621,20 @@
       }
     },
     {
-      "schema_version": "1.1",
+      "schema_version": "2.1",
       "id": "marketing/creative-operating-system-plugin",
       "name": "Creative Operating System Plugin",
       "description": "Bundle the Creative Operating System workflow into one installable package with audit, concepting, creator, timing, evaluation, and first-run operational templates.",
       "category": "marketing-plugins/creative",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-06-28T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/creative-operating-system-plugin/0.1.0.yaml",
-          "manifest_sha256": "d461ad41446137a0ef5004d50f68920c92dba8ec97b31e2220e99f32c4c5fe89",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-operating-system-plugin/0.1.0.tar.gz",
-          "sha256": "f361e690edefb02b76fc0dd8fe66324b248c8447ba36e0828b975f4c79ba5a94"
+          "version": "0.2.0",
+          "released_at": "2026-09-22T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/creative-operating-system-plugin/0.2.0.yaml",
+          "manifest_sha256": "4aa6fdacb20ca17aabe7e5d0f2b99863f98d942898fc6dbc2389c9a319bda91f",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-operating-system-plugin/0.2.0.tar.gz",
+          "sha256": "4c23eb14aed0e0870a159159bc034d063e0c94be142d157680da342580496ef3"
         }
       ],
       "runtimes": [
@@ -506,13 +654,59 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "template-only",
+        "availability": "usable-now",
         "execution": "bundle",
         "limitations": [
-          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published."
+          "Launch and product-surface changes remain human-approved; packaged Markdown hooks are advisory on runtimes without native enforcement mappings."
         ],
-        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+        "quickstart": "Run `node scripts/first_use.mjs examples/first-use-input.json` after installation to generate a first-run operating-system checklist.",
+        "executable_helpers": [
+          {
+            "entrypoint": "scripts/first_use.mjs",
+            "availability": "usable-now",
+            "execution": "local-tool",
+            "limitations": [
+              "Requires a declared Node.js 22 execution capability; it never authorizes launch."
+            ],
+            "quickstart": "node scripts/first_use.mjs examples/first-use-input.json"
+          }
+        ],
         "source": "declared"
+      },
+      "execution": {
+        "kind": "bundle",
+        "supported_platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ],
+        "supported_runtimes": [
+          "node22"
+        ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": "dependencies.lock.json",
+        "checksums": "checksums.txt",
+        "sbom": "sbom.cdx.json",
+        "provenance": "provenance.json"
+      },
+      "authentication": {
+        "status": "none",
+        "methods": [
+          "none"
+        ],
+        "credential_bindings": [],
+        "scopes": [],
+        "credential_storage": "No credentials are used by this instruction bundle.",
+        "validation": "Confirm no authentication challenge is introduced by runtime wiring.",
+        "revocation": "Not applicable; remove the installed bundle to withdraw it."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/local-plugin-wave/creative-operating-system-first-use"
+        ],
+        "last_verified_at": "2026-09-22T00:00:00Z"
       },
       "includes": {
         "skills": [
@@ -672,20 +866,20 @@
       }
     },
     {
-      "schema_version": "1.1",
+      "schema_version": "2.1",
       "id": "security/runtime-safety-plugin",
       "name": "Runtime Safety Plugin",
       "description": "Package untrusted-content handling, dependency audit, secret hygiene, and environment-risk assessment into one conservative security review workflow plugin.",
       "category": "security-plugins/runtime-safety",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-03-31T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/security/runtime-safety-plugin/0.1.0.yaml",
-          "manifest_sha256": "c195cfee57dbe18ba286383880621cfafceedd4e468561b6cbdb14aa60e08edd",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/runtime-safety-plugin/0.1.0.tar.gz",
-          "sha256": "6a3cff2cebfaf347d50fd5a79f19b30cd6efd513b871f965e7bc21b2b0038ccf"
+          "version": "0.2.0",
+          "released_at": "2026-09-22T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/security/runtime-safety-plugin/0.2.0.yaml",
+          "manifest_sha256": "e6676be00bc37bb71ace21281a7bed2ea2af325cb9cf6240f5deccb27e73b31e",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/security/runtime-safety-plugin/0.2.0.tar.gz",
+          "sha256": "01b45bbbb1fe415137cc2ffaea774db6d787edb857f2205c3b617a7fc0aba64b"
         }
       ],
       "runtimes": [
@@ -703,13 +897,59 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "template-only",
+        "availability": "usable-now",
         "execution": "bundle",
         "limitations": [
-          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published."
+          "Live remediation remains human-approved; the packaged Markdown hook is advisory on runtimes without a native enforcement mapping."
         ],
-        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+        "quickstart": "Run `node scripts/first_use.mjs examples/first-use-input.json` after installation to produce a conservative runtime-risk decision.",
+        "executable_helpers": [
+          {
+            "entrypoint": "scripts/first_use.mjs",
+            "availability": "usable-now",
+            "execution": "local-tool",
+            "limitations": [
+              "Requires a declared Node.js 22 execution capability; it never performs remediation."
+            ],
+            "quickstart": "node scripts/first_use.mjs examples/first-use-input.json"
+          }
+        ],
         "source": "declared"
+      },
+      "execution": {
+        "kind": "bundle",
+        "supported_platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ],
+        "supported_runtimes": [
+          "node22"
+        ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": "dependencies.lock.json",
+        "checksums": "checksums.txt",
+        "sbom": "sbom.cdx.json",
+        "provenance": "provenance.json"
+      },
+      "authentication": {
+        "status": "none",
+        "methods": [
+          "none"
+        ],
+        "credential_bindings": [],
+        "scopes": [],
+        "credential_storage": "No credentials are used by this instruction bundle.",
+        "validation": "Confirm no authentication challenge is introduced by runtime wiring.",
+        "revocation": "Not applicable; remove the installed bundle to withdraw it."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/local-plugin-wave/runtime-safety-first-use"
+        ],
+        "last_verified_at": "2026-09-22T00:00:00Z"
       },
       "includes": {
         "skills": [

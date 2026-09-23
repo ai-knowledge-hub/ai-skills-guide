@@ -1,0 +1,94 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "metadata": {
+    "component": {
+      "type": "application",
+      "bom-ref": "plugins:agentops/harness-governance-plugin@0.2.0",
+      "name": "agentops/harness-governance-plugin",
+      "version": "0.2.0"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "skills:agentops/harness-regression-evaluator@0.1.0",
+      "group": "agentops",
+      "name": "harness-regression-evaluator",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "f8de185ade4b08a341aa92dbc4c0e3ccae476c61d59a8fe281148478ed5a345c"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:agentops/harness-run-reflection@0.1.0",
+      "group": "agentops",
+      "name": "harness-run-reflection",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "e771aef774548cfa0a7d59308aa6edcc536d174dbf0f495adeda25a46d33c00d"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:agentops/harness-skill-proposal@0.1.0",
+      "group": "agentops",
+      "name": "harness-skill-proposal",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "51b2e796b91b2425f0b6273517a48ce9995c12bc57a5606f766c800854d4adc1"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "plugins:agentops/harness-governance-plugin@0.2.0",
+      "dependsOn": [
+        "skills:agentops/harness-regression-evaluator@0.1.0",
+        "skills:agentops/harness-run-reflection@0.1.0",
+        "skills:agentops/harness-skill-proposal@0.1.0"
+      ]
+    },
+    {
+      "ref": "skills:agentops/harness-regression-evaluator@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:agentops/harness-run-reflection@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:agentops/harness-skill-proposal@0.1.0",
+      "dependsOn": []
+    }
+  ]
+}

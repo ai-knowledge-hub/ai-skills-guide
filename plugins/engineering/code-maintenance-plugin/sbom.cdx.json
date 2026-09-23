@@ -1,0 +1,142 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "metadata": {
+    "component": {
+      "type": "application",
+      "bom-ref": "plugins:engineering/code-maintenance-plugin@0.2.0",
+      "name": "engineering/code-maintenance-plugin",
+      "version": "0.2.0"
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "skills:engineering/code-change-verification@0.1.0",
+      "group": "engineering",
+      "name": "code-change-verification",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "9ac96d168f42c750d68cb1f860d74c94894a6a6faf41d814bfa76f5b57a47707"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:engineering/coverage-gap-reporter@0.1.0",
+      "group": "engineering",
+      "name": "coverage-gap-reporter",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "cf2739728a0e9ce696b8d13a52621e6215093387eaecc9eee0affccad92c80d3"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:engineering/implementation-strategy@0.1.0",
+      "group": "engineering",
+      "name": "implementation-strategy",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "8d24a55aff19cafa785615732bd935e62543ce9416d9602232c4ecaeba875ce3"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:engineering/pr-review-and-draft@0.1.0",
+      "group": "engineering",
+      "name": "pr-review-and-draft",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "8fa20412346854320e87ac3fbad67212fb9abb2dd5e8a74d8445e9fbc52cc0c3"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "skills:engineering/test-gap-analyzer@0.1.0",
+      "group": "engineering",
+      "name": "test-gap-analyzer",
+      "version": "0.1.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "5f884dd4825f3dc7c5487ba5df70a5822ad4cd0ba521be7b36055e512b310a86"
+        }
+      ],
+      "properties": [
+        {
+          "name": "ai.skills.module",
+          "value": "skills"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "plugins:engineering/code-maintenance-plugin@0.2.0",
+      "dependsOn": [
+        "skills:engineering/code-change-verification@0.1.0",
+        "skills:engineering/coverage-gap-reporter@0.1.0",
+        "skills:engineering/implementation-strategy@0.1.0",
+        "skills:engineering/pr-review-and-draft@0.1.0",
+        "skills:engineering/test-gap-analyzer@0.1.0"
+      ]
+    },
+    {
+      "ref": "skills:engineering/code-change-verification@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:engineering/coverage-gap-reporter@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:engineering/implementation-strategy@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:engineering/pr-review-and-draft@0.1.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "skills:engineering/test-gap-analyzer@0.1.0",
+      "dependsOn": []
+    }
+  ]
+}

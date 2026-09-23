@@ -28,9 +28,15 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 				t.Fatalf("got %d entries, want %d", len(index.Skills), test.wantCount)
 			}
 			for _, entry := range index.Skills {
-				if entry.ID == "marketing/content-repurposing-plugin" {
-					if entry.SchemaVersion != "2.1" || entry.Usability.Availability != "not-verified" || entry.Usability.Execution != "bundle" {
-						t.Errorf("content repurposing release classification = %#v", entry)
+				if test.name == "plugins" && localPluginWave[entry.ID] {
+					if entry.SchemaVersion != "2.1" || entry.Usability.Availability != "usable-now" || entry.Usability.Execution != "bundle" || entry.Artifact == nil || !entry.Artifact.SelfContained {
+						t.Errorf("local plugin wave classification = %#v", entry)
+					}
+					continue
+				}
+				if test.name == "agents" && entry.ID == "marketing/creative-operating-system-supervisor" {
+					if entry.SchemaVersion != "1.1" || entry.Usability.Availability != "not-verified" || entry.Usability.Execution != "orchestrator" {
+						t.Errorf("creative operating system supervisor classification = %#v", entry)
 					}
 					continue
 				}
@@ -112,6 +118,15 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 		}
 		assertClassification(t, entry, want[0], want[1])
 	}
+}
+
+var localPluginWave = map[string]bool{
+	"agentops/harness-governance-plugin":         true,
+	"engineering/code-maintenance-plugin":        true,
+	"marketing/competitive-intelligence-plugin":  true,
+	"marketing/content-repurposing-plugin":       true,
+	"marketing/creative-operating-system-plugin": true,
+	"security/runtime-safety-plugin":             true,
 }
 
 func assertClassification(t *testing.T, entry SkillEntry, availability, execution string) {

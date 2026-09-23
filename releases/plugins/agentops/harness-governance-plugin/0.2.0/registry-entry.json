@@ -1,0 +1,91 @@
+{
+  "schema_version": "2.1",
+  "id": "agentops/harness-governance-plugin",
+  "name": "Harness Governance Plugin",
+  "description": "Package harness reflection, proposal drafting, and regression evaluation into one governed harness-improvement plugin with explicit human gates.",
+  "category": "agentops-plugins/governance",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "harness",
+    "governance",
+    "evaluation",
+    "reflection"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "usability": {
+    "availability": "usable-now",
+    "execution": "bundle",
+    "limitations": [
+      "Harness adoption remains human-approved; the packaged Markdown hook is advisory on runtimes without a native enforcement mapping."
+    ],
+    "quickstart": "Run `node scripts/first_use.mjs examples/first-use-input.json` after installation to produce a governed proposal decision.",
+    "executable_helpers": [
+      {
+        "entrypoint": "scripts/first_use.mjs",
+        "availability": "usable-now",
+        "execution": "local-tool",
+        "limitations": [
+          "Requires a declared Node.js 22 execution capability; it never authorizes harness adoption."
+        ],
+        "quickstart": "node scripts/first_use.mjs examples/first-use-input.json"
+      }
+    ],
+    "source": "declared"
+  },
+  "execution": {
+    "kind": "bundle",
+    "supported_platforms": [
+      "linux",
+      "macos",
+      "windows"
+    ],
+    "supported_runtimes": [
+      "node22"
+    ]
+  },
+  "artifact": {
+    "self_contained": true,
+    "dependency_lock": "dependencies.lock.json",
+    "checksums": "checksums.txt",
+    "sbom": "sbom.cdx.json",
+    "provenance": "provenance.json"
+  },
+  "authentication": {
+    "status": "none",
+    "methods": [
+      "none"
+    ],
+    "credential_bindings": [],
+    "scopes": [],
+    "credential_storage": "No credentials are used by this instruction bundle.",
+    "validation": "Confirm no authentication challenge is introduced by runtime wiring.",
+    "revocation": "Not applicable; remove the installed bundle to withdraw it."
+  },
+  "verification": {
+    "evidence": [
+      "evidence://tests/local-plugin-wave/harness-governance-first-use"
+    ],
+    "last_verified_at": "2026-09-22T00:00:00Z"
+  },
+  "includes": {
+    "skills": [
+      "agentops/harness-run-reflection",
+      "agentops/harness-skill-proposal",
+      "agentops/harness-regression-evaluator"
+    ],
+    "hooks": [
+      "require-human-approval-for-harness-adoption"
+    ]
+  },
+  "requires": {
+    "approvals": [
+      "human-approval-for-harness-update"
+    ]
+  }
+}

@@ -945,7 +945,7 @@ func hasExecutableFileSuffix(value string) bool {
 
 func isExecutableKind(kind string) bool {
 	switch kind {
-	case "script", "cli", "mcp-server", "service", "orchestrator":
+	case "script", "cli", "mcp-server", "service", "orchestrator", "bundle":
 		return true
 	default:
 		return false

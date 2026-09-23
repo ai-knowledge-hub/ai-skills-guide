@@ -84,6 +84,27 @@ expiry, revocation, wrong account, missing scopes, invalid identity, and ready
 state. An environment variable's presence proves configuration only. A current
 non-destructive provider observation is required for `authenticated: true`.
 
+Authenticated plugins declare their provider tools as an exact authority
+contract. After installation, inspect the plugin rather than inventing a shared
+plugin credential:
+
+```sh
+skills-hub auth status marketing/performance-reporting-plugin@0.2.0 \
+  --module plugins \
+  --runtime generic \
+  --target ./my-agent/plugins
+```
+
+The command verifies the plugin receipt and its installed dependency closure,
+then delegates identity, account, scope, expiry, and revocation checks to each
+provider tool's own authentication driver. It prints a credential-free
+`auth configure` command for every provider that is not ready. Required
+providers must all be ready. Missing optional providers produce `partial`
+coverage and remain visible; they never become false complete coverage.
+Provider credentials remain owned by the provider tools and are not copied into
+or flattened behind the plugin. A configured profile for the wrong account or
+tenant fails through the provider's normal authoritative status check.
+
 `doctor` additionally verifies the installation receipt, installed tree,
 runtime, and platform. It does not repair state or run the package operation.
 

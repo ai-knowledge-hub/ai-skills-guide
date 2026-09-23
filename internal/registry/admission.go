@@ -182,7 +182,7 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time, requ
 		if authenticationIsRequired(manifest) && manifest.Authentication.Status == "none" {
 			return fmt.Errorf("manifest %s requires authentication but declares authentication.status none", manifestPath)
 		}
-		if requireCurrentEvidence && manifest.Usability.Availability == "usable-now" {
+		if requireCurrentEvidence && (manifest.Usability.Availability == "usable-now" || manifest.Authentication.Status != "none") {
 			if err := validateFreshEvidence(manifestPath, manifest, now); err != nil {
 				return err
 			}
@@ -987,15 +987,19 @@ func isExecutableKind(kind string) bool {
 }
 
 func validateFreshEvidence(manifestPath string, manifest Manifest, now time.Time) error {
+	claim := "requires current runtime evidence"
+	if manifest.Usability.Availability == "usable-now" {
+		claim = "claims usable-now"
+	}
 	if len(manifest.Verification.Evidence) == 0 {
-		return fmt.Errorf("manifest %s claims usable-now without evidence references", manifestPath)
+		return fmt.Errorf("manifest %s %s without evidence references", manifestPath, claim)
 	}
 	observedAt, err := time.Parse(time.RFC3339, manifest.Verification.LastVerifiedAt)
 	if err != nil {
-		return fmt.Errorf("manifest %s claims usable-now with invalid verification timestamp: %w", manifestPath, err)
+		return fmt.Errorf("manifest %s %s with invalid verification timestamp: %w", manifestPath, claim, err)
 	}
 	if observedAt.After(now.Add(5 * time.Minute)) {
-		return fmt.Errorf("manifest %s claims usable-now with a future verification timestamp", manifestPath)
+		return fmt.Errorf("manifest %s %s with a future verification timestamp", manifestPath, claim)
 	}
 	lifetime := instructionEvidenceLifetime
 	if isExecutableKind(manifest.Execution.Kind) {
@@ -1005,7 +1009,7 @@ func validateFreshEvidence(manifestPath string, manifest Manifest, now time.Time
 		lifetime = authEvidenceLifetime
 	}
 	if now.Sub(observedAt) > lifetime {
-		return fmt.Errorf("manifest %s claims usable-now with evidence older than %s", manifestPath, lifetime)
+		return fmt.Errorf("manifest %s %s with evidence older than %s", manifestPath, claim, lifetime)
 	}
 	return nil
 }

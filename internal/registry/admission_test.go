@@ -225,6 +225,32 @@ func TestBuildIndexRejectsStaleEvidenceForDeclaredUsableNow(t *testing.T) {
 	assertAdmissionError(t, err, "claims usable-now with evidence older than")
 }
 
+func TestBuildIndexRejectsStaleEvidenceBeforeAuthenticatedSetupExecution(t *testing.T) {
+	root := t.TempDir()
+	entryDir := filepath.Join(root, "tools-mcp", "shared", "stale-auth-tool")
+	if err := os.MkdirAll(filepath.Join(entryDir, "bin"), 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	manifest := v2ExecutableManifest("shared/stale-auth-tool", time.Now().UTC().Add(-authEvidenceLifetime-time.Hour))
+	manifest = strings.Replace(manifest, "availability: usable-now", "availability: setup-required", 1)
+	manifest = strings.Replace(manifest, `authentication:
+  status: none
+  methods: [none]
+  credential_bindings: []
+  scopes: []`, `authentication:
+  status: required
+  methods: [api-key]
+  credential_bindings: [PROVIDER_API_KEY]
+  scopes: [read]`, 1)
+	writeTestFile(t, filepath.Join(entryDir, "tool.yaml"), manifest, 0o644)
+	for _, file := range []string{"TOOL.md", "checksums.txt", "sbom.cdx.json", "bin/tool"} {
+		writeTestFile(t, filepath.Join(entryDir, filepath.FromSlash(file)), "fixture\n", 0o755)
+	}
+
+	_, err := BuildToolsIndex(root)
+	assertAdmissionError(t, err, "requires current runtime evidence with evidence older than 720h0m0s")
+}
+
 func TestRunnableBundleUsesExecutableEvidenceLifetime(t *testing.T) {
 	now := time.Now().UTC()
 	manifest := Manifest{

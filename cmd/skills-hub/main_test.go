@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -46,6 +47,183 @@ func TestPrintPluginSummary(t *testing.T) {
 		if !strings.Contains(rendered, needle) {
 			t.Fatalf("expected output to contain %q, got:\n%s", needle, rendered)
 		}
+	}
+}
+
+func TestPrintProviderAuthNextStepListsEveryAuthority(t *testing.T) {
+	entry := registry.SkillEntry{
+		ID: "marketing/performance-reporting-plugin",
+		ProviderDependencies: []registry.ProviderDependencyMetadata{
+			{Tool: "analytics/ga4-mcp-connector", Requirement: "required", Access: "read-only"},
+			{Tool: "warehouse/bigquery-mcp-query-runner", Requirement: "optional", Access: "read-only"},
+		},
+	}
+	var out bytes.Buffer
+	printProviderAuthNextStep(&out, entry, "0.2.0", "codex", "/tmp/runtime plugins")
+	rendered := out.String()
+	for _, want := range []string{
+		"analytics/ga4-mcp-connector (required, read-only)",
+		"warehouse/bigquery-mcp-query-runner (optional, read-only)",
+		"auth status marketing/performance-reporting-plugin@0.2.0 --module plugins --runtime codex",
+		`--target "/tmp/runtime plugins"`,
+	} {
+		if !strings.Contains(rendered, want) {
+			t.Fatalf("provider authentication guidance missing %q:\n%s", want, rendered)
+		}
+	}
+}
+
+func TestShellQuoteCommandPreservesArgumentBoundaries(t *testing.T) {
+	got := shellQuoteCommand([]string{
+		"skills-hub", "--target", "/Users/me/My Project/tools-mcp", "--state-dir", "/tmp/user's state",
+	})
+	want := `skills-hub --target '/Users/me/My Project/tools-mcp' --state-dir '/tmp/user'"'"'s state'`
+	if got != want {
+		t.Fatalf("quoted command = %q, want %q", got, want)
+	}
+}
+
+func TestBindReadinessEntryUsesReceiptVerifiedSelectedVersionManifest(t *testing.T) {
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("resolve test source path")
+	}
+	source := filepath.Join(filepath.Dir(filename), "..", "..", "tools-mcp", "analytics", "ga4-mcp-connector")
+	targetRoot := filepath.Join(t.TempDir(), "tools-mcp")
+	destination := filepath.Join(targetRoot, "analytics", "ga4-mcp-connector")
+	copyTestPackage(t, source, destination)
+
+	manifest, err := registry.ValidateHistoricalPackageManifest(filepath.Join(destination, "tool.yaml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	selected := registry.ProjectManifest(manifest)
+	contractDigest, err := installer.RuntimeContractSHA256(selected, manifest.Version)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := installer.WriteInstallReceipt(destination, installer.InstallReceipt{
+		Source: "local", Module: "tools", ID: manifest.ID, Version: manifest.Version,
+		Runtime: "generic", RuntimeContractSHA256: contractDigest,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	latestProjection := selected
+	latestProjection.Latest = "0.3.0"
+	latestProjection.Authentication = &registry.AuthenticationMetadata{
+		Status: "required", Methods: []string{"api-key"}, CredentialBindings: []string{"OTHER_KEY"}, Scopes: []string{"other"},
+	}
+	bound, err := bindReadinessEntryToInstalledVersion(
+		readinessEntry{Module: "tools", Entry: latestProjection, Version: manifest.Version},
+		installer.RuntimeTarget{Runtime: "generic", TargetPath: targetRoot},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if bound.Version != manifest.Version || len(bound.Entry.Authentication.Methods) != 2 || bound.Entry.Authentication.Methods[0] != "bearer-token" {
+		t.Fatalf("selected-version projection = %#v", bound.Entry.Authentication)
+	}
+}
+
+func TestRunAuthConfigureBindsHistoricalInstalledContract(t *testing.T) {
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("resolve test source path")
+	}
+	root := t.TempDir()
+	source := filepath.Join(filepath.Dir(filename), "..", "..", "tools-mcp", "analytics", "ga4-mcp-connector")
+	targetRoot := filepath.Join(root, "tools-mcp")
+	destination := filepath.Join(targetRoot, "analytics", "ga4-mcp-connector")
+	copyTestPackage(t, source, destination)
+	manifestPath := filepath.Join(destination, "tool.yaml")
+	payload, err := os.ReadFile(manifestPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	updated := strings.Replace(string(payload), "methods: [bearer-token, service-account]", "methods: [api-key]", 1)
+	updated = strings.ReplaceAll(updated, "GA4_CREDENTIAL", "PROVIDER_API_KEY")
+	if err := os.WriteFile(manifestPath, []byte(updated), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	manifest, err := registry.ValidatePackageManifest(manifestPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	selected := registry.ProjectManifest(manifest)
+	contractDigest, err := installer.RuntimeContractSHA256(selected, manifest.Version)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := installer.WriteInstallReceipt(destination, installer.InstallReceipt{
+		Source: "local", Module: "tools", ID: manifest.ID, Version: manifest.Version,
+		Runtime: "generic", RuntimeContractSHA256: contractDigest,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	latest := selected
+	latest.Latest = "0.3.0"
+	latest.Versions = []registry.VersionEntry{{Version: "0.3.0"}, {Version: manifest.Version}}
+	latest.Authentication = &registry.AuthenticationMetadata{
+		Status: "required", Methods: []string{"api-key"}, CredentialBindings: []string{"LATEST_ONLY_KEY"}, Scopes: []string{"latest"},
+	}
+	registryPath := filepath.Join(root, "tools-index.json")
+	if err := registry.WriteIndex(registryPath, registry.Index{RegistryVersion: "1.3", Skills: []registry.SkillEntry{latest}}); err != nil {
+		t.Fatal(err)
+	}
+	t.Setenv("PRIVATE_PROVIDER_KEY", "runtime-owned-test-value")
+	t.Setenv("PRIVATE_PROVIDER_KEY_GENERATION", "generation-1")
+	stateDir := filepath.Join(root, "state")
+	if err := runAuth([]string{
+		"configure", manifest.ID + "@" + manifest.Version,
+		"--module", "tools", "--registry", registryPath, "--runtime", "generic", "--target", targetRoot,
+		"--state-dir", stateDir, "--method", "api-key",
+		"--binding", "PROVIDER_API_KEY=env:PRIVATE_PROVIDER_KEY",
+		"--generation", "PROVIDER_API_KEY=env:PRIVATE_PROVIDER_KEY_GENERATION",
+		"--validator-command", os.Args[0],
+	}); err != nil {
+		t.Fatal(err)
+	}
+	profiles, err := filepath.Glob(filepath.Join(stateDir, "auth", "tools", "analytics", "*.json"))
+	if err != nil || len(profiles) != 1 {
+		t.Fatalf("historical authentication profiles = %v, %v", profiles, err)
+	}
+	profile, err := os.ReadFile(profiles[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(profile), `"entry_version": "`+manifest.Version+`"`) || strings.Contains(string(profile), "LATEST_ONLY_KEY") {
+		t.Fatalf("historical profile did not use installed contract: %s", profile)
+	}
+}
+
+func copyTestPackage(t *testing.T, source, destination string) {
+	t.Helper()
+	err := filepath.WalkDir(source, func(path string, entry os.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		relative, err := filepath.Rel(source, path)
+		if err != nil {
+			return err
+		}
+		target := filepath.Join(destination, relative)
+		info, err := entry.Info()
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() {
+			return os.MkdirAll(target, info.Mode().Perm())
+		}
+		payload, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		return os.WriteFile(target, payload, info.Mode().Perm())
+	})
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 

@@ -87,11 +87,20 @@ func runAuthConfigure(args []string) error {
 	if err != nil {
 		return err
 	}
+	installed, installErr := installer.ResolveRuntimeTargetForModule(*runtimeName, target.Module, *targetRoot)
+	if target.Version != target.Entry.Latest {
+		if installErr != nil {
+			return installErr
+		}
+		target, err = bindReadinessEntryToInstalledVersion(target, installed)
+		if err != nil {
+			return err
+		}
+	}
 	var validator *readiness.Validator
 	if strings.TrimSpace(*validatorCommand) != "" {
 		validator = &readiness.Validator{Command: strings.TrimSpace(*validatorCommand), Args: []string(validatorArgs)}
 	}
-	installed, installErr := installer.ResolveRuntimeTargetForModule(*runtimeName, target.Module, *targetRoot)
 	packageDir := ""
 	resolvedRuntime, resolvedTarget := "", ""
 	if installErr == nil {
@@ -130,6 +139,8 @@ func runAuthStatus(args []string) error {
 	module := fs.String("module", "skills", "module: skills|agents|tools|plugins")
 	registryPath := fs.String("registry", "", "registry index path (defaults by module)")
 	stateDir := fs.String("state-dir", defaultStateDir(), "non-secret authentication state directory")
+	runtimeName := fs.String("runtime", "generic", "runtime adapter: codex|claude|generic")
+	targetRoot := fs.String("target", "", "installed module directory")
 	entryFlag := fs.String("entry", "", "entry id, optionally with @version")
 	jsonOutput := fs.Bool("json", false, "write machine-readable JSON")
 	timeout := fs.Duration("timeout", 30*time.Second, "provider validation timeout")
@@ -142,6 +153,46 @@ func runAuthStatus(args []string) error {
 	target, err := loadReadinessEntry(*module, *registryPath, entrySpec)
 	if err != nil {
 		return err
+	}
+	var installed installer.RuntimeTarget
+	if target.Version != target.Entry.Latest || (target.Module == "plugins" && len(target.Entry.ProviderDependencies) > 0) {
+		installed, err = installer.ResolveRuntimeTargetForModule(*runtimeName, target.Module, *targetRoot)
+		if err != nil {
+			return err
+		}
+		target, err = bindReadinessEntryToInstalledVersion(target, installed)
+		if err != nil {
+			return err
+		}
+	}
+	if target.Module == "plugins" && len(target.Entry.ProviderDependencies) > 0 {
+		if installed.TargetPath == "" {
+			installed, err = installer.ResolveRuntimeTargetForModule(*runtimeName, target.Module, *targetRoot)
+			if err != nil {
+				return err
+			}
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), *timeout)
+		defer cancel()
+		report, statusErr := readiness.CompositeStatus(ctx, readiness.CompositeStatusOptions{
+			StateDir: *stateDir, Entry: target.Entry, Version: target.Version,
+			PackageDir: filepath.Join(installed.TargetPath, filepath.FromSlash(target.Entry.ID)),
+			TargetRoot: installed.TargetPath, Runtime: installed.Runtime,
+		})
+		if statusErr != nil {
+			return statusErr
+		}
+		if *jsonOutput {
+			if err := writeJSON(report); err != nil {
+				return err
+			}
+		} else {
+			printCompositeAuthReport(report)
+		}
+		if !report.Ready {
+			return errors.New("one or more required provider authentications are not ready")
+		}
+		return nil
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), *timeout)
 	defer cancel()
@@ -162,6 +213,40 @@ func runAuthStatus(args []string) error {
 		return fmt.Errorf("authentication is not ready: %s", report.State)
 	}
 	return nil
+}
+
+func printCompositeAuthReport(report readiness.CompositeStatusReport) {
+	fmt.Printf("entry: %s@%s\n", report.EntryID, report.EntryVersion)
+	fmt.Printf("coverage: %s\n", report.CoverageState)
+	fmt.Printf("ready: %t\n", report.Ready)
+	for _, provider := range report.Providers {
+		fmt.Printf("provider: %s@%s (%s, %s): %s\n", provider.ToolID, provider.ToolVersion, provider.Requirement, provider.Access, provider.State)
+		if provider.Reason != "" {
+			fmt.Printf("  reason: %s\n", provider.Reason)
+		}
+		if !provider.Authenticated {
+			for _, command := range provider.ConfigureCommands {
+				fmt.Printf("  configure: %s\n", shellQuoteCommand(command))
+			}
+		}
+	}
+}
+
+func shellQuoteCommand(argv []string) string {
+	quoted := make([]string, 0, len(argv))
+	for _, argument := range argv {
+		if argument != "" && strings.IndexFunc(argument, func(character rune) bool {
+			return !((character >= 'a' && character <= 'z') ||
+				(character >= 'A' && character <= 'Z') ||
+				(character >= '0' && character <= '9') ||
+				strings.ContainsRune("_@%+=:,./-", character))
+		}) == -1 {
+			quoted = append(quoted, argument)
+			continue
+		}
+		quoted = append(quoted, "'"+strings.ReplaceAll(argument, "'", "'\"'\"'")+"'")
+	}
+	return strings.Join(quoted, " ")
 }
 
 func runDoctor(args []string) error {
@@ -292,6 +377,48 @@ func loadReadinessEntry(moduleRaw, registryPath, spec string) (readinessEntry, e
 		return readinessEntry{}, err
 	}
 	return readinessEntry{Module: module, Entry: entry, Version: version.Version}, nil
+}
+
+func bindReadinessEntryToInstalledVersion(target readinessEntry, installed installer.RuntimeTarget) (readinessEntry, error) {
+	manifestNames := map[string]string{
+		"skills": "skill.yaml", "agents": "agent.yaml", "tools": "tool.yaml", "plugins": "plugin.yaml",
+	}
+	manifestName, ok := manifestNames[target.Module]
+	if !ok {
+		return readinessEntry{}, fmt.Errorf("unsupported installed module %q", target.Module)
+	}
+	packageDir := filepath.Join(installed.TargetPath, filepath.FromSlash(target.Entry.ID))
+	manifestPath := filepath.Join(packageDir, manifestName)
+	manifest, err := registry.ValidateHistoricalPackageManifest(manifestPath)
+	if err != nil {
+		return readinessEntry{}, fmt.Errorf("validate installed %s@%s manifest: %w", target.Entry.ID, target.Version, err)
+	}
+	if manifest.ID != target.Entry.ID || manifest.Version != target.Version {
+		return readinessEntry{}, errors.New("installed package manifest does not match the selected release")
+	}
+	currentManifest, err := registry.ValidatePackageManifest(manifestPath)
+	if err != nil {
+		return readinessEntry{}, fmt.Errorf("installed %s@%s is not currently admissible: %w", target.Entry.ID, target.Version, err)
+	}
+	manifest = currentManifest
+	entry := registry.ProjectManifest(manifest)
+	contractDigest, err := installer.RuntimeContractSHA256(entry, target.Version)
+	if err != nil {
+		return readinessEntry{}, err
+	}
+	receipt, err := installer.VerifyInstallReceipt(
+		packageDir, target.Module, target.Entry.ID, target.Version, installed.Runtime, "", contractDigest,
+	)
+	if err != nil {
+		return readinessEntry{}, fmt.Errorf("verify installed %s@%s receipt: %w", target.Entry.ID, target.Version, err)
+	}
+	if target.Module == "plugins" {
+		if err := installer.VerifyInstallClosure(packageDir, installed.TargetPath, receipt, entry.Includes); err != nil {
+			return readinessEntry{}, fmt.Errorf("verify installed %s@%s closure: %w", target.Entry.ID, target.Version, err)
+		}
+	}
+	target.Entry = entry
+	return target, nil
 }
 
 func positionalEntry(args []string) (string, []string) {

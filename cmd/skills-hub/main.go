@@ -388,6 +388,7 @@ func runInstall(args []string) error {
 		printInstallUsabilityWarning(os.Stderr, result.Registry)
 		fmt.Printf("Installed %s@%s to %s (runtime=%s source=remote cache=%s)\n", result.Registry.ID, result.Version, result.Destination, rt.Runtime, cacheStatus)
 		printUsabilitySummary(os.Stdout, result.Registry)
+		printProviderAuthNextStep(os.Stdout, result.Registry, result.Version, rt.Runtime, rt.TargetPath)
 		return nil
 	case "local":
 		if strings.TrimSpace(*registryURL) != "" || *offline || len(allowedOrigins) > 0 || len(executionRuntimes) > 0 {
@@ -597,6 +598,24 @@ func printPluginInstallNotes(
 	}
 	printPluginDependencySummary(stdout, deps)
 	printPluginSummary(stdout, entry)
+	printProviderAuthNextStep(stdout, entry, entry.Latest, runtime, filepath.Dir(filepath.Dir(destination)))
+}
+
+func printProviderAuthNextStep(w io.Writer, entry registry.SkillEntry, version, runtimeName, pluginTargetRoot string) {
+	if len(entry.ProviderDependencies) == 0 {
+		return
+	}
+	for _, dependency := range entry.ProviderDependencies {
+		fmt.Fprintf(w, "install.auth.provider: %s (%s, %s)\n", dependency.Tool, dependency.Requirement, dependency.Access)
+	}
+	fmt.Fprintf(
+		w,
+		"install.auth.next_step: skills-hub auth status %s@%s --module plugins --runtime %s --target %q\n",
+		entry.ID,
+		version,
+		runtimeName,
+		pluginTargetRoot,
+	)
 }
 
 func printPluginDependencySummary(stdout io.Writer, deps installer.DependencyInstallResult) {
@@ -707,6 +726,7 @@ func printUsage() {
 		"  skills-hub install --source remote --registry-url https://skills.ai-knowledge-hub.org/registry/skills-index.json --entry engineering/implementation-strategy@latest --runtime codex",
 		"  skills-hub auth configure ads/example@latest --module tools --binding PROVIDER_API_KEY=env:PROVIDER_API_KEY --generation PROVIDER_API_KEY=env:PROVIDER_API_KEY_GENERATION --validator-command provider-auth-check",
 		"  skills-hub auth status ads/example@latest --module tools",
+		"  skills-hub auth status marketing/performance-reporting-plugin@latest --module plugins --runtime codex",
 		"  skills-hub doctor ads/example@latest --module tools --runtime codex",
 		"  skills-hub smoke ads/example@latest --module tools --runtime codex",
 		"  skills-hub run-agent --agent marketing/weekly-performance-supervisor --bindings agents/marketing/weekly-performance-supervisor/config/tool-bindings.example.json --approve-live",

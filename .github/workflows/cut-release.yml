@@ -48,7 +48,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Install check-jsonschema
-        run: python3 -m pip install --upgrade pip check-jsonschema
+        run: python3 -m pip install --upgrade pip "check-jsonschema==0.37.0"
 
       - name: Compute next tag
         id: version

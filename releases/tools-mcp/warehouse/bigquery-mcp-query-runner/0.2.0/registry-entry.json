@@ -1,0 +1,117 @@
+{
+  "schema_version": "2.0",
+  "id": "warehouse/bigquery-mcp-query-runner",
+  "name": "BigQuery MCP Query Runner",
+  "description": "Launchable read-only BigQuery MCP server with parameter binding, scope isolation, dry-run cost enforcement, bounded pagination, and typed diagnostics.",
+  "category": "tools-mcp/warehouse",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "bigquery",
+    "mcp",
+    "sql",
+    "read-only"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "connected_system": "Google BigQuery",
+    "capabilities": [
+      "Execute one parameterized read-only GoogleSQL query inside configured project, dataset, and location boundaries.",
+      "Dry-run every query and enforce provider-side maximum bytes billed before execution.",
+      "Return typed rows with bounded pagination, job identity, cost, cache, timeout, and source diagnostics."
+    ],
+    "auth_required": [
+      "BigQuery OAuth credential with jobs.create and read access only to the configured datasets"
+    ],
+    "access_level": "read-only",
+    "trust_boundary": "remote-mcp-server",
+    "approval_boundary": "Read-only queries only; project, billing project, dataset, location, SQL, parameter, byte, row, page, timeout, and response-size restrictions are enforced before results are returned."
+  },
+  "usability": {
+    "availability": "setup-required",
+    "execution": "remote-integration",
+    "requires_setup": [
+      "Node.js 22 or newer.",
+      "BQ_CREDENTIAL and a BQ_POLICY envelope defining project, billing project, dataset, location, byte, row, timeout, and user-OAuth authority.",
+      "Google BigQuery API enabled with least-privilege access to the configured datasets."
+    ],
+    "limitations": [
+      "Only SELECT or WITH GoogleSQL is accepted; scripts, DML, DDL, external queries, destinations, and unqualified external tables are rejected.",
+      "Workload identity uses Google STS plus service-account impersonation; direct unidentifiable federated tokens are not accepted for readiness evidence.",
+      "Provider verification requires a clean-client sandbox smoke observation; deterministic tests do not satisfy that release evidence gate."
+    ],
+    "quickstart": "Configure BQ_CREDENTIAL and BQ_POLICY, then register .mcp.json with Codex, Claude, or a generic MCP client.",
+    "source": "declared"
+  },
+  "execution": {
+    "kind": "mcp-server",
+    "command": [
+      "node",
+      "scripts/bigquery_mcp_server.mjs"
+    ],
+    "healthcheck": [
+      "node",
+      "scripts/bigquery_mcp_server.mjs",
+      "--healthcheck"
+    ],
+    "smoke_test": [
+      "node",
+      "scripts/bigquery_mcp_server.mjs",
+      "--smoke"
+    ],
+    "supported_platforms": [
+      "linux",
+      "macos"
+    ],
+    "supported_runtimes": [
+      "node22"
+    ]
+  },
+  "artifact": {
+    "self_contained": true,
+    "dependency_lock": null,
+    "checksums": null,
+    "sbom": null
+  },
+  "authentication": {
+    "status": "required",
+    "methods": [
+      "bearer-token",
+      "service-account",
+      "workload-identity"
+    ],
+    "credential_bindings": [
+      "BQ_CREDENTIAL",
+      "BQ_POLICY"
+    ],
+    "scopes": [
+      "https://www.googleapis.com/auth/bigquery"
+    ],
+    "setup_url": "https://console.cloud.google.com/apis/library/bigquery.googleapis.com",
+    "credential_storage": "Credential JSON and workload subject tokens remain in explicit runtime environment bindings and are never written into the package or readiness profile.",
+    "validation": "The packaged driver verifies Google-attested identity, scope, lifetime, billing project, and a live dry-run plus one-row read-only query.",
+    "revocation": "Revoke the user grant, disable or rotate the service-account key, or remove the workload identity binding in Google Cloud IAM."
+  },
+  "verification": {
+    "evidence": [
+      "evidence://tests/bigquery-mcp/json-rpc-clean-client-launch",
+      "evidence://tests/bigquery-mcp/sql-parameter-dataset-project-isolation",
+      "evidence://tests/bigquery-mcp/dry-run-byte-row-page-timeout-cancellation",
+      "evidence://tests/bigquery-mcp/service-user-workload-identity",
+      "evidence://tests/bigquery-mcp/quota-pagination-typed-diagnostics",
+      "https://skills.ai-knowledge-hub.org/evidence/tools-mcp/warehouse/bigquery-mcp-query-runner/0.2.0/sandbox-smoke.json"
+    ],
+    "last_verified_at": "2026-09-19T00:00:00Z"
+  },
+  "dependencies": {
+    "apis": [
+      "Google BigQuery API v2",
+      "Google OAuth 2.0 and Security Token Service"
+    ]
+  }
+}

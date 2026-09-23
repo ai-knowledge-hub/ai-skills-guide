@@ -3,6 +3,7 @@ package registry
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -114,6 +115,92 @@ deprecated: false
 	}
 	if entry.Usability.Availability != "documentation-only" || entry.Usability.Execution != "instructions" || entry.Usability.Source != "declared" {
 		t.Fatalf("unexpected declared usability: %#v", entry.Usability)
+	}
+}
+
+func TestBuildIndexUsesExactRetainedArchiveDigest(t *testing.T) {
+	root := t.TempDir()
+	entryDir := filepath.Join(root, "skills", "engineering", "demo-skill")
+	if err := os.MkdirAll(entryDir, 0o755); err != nil {
+		t.Fatalf("mkdir package: %v", err)
+	}
+	manifest := `id: engineering/demo-skill
+name: Demo Skill
+description: Demo skill manifest used for retained archive digest tests.
+version: 0.1.0
+released_at: "2026-03-30T00:00:00Z"
+category: engineering/code-maintenance
+tags: [planning]
+license: MIT
+author: {name: Tests}
+runtimes: [codex]
+entrypoints: {skill_md: SKILL.md}
+usability: {availability: documentation-only, execution: instructions}
+deprecated: false
+`
+	if err := os.WriteFile(filepath.Join(entryDir, "skill.yaml"), []byte(manifest), 0o644); err != nil {
+		t.Fatalf("write manifest: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(entryDir, "SKILL.md"), []byte("# Demo\n"), 0o644); err != nil {
+		t.Fatalf("write spec: %v", err)
+	}
+	archive := []byte("exact retained archive bytes")
+	archivePath := filepath.Join(root, "releases", "skills", "engineering", "demo-skill", "0.1.0", "package.tar.gz")
+	if err := os.MkdirAll(filepath.Dir(archivePath), 0o755); err != nil {
+		t.Fatalf("mkdir release: %v", err)
+	}
+	if err := os.WriteFile(archivePath, archive, 0o644); err != nil {
+		t.Fatalf("write release: %v", err)
+	}
+
+	index, err := BuildSkillsIndex(root)
+	if err != nil {
+		t.Fatalf("build index: %v", err)
+	}
+	want := sha256.Sum256(archive)
+	if got := index.Skills[0].Versions[0].SHA256; got != hex.EncodeToString(want[:]) {
+		t.Fatalf("registry checksum = %s, want exact archive checksum %x", got, want)
+	}
+}
+
+func TestTrackedRegistryChecksumsMatchEveryRetainedRelease(t *testing.T) {
+	root, err := filepath.Abs(filepath.Join("..", ".."))
+	if err != nil {
+		t.Fatalf("resolve repository root: %v", err)
+	}
+	for _, target := range []struct {
+		index  string
+		module string
+	}{
+		{index: "skills-index.json", module: "skills"},
+		{index: "agents-index.json", module: "agents"},
+		{index: "tools-index.json", module: "tools-mcp"},
+		{index: "plugins-index.json", module: "plugins"},
+	} {
+		t.Run(target.module, func(t *testing.T) {
+			data, err := os.ReadFile(filepath.Join(root, "registry", target.index))
+			if err != nil {
+				t.Fatalf("read tracked registry: %v", err)
+			}
+			var index Index
+			if err := json.Unmarshal(data, &index); err != nil {
+				t.Fatalf("decode tracked registry: %v", err)
+			}
+			for _, entry := range index.Skills {
+				for _, version := range entry.Versions {
+					archivePath := filepath.Join(root, "releases", target.module, filepath.FromSlash(entry.ID), version.Version, "package.tar.gz")
+					archive, err := os.ReadFile(archivePath)
+					if err != nil {
+						t.Errorf("%s@%s: read retained archive: %v", entry.ID, version.Version, err)
+						continue
+					}
+					digest := sha256.Sum256(archive)
+					if got, want := version.SHA256, hex.EncodeToString(digest[:]); got != want {
+						t.Errorf("%s@%s: registry checksum %s does not match retained archive %s", entry.ID, version.Version, got, want)
+					}
+				}
+			}
+		})
 	}
 }
 

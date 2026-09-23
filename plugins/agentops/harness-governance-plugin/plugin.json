@@ -1,5 +1,5 @@
 {
   "name": "harness-governance-plugin",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Portable harness-governance bundle for reflection, proposal drafting, and regression evaluation with human-gated adoption."
 }

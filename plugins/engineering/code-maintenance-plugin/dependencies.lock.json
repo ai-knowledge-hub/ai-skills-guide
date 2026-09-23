@@ -1,0 +1,50 @@
+{
+  "lock_version": "1.0",
+  "root": {
+    "module": "plugins",
+    "id": "engineering/code-maintenance-plugin",
+    "version": "0.2.0"
+  },
+  "components": [
+    {
+      "module": "skills",
+      "id": "engineering/code-change-verification",
+      "version": "0.1.0",
+      "content_sha256": "9ac96d168f42c750d68cb1f860d74c94894a6a6faf41d814bfa76f5b57a47707",
+      "manifest_path": "bundled/skills/engineering/code-change-verification/skill.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "skills",
+      "id": "engineering/coverage-gap-reporter",
+      "version": "0.1.0",
+      "content_sha256": "cf2739728a0e9ce696b8d13a52621e6215093387eaecc9eee0affccad92c80d3",
+      "manifest_path": "bundled/skills/engineering/coverage-gap-reporter/skill.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "skills",
+      "id": "engineering/implementation-strategy",
+      "version": "0.1.0",
+      "content_sha256": "8d24a55aff19cafa785615732bd935e62543ce9416d9602232c4ecaeba875ce3",
+      "manifest_path": "bundled/skills/engineering/implementation-strategy/skill.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "skills",
+      "id": "engineering/pr-review-and-draft",
+      "version": "0.1.0",
+      "content_sha256": "8fa20412346854320e87ac3fbad67212fb9abb2dd5e8a74d8445e9fbc52cc0c3",
+      "manifest_path": "bundled/skills/engineering/pr-review-and-draft/skill.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "skills",
+      "id": "engineering/test-gap-analyzer",
+      "version": "0.1.0",
+      "content_sha256": "5f884dd4825f3dc7c5487ba5df70a5822ad4cd0ba521be7b36055e512b310a86",
+      "manifest_path": "bundled/skills/engineering/test-gap-analyzer/skill.yaml",
+      "dependencies": []
+    }
+  ]
+}

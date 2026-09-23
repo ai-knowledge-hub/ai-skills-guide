@@ -388,7 +388,7 @@ function hasFreshEvidence(entry) {
   if (!Number.isFinite(observedAt)) return false;
   const now = Date.now();
   if (observedAt > now + 5 * 60 * 1000) return false;
-  const executableKinds = new Set(["script", "cli", "mcp-server", "service", "orchestrator"]);
+  const executableKinds = new Set(["script", "cli", "mcp-server", "service", "orchestrator", "bundle"]);
   let lifetimeDays = executableKinds.has(entry.execution?.kind) ? 90 : 180;
   if (entry.authentication?.status && entry.authentication.status !== "none") lifetimeDays = 30;
   return now - observedAt <= lifetimeDays * 24 * 60 * 60 * 1000;

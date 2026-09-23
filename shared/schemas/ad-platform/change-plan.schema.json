@@ -1,23 +1,30 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Ad Platform Change Plan",
+  "$id": "https://skills.ai-knowledge-hub.org/schemas/ad-platform/change-plan.schema.json",
+  "title": "Governed Ad Platform Change Plan",
   "type": "object",
-  "required": ["plan_id", "agent_id", "platform", "workspace_id", "advertiser_id", "entity_type", "entity_id", "action", "proposed_diff", "risk_tier"],
+  "additionalProperties": false,
+  "required": ["schema_version", "plan_id", "action_id", "provider", "account_id", "resource_type", "resource_id", "operation", "proposed_diff", "generated_at", "expires_at"],
   "properties": {
-    "plan_id": {"type": "string"},
-    "agent_id": {"type": "string"},
-    "platform": {"type": "string", "enum": ["google_ads", "dv360", "meta_ads", "merchant_center", "other"]},
-    "workspace_id": {"type": "string"},
-    "advertiser_id": {"type": "string"},
-    "entity_type": {"type": "string"},
-    "entity_id": {"type": "string"},
-    "action": {"type": "string"},
-    "current_state_hash": {"type": "string"},
-    "proposed_diff": {"type": "object"},
-    "expected_impact": {"type": "string"},
-    "rationale": {"type": "string"},
-    "risk_tier": {"type": "string", "enum": ["low", "medium", "high", "blocked"]},
-    "requires_approval": {"type": "boolean"}
-  },
-  "additionalProperties": true
+    "schema_version": {"const": "ad-platform.change-plan/v2"},
+    "plan_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{1,127}$"},
+    "action_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{1,127}$"},
+    "provider": {"enum": ["google_ads", "dv360"]},
+    "account_id": {"type": "string", "pattern": "^[1-9][0-9]{3,29}$"},
+    "resource_type": {"enum": ["campaign", "campaign_budget", "ad_group", "line_item"]},
+    "resource_id": {"type": "string", "pattern": "^[1-9][0-9]{3,29}$"},
+    "operation": {"enum": ["set_status", "set_budget_micros", "set_bid_micros"]},
+    "proposed_diff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "from", "to"],
+      "properties": {
+        "field": {"enum": ["status", "budget_micros", "bid_micros"]},
+        "from": {"oneOf": [{"enum": ["ENABLED", "PAUSED"]}, {"type": "integer", "minimum": 1, "maximum": 1000000000000}]},
+        "to": {"oneOf": [{"enum": ["ENABLED", "PAUSED"]}, {"type": "integer", "minimum": 1, "maximum": 1000000000000}]}
+      }
+    },
+    "generated_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"}
+  }
 }

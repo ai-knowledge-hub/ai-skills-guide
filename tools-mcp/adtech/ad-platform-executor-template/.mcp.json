@@ -1,0 +1,11 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "governed-ad-platform-executor": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["scripts/ad_platform_executor_server.mjs"],
+      "cwd": "."
+    }
+  }
+}

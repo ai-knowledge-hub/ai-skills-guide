@@ -1,22 +1,22 @@
 {
   "registry_version": "1.3",
-  "generated_at": "2026-07-25T00:00:00Z",
+  "generated_at": "2026-09-21T00:00:00Z",
   "skills": [
     {
-      "schema_version": "1.1",
+      "schema_version": "2.0",
       "id": "ads/meta-ads-mcp-connector",
       "name": "Meta Ads MCP Connector",
-      "description": "Implementation specification and template for a read-only Meta Ads MCP connector; no launchable server is packaged.",
+      "description": "Launchable account-scoped Meta Marketing API MCP server for bounded read-only insights with provider-verified identity and normalized diagnostics.",
       "category": "tools-mcp/ads",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-03-02T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/ads/meta-ads-mcp-connector/0.1.0.yaml",
-          "manifest_sha256": "8038a743883b038b316b0683ca2cf01115189f65245aad2a93054fac5c896495",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/ads/meta-ads-mcp-connector/0.1.0.tar.gz",
-          "sha256": "59ee95875cdcdaebeffe92da2c5462ec46055094da776f111a9cb2636d158905"
+          "version": "0.2.0",
+          "released_at": "2026-09-19T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/ads/meta-ads-mcp-connector/0.2.0.yaml",
+          "manifest_sha256": "5140f9e2ed4afaaec4360ea3b56cd039fd64ccc671c44831c6e83bf29f80f1f0",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/ads/meta-ads-mcp-connector/0.2.0.tar.gz",
+          "sha256": "3dfbe1eecdf4f6587fa041fd0e27ee56c6951a76b881bca94209182bd0c2c61e"
         }
       ],
       "runtimes": [
@@ -27,7 +27,8 @@
       "tags": [
         "meta-ads",
         "mcp",
-        "paid-social"
+        "paid-social",
+        "read-only"
       ],
       "readiness": "experimental",
       "security_reviewed": false,
@@ -35,47 +36,111 @@
       "operational": {
         "connected_system": "Meta Ads",
         "capabilities": [
-          "Pull campaign, ad set, and ad metrics for fixed reporting windows.",
-          "Return spend, delivery, click, and conversion fields in normalized rows.",
-          "Preserve source timestamps for QA and freshness validation."
+          "Read bounded account, campaign, ad set, and ad-level Insights reports for explicitly allowed ad accounts.",
+          "Preserve provider reporting dates, account timezone, currency, and account attribution settings.",
+          "Live-verify the Meta application, token principal, permissions, expiry, business, and ad-account relationship."
         ],
         "auth_required": [
-          "Meta Ads account scope via authenticated MCP runtime"
+          "Meta access token plus application credentials with ads_read and business_management permissions"
         ],
         "access_level": "read-only",
         "trust_boundary": "remote-mcp-server",
-        "approval_boundary": "Safe for reporting queries only; require human approval before pairing with any workflow that can modify campaigns, budgets, or creative state."
+        "approval_boundary": "Insights GET requests only; business, account, fields, breakdowns, dates, pagination, timeout, and response-size limits are enforced before results are returned."
       },
       "usability": {
-        "availability": "template-only",
-        "execution": "integration-template",
-        "limitations": [
-          "Specification, prompts, and examples only; no launchable MCP transport is packaged."
+        "availability": "setup-required",
+        "execution": "remote-integration",
+        "requires_setup": [
+          "Node.js 22 or newer.",
+          "META_ADS_CREDENTIAL and META_ADS_POLICY runtime bindings.",
+          "A Meta app and token with access to the configured business and sandbox or live ad account."
         ],
-        "quickstart": "Review TOOL.md as an implementation contract; do not register this package as an MCP server.",
+        "limitations": [
+          "The connector exposes no campaign, budget, creative, audience, or account mutation operation.",
+          "Reports are limited to the packaged field and breakdown allowlists and the runtime owner's policy budgets.",
+          "Provider promotion requires a current clean-client smoke observation against an approved sandbox ad account."
+        ],
+        "quickstart": "Bind META_ADS_CREDENTIAL and META_ADS_POLICY, then register .mcp.json with Codex, Claude, or a generic MCP client.",
         "source": "declared"
       },
+      "execution": {
+        "kind": "mcp-server",
+        "command": [
+          "node",
+          "scripts/meta_ads_mcp_server.mjs"
+        ],
+        "healthcheck": [
+          "node",
+          "scripts/meta_ads_mcp_server.mjs",
+          "--healthcheck"
+        ],
+        "smoke_test": [
+          "node",
+          "scripts/meta_ads_mcp_server.mjs",
+          "--smoke"
+        ],
+        "supported_platforms": [
+          "linux",
+          "macos"
+        ],
+        "supported_runtimes": [
+          "node22"
+        ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": null,
+        "checksums": null,
+        "sbom": null
+      },
+      "authentication": {
+        "status": "required",
+        "methods": [
+          "bearer-token"
+        ],
+        "credential_bindings": [
+          "META_ADS_CREDENTIAL",
+          "META_ADS_POLICY"
+        ],
+        "scopes": [
+          "ads_read",
+          "business_management"
+        ],
+        "setup_url": "https://developers.facebook.com/apps/",
+        "credential_storage": "Access tokens and application credentials remain in explicitly bound runtime environment sources and are never written into the package or readiness profile.",
+        "validation": "The packaged driver uses Meta debug_token to verify application binding, principal, permissions, and lifetime, then verifies the selected ad account and owning business with that same token.",
+        "revocation": "Invalidate the token in Meta Business Settings, remove the system user or app from the ad account, or rotate the Meta application secret."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/meta-ads-mcp/json-rpc-clean-client-launch",
+          "evidence://tests/meta-ads-mcp/provider-app-principal-scope-expiry",
+          "evidence://tests/meta-ads-mcp/business-account-isolation",
+          "evidence://tests/meta-ads-mcp/pagination-rate-limit-timeout-wire-bounds"
+        ],
+        "last_verified_at": "2026-09-19T00:00:00Z"
+      },
       "dependencies": {
-        "mcp_servers": [
-          "meta-ads"
+        "apis": [
+          "Meta Marketing API"
         ]
       }
     },
     {
-      "schema_version": "1.1",
+      "schema_version": "2.0",
       "id": "adtech/ad-platform-executor-template",
-      "name": "Ad Platform Executor Template",
-      "description": "MCP/tool template for a narrow DV360 and Google Ads executor that applies only approved, policy-checked campaign changes and records rollback evidence.",
+      "name": "Governed Ad Platform Executor",
+      "description": "Launchable MCP executor for exact control-plane-authorized Google Ads and DV360 mutations with state revalidation, serialization, receipts, reconciliation, and rollback.",
       "category": "tools-mcp/adtech",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-05-06T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/adtech/ad-platform-executor-template/0.1.0.yaml",
-          "manifest_sha256": "9bc313e09df337bc33b844d6e09074d27a395645068bebe60df02296ec0a93f4",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/ad-platform-executor-template/0.1.0.tar.gz",
-          "sha256": "3776a8633629bbd79531e06155647433c88898d0f9a6fc211fa9a5d7f5964996"
+          "version": "0.2.0",
+          "released_at": "2026-09-20T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/adtech/ad-platform-executor-template/0.2.0.yaml",
+          "manifest_sha256": "dc5092fec1fd232a1e52648d82af51ff19da5af1210a5ebdcec15ee0227965d7",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/ad-platform-executor-template/0.2.0.tar.gz",
+          "sha256": "3a5f2b88136d485b71f59057d2676bffe097cf813e94ac1b925ae15ab569512f"
         }
       ],
       "runtimes": [
@@ -88,46 +153,117 @@
         "executor",
         "dv360",
         "google-ads",
-        "rollback"
+        "governance"
       ],
       "readiness": "experimental",
       "security_reviewed": false,
       "deprecated": false,
       "operational": {
-        "connected_system": "DV360 and Google Ads API execution layer",
+        "connected_system": "Google Ads API v25 and Display \u0026 Video 360 API v4",
         "capabilities": [
-          "Read current campaign or line item state before execution.",
-          "Validate approved change plans against policy and current platform state.",
-          "Apply bounded bid, budget, targeting, or status changes.",
-          "Verify post-write state and create rollback patches."
+          "Preview closed provider-native change plans without acquiring execution authority.",
+          "Re-read current state and atomically claim an exact short-lived control-plane grant at the effect boundary.",
+          "Serialize each provider resource and apply bounded status, budget, or bid updates.",
+          "Persist authenticated intents and receipts, verify post-write state, and reconcile ambiguous effects.",
+          "Apply a verified rollback patch only under a separate exact rollback grant."
         ],
         "auth_required": [
-          "Brokered Google API credentials",
-          "Scoped execution grant",
-          "Approval token for medium and high-risk writes"
+          "Runtime-owned provider credential and closed executor policy",
+          "Separately installed Agent Control Plane with an executor identity and grant public key",
+          "Private local executor and control-plane stores with independent audit keys"
         ],
         "access_level": "read-write",
         "trust_boundary": "remote-mcp-server",
-        "approval_boundary": "Applies only policy-approved bounded writes; high-risk changes require human approval and rollback evidence."
+        "approval_boundary": "Mutations require an exact single-use control-plane grant; rollback requires a separate exact grant. Preview never grants execution authority."
       },
       "usability": {
-        "availability": "template-only",
-        "execution": "integration-template",
-        "limitations": [
-          "Reference executor contract only; no connected ad-platform implementation is packaged."
+        "availability": "setup-required",
+        "execution": "remote-integration",
+        "requires_setup": [
+          "Node.js 22 or newer and the Agent Control Plane 0.2.1 package.",
+          "Provider OAuth access with Google Ads or DV360 mutation permission for explicitly allowlisted sandbox targets.",
+          "Runtime-owned executor policy, credential, signed executor identity, public grant key, stores, and audit keys."
         ],
-        "quickstart": "Review TOOL.md and implement the approved provider operations before registration.",
+        "limitations": [
+          "Only campaign status, campaign-budget amount, ad-group status or CPC bid, and DV360 line-item status or max-average-CPM bid are supported.",
+          "Provider mutation APIs do not guarantee idempotency; ambiguous outcomes stop for reconciliation rather than replay.",
+          "Conflicting post-write state is never overwritten automatically; it requires reconciliation and a separately authorized rollback where appropriate.",
+          "CI uses deterministic provider simulations; live sandbox mutation evidence remains separately gated."
+        ],
+        "quickstart": "Configure sandbox allowlists and the executor identity, preview a closed plan, then execute only the exact control-plane grant for that plan.",
         "source": "declared"
+      },
+      "execution": {
+        "kind": "mcp-server",
+        "command": [
+          "node",
+          "scripts/ad_platform_executor_server.mjs"
+        ],
+        "healthcheck": [
+          "node",
+          "scripts/ad_platform_executor_server.mjs",
+          "--healthcheck"
+        ],
+        "smoke_test": [
+          "node",
+          "scripts/ad_platform_executor_server.mjs",
+          "--smoke"
+        ],
+        "supported_platforms": [
+          "linux",
+          "macos"
+        ],
+        "supported_runtimes": [
+          "node22"
+        ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": null,
+        "checksums": null,
+        "sbom": null
+      },
+      "authentication": {
+        "status": "required",
+        "methods": [
+          "custom"
+        ],
+        "credential_bindings": [
+          "AD_PLATFORM_PROVIDER_CREDENTIAL",
+          "AD_PLATFORM_EXECUTOR_POLICY",
+          "AD_PLATFORM_EXECUTOR_STORE",
+          "AD_PLATFORM_EXECUTOR_AUDIT_KEY",
+          "CONTROL_PLANE_PACKAGE_ROOT",
+          "CONTROL_PLANE_PACKAGE_INTEGRITY",
+          "CONTROL_PLANE_STORE",
+          "CONTROL_PLANE_IDENTITY",
+          "CONTROL_PLANE_IDENTITY_PUBLIC_KEY",
+          "CONTROL_PLANE_GRANT_ROLE_KEY",
+          "CONTROL_PLANE_AUDIT_KEY"
+        ],
+        "scopes": [
+          "provider-read",
+          "provider-mutate",
+          "control-plane-claim",
+          "control-plane-record"
+        ],
+        "setup_url": "https://github.com/ai-knowledge-hub/ai-skills-guide/tree/main/tools-mcp/adtech/ad-platform-executor-template",
+        "credential_storage": "Provider and control-plane credentials remain in runtime-owned bindings. The package stores authenticated plans, state snapshots, and receipt references, never tokens.",
+        "validation": "The driver verifies the pinned control-plane install receipt and tree, signed executor authority, complete control-plane audit chain, and a read-only probe against the first allowlisted provider-native target.",
+        "revocation": "Revoke provider OAuth access, replace the executor identity or policy, rotate audit keys, and stop executors that trust the former grant key."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/ad-platform-executor/authority-substitution-and-stale-state",
+          "evidence://tests/ad-platform-executor/idempotency-concurrency-and-crash-recovery",
+          "evidence://tests/ad-platform-executor/ambiguous-effect-reconciliation",
+          "evidence://tests/ad-platform-executor/post-write-verification-and-rollback"
+        ],
+        "last_verified_at": "2026-09-20T00:00:00Z"
       },
       "dependencies": {
         "tools": [
-          "authorization_broker",
-          "policy_engine",
-          "audit_log"
-        ],
-        "apis": [
-          "Google Ads API",
-          "Display \u0026 Video 360 API"
+          "agentops/agent-control-plane-server"
         ]
       }
     },
@@ -145,7 +281,7 @@
           "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/adtech/conversion-event-reconciler/0.1.0.yaml",
           "manifest_sha256": "58a9e854b242a0c39a16328f55e9541c800ee01a090e603e506a9f663a625d54",
           "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/conversion-event-reconciler/0.1.0.tar.gz",
-          "sha256": "5a33d7fef1c300d83b400e14a6f4ff8c56137bd943722c46cdfae34781ed3976"
+          "sha256": "efd779e28b02dc947377dc3b6d025fea045f1134fe086ea0e00061cb10c58eec"
         }
       ],
       "runtimes": [
@@ -197,17 +333,17 @@
       "schema_version": "1.1",
       "id": "adtech/openai-ads-adapter-template",
       "name": "OpenAI Ads Adapter Template",
-      "description": "Mock-first read-only adapter contract for OpenAI Ads accounts, campaigns, ads, insights, and product feeds.",
+      "description": "Deprecated reference contract retained for migration; use the executable OpenAI Ads API Client.",
       "category": "tools-mcp/adtech",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-07-24T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/adtech/openai-ads-adapter-template/0.1.0.yaml",
-          "manifest_sha256": "11bd25d0a8e0615983dc977e8426680cc2cf5e02a1a21c5f42f4798ca4c8f230",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/openai-ads-adapter-template/0.1.0.tar.gz",
-          "sha256": "b3bbb691f98a1e3ab6bedfc8a5068073ff04ce8ddbcff7e5b81df3d9626c57ee"
+          "version": "0.2.0",
+          "released_at": "2026-09-21T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/adtech/openai-ads-adapter-template/0.2.0.yaml",
+          "manifest_sha256": "5a4451137b97a637d7b166d4d918e6a8a9c84961dc82672d1c0a24fae34ec4a9",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/openai-ads-adapter-template/0.2.0.tar.gz",
+          "sha256": "085ebd2f1da6766a38e883faa0279e03421473bf6cb380d2775e622154c55f7c"
         }
       ],
       "runtimes": [
@@ -222,9 +358,10 @@
         "campaign-insights",
         "product-feeds"
       ],
-      "readiness": "experimental",
+      "readiness": "deprecated",
       "security_reviewed": false,
-      "deprecated": false,
+      "deprecated": true,
+      "replaced_by": "adtech/openai-ads-api-client",
       "operational": {
         "connected_system": "OpenAI Ads API or local mock fixtures",
         "capabilities": [
@@ -244,9 +381,10 @@
         "availability": "template-only",
         "execution": "integration-template",
         "limitations": [
-          "Reference adapter contract only; no connected executable integration is packaged."
+          "Deprecated reference contract only; no executable integration is packaged.",
+          "New installations and plugin references must use adtech/openai-ads-api-client."
         ],
-        "quickstart": "Use adtech/openai-ads-api-client for an executable mock or live read-only integration.",
+        "quickstart": "Replace this package with adtech/openai-ads-api-client and follow its migration guidance.",
         "source": "declared"
       },
       "dependencies": {
@@ -259,20 +397,20 @@
       }
     },
     {
-      "schema_version": "1.1",
+      "schema_version": "2.1",
       "id": "adtech/openai-ads-api-client",
       "name": "OpenAI Ads API Client",
-      "description": "Dry-run-first client for mock or live read-only OpenAI Ads account, campaign, ad, and insights retrieval plus non-persisting Conversions API validation.",
+      "description": "Preferred executable client for bounded mock or live read-only OpenAI Ads retrieval and non-persisting Conversions API validation.",
       "category": "tools-mcp/adtech",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-07-25T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/adtech/openai-ads-api-client/0.1.0.yaml",
-          "manifest_sha256": "e837f60e3ded12b01b29b533e00622c41b29c06235edbf5a1197b704b1de8400",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/openai-ads-api-client/0.1.0.tar.gz",
-          "sha256": "ba5496b419bbbaec2a8756fd2abc194a6a750b360f889444b51f7b7fb15ab63a"
+          "version": "0.2.0",
+          "released_at": "2026-09-21T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/adtech/openai-ads-api-client/0.2.0.yaml",
+          "manifest_sha256": "98d89e9e452c8517bd097c8d56ae56ad5cbb038bf69ebc43ffcb691c77bae7bd",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/openai-ads-api-client/0.2.0.tar.gz",
+          "sha256": "87609167e07529940acabc3db858a078ea7df1a5236f8287595f1be29daf45f4"
         }
       ],
       "runtimes": [
@@ -293,36 +431,84 @@
       "operational": {
         "connected_system": "OpenAI Advertiser API and Ads Conversions API",
         "capabilities": [
-          "Read ad-account metadata.",
-          "List campaigns and ads.",
-          "Retrieve account, campaign, ad-group, or ad insights.",
-          "Validate conversion event batches locally or through validate-only server mode."
+          "Read bounded ad-account metadata, campaigns, ads, and account or entity insights.",
+          "Verify an account-scoped Ads API key against the provider ad-account endpoint.",
+          "Validate conversion batches locally or through non-persisting provider validation."
         ],
         "auth_required": [
           "OPENAI_ADS_API_KEY for live Advertiser API reads",
-          "OPENAI_ADS_PIXEL_ID and OPENAI_ADS_CONVERSIONS_API_KEY for remote conversion validation"
+          "OPENAI_ADS_PIXEL_ID and OPENAI_ADS_CONVERSIONS_API_KEY for optional remote conversion validation"
         ],
         "access_level": "read-only",
         "trust_boundary": "third-party-hosted",
-        "approval_boundary": "Advertiser operations are GET-only; Conversions API requests always force validate_only true and cannot persist events."
+        "approval_boundary": "Advertiser operations are GET-only; bounded Conversions API requests force validate_only true and cannot persist events."
       },
       "usability": {
-        "availability": "not-verified",
-        "execution": "remote-integration",
+        "availability": "setup-required",
+        "execution": "local-tool",
         "requires_setup": [
-          "For live reads, create an account-scoped Ads API key in OpenAI Ads Manager and configure the API base URL.",
-          "Keep API keys in environment variables outside agent context.",
-          "Write-capable operations require explicit approval outside this client."
+          "Python 3.9 or newer.",
+          "For live reads, create an account-scoped key in OpenAI Ads Manager and bind OPENAI_ADS_API_KEY outside agent context.",
+          "Configure separate pixel and Conversions API credentials only when provider-side validate-only checks are required."
         ],
         "limitations": [
-          "Mock mode is local and read-only; live mode depends on an external API contract.",
-          "No published clean-client installation and live-readiness evidence is recorded yet.",
-          "Campaign, ad-group, ad, file, and feed mutations are intentionally excluded.",
-          "Conversion validation is dry-run only and does not persist events.",
-          "Automatic pagination, retries, and rate-limit backoff are not included in this first client."
+          "Mock mode is immediately runnable, but provider-backed readiness requires an available account-scoped API key.",
+          "The provider account endpoint attests the account binding, not the individual human owner of an API key.",
+          "Campaign, ad-group, ad, file, feed, and persisted conversion mutations are intentionally excluded.",
+          "Automatic pagination, retries, and rate-limit backoff are not included."
         ],
         "quickstart": "python3 scripts/openai_ads_client.py --mode mock account",
         "source": "declared"
+      },
+      "execution": {
+        "kind": "cli",
+        "command": [
+          "python3",
+          "scripts/openai_ads_client.py"
+        ],
+        "smoke_test": [
+          "python3",
+          "scripts/openai_ads_client.py",
+          "--mode",
+          "mock",
+          "account"
+        ],
+        "supported_platforms": [
+          "linux",
+          "macos"
+        ],
+        "supported_runtimes": [
+          "python3"
+        ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": null,
+        "checksums": null,
+        "sbom": null
+      },
+      "authentication": {
+        "status": "optional",
+        "methods": [
+          "api-key"
+        ],
+        "credential_bindings": [
+          "OPENAI_ADS_API_KEY"
+        ],
+        "scopes": [],
+        "setup_url": "https://developers.openai.com/ads/api-reference/authentication",
+        "credential_storage": "The account-scoped API key remains in an explicitly bound runtime environment source and is never written into the package or readiness profile.",
+        "validation": "The packaged driver calls GET /ad_account and accepts only the provider-returned account identifier as identity evidence.",
+        "revocation": "Revoke or rotate the account-scoped API key in OpenAI Ads Manager and remove its runtime binding."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/openai-ads-client/mock-clean-client-launch",
+          "evidence://tests/openai-ads-client/read-only-request-boundary",
+          "evidence://tests/openai-ads-client/provider-account-attestation",
+          "evidence://tests/openai-ads-client/conversions-validate-only"
+        ],
+        "last_verified_at": "2026-09-21T00:00:00Z"
       },
       "dependencies": {
         "tools": [
@@ -335,20 +521,20 @@
       }
     },
     {
-      "schema_version": "1.1",
+      "schema_version": "2.0",
       "id": "agentops/agent-control-plane-server",
       "name": "Agent Control Plane MCP Server",
-      "description": "Implementation specification and template for an agent control-plane MCP server; no launchable server is packaged.",
+      "description": "Launchable local MCP authority for tenant-scoped policy decisions, exact human approvals, signed execution grants, ordered action records, restart recovery, and tamper-evident audit verification.",
       "category": "tools-mcp/agentops",
-      "latest": "0.1.0",
+      "latest": "0.2.1",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-04-26T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/agentops/agent-control-plane-server/0.1.0.yaml",
-          "manifest_sha256": "86b0b602e7b061cf39c812a0e58281499d915a8e388d75b31128bcfa9e0ec088",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/agent-control-plane-server/0.1.0.tar.gz",
-          "sha256": "b8538fd4344377ea2adf36e984fe907eff02b0b06a156807400f2f995f869f6e"
+          "version": "0.2.1",
+          "released_at": "2026-09-21T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/agentops/agent-control-plane-server/0.2.1.yaml",
+          "manifest_sha256": "78262eda351586d087d5c14324a570b7da355b9d5b0ef15ced97473d21ede2dc",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/agent-control-plane-server/0.2.1.tar.gz",
+          "sha256": "47346df4b3422c16b08df0ddc5973cb4fc536de5263f35cba51e7879cb34b850"
         }
       ],
       "runtimes": [
@@ -367,52 +553,117 @@
       "security_reviewed": false,
       "deprecated": false,
       "operational": {
-        "connected_system": "Agent control plane runtime",
+        "connected_system": "Local agent control plane",
         "capabilities": [
-          "Check proposed agent actions against JSON policy rules.",
-          "Record agent action events with input and output hashes.",
-          "Create approval requests for high-risk actions.",
-          "Verify audit hash-chain continuity."
+          "Authenticate separate proposing-agent and executor identities and enforce tenant, capability, and provider-account scope.",
+          "Evaluate versioned policy outside the model and fail closed for unmatched actions.",
+          "Create exact approval requests and revalidate separately recorded human decisions.",
+          "Issue short-lived signed execution grants for downstream governed executors.",
+          "Revalidate current policy, approval, and executor scope while atomically claiming a grant at the external effect boundary.",
+          "Recover an exact durable claim for historical reconciliation, then separately revalidate current authority before any not-yet-started provider effect.",
+          "Persist authenticated state, hashed receipt references, compacted recovery intents, idempotent action evidence, and a signed hash-chained audit log."
         ],
         "auth_required": [
-          "Agent runtime identity",
-          "Policy store access",
-          "Audit log write access"
+          "Runtime-owned signed identity and independent signing keys",
+          "Absolute private control-plane store path"
         ],
         "access_level": "read-write",
-        "trust_boundary": "remote-mcp-server",
-        "approval_boundary": "Safe for policy checks and audit writes; requires human approval before executing high-risk operational actions or changing policy."
+        "trust_boundary": "local-tool",
+        "approval_boundary": "The MCP runtime can request approval but cannot install policy or decide approvals; administrator authority is available only through the separate operator entrypoint."
       },
       "usability": {
-        "availability": "template-only",
-        "execution": "integration-template",
-        "limitations": [
-          "Specification, prompts, and examples only; no launchable MCP transport is packaged."
+        "availability": "setup-required",
+        "execution": "local-tool",
+        "requires_setup": [
+          "Node.js 22 or newer.",
+          "CONTROL_PLANE_STORE, signed identity, identity public key, audit key, and role-specific grant keys: issuer key pair for agents or public key only for executors.",
+          "A separately scoped administrator identity to install policy and record human approval decisions."
         ],
-        "quickstart": "Review TOOL.md as an implementation contract; do not register this package as an MCP server.",
+        "limitations": [
+          "This server does not execute provider mutations; governed executors must verify grants at their own effect boundary.",
+          "The deterministic local store assumes one filesystem host and does not provide multi-host consensus.",
+          "Key rotation requires an explicit operator migration; silent fallback to an old or unknown key is not supported."
+        ],
+        "quickstart": "Create signed runtime and administrator identities, install a tenant policy with the operator CLI, then register .mcp.json.",
         "source": "declared"
       },
-      "dependencies": {
-        "mcp_servers": [
-          "agent-control-plane"
+      "execution": {
+        "kind": "mcp-server",
+        "command": [
+          "node",
+          "scripts/agent_control_plane_server.mjs"
+        ],
+        "healthcheck": [
+          "node",
+          "scripts/agent_control_plane_server.mjs",
+          "--healthcheck"
+        ],
+        "smoke_test": [
+          "node",
+          "scripts/agent_control_plane_server.mjs",
+          "--smoke"
+        ],
+        "supported_platforms": [
+          "linux",
+          "macos"
+        ],
+        "supported_runtimes": [
+          "node22"
         ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": null,
+        "checksums": null,
+        "sbom": null
+      },
+      "authentication": {
+        "status": "required",
+        "methods": [
+          "custom"
+        ],
+        "credential_bindings": [
+          "CONTROL_PLANE_IDENTITY",
+          "CONTROL_PLANE_IDENTITY_PUBLIC_KEY",
+          "CONTROL_PLANE_GRANT_ROLE_KEY",
+          "CONTROL_PLANE_AUDIT_KEY",
+          "CONTROL_PLANE_STORE"
+        ],
+        "scopes": [
+          "tenant",
+          "capability",
+          "provider-account"
+        ],
+        "setup_url": "https://github.com/ai-knowledge-hub/ai-skills-guide/tree/main/tools-mcp/agentops/agent-control-plane-server",
+        "credential_storage": "Keys and signed identities remain in runtime-owned bindings. Executors reject the grant private key. The package stores no secrets, raw provider receipts, or provider credentials.",
+        "validation": "The packaged driver verifies identity signature, role, tenant, scope, absolute expiry, store access, and the complete audit chain.",
+        "revocation": "Remove or replace the runtime identity binding, rotate the identity key, activate a replacement policy, and stop any executor that trusts the old grant key."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/agent-control-plane/clean-client-mcp-launch",
+          "evidence://tests/agent-control-plane/identity-policy-approval-binding",
+          "evidence://tests/agent-control-plane/idempotency-ordering-restart-recovery",
+          "evidence://tests/agent-control-plane/audit-deletion-substitution-reordering"
+        ],
+        "last_verified_at": "2026-09-20T00:00:00Z"
       }
     },
     {
-      "schema_version": "1.1",
+      "schema_version": "2.0",
       "id": "analytics/ga4-mcp-connector",
       "name": "GA4 MCP Connector",
-      "description": "Implementation specification and template for a GA4 MCP query connector; no launchable server is packaged.",
+      "description": "Launchable read-only GA4 Data API MCP server with bounded queries, property isolation, typed authentication, and normalized source metadata.",
       "category": "tools-mcp/analytics",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-03-02T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/analytics/ga4-mcp-connector/0.1.0.yaml",
-          "manifest_sha256": "ef983e25d15db8248a46a8b128ffb691648440af151ac250d787bd4b57e8376b",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/analytics/ga4-mcp-connector/0.1.0.tar.gz",
-          "sha256": "72b9154ff65c0418adc15d318955c0c80e566fb0c2454281f90ee4fd7072b36c"
+          "version": "0.2.0",
+          "released_at": "2026-09-17T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/analytics/ga4-mcp-connector/0.2.0.yaml",
+          "manifest_sha256": "1b430183e498910549e4e5139a08800cf44fe37e32998a54b06a89bb34a5c993",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/analytics/ga4-mcp-connector/0.2.0.tar.gz",
+          "sha256": "80efc8f9e5176097781da84595a9271b34cc5f1661b098422664cf739e154b84"
         }
       ],
       "runtimes": [
@@ -423,7 +674,8 @@
       "tags": [
         "ga4",
         "mcp",
-        "analytics"
+        "analytics",
+        "read-only"
       ],
       "readiness": "experimental",
       "security_reviewed": false,
@@ -431,47 +683,109 @@
       "operational": {
         "connected_system": "Google Analytics 4",
         "capabilities": [
-          "Pull sessions, users, conversions, and revenue by allowed dimensions.",
-          "Query fixed date windows for period comparisons and dashboard inputs.",
-          "Return normalized analytics payloads for downstream skills and agents."
+          "Run bounded read-only reports for explicitly allowed GA4 properties.",
+          "Return normalized dimensions, metrics, pagination, and source freshness.",
+          "Live-verify bearer or service-account identity and property access."
         ],
         "auth_required": [
-          "GA4 property access via authenticated MCP runtime"
+          "GA4 read-only OAuth credential with access to each allowed property"
         ],
         "access_level": "read-only",
         "trust_boundary": "remote-mcp-server",
-        "approval_boundary": "Safe for read-only analytics retrieval; require human approval before combining with any workflow that writes back to ad platforms or reporting systems."
+        "approval_boundary": "Read-only report retrieval only; property, field, date, pagination, timeout, and response-size bounds are enforced before results are returned."
       },
       "usability": {
-        "availability": "template-only",
-        "execution": "integration-template",
-        "limitations": [
-          "Specification, prompts, and examples only; no launchable MCP transport is packaged."
+        "availability": "setup-required",
+        "execution": "remote-integration",
+        "requires_setup": [
+          "Node.js 22 or newer.",
+          "GA4_CREDENTIAL runtime binding and GA4_ALLOWED_PROPERTY_IDS configuration.",
+          "Google Analytics Data API enabled with read access to each allowed property."
         ],
-        "quickstart": "Review TOOL.md as an implementation contract; do not register this package as an MCP server.",
+        "limitations": [
+          "The connector does not expose GA4 administration or mutation endpoints.",
+          "Reports are limited to the packaged dimension and metric allowlists."
+        ],
+        "quickstart": "Configure GA4_CREDENTIAL, set GA4_ALLOWED_PROPERTY_IDS, then register .mcp.json with Codex, Claude, or a generic MCP client.",
         "source": "declared"
       },
+      "execution": {
+        "kind": "mcp-server",
+        "command": [
+          "node",
+          "scripts/ga4_mcp_server.mjs"
+        ],
+        "healthcheck": [
+          "node",
+          "scripts/ga4_mcp_server.mjs",
+          "--healthcheck"
+        ],
+        "smoke_test": [
+          "node",
+          "scripts/ga4_mcp_server.mjs",
+          "--smoke"
+        ],
+        "supported_platforms": [
+          "linux",
+          "macos"
+        ],
+        "supported_runtimes": [
+          "node22"
+        ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": null,
+        "checksums": null,
+        "sbom": null
+      },
+      "authentication": {
+        "status": "required",
+        "methods": [
+          "bearer-token",
+          "service-account"
+        ],
+        "credential_bindings": [
+          "GA4_CREDENTIAL"
+        ],
+        "scopes": [
+          "https://www.googleapis.com/auth/analytics.readonly"
+        ],
+        "setup_url": "https://console.cloud.google.com/apis/library/analyticsdata.googleapis.com",
+        "credential_storage": "Credential JSON remains in an explicitly bound runtime environment source and is never written into the package or readiness profile.",
+        "validation": "The packaged driver obtains an access token, verifies principal, scopes, and lifetime with Google's token-info endpoint, and uses that same token for a one-row read-only report against the selected property.",
+        "revocation": "Revoke user grants in the Google Account or disable and rotate the service-account key in Google Cloud IAM."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/ga4-mcp/json-rpc",
+          "evidence://tests/ga4-mcp/pagination-quota-timeout-malformed-revoked",
+          "evidence://tests/ga4-mcp/property-isolation-auth-driver",
+          "evidence://tests/ga4-mcp/provider-attested-identity-aggregate-result-bound"
+        ],
+        "last_verified_at": "2026-09-17T00:00:00Z"
+      },
       "dependencies": {
-        "mcp_servers": [
-          "ga4"
+        "apis": [
+          "Google Analytics Data API v1beta"
         ]
       }
     },
     {
-      "schema_version": "1.1",
+      "schema_version": "2.0",
       "id": "warehouse/bigquery-mcp-query-runner",
       "name": "BigQuery MCP Query Runner",
-      "description": "Implementation specification and template for a read-only BigQuery MCP query runner; no launchable server is packaged.",
+      "description": "Launchable read-only BigQuery MCP server with parameter binding, scope isolation, dry-run cost enforcement, bounded pagination, and typed diagnostics.",
       "category": "tools-mcp/warehouse",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-03-02T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/warehouse/bigquery-mcp-query-runner/0.1.0.yaml",
-          "manifest_sha256": "d6f8666a1904086170daed90d230dc5be79eaa815896d2f1e8535ab2fb470f20",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/warehouse/bigquery-mcp-query-runner/0.1.0.tar.gz",
-          "sha256": "5062178debd2aa7a7be639f1972cd3d54c7b9548b323bc58c36bbb18de030b31"
+          "version": "0.2.0",
+          "released_at": "2026-09-18T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/warehouse/bigquery-mcp-query-runner/0.2.0.yaml",
+          "manifest_sha256": "380615648601d908e7db43a67df504b36b5e8babe5b3ac9bf9e51125200beded",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/warehouse/bigquery-mcp-query-runner/0.2.0.tar.gz",
+          "sha256": "0ea4c8301f2292f4790ae8d18344fffc9bc6e4aa8dbf82244574f21608745871"
         }
       ],
       "runtimes": [
@@ -482,7 +796,8 @@
       "tags": [
         "bigquery",
         "mcp",
-        "sql"
+        "sql",
+        "read-only"
       ],
       "readiness": "experimental",
       "security_reviewed": false,
@@ -490,29 +805,97 @@
       "operational": {
         "connected_system": "Google BigQuery",
         "capabilities": [
-          "Execute parameterized read-only SQL templates for analytics workflows.",
-          "Return typed warehouse rows for BI transformations and reporting.",
-          "Enforce query guardrails such as timeout, limits, and statement restrictions."
+          "Execute one parameterized read-only GoogleSQL query inside configured project, dataset, and location boundaries.",
+          "Dry-run every query and enforce provider-side maximum bytes billed before execution.",
+          "Return typed rows with bounded pagination, job identity, cost, cache, timeout, and source diagnostics."
         ],
         "auth_required": [
-          "BigQuery dataset access via authenticated MCP runtime"
+          "BigQuery OAuth credential with jobs.create and read access only to the configured datasets"
         ],
         "access_level": "read-only",
         "trust_boundary": "remote-mcp-server",
-        "approval_boundary": "Safe for parameterized read-only queries; require human approval before broadening dataset scope or enabling any non-read-only SQL path."
+        "approval_boundary": "Read-only queries only; project, billing project, dataset, location, SQL, parameter, byte, row, page, timeout, and response-size restrictions are enforced before results are returned."
       },
       "usability": {
-        "availability": "template-only",
-        "execution": "integration-template",
-        "limitations": [
-          "Specification, prompts, and examples only; no launchable MCP transport is packaged."
+        "availability": "setup-required",
+        "execution": "remote-integration",
+        "requires_setup": [
+          "Node.js 22 or newer.",
+          "BQ_CREDENTIAL and a BQ_POLICY envelope defining project, billing project, dataset, location, byte, row, timeout, and user-OAuth authority.",
+          "Google BigQuery API enabled with least-privilege access to the configured datasets."
         ],
-        "quickstart": "Review TOOL.md as an implementation contract; do not register this package as an MCP server.",
+        "limitations": [
+          "Only SELECT or WITH GoogleSQL is accepted; scripts, DML, DDL, external queries, destinations, and unqualified external tables are rejected.",
+          "Workload identity uses Google STS plus service-account impersonation; direct unidentifiable federated tokens are not accepted for readiness evidence.",
+          "Provider verification requires a clean-client sandbox smoke observation; deterministic tests do not satisfy that release evidence gate."
+        ],
+        "quickstart": "Configure BQ_CREDENTIAL and BQ_POLICY, then register .mcp.json with Codex, Claude, or a generic MCP client.",
         "source": "declared"
       },
+      "execution": {
+        "kind": "mcp-server",
+        "command": [
+          "node",
+          "scripts/bigquery_mcp_server.mjs"
+        ],
+        "healthcheck": [
+          "node",
+          "scripts/bigquery_mcp_server.mjs",
+          "--healthcheck"
+        ],
+        "smoke_test": [
+          "node",
+          "scripts/bigquery_mcp_server.mjs",
+          "--smoke"
+        ],
+        "supported_platforms": [
+          "linux",
+          "macos"
+        ],
+        "supported_runtimes": [
+          "node22"
+        ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": null,
+        "checksums": null,
+        "sbom": null
+      },
+      "authentication": {
+        "status": "required",
+        "methods": [
+          "bearer-token",
+          "service-account",
+          "workload-identity"
+        ],
+        "credential_bindings": [
+          "BQ_CREDENTIAL",
+          "BQ_POLICY"
+        ],
+        "scopes": [
+          "https://www.googleapis.com/auth/bigquery"
+        ],
+        "setup_url": "https://console.cloud.google.com/apis/library/bigquery.googleapis.com",
+        "credential_storage": "Credential JSON and workload subject tokens remain in explicit runtime environment bindings and are never written into the package or readiness profile.",
+        "validation": "The packaged driver verifies Google-attested identity, scope, lifetime, billing project, and a live dry-run plus one-row read-only query.",
+        "revocation": "Revoke the user grant, disable or rotate the service-account key, or remove the workload identity binding in Google Cloud IAM."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/bigquery-mcp/json-rpc-clean-client-launch",
+          "evidence://tests/bigquery-mcp/sql-parameter-dataset-project-isolation",
+          "evidence://tests/bigquery-mcp/dry-run-byte-row-page-timeout-cancellation",
+          "evidence://tests/bigquery-mcp/service-user-workload-identity",
+          "evidence://tests/bigquery-mcp/quota-pagination-typed-diagnostics",
+          "https://skills.ai-knowledge-hub.org/evidence/tools-mcp/warehouse/bigquery-mcp-query-runner/0.2.0/sandbox-smoke.json"
+        ],
+        "last_verified_at": "2026-09-19T00:00:00Z"
+      },
       "dependencies": {
-        "mcp_servers": [
-          "bigquery"
+        "apis": [
+          "Google BigQuery API v2",
+          "Google OAuth 2.0 and Security Token Service"
         ]
       }
     }

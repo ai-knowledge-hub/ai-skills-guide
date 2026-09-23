@@ -5,9 +5,9 @@
   "metadata": {
     "component": {
       "type": "application",
-      "bom-ref": "plugins:marketing/content-repurposing-plugin@0.2.0",
+      "bom-ref": "plugins:marketing/content-repurposing-plugin@0.3.0",
       "name": "marketing/content-repurposing-plugin",
-      "version": "0.2.0"
+      "version": "0.3.0"
     }
   },
   "components": [
@@ -71,7 +71,7 @@
   ],
   "dependencies": [
     {
-      "ref": "plugins:marketing/content-repurposing-plugin@0.2.0",
+      "ref": "plugins:marketing/content-repurposing-plugin@0.3.0",
       "dependsOn": [
         "skills:marketing/ai-output-eval-scorecard@0.1.0",
         "skills:marketing/creative-workshop-pmax-reels@0.1.0",

@@ -23,6 +23,155 @@ func TestResolveRuntimeTargetExplicitTargetWins(t *testing.T) {
 	}
 }
 
+func TestOpenAIAdsClientReleaseArchiveRunsCredentialFreeMockSmoke(t *testing.T) {
+	python, err := exec.LookPath("python3")
+	if err != nil {
+		t.Fatalf("python3 is required for the OpenAI Ads client launch regression: %v", err)
+	}
+	destination := t.TempDir()
+	archive := filepath.Join("..", "..", "releases", "tools-mcp", "adtech", "openai-ads-api-client", "0.2.0", "package.tar.gz")
+	if err := extractVerifiedTarGz(archive, destination); err != nil {
+		t.Fatalf("extract clean OpenAI Ads client release: %v", err)
+	}
+	command := exec.Command(python, "scripts/openai_ads_client.py", "--mode", "mock", "account")
+	command.Dir = destination
+	command.Env = []string{}
+	output, err := command.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"id": "adacct_mock"`)) {
+		t.Fatalf("OpenAI Ads client release mock smoke failed: %v\n%s", err, output)
+	}
+	for _, relative := range []string{"auth/api-key.json", "scripts/openai_ads_auth_driver.py"} {
+		if _, err := os.Stat(filepath.Join(destination, filepath.FromSlash(relative))); err != nil {
+			t.Fatalf("OpenAI Ads client release omitted %s: %v", relative, err)
+		}
+	}
+}
+
+func TestGA4ReleaseArchiveLaunchesAsNativeMCPServer(t *testing.T) {
+	node, err := exec.LookPath("node")
+	if err != nil {
+		t.Fatalf("node is required for the GA4 MCP launch regression: %v", err)
+	}
+	destination := t.TempDir()
+	archive := filepath.Join("..", "..", "releases", "tools-mcp", "analytics", "ga4-mcp-connector", "0.2.0", "package.tar.gz")
+	if err := extractVerifiedTarGz(archive, destination); err != nil {
+		t.Fatalf("extract clean GA4 release: %v", err)
+	}
+	health := exec.Command(node, "scripts/ga4_mcp_server.mjs", "--healthcheck")
+	health.Dir = destination
+	output, err := health.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"status":"ok"`)) {
+		t.Fatalf("GA4 release healthcheck failed: %v\n%s", err, output)
+	}
+	command := exec.Command(node, "scripts/ga4_mcp_server.mjs")
+	command.Dir = destination
+	command.Stdin = strings.NewReader("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}}\n{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\",\"params\":{}}\n")
+	output, err = command.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"name":"ga4-mcp-connector"`)) || !bytes.Contains(output, []byte(`"name":"ga4_run_report"`)) {
+		t.Fatalf("GA4 release MCP handshake failed: %v\n%s", err, output)
+	}
+}
+
+func TestBigQueryReleaseArchiveLaunchesAsNativeMCPServer(t *testing.T) {
+	node, err := exec.LookPath("node")
+	if err != nil {
+		t.Fatalf("node is required for the BigQuery MCP launch regression: %v", err)
+	}
+	destination := t.TempDir()
+	archive := filepath.Join("..", "..", "releases", "tools-mcp", "warehouse", "bigquery-mcp-query-runner", "0.2.0", "package.tar.gz")
+	if err := extractVerifiedTarGz(archive, destination); err != nil {
+		t.Fatalf("extract clean BigQuery release: %v", err)
+	}
+	health := exec.Command(node, "scripts/bigquery_mcp_server.mjs", "--healthcheck")
+	health.Dir = destination
+	output, err := health.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"status":"ok"`)) {
+		t.Fatalf("BigQuery release healthcheck failed: %v\n%s", err, output)
+	}
+	command := exec.Command(node, "scripts/bigquery_mcp_server.mjs")
+	command.Dir = destination
+	command.Stdin = strings.NewReader("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}}\n{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\",\"params\":{}}\n")
+	output, err = command.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"name":"bigquery-mcp-query-runner"`)) || !bytes.Contains(output, []byte(`"name":"bigquery_run_query"`)) {
+		t.Fatalf("BigQuery release MCP handshake failed: %v\n%s", err, output)
+	}
+}
+
+func TestMetaAdsReleaseArchiveLaunchesAsNativeMCPServer(t *testing.T) {
+	node, err := exec.LookPath("node")
+	if err != nil {
+		t.Fatalf("node is required for the Meta Ads MCP launch regression: %v", err)
+	}
+	destination := t.TempDir()
+	archive := filepath.Join("..", "..", "releases", "tools-mcp", "ads", "meta-ads-mcp-connector", "0.2.0", "package.tar.gz")
+	if err := extractVerifiedTarGz(archive, destination); err != nil {
+		t.Fatalf("extract clean Meta Ads release: %v", err)
+	}
+	health := exec.Command(node, "scripts/meta_ads_mcp_server.mjs", "--healthcheck")
+	health.Dir = destination
+	output, err := health.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"status":"ok"`)) {
+		t.Fatalf("Meta Ads release healthcheck failed: %v\n%s", err, output)
+	}
+	command := exec.Command(node, "scripts/meta_ads_mcp_server.mjs")
+	command.Dir = destination
+	command.Stdin = strings.NewReader("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}}\n{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\",\"params\":{}}\n")
+	output, err = command.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"name":"meta-ads-mcp-connector"`)) || !bytes.Contains(output, []byte(`"name":"meta_ads_read_insights"`)) {
+		t.Fatalf("Meta Ads release MCP handshake failed: %v\n%s", err, output)
+	}
+}
+
+func TestAgentControlPlaneReleaseArchiveLaunchesAsNativeMCPServer(t *testing.T) {
+	node, err := exec.LookPath("node")
+	if err != nil {
+		t.Fatalf("node is required for the Agent Control Plane MCP launch regression: %v", err)
+	}
+	destination := t.TempDir()
+	archive := filepath.Join("..", "..", "releases", "tools-mcp", "agentops", "agent-control-plane-server", "0.2.1", "package.tar.gz")
+	if err := extractVerifiedTarGz(archive, destination); err != nil {
+		t.Fatalf("extract clean Agent Control Plane release: %v", err)
+	}
+	health := exec.Command(node, "scripts/agent_control_plane_server.mjs", "--healthcheck")
+	health.Dir = destination
+	output, err := health.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"status":"ok"`)) {
+		t.Fatalf("Agent Control Plane release healthcheck failed: %v\n%s", err, output)
+	}
+	command := exec.Command(node, "scripts/agent_control_plane_server.mjs")
+	command.Dir = destination
+	command.Stdin = strings.NewReader("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}}\n{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\",\"params\":{}}\n")
+	output, err = command.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"name":"agent-control-plane-server"`)) || !bytes.Contains(output, []byte(`"name":"authorize_action"`)) {
+		t.Fatalf("Agent Control Plane release MCP handshake failed: %v\n%s", err, output)
+	}
+}
+
+func TestAdPlatformExecutorReleaseArchiveLaunchesAsNativeMCPServer(t *testing.T) {
+	node, err := exec.LookPath("node")
+	if err != nil {
+		t.Fatalf("node is required for the governed executor launch regression: %v", err)
+	}
+	destination := t.TempDir()
+	archive := filepath.Join("..", "..", "releases", "tools-mcp", "adtech", "ad-platform-executor-template", "0.2.0", "package.tar.gz")
+	if err := extractVerifiedTarGz(archive, destination); err != nil {
+		t.Fatalf("extract clean governed executor release: %v", err)
+	}
+	health := exec.Command(node, "scripts/ad_platform_executor_server.mjs", "--healthcheck")
+	health.Dir = destination
+	output, err := health.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"status":"ok"`)) {
+		t.Fatalf("governed executor release healthcheck failed: %v\n%s", err, output)
+	}
+	command := exec.Command(node, "scripts/ad_platform_executor_server.mjs")
+	command.Dir = destination
+	command.Stdin = strings.NewReader("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{}}\n{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\",\"params\":{}}\n")
+	output, err = command.CombinedOutput()
+	if err != nil || !bytes.Contains(output, []byte(`"name":"governed-ad-platform-executor"`)) || !bytes.Contains(output, []byte(`"name":"execute_approved_change"`)) {
+		t.Fatalf("governed executor release MCP handshake failed: %v\n%s", err, output)
+	}
+}
+
 func TestResolveRuntimeTargetCodexFromEnv(t *testing.T) {
 	t.Setenv("CODEX_HOME", "/tmp/codex-home")
 	target, err := ResolveRuntimeTarget("codex", "")

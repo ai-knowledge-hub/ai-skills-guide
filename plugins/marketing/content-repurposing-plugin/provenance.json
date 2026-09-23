@@ -3,8 +3,8 @@
   "subject": {
     "module": "plugins",
     "id": "marketing/content-repurposing-plugin",
-    "version": "0.2.0",
-    "closure_sha256": "b9b1f03ee1c1d60930d45400c3769862116a22566b90ec6035500dd7431d327f"
+    "version": "0.3.0",
+    "closure_sha256": "8a529b396e2c60e73b8af68bc5a4536127e5093919eedbc667d506f99118fe96"
   },
   "builder": "ai-skills-guide/prepare-public-assets",
   "materials": [

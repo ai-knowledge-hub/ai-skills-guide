@@ -13,7 +13,7 @@ Installable package for teams that want to move from AI-generated campaign ideas
 
 ## Install Behavior
 
-This plugin is a packaging layer.
+This plugin is published as a self-contained, integrity-locked packaging layer.
 
 On install:
 
@@ -22,12 +22,15 @@ On install:
 - bundled agents are installed into the runtime `agents/...` directory
 - packaged hooks, templates, and schemas remain inside this plugin's directory
 
-Bundled skills and agents do not live inside the plugin directory itself. That avoids duplication while still making the package usable immediately.
+The release archive carries the pinned skill and agent closure, dependency
+lock, checksums, SBOM, and provenance. Installation never depends on sibling
+source directories.
 
 ## Install Command
 
 ```bash
-./bin/skills-hub install --module plugins --entry marketing/creative-operating-system-plugin@0.1.0 --runtime codex
+./bin/skills-hub install --module plugins --entry marketing/creative-operating-system-plugin@0.2.0 \
+  --runtime codex --execution-runtime node22
 ```
 
 ## Installed Dependencies
@@ -50,7 +53,18 @@ Hooks kept inside this plugin package:
 - `require-memory-before-ideation`
 - `require-launch-gate-review`
 
+These Markdown hooks are compiled as visible advisory guidance unless a
+runtime provides equivalent native enforcement mappings.
+
 ## First-Run Path
+
+Start with the dependency-free scenario:
+
+```bash
+node scripts/first_use.mjs examples/first-use-input.json
+```
+
+It emits the ordered workflow and approval owner without authorizing launch.
 
 If the team has no existing systems yet, run the package in this order:
 

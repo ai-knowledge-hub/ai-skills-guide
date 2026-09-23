@@ -3,7 +3,7 @@
   "root": {
     "module": "plugins",
     "id": "marketing/content-repurposing-plugin",
-    "version": "0.2.0"
+    "version": "0.3.0"
   },
   "components": [
     {

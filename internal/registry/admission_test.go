@@ -143,6 +143,25 @@ func TestBuildIndexRejectsStaleEvidenceForDeclaredUsableNow(t *testing.T) {
 	assertAdmissionError(t, err, "claims usable-now with evidence older than")
 }
 
+func TestRunnableBundleUsesExecutableEvidenceLifetime(t *testing.T) {
+	now := time.Now().UTC()
+	manifest := Manifest{
+		Execution:      ExecutionMetadata{Kind: "bundle"},
+		Authentication: AuthenticationMetadata{Status: "none"},
+		Verification: VerificationMetadata{
+			Evidence:       []string{"evidence://tests/plugin/clean-client"},
+			LastVerifiedAt: now.Add(-executableEvidenceLifetime - time.Hour).Format(time.RFC3339),
+		},
+	}
+	if err := validateFreshEvidence("runnable-bundle", manifest, now); err == nil || !strings.Contains(err.Error(), "evidence older than") {
+		t.Fatalf("expected runnable bundle evidence to expire after %s, got %v", executableEvidenceLifetime, err)
+	}
+	manifest.Verification.LastVerifiedAt = now.Add(-executableEvidenceLifetime + time.Hour).Format(time.RFC3339)
+	if err := validateFreshEvidence("runnable-bundle", manifest, now); err != nil {
+		t.Fatalf("fresh runnable bundle evidence was rejected: %v", err)
+	}
+}
+
 func TestBuildIndexSuppressesDeprecatedRootAndHelperUsability(t *testing.T) {
 	root := t.TempDir()
 	entryDir := filepath.Join(root, "tools-mcp", "shared", "deprecated-tool")

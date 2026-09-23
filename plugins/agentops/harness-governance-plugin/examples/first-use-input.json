@@ -1,0 +1,6 @@
+{
+  "run_id": "demo-run-001",
+  "observation": "Repeated tool retries consumed the context budget.",
+  "proposed_change": "Add a bounded retry policy to the harness guidance.",
+  "regression_result": "pass"
+}

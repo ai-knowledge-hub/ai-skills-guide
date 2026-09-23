@@ -28,9 +28,15 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 				t.Fatalf("got %d entries, want %d", len(index.Skills), test.wantCount)
 			}
 			for _, entry := range index.Skills {
-				if entry.ID == "marketing/content-repurposing-plugin" {
-					if entry.SchemaVersion != "2.1" || entry.Usability.Availability != "not-verified" || entry.Usability.Execution != "bundle" {
-						t.Errorf("content repurposing release classification = %#v", entry)
+				if test.name == "plugins" && localPluginWave[entry.ID] {
+					if entry.SchemaVersion != "2.1" || entry.Usability.Availability != "usable-now" || entry.Usability.Execution != "bundle" || entry.Artifact == nil || !entry.Artifact.SelfContained {
+						t.Errorf("local plugin wave classification = %#v", entry)
+					}
+					continue
+				}
+				if test.name == "agents" && entry.ID == "marketing/creative-operating-system-supervisor" {
+					if entry.SchemaVersion != "1.1" || entry.Usability.Availability != "not-verified" || entry.Usability.Execution != "orchestrator" {
+						t.Errorf("creative operating system supervisor classification = %#v", entry)
 					}
 					continue
 				}
@@ -75,14 +81,14 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 		t.Fatalf("build tools index: %v", err)
 	}
 	wantTools := map[string][2]string{
-		"ads/meta-ads-mcp-connector":           {"template-only", "integration-template"},
-		"adtech/ad-platform-executor-template": {"template-only", "integration-template"},
+		"ads/meta-ads-mcp-connector":           {"setup-required", "remote-integration"},
+		"adtech/ad-platform-executor-template": {"setup-required", "remote-integration"},
 		"adtech/conversion-event-reconciler":   {"not-verified", "local-tool"},
 		"adtech/openai-ads-adapter-template":   {"template-only", "integration-template"},
-		"adtech/openai-ads-api-client":         {"not-verified", "remote-integration"},
-		"agentops/agent-control-plane-server":  {"template-only", "integration-template"},
-		"analytics/ga4-mcp-connector":          {"template-only", "integration-template"},
-		"warehouse/bigquery-mcp-query-runner":  {"template-only", "integration-template"},
+		"adtech/openai-ads-api-client":         {"setup-required", "local-tool"},
+		"agentops/agent-control-plane-server":  {"setup-required", "local-tool"},
+		"analytics/ga4-mcp-connector":          {"setup-required", "remote-integration"},
+		"warehouse/bigquery-mcp-query-runner":  {"setup-required", "remote-integration"},
 	}
 	if len(tools.Skills) != len(wantTools) {
 		t.Fatalf("got %d tools, want %d", len(tools.Skills), len(wantTools))
@@ -92,8 +98,35 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 		if !ok {
 			t.Fatalf("unexpected tool %q", entry.ID)
 		}
+		if entry.ID == "adtech/openai-ads-adapter-template" {
+			if !entry.Deprecated || entry.ReplacedBy != "adtech/openai-ads-api-client" || entry.Readiness != "deprecated" || entry.Usability.Source != "declared" || entry.Usability.Availability != "template-only" {
+				t.Errorf("deprecated OpenAI Ads adapter projection = %#v", entry)
+			}
+			continue
+		}
+		if entry.ID == "adtech/openai-ads-api-client" {
+			if entry.SchemaVersion != "2.1" || entry.Deprecated || entry.Usability.Source != "declared" || entry.Usability.Availability != "setup-required" || entry.Usability.Execution != "local-tool" || entry.Execution == nil || entry.Execution.Kind != "cli" || entry.Authentication == nil || entry.Authentication.Status != "optional" {
+				t.Errorf("preferred OpenAI Ads client classification = %#v", entry)
+			}
+			continue
+		}
+		if entry.ID == "ads/meta-ads-mcp-connector" || entry.ID == "adtech/ad-platform-executor-template" || entry.ID == "analytics/ga4-mcp-connector" || entry.ID == "warehouse/bigquery-mcp-query-runner" || entry.ID == "agentops/agent-control-plane-server" {
+			if entry.SchemaVersion != "2.0" || entry.Usability.Source != "declared" || entry.Usability.Availability != "setup-required" || entry.Usability.Execution != want[1] || len(entry.Usability.Limitations) == 0 {
+				t.Errorf("executable integration classification = %#v", entry)
+			}
+			continue
+		}
 		assertClassification(t, entry, want[0], want[1])
 	}
+}
+
+var localPluginWave = map[string]bool{
+	"agentops/harness-governance-plugin":         true,
+	"engineering/code-maintenance-plugin":        true,
+	"marketing/competitive-intelligence-plugin":  true,
+	"marketing/content-repurposing-plugin":       true,
+	"marketing/creative-operating-system-plugin": true,
+	"security/runtime-safety-plugin":             true,
 }
 
 func assertClassification(t *testing.T, entry SkillEntry, availability, execution string) {

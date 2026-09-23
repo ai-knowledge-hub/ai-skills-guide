@@ -1,0 +1,23 @@
+{
+  "environment_tier": "sandbox",
+  "allow_live": false,
+  "max_timeout_ms": 30000,
+  "google_ads_api_version": "v25",
+  "dv360_api_version": "v4",
+  "allowed_targets": [
+    {
+      "provider": "google_ads",
+      "account_id": "1234567890",
+      "resource_type": "campaign_budget",
+      "resource_ids": ["22222"],
+      "operations": ["set_budget_micros"]
+    },
+    {
+      "provider": "dv360",
+      "account_id": "987654",
+      "resource_type": "line_item",
+      "resource_ids": ["456789"],
+      "operations": ["set_status", "set_bid_micros"]
+    }
+  ]
+}

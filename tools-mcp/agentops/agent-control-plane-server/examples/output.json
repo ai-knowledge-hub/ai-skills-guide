@@ -1,7 +1,15 @@
 {
-  "decision": "allow_with_approval",
-  "approval_required": true,
-  "matched_rules": ["budget-write-requires-approval"],
-  "reason": "Budget writes require human approval before execution.",
-  "audit_event_id": "evt_001"
+  "schema_version": "control-plane.policy-decision/v1",
+  "decision_id": "pdec_examplebounddecision000000000",
+  "tenant_id": "tenant-example",
+  "actor_id": "campaign-agent",
+  "effect": "require_approval",
+  "matched_rule_ids": ["budget-writes-require-owner"],
+  "approver_roles": ["budget_owner"],
+  "approval_ttl_seconds": 600,
+  "reason_code": "RULE_REQUIRE_APPROVAL",
+  "policy_id": "paid-media-governance",
+  "policy_version": "v1",
+  "policy_digest": "sha256:example-policy-digest",
+  "decided_at": "2026-09-20T10:00:00.000Z"
 }

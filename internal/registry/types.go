@@ -1,33 +1,43 @@
 package registry
 
 type Manifest struct {
-	SchemaVersion     string                 `json:"schema_version"`
-	ID                string                 `json:"id"`
-	Name              string                 `json:"name"`
-	Description       string                 `json:"description"`
-	Version           string                 `json:"version"`
-	ReleasedAt        string                 `json:"released_at"`
-	Category          string                 `json:"category"`
-	Tags              []string               `json:"tags"`
-	Runtimes          []string               `json:"runtimes"`
-	Entrypoints       map[string]string      `json:"entrypoints"`
-	SecurityReviewed  bool                   `json:"-"`
-	Deprecated        bool                   `json:"deprecated"`
-	ReplacedBy        string                 `json:"replaced_by"`
-	Operational       OperationalMetadata    `json:"operational"`
-	Usability         UsabilityMetadata      `json:"usability"`
-	Execution         ExecutionMetadata      `json:"execution"`
-	Artifact          ArtifactMetadata       `json:"artifact"`
-	Authentication    AuthenticationMetadata `json:"authentication"`
-	Verification      VerificationMetadata   `json:"verification"`
-	Dependencies      DependencySet          `json:"dependencies"`
-	Includes          IncludeSet             `json:"includes"`
-	Requires          RequirementSet         `json:"requires"`
-	executionSet      bool
-	artifactSet       bool
-	authenticationSet bool
-	verificationSet   bool
-	usabilitySet      bool
+	SchemaVersion        string                       `json:"schema_version"`
+	ID                   string                       `json:"id"`
+	Name                 string                       `json:"name"`
+	Description          string                       `json:"description"`
+	Version              string                       `json:"version"`
+	ReleasedAt           string                       `json:"released_at"`
+	Category             string                       `json:"category"`
+	Tags                 []string                     `json:"tags"`
+	Runtimes             []string                     `json:"runtimes"`
+	Entrypoints          map[string]string            `json:"entrypoints"`
+	SecurityReviewed     bool                         `json:"-"`
+	Deprecated           bool                         `json:"deprecated"`
+	ReplacedBy           string                       `json:"replaced_by"`
+	Operational          OperationalMetadata          `json:"operational"`
+	Usability            UsabilityMetadata            `json:"usability"`
+	Execution            ExecutionMetadata            `json:"execution"`
+	Artifact             ArtifactMetadata             `json:"artifact"`
+	Authentication       AuthenticationMetadata       `json:"authentication"`
+	Verification         VerificationMetadata         `json:"verification"`
+	ProviderDependencies []ProviderDependencyMetadata `json:"provider_dependencies,omitempty"`
+	Dependencies         DependencySet                `json:"dependencies"`
+	Includes             IncludeSet                   `json:"includes"`
+	Requires             RequirementSet               `json:"requires"`
+	executionSet         bool
+	artifactSet          bool
+	authenticationSet    bool
+	verificationSet      bool
+	usabilitySet         bool
+}
+
+// ProviderDependencyMetadata declares the provider authority a composed
+// plugin needs from one of its included tools. Credentials remain owned and
+// validated by that tool; the plugin only composes target-bound evidence.
+type ProviderDependencyMetadata struct {
+	Tool        string `json:"tool"`
+	Requirement string `json:"requirement"`
+	Access      string `json:"access"`
 }
 
 type ExecutionMetadata struct {
@@ -123,28 +133,29 @@ type Index struct {
 }
 
 type SkillEntry struct {
-	SchemaVersion    string                  `json:"schema_version,omitempty"`
-	ID               string                  `json:"id"`
-	Name             string                  `json:"name"`
-	Description      string                  `json:"description"`
-	Category         string                  `json:"category"`
-	Latest           string                  `json:"latest"`
-	Versions         []VersionEntry          `json:"versions"`
-	Runtimes         []string                `json:"runtimes"`
-	Tags             []string                `json:"tags"`
-	Readiness        string                  `json:"readiness"`
-	SecurityReviewed bool                    `json:"security_reviewed"`
-	Deprecated       bool                    `json:"deprecated"`
-	ReplacedBy       string                  `json:"replaced_by,omitempty"`
-	Operational      *OperationalMetadata    `json:"operational,omitempty"`
-	Usability        UsabilityMetadata       `json:"usability"`
-	Execution        *ExecutionMetadata      `json:"execution,omitempty"`
-	Artifact         *ArtifactMetadata       `json:"artifact,omitempty"`
-	Authentication   *AuthenticationMetadata `json:"authentication,omitempty"`
-	Verification     *VerificationMetadata   `json:"verification,omitempty"`
-	Dependencies     *DependencySet          `json:"dependencies,omitempty"`
-	Includes         *IncludeSet             `json:"includes,omitempty"`
-	Requires         *RequirementSet         `json:"requires,omitempty"`
+	SchemaVersion        string                       `json:"schema_version,omitempty"`
+	ID                   string                       `json:"id"`
+	Name                 string                       `json:"name"`
+	Description          string                       `json:"description"`
+	Category             string                       `json:"category"`
+	Latest               string                       `json:"latest"`
+	Versions             []VersionEntry               `json:"versions"`
+	Runtimes             []string                     `json:"runtimes"`
+	Tags                 []string                     `json:"tags"`
+	Readiness            string                       `json:"readiness"`
+	SecurityReviewed     bool                         `json:"security_reviewed"`
+	Deprecated           bool                         `json:"deprecated"`
+	ReplacedBy           string                       `json:"replaced_by,omitempty"`
+	Operational          *OperationalMetadata         `json:"operational,omitempty"`
+	Usability            UsabilityMetadata            `json:"usability"`
+	Execution            *ExecutionMetadata           `json:"execution,omitempty"`
+	Artifact             *ArtifactMetadata            `json:"artifact,omitempty"`
+	Authentication       *AuthenticationMetadata      `json:"authentication,omitempty"`
+	Verification         *VerificationMetadata        `json:"verification,omitempty"`
+	ProviderDependencies []ProviderDependencyMetadata `json:"provider_dependencies,omitempty"`
+	Dependencies         *DependencySet               `json:"dependencies,omitempty"`
+	Includes             *IncludeSet                  `json:"includes,omitempty"`
+	Requires             *RequirementSet              `json:"requires,omitempty"`
 }
 
 type VersionEntry struct {

@@ -113,7 +113,7 @@ func ParseManifest(path string) (Manifest, error) {
 }
 
 func firstV2ContractField(raw map[string]any) (string, bool) {
-	for _, field := range []string{"execution", "artifact", "authentication"} {
+	for _, field := range []string{"execution", "artifact", "authentication", "provider_dependencies"} {
 		if _, found := raw[field]; found {
 			return "$." + field, true
 		}
@@ -224,7 +224,7 @@ func validateManifestFields(m Manifest, path string) error {
 			return fmt.Errorf("manifest %s must use schema_version 1.1 or 2.1 for usability executable_helpers", path)
 		}
 		if m.SchemaVersion == "1.1" {
-			if m.executionSet || m.artifactSet || m.authenticationSet || len(m.Verification.Evidence) > 0 || m.Verification.LastVerifiedAt != "" {
+			if m.executionSet || m.artifactSet || m.authenticationSet || len(m.ProviderDependencies) > 0 || len(m.Verification.Evidence) > 0 || m.Verification.LastVerifiedAt != "" {
 				return fmt.Errorf("manifest %s uses v2 contract fields with schema_version 1.1", path)
 			}
 			return nil

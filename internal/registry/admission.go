@@ -146,6 +146,9 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time, requ
 	}
 
 	if strings.HasPrefix(manifest.SchemaVersion, "2.") {
+		if err := validateProviderDependencyDeclarations(manifestPath, manifest); err != nil {
+			return err
+		}
 		if filepath.Base(manifestPath) == "plugin.yaml" && manifest.Execution.Kind == "bundle" && !manifest.Artifact.SelfContained {
 			return fmt.Errorf("manifest %s bundle artifact must declare a self-contained dependency closure", manifestPath)
 		}
@@ -196,6 +199,37 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time, requ
 				return fmt.Errorf("manifest %s claims usable-now %s without a scripts_dir entrypoint", manifestPath, manifest.Usability.Execution)
 			}
 		}
+	}
+	return nil
+}
+
+func validateProviderDependencyDeclarations(manifestPath string, manifest Manifest) error {
+	if len(manifest.ProviderDependencies) == 0 {
+		return nil
+	}
+	included := make(map[string]struct{}, len(manifest.Includes.Tools))
+	for _, tool := range manifest.Includes.Tools {
+		included[tool] = struct{}{}
+	}
+	seen := make(map[string]struct{}, len(manifest.ProviderDependencies))
+	hasRequired := false
+	for _, dependency := range manifest.ProviderDependencies {
+		if _, ok := included[dependency.Tool]; !ok {
+			return fmt.Errorf("manifest %s provider dependency %q is not present in includes.tools", manifestPath, dependency.Tool)
+		}
+		if _, duplicate := seen[dependency.Tool]; duplicate {
+			return fmt.Errorf("manifest %s repeats provider dependency %q", manifestPath, dependency.Tool)
+		}
+		seen[dependency.Tool] = struct{}{}
+		if dependency.Requirement == "required" {
+			hasRequired = true
+		}
+	}
+	if !hasRequired {
+		return fmt.Errorf("manifest %s provider dependencies must contain at least one required provider", manifestPath)
+	}
+	if manifest.Authentication.Status != "required" {
+		return fmt.Errorf("manifest %s with provider dependencies must declare authentication.status required", manifestPath)
 	}
 	return nil
 }
@@ -1007,6 +1041,15 @@ func validateDependencyGraph(root string, records []manifestRecord) error {
 			}
 			edges[from] = append(edges[from], dependency.kind+":"+dependency.id)
 		}
+		for _, provider := range record.manifest.ProviderDependencies {
+			target, exists := byKind["tool"][provider.Tool]
+			if !exists {
+				continue
+			}
+			if err := validateProviderDependencyAuthority(record.path, provider, target.manifest); err != nil {
+				return err
+			}
+		}
 	}
 
 	state := map[string]uint8{}
@@ -1040,6 +1083,16 @@ func validateDependencyGraph(root string, records []manifestRecord) error {
 				return err
 			}
 		}
+	}
+	return nil
+}
+
+func validateProviderDependencyAuthority(manifestPath string, provider ProviderDependencyMetadata, target Manifest) error {
+	if target.Authentication.Status == "none" {
+		return fmt.Errorf("manifest %s provider dependency %q has no provider authentication contract", manifestPath, provider.Tool)
+	}
+	if provider.Access != target.Operational.AccessLevel {
+		return fmt.Errorf("manifest %s provider dependency %q declares %s access but the tool access level is %q", manifestPath, provider.Tool, provider.Access, target.Operational.AccessLevel)
 	}
 	return nil
 }

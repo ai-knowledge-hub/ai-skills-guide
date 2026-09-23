@@ -177,6 +177,7 @@ func ProjectManifest(m Manifest) SkillEntry {
 		entry.Artifact = &artifact
 		entry.Authentication = &authentication
 		entry.Verification = &verification
+		entry.ProviderDependencies = append([]ProviderDependencyMetadata(nil), m.ProviderDependencies...)
 	}
 	if hasOperational(m.Operational) {
 		operational := m.Operational

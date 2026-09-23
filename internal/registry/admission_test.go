@@ -28,6 +28,88 @@ func TestValidateRepositoryAcceptsCompleteClosure(t *testing.T) {
 	}
 }
 
+func TestProviderDependencyDeclarationsRequireExactIncludedToolsAndAuthentication(t *testing.T) {
+	base := Manifest{
+		SchemaVersion:  "2.1",
+		Authentication: AuthenticationMetadata{Status: "required"},
+		Includes:       IncludeSet{Tools: []string{"analytics/ga4-mcp-connector", "ads/meta-ads-mcp-connector"}},
+		ProviderDependencies: []ProviderDependencyMetadata{
+			{Tool: "analytics/ga4-mcp-connector", Requirement: "required", Access: "read-only"},
+			{Tool: "ads/meta-ads-mcp-connector", Requirement: "optional", Access: "read-only"},
+		},
+	}
+	if err := validateProviderDependencyDeclarations("plugin.yaml", base); err != nil {
+		t.Fatalf("valid provider dependency contract rejected: %v", err)
+	}
+
+	tests := map[string]func(*Manifest){
+		"tool not included": func(manifest *Manifest) {
+			manifest.ProviderDependencies[0].Tool = "warehouse/bigquery-mcp-query-runner"
+		},
+		"duplicate tool": func(manifest *Manifest) {
+			manifest.ProviderDependencies[1].Tool = manifest.ProviderDependencies[0].Tool
+		},
+		"no required provider": func(manifest *Manifest) {
+			manifest.ProviderDependencies[0].Requirement = "optional"
+		},
+		"flat authentication disabled": func(manifest *Manifest) {
+			manifest.Authentication.Status = "none"
+		},
+	}
+	for name, mutate := range tests {
+		t.Run(name, func(t *testing.T) {
+			candidate := base
+			candidate.ProviderDependencies = append([]ProviderDependencyMetadata(nil), base.ProviderDependencies...)
+			mutate(&candidate)
+			if err := validateProviderDependencyDeclarations("plugin.yaml", candidate); err == nil {
+				t.Fatal("invalid provider dependency contract was accepted")
+			}
+		})
+	}
+}
+
+func TestProviderDependencyAuthorityRequiresExactToolAccess(t *testing.T) {
+	authenticatedReadOnlyTool := Manifest{
+		Authentication: AuthenticationMetadata{Status: "required"},
+		Operational:    OperationalMetadata{AccessLevel: "read-only"},
+	}
+	readOnly := ProviderDependencyMetadata{Tool: "analytics/provider", Requirement: "required", Access: "read-only"}
+	if err := validateProviderDependencyAuthority("plugin.yaml", readOnly, authenticatedReadOnlyTool); err != nil {
+		t.Fatalf("matching read-only authority rejected: %v", err)
+	}
+
+	mutations := map[string]struct {
+		dependency ProviderDependencyMetadata
+		tool       Manifest
+	}{
+		"read-write dependency with read-only tool": {
+			dependency: ProviderDependencyMetadata{Tool: "analytics/provider", Requirement: "required", Access: "read-write"},
+			tool:       authenticatedReadOnlyTool,
+		},
+		"read-only dependency with read-write tool": {
+			dependency: readOnly,
+			tool: Manifest{
+				Authentication: AuthenticationMetadata{Status: "required"},
+				Operational:    OperationalMetadata{AccessLevel: "read-write"},
+			},
+		},
+		"provider without authentication": {
+			dependency: readOnly,
+			tool: Manifest{
+				Authentication: AuthenticationMetadata{Status: "none"},
+				Operational:    OperationalMetadata{AccessLevel: "read-only"},
+			},
+		},
+	}
+	for name, mutation := range mutations {
+		t.Run(name, func(t *testing.T) {
+			if err := validateProviderDependencyAuthority("plugin.yaml", mutation.dependency, mutation.tool); err == nil {
+				t.Fatal("incompatible provider authority was accepted")
+			}
+		})
+	}
+}
+
 func TestValidateRepositoryRejectsMissingUsabilityDeclaration(t *testing.T) {
 	root := t.TempDir()
 	path := writeTestModule(t, root, "skill", "shared/undeclared-usability", "codex", "")

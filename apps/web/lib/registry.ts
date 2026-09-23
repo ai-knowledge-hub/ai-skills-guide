@@ -101,6 +101,11 @@ export type RegistryEntry = {
     validation: string;
     revocation: string;
   };
+  provider_dependencies?: Array<{
+    tool: string;
+    requirement: "required" | "optional";
+    access: "read-only" | "read-write";
+  }>;
   verification?: {
     evidence: string[];
     last_verified_at: string;

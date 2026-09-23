@@ -541,6 +541,24 @@ deprecated: false
 	}
 }
 
+func TestProjectManifestPreservesCompositeProviderDependencies(t *testing.T) {
+	manifest := Manifest{
+		SchemaVersion: "2.1", ID: "marketing/reporting-plugin",
+		ProviderDependencies: []ProviderDependencyMetadata{
+			{Tool: "analytics/ga4-mcp-connector", Requirement: "required", Access: "read-only"},
+			{Tool: "warehouse/bigquery-mcp-query-runner", Requirement: "optional", Access: "read-only"},
+		},
+	}
+	entry := ProjectManifest(manifest)
+	if len(entry.ProviderDependencies) != 2 || entry.ProviderDependencies[0].Tool != "analytics/ga4-mcp-connector" || entry.ProviderDependencies[1].Requirement != "optional" {
+		t.Fatalf("provider dependency contract was not preserved: %#v", entry.ProviderDependencies)
+	}
+	manifest.ProviderDependencies[0].Tool = "changed/source"
+	if entry.ProviderDependencies[0].Tool != "analytics/ga4-mcp-connector" {
+		t.Fatal("registry projection aliases the manifest provider dependency slice")
+	}
+}
+
 func TestSchemaValidFlowSequencesRoundTripToRegistry(t *testing.T) {
 	root := t.TempDir()
 	entryDir := filepath.Join(root, "tools-mcp", "adtech", "flow-sequence-fixture")

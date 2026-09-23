@@ -17,6 +17,12 @@ entrypoints:
 includes:
   skills:
     - engineering/contract-fixture-skill
+  tools:
+    - analytics/contract-fixture-provider
+provider_dependencies:
+  - tool: analytics/contract-fixture-provider
+    requirement: required
+    access: read-only
 usability:
   availability: not-verified
   execution: bundle
@@ -33,10 +39,11 @@ artifact:
   checksums: checksums.txt
   sbom: sbom.cdx.json
 authentication:
-  status: optional
+  status: required
   methods:
     - brokered
-  credential_bindings: []
+  credential_bindings:
+    - CONTRACT_FIXTURE_PROVIDER_CREDENTIAL
   scopes: []
   setup_url: https://example.test/setup
   credential_storage: Runtime credential broker when enabled.

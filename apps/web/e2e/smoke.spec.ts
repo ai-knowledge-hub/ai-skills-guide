@@ -6,6 +6,7 @@ const samplePluginPath = "/plugins/marketing/performance-reporting-plugin";
 const sampleEngineeringPluginPath = "/plugins/engineering/code-maintenance-plugin";
 const sampleSecurityPluginPath = "/plugins/security/runtime-safety-plugin";
 const sampleHarnessPluginPath = "/plugins/agentops/harness-governance-plugin";
+const sampleAdvertisingExperimentPluginPath = "/plugins/marketing/chatgpt-advertising-experiment-plugin";
 const sampleToolPath = "/tools-mcp/analytics/ga4-mcp-connector";
 
 test("home route smoke", async ({ page }) => {
@@ -114,6 +115,19 @@ test("new plugin domains smoke", async ({ page }) => {
   await expect(page.getByRole("link", { name: "agentops/harness-run-reflection" })).toBeVisible();
   const harnessRequirements = page.locator(".detail-panel").filter({ has: page.getByRole("heading", { name: "Requirements" }) }).first();
   await expect(harnessRequirements.getByText("human-approval-for-harness-update")).toBeVisible();
+});
+
+test("effectful plugin capabilities remain independently projected", async ({ page }) => {
+  await page.goto(sampleAdvertisingExperimentPluginPath);
+  await expect(page.getByRole("heading", { name: "ChatGPT Advertising Experiment Plugin" })).toBeVisible();
+  const readiness = page.locator(".detail-panel").filter({ has: page.getByRole("heading", { name: "Capability readiness" }) }).first();
+  await expect(readiness.getByRole("heading", { name: "Mock lab" })).toBeVisible();
+  await expect(readiness.getByRole("heading", { name: "Live read" })).toBeVisible();
+  await expect(readiness.getByRole("heading", { name: "Live write" })).toBeVisible();
+  await expect(readiness.getByText("usable-now", { exact: false })).toBeVisible();
+  await expect(readiness.getByText("setup-required", { exact: false })).toBeVisible();
+  await expect(readiness.getByText("not-verified", { exact: false })).toBeVisible();
+  await expect(readiness.getByText("No supported OpenAI Ads mutation adapter", { exact: false })).toBeVisible();
 });
 
 test("tools route and detail smoke", async ({ page }) => {

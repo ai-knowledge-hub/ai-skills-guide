@@ -559,6 +559,71 @@ func TestProjectManifestPreservesCompositeProviderDependencies(t *testing.T) {
 	}
 }
 
+func TestProjectManifestPreservesIndependentCapabilityReadiness(t *testing.T) {
+	manifest := Manifest{SchemaVersion: "2.1", ID: "marketing/experiment-plugin", CapabilityReadiness: []CapabilityReadinessMetadata{{
+		ID: "mock", Name: "Mock lab", Description: "Offline deterministic experiment lab.",
+		Access: "offline", Availability: "usable-now", Limitations: []string{"No provider calls."},
+	}}}
+	entry := ProjectManifest(manifest)
+	if len(entry.CapabilityReadiness) != 1 || entry.CapabilityReadiness[0].Availability != "usable-now" {
+		t.Fatalf("capability readiness was not preserved: %#v", entry.CapabilityReadiness)
+	}
+	manifest.CapabilityReadiness[0].Limitations[0] = "changed"
+	if entry.CapabilityReadiness[0].Limitations[0] != "No provider calls." {
+		t.Fatal("registry projection aliases capability readiness")
+	}
+}
+
+func TestExpiredEvidenceDemotesEveryPositiveCapability(t *testing.T) {
+	verifiedAt := time.Date(2026, 9, 23, 0, 0, 0, 0, time.UTC)
+	manifest := Manifest{
+		SchemaVersion: "2.1", ID: "marketing/experiment-plugin",
+		Usability:      UsabilityMetadata{Availability: "usable-now"},
+		Execution:      ExecutionMetadata{Kind: "bundle"},
+		Authentication: AuthenticationMetadata{Status: "none"},
+		Verification:   VerificationMetadata{Evidence: []string{"evidence://tests/mock"}, LastVerifiedAt: verifiedAt.Format(time.RFC3339)},
+		CapabilityReadiness: []CapabilityReadinessMetadata{
+			{ID: "mock", Availability: "usable-now"},
+			{ID: "live-read", Availability: "setup-required"},
+			{ID: "live-write", Availability: "not-verified"},
+		},
+	}
+	entry := ProjectManifestForCurrentCatalog(manifest, verifiedAt.Add(executableEvidenceLifetime+time.Second))
+	for _, capability := range entry.CapabilityReadiness {
+		if capability.Availability != "not-verified" {
+			t.Fatalf("expired capability %s retained availability %s", capability.ID, capability.Availability)
+		}
+	}
+}
+
+func TestExpiredCapabilityEvidenceIsIndependentOfAggregateUsability(t *testing.T) {
+	verifiedAt := time.Date(2026, 9, 23, 0, 0, 0, 0, time.UTC)
+	manifest := Manifest{
+		SchemaVersion: "2.1", ID: "marketing/experiment-plugin",
+		Usability:      UsabilityMetadata{Availability: "setup-required"},
+		Execution:      ExecutionMetadata{Kind: "bundle"},
+		Authentication: AuthenticationMetadata{Status: "none"},
+		Verification:   VerificationMetadata{Evidence: []string{"evidence://tests/mock"}, LastVerifiedAt: verifiedAt.Format(time.RFC3339)},
+		CapabilityReadiness: []CapabilityReadinessMetadata{
+			{ID: "mock", Availability: "usable-now"},
+			{ID: "live-read", Availability: "setup-required"},
+			{ID: "live-write", Availability: "not-verified"},
+		},
+	}
+	entry := ProjectManifestForCurrentCatalog(manifest, verifiedAt.Add(executableEvidenceLifetime+time.Second))
+	if entry.Usability.Availability != "setup-required" {
+		t.Fatalf("aggregate setup state changed to %s", entry.Usability.Availability)
+	}
+	if entry.Usability.Source != "inferred" {
+		t.Fatalf("capability demotion did not mark the projection inferred: %#v", entry.Usability)
+	}
+	for _, capability := range entry.CapabilityReadiness {
+		if capability.Availability != "not-verified" {
+			t.Fatalf("expired capability %s retained availability %s", capability.ID, capability.Availability)
+		}
+	}
+}
+
 func TestSchemaValidFlowSequencesRoundTripToRegistry(t *testing.T) {
 	root := t.TempDir()
 	entryDir := filepath.Join(root, "tools-mcp", "adtech", "flow-sequence-fixture")

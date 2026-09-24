@@ -84,6 +84,28 @@ func TestRuntimeContractDigestBindsPluginProviderAuthority(t *testing.T) {
 	}
 }
 
+func TestRuntimeContractDigestBindsPluginCapabilityReadiness(t *testing.T) {
+	entry := registry.SkillEntry{
+		ID: "marketing/example-plugin", Runtimes: []string{"generic"},
+		CapabilityReadiness: []registry.CapabilityReadinessMetadata{{
+			ID: "live-write", Name: "Live write", Description: "Governed provider mutations.",
+			Access: "read-write", Availability: "not-verified", Limitations: []string{"No provider adapter."},
+		}},
+	}
+	original, err := RuntimeContractSHA256(entry, "1.0.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	entry.CapabilityReadiness[0].Availability = "setup-required"
+	changed, err := RuntimeContractSHA256(entry, "1.0.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if original == changed {
+		t.Fatal("runtime contract digest did not change with capability readiness")
+	}
+}
+
 func TestInstallReceiptRejectsIdentityMismatch(t *testing.T) {
 	root := t.TempDir()
 	if err := os.WriteFile(filepath.Join(root, "tool.yaml"), []byte("fixture\n"), 0o644); err != nil {

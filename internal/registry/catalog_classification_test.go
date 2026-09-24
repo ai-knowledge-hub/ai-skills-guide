@@ -121,12 +121,13 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 }
 
 var localPluginWave = map[string]bool{
-	"agentops/harness-governance-plugin":         true,
-	"engineering/code-maintenance-plugin":        true,
-	"marketing/competitive-intelligence-plugin":  true,
-	"marketing/content-repurposing-plugin":       true,
-	"marketing/creative-operating-system-plugin": true,
-	"security/runtime-safety-plugin":             true,
+	"agentops/harness-governance-plugin":              true,
+	"engineering/code-maintenance-plugin":             true,
+	"marketing/chatgpt-advertising-experiment-plugin": true,
+	"marketing/competitive-intelligence-plugin":       true,
+	"marketing/content-repurposing-plugin":            true,
+	"marketing/creative-operating-system-plugin":      true,
+	"security/runtime-safety-plugin":                  true,
 }
 
 func assertClassification(t *testing.T, entry SkillEntry, availability, execution string) {

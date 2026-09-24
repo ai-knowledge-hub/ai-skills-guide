@@ -203,18 +203,19 @@ func VerifyInstallClosure(packageDir, pluginTargetRoot string, receipt InstallRe
 
 func RuntimeContractSHA256(entry registry.SkillEntry, version string) (string, error) {
 	contract := struct {
-		ID                   string                                `json:"id"`
-		Version              string                                `json:"version"`
-		Runtimes             []string                              `json:"runtimes"`
-		Execution            *registry.ExecutionMetadata           `json:"execution"`
-		Artifact             *registry.ArtifactMetadata            `json:"artifact"`
-		Authentication       *registry.AuthenticationMetadata      `json:"authentication"`
-		Includes             *registry.IncludeSet                  `json:"includes,omitempty"`
-		ProviderDependencies []registry.ProviderDependencyMetadata `json:"provider_dependencies,omitempty"`
+		ID                   string                                 `json:"id"`
+		Version              string                                 `json:"version"`
+		Runtimes             []string                               `json:"runtimes"`
+		Execution            *registry.ExecutionMetadata            `json:"execution"`
+		Artifact             *registry.ArtifactMetadata             `json:"artifact"`
+		Authentication       *registry.AuthenticationMetadata       `json:"authentication"`
+		Includes             *registry.IncludeSet                   `json:"includes,omitempty"`
+		ProviderDependencies []registry.ProviderDependencyMetadata  `json:"provider_dependencies,omitempty"`
+		CapabilityReadiness  []registry.CapabilityReadinessMetadata `json:"capability_readiness,omitempty"`
 	}{
 		ID: entry.ID, Version: version, Runtimes: entry.Runtimes, Execution: entry.Execution,
 		Artifact: entry.Artifact, Authentication: entry.Authentication, Includes: entry.Includes,
-		ProviderDependencies: entry.ProviderDependencies,
+		ProviderDependencies: entry.ProviderDependencies, CapabilityReadiness: entry.CapabilityReadiness,
 	}
 	payload, err := json.Marshal(contract)
 	if err != nil {

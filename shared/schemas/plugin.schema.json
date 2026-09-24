@@ -66,6 +66,14 @@
         "required": ["requirement"]
       }
     },
+    "capability_readiness": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "items": {
+        "$ref": "#/$defs/capability_readiness"
+      }
+    },
     "id": {
       "type": "string",
       "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"
@@ -273,6 +281,53 @@
     }
   },
   "$defs": {
+    "capability_readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "description", "access", "availability"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]{1,39}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 80
+        },
+        "description": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 300
+        },
+        "access": {
+          "enum": ["offline", "read-only", "read-write"]
+        },
+        "availability": {
+          "enum": ["usable-now", "setup-required", "not-verified", "template-only"]
+        },
+        "requires_setup": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 240
+          }
+        },
+        "limitations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 300
+          }
+        }
+      }
+    },
     "usability": {
       "type": "object",
       "additionalProperties": false,
@@ -807,6 +862,11 @@
             ]
           },
           {
+            "required": [
+              "capability_readiness"
+            ]
+          },
+          {
             "properties": {
               "verification": {
                 "anyOf": [
@@ -860,6 +920,7 @@
       },
       "then": {
         "properties": {
+        "capability_readiness": false,
         "usability": {
           "properties": {
             "availability": {

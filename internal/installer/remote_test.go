@@ -1199,9 +1199,14 @@ func TestInstallPublishedLocalPluginWaveWithoutSourceSiblings(t *testing.T) {
 	runPublisher(t, webRoot, releaseStore, publicRoot)
 
 	testCases := []struct {
-		id     string
-		skills []string
-		agents []string
+		id               string
+		skills           []string
+		agents           []string
+		tools            []string
+		executionRuntime string
+		interpreter      string
+		script           string
+		arguments        []string
 	}{
 		{id: "agentops/harness-governance-plugin", skills: []string{"agentops/harness-run-reflection", "agentops/harness-skill-proposal", "agentops/harness-regression-evaluator"}},
 		{id: "engineering/code-maintenance-plugin", skills: []string{"engineering/implementation-strategy", "engineering/code-change-verification", "engineering/test-gap-analyzer", "engineering/coverage-gap-reporter", "engineering/pr-review-and-draft"}},
@@ -1209,6 +1214,12 @@ func TestInstallPublishedLocalPluginWaveWithoutSourceSiblings(t *testing.T) {
 		{id: "marketing/competitive-intelligence-plugin", skills: []string{"adtech/brand-rag-memory-bootstrap", "marketing/ai-output-eval-scorecard", "security/handle-untrusted-content"}},
 		{id: "marketing/creative-operating-system-plugin", skills: []string{"adtech/brand-rag-memory-bootstrap", "marketing/creative-operating-system-audit", "marketing/utility-campaign-concept-designer", "marketing/product-as-media-mapper", "marketing/cultural-timing-signal-triage", "marketing/creator-strategy-brief", "marketing/ai-output-eval-scorecard"}, agents: []string{"marketing/creative-operating-system-supervisor"}},
 		{id: "security/runtime-safety-plugin", skills: []string{"security/handle-untrusted-content", "security/dependency-supply-chain-audit", "security/secrets-and-credential-hygiene", "security/environment-risk-assessment"}},
+		{
+			id:               "marketing/chatgpt-advertising-experiment-plugin",
+			skills:           []string{"marketing/task-map-designer", "marketing/ai-output-eval-scorecard", "adtech/advertising-signal-ownership-auditor", "marketing/agent-share-of-choice-evaluator", "agentops/ad-platform-policy-gate-designer"},
+			tools:            []string{"adtech/conversion-event-reconciler", "adtech/openai-ads-api-client"},
+			executionRuntime: "python3", interpreter: "python3", script: "scripts/run_mock_lab.py", arguments: []string{"--check"},
+		},
 	}
 
 	index, err := registry.LoadIndex(filepath.Join(publicRoot, "registry", "plugins-index.json"))
@@ -1217,6 +1228,18 @@ func TestInstallPublishedLocalPluginWaveWithoutSourceSiblings(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(strings.ReplaceAll(testCase.id, "/", "_"), func(t *testing.T) {
+			executionRuntime := testCase.executionRuntime
+			if executionRuntime == "" {
+				executionRuntime = "node22"
+			}
+			interpreter := testCase.interpreter
+			if interpreter == "" {
+				interpreter = "node"
+			}
+			script := testCase.script
+			if script == "" {
+				script = "scripts/first_use.mjs"
+			}
 			entry, found := registry.FindSkill(index, testCase.id)
 			if !found {
 				t.Fatalf("published registry missing %s", testCase.id)
@@ -1266,7 +1289,7 @@ func TestInstallPublishedLocalPluginWaveWithoutSourceSiblings(t *testing.T) {
 					if _, deniedErr := InstallRemoteRelease(context.Background(), options); deniedErr == nil || !strings.Contains(deniedErr.Error(), "--execution-runtime") {
 						t.Fatalf("install without declared Node capability was not rejected: %v", deniedErr)
 					}
-					options.ExecutionRuntimes = []string{"node22"}
+					options.ExecutionRuntimes = []string{executionRuntime}
 					result, installErr := InstallRemoteRelease(context.Background(), options)
 					if installErr != nil {
 						t.Fatalf("install standalone published plugin: %v", installErr)
@@ -1293,6 +1316,9 @@ func TestInstallPublishedLocalPluginWaveWithoutSourceSiblings(t *testing.T) {
 					for _, dependencyID := range testCase.agents {
 						assertFileContains(t, filepath.Join(runtimeRoot, "agents", filepath.FromSlash(dependencyID), "agent.yaml"), dependencyID)
 					}
+					for _, dependencyID := range testCase.tools {
+						assertFileContains(t, filepath.Join(runtimeRoot, "tools-mcp", filepath.FromSlash(dependencyID), "tool.yaml"), dependencyID)
+					}
 					if runtimeName == "codex" {
 						assertFileContains(t, filepath.Join(result.Destination, "plugin.json"), agentPluginManifestSchema)
 					}
@@ -1300,14 +1326,15 @@ func TestInstallPublishedLocalPluginWaveWithoutSourceSiblings(t *testing.T) {
 						assertFileContains(t, filepath.Join(result.Destination, ".claude-plugin", "plugin.json"), `"skills": "./skills/"`)
 					}
 
-					commandArgs := []string{
-						filepath.Join(result.Destination, "scripts", "first_use.mjs"),
-						filepath.Join(result.Destination, "examples", "first-use-input.json"),
+					commandArgs := []string{filepath.Join(result.Destination, filepath.FromSlash(script))}
+					if testCase.script == "" {
+						commandArgs = append(commandArgs, filepath.Join(result.Destination, "examples", "first-use-input.json"))
 					}
+					commandArgs = append(commandArgs, testCase.arguments...)
 					if testCase.id == "marketing/content-repurposing-plugin" {
 						commandArgs = append(commandArgs, filepath.Join(t.TempDir(), "deliverable"))
 					}
-					command := exec.Command("node", commandArgs...)
+					command := exec.Command(interpreter, commandArgs...)
 					output, commandErr := command.CombinedOutput()
 					if commandErr != nil {
 						t.Fatalf("installed first-use command failed: %v\n%s", commandErr, output)
@@ -1315,6 +1342,10 @@ func TestInstallPublishedLocalPluginWaveWithoutSourceSiblings(t *testing.T) {
 					if testCase.id == "marketing/content-repurposing-plugin" {
 						if !strings.Contains(string(output), `"publish_authorized":false`) {
 							t.Fatalf("installed content first-use result lost its authority boundary: %s", output)
+						}
+					} else if testCase.id == "marketing/chatgpt-advertising-experiment-plugin" {
+						if !strings.Contains(string(output), `"network_calls": 0`) || !strings.Contains(string(output), `"valid": true`) {
+							t.Fatalf("installed mock lab lost its offline contract: %s", output)
 						}
 					} else if !strings.Contains(string(output), `"schema_version": "local-plugin.first-use/v1"`) {
 						t.Fatalf("installed first-use result has the wrong contract: %s", output)

@@ -11,7 +11,7 @@ This bundle turns the ChatGPT advertising experiment pack into an installable wo
 ```bash
 ./bin/skills-hub install \
   --module plugins \
-  --entry marketing/chatgpt-advertising-experiment-plugin@0.1.0 \
+  --entry marketing/chatgpt-advertising-experiment-plugin@0.2.0 \
   --runtime codex
 ```
 
@@ -27,7 +27,7 @@ python3 scripts/run_mock_lab.py
 
 The command reads the installed mock Ads API fixtures, validates a conversion batch, reconciles platform events against business outcomes, and writes `output/mock-evidence-bundle.json`. It makes no network calls.
 
-Use that evidence bundle with `adtech/chatgpt-ads-experiment-supervisor` in `mock-run` mode.
+Review that evidence bundle directly, or pass it to a separately installed advisory supervisor. Template-only supervisors and executors are intentionally excluded from this executable closure because they cannot satisfy runtime admission.
 
 ## Live read-only setup
 
@@ -42,7 +42,7 @@ For remote conversion validation, also configure `OPENAI_ADS_PIXEL_ID` and `OPEN
 
 ## Live writes
 
-No live OpenAI Ads writer ships in this plugin. The included executor is an architecture template. A production implementation must add:
+No live OpenAI Ads writer ships in this plugin. Installing or configuring the control plane and executor does not change that status: neither component supplies an OpenAI Ads mutation adapter. A future production adapter must add:
 
 - explicit operation allowlists
 - bounded budget and targeting deltas
@@ -50,6 +50,8 @@ No live OpenAI Ads writer ships in this plugin. The included executor is an arch
 - current-state validation
 - idempotency and retry policy
 - immutable audit records and rollback evidence
+
+The catalog therefore reports live write as `not-verified`, not `setup-required`. It must not be promoted until the adapter, exact-effect approval, bounded grant expiry, ambiguous-effect reconciliation, and rollback path have provider-bound evidence.
 
 ## Official OpenAI Ads references
 

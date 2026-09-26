@@ -178,6 +178,7 @@ func ProjectManifest(m Manifest) SkillEntry {
 		entry.Authentication = &authentication
 		entry.Verification = &verification
 		entry.ProviderDependencies = append([]ProviderDependencyMetadata(nil), m.ProviderDependencies...)
+		entry.CapabilityReadiness = cloneCapabilityReadiness(m.CapabilityReadiness)
 	}
 	if hasOperational(m.Operational) {
 		operational := m.Operational
@@ -218,6 +219,12 @@ func ApplyLifecycleProjection(entry SkillEntry) SkillEntry {
 			demoted = true
 		}
 	}
+	for index := range entry.CapabilityReadiness {
+		if isPositiveUsability(entry.CapabilityReadiness[index].Availability) {
+			entry.CapabilityReadiness[index].Availability = "not-verified"
+			demoted = true
+		}
+	}
 	if demoted {
 		entry.Usability.Source = "inferred"
 	}
@@ -228,16 +235,45 @@ func isPositiveUsability(availability string) bool {
 	return availability == "usable-now" || availability == "setup-required"
 }
 
+func cloneCapabilityReadiness(values []CapabilityReadinessMetadata) []CapabilityReadinessMetadata {
+	if len(values) == 0 {
+		return nil
+	}
+	result := make([]CapabilityReadinessMetadata, len(values))
+	for index, value := range values {
+		result[index] = value
+		result[index].RequiresSetup = cloneNonEmptyStrings(value.RequiresSetup)
+		result[index].Limitations = cloneNonEmptyStrings(value.Limitations)
+	}
+	return result
+}
+
+func hasPositiveCapabilityReadiness(values []CapabilityReadinessMetadata) bool {
+	for _, capability := range values {
+		if isPositiveUsability(capability.Availability) {
+			return true
+		}
+	}
+	return false
+}
+
 // ProjectManifestForCurrentCatalog derives the operator-visible projection at
 // publication time without changing the immutable manifest or release
 // sidecar. An expired usable-now claim is retained for audit in Verification,
 // but it cannot remain advertised as current readiness.
 func ProjectManifestForCurrentCatalog(m Manifest, now time.Time) SkillEntry {
 	entry := ProjectManifest(m)
-	if m.Usability.Availability == "usable-now" {
+	if m.Usability.Availability == "usable-now" || hasPositiveCapabilityReadiness(m.CapabilityReadiness) {
 		if err := validateFreshEvidence(m.ID, m, now.UTC()); err != nil {
-			entry.Usability.Availability = "not-verified"
+			if entry.Usability.Availability == "usable-now" {
+				entry.Usability.Availability = "not-verified"
+			}
 			entry.Usability.Source = "inferred"
+			for index := range entry.CapabilityReadiness {
+				if isPositiveUsability(entry.CapabilityReadiness[index].Availability) {
+					entry.CapabilityReadiness[index].Availability = "not-verified"
+				}
+			}
 		}
 	}
 	return ApplyLifecycleProjection(entry)

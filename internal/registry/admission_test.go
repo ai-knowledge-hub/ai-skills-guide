@@ -68,6 +68,50 @@ func TestProviderDependencyDeclarationsRequireExactIncludedToolsAndAuthenticatio
 	}
 }
 
+func TestCapabilityReadinessRequiresConservativeEffectClaims(t *testing.T) {
+	base := Manifest{CapabilityReadiness: []CapabilityReadinessMetadata{
+		{ID: "mock", Availability: "usable-now", Access: "offline"},
+		{ID: "live-read", Availability: "setup-required", Access: "read-only", RequiresSetup: []string{"Configure provider authentication."}},
+		{ID: "live-write", Availability: "not-verified", Access: "read-write", Limitations: []string{"No provider mutation adapter."}},
+	}}
+	if err := validateCapabilityReadinessDeclarations("plugin.yaml", base); err != nil {
+		t.Fatalf("conservative capability contract rejected: %v", err)
+	}
+
+	tests := map[string]func(*Manifest){
+		"duplicate id": func(manifest *Manifest) {
+			manifest.CapabilityReadiness[1].ID = "mock"
+		},
+		"setup without requirements": func(manifest *Manifest) {
+			manifest.CapabilityReadiness[1].RequiresSetup = nil
+		},
+		"unavailable without explanation": func(manifest *Manifest) {
+			manifest.CapabilityReadiness[2].Limitations = nil
+		},
+		"write claim without authority": func(manifest *Manifest) {
+			manifest.CapabilityReadiness[2].Availability = "setup-required"
+			manifest.CapabilityReadiness[2].RequiresSetup = []string{"Configure write access."}
+		},
+		"write claim with unrelated read-write dependency": func(manifest *Manifest) {
+			manifest.ProviderDependencies = []ProviderDependencyMetadata{{
+				Tool: "agentops/agent-control-plane-server", Requirement: "required", Access: "read-write",
+			}}
+			manifest.CapabilityReadiness[2].Availability = "setup-required"
+			manifest.CapabilityReadiness[2].RequiresSetup = []string{"Configure control-plane authority."}
+		},
+	}
+	for name, mutate := range tests {
+		t.Run(name, func(t *testing.T) {
+			candidate := base
+			candidate.CapabilityReadiness = cloneCapabilityReadiness(base.CapabilityReadiness)
+			mutate(&candidate)
+			if err := validateCapabilityReadinessDeclarations("plugin.yaml", candidate); err == nil {
+				t.Fatal("invalid capability readiness contract was accepted")
+			}
+		})
+	}
+}
+
 func TestProviderDependencyAuthorityRequiresExactToolAccess(t *testing.T) {
 	authenticatedReadOnlyTool := Manifest{
 		Authentication: AuthenticationMetadata{Status: "required"},

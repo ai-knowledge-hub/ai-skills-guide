@@ -113,7 +113,7 @@ func ParseManifest(path string) (Manifest, error) {
 }
 
 func firstV2ContractField(raw map[string]any) (string, bool) {
-	for _, field := range []string{"execution", "artifact", "authentication", "provider_dependencies"} {
+	for _, field := range []string{"execution", "artifact", "authentication", "provider_dependencies", "capability_readiness"} {
 		if _, found := raw[field]; found {
 			return "$." + field, true
 		}

@@ -149,6 +149,9 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time, requ
 		if err := validateProviderDependencyDeclarations(manifestPath, manifest); err != nil {
 			return err
 		}
+		if err := validateCapabilityReadinessDeclarations(manifestPath, manifest); err != nil {
+			return err
+		}
 		if filepath.Base(manifestPath) == "plugin.yaml" && manifest.Execution.Kind == "bundle" && !manifest.Artifact.SelfContained {
 			return fmt.Errorf("manifest %s bundle artifact must declare a self-contained dependency closure", manifestPath)
 		}
@@ -198,6 +201,26 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time, requ
 			if _, ok := manifest.Entrypoints["scripts_dir"]; !ok {
 				return fmt.Errorf("manifest %s claims usable-now %s without a scripts_dir entrypoint", manifestPath, manifest.Usability.Execution)
 			}
+		}
+	}
+	return nil
+}
+
+func validateCapabilityReadinessDeclarations(manifestPath string, manifest Manifest) error {
+	seen := make(map[string]struct{}, len(manifest.CapabilityReadiness))
+	for _, capability := range manifest.CapabilityReadiness {
+		if _, duplicate := seen[capability.ID]; duplicate {
+			return fmt.Errorf("manifest %s repeats capability readiness id %q", manifestPath, capability.ID)
+		}
+		seen[capability.ID] = struct{}{}
+		if capability.Availability == "setup-required" && len(capability.RequiresSetup) == 0 {
+			return fmt.Errorf("manifest %s capability %q requires setup but declares no setup requirements", manifestPath, capability.ID)
+		}
+		if (capability.Availability == "not-verified" || capability.Availability == "template-only") && len(capability.Limitations) == 0 {
+			return fmt.Errorf("manifest %s capability %q must explain why it is unavailable", manifestPath, capability.ID)
+		}
+		if capability.Access == "read-write" && isPositiveUsability(capability.Availability) {
+			return fmt.Errorf("manifest %s capability %q claims positive read-write readiness without an exact effect-authority contract", manifestPath, capability.ID)
 		}
 	}
 	return nil
@@ -542,7 +565,7 @@ func dependencyKeys(manifest Manifest) []string {
 	keys := make([]string, 0)
 	add := func(module string, ids []string) {
 		for _, id := range ids {
-			if strings.Contains(id, "/") {
+			if packageIDPattern.MatchString(id) {
 				keys = append(keys, module+":"+id)
 			}
 		}
@@ -559,7 +582,7 @@ func dependencyRefsForManifest(manifest Manifest) []struct{ module, id string } 
 	seen := make(map[string]struct{})
 	add := func(module string, ids []string) {
 		for _, id := range ids {
-			if strings.Contains(id, "/") {
+			if packageIDPattern.MatchString(id) {
 				key := module + ":" + id
 				if _, exists := seen[key]; !exists {
 					seen[key] = struct{}{}

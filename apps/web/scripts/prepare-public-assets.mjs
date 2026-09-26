@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { execFile } from "node:child_process";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { promisify } from "node:util";
 import { gunzipSync, gzipSync } from "node:zlib";
 
@@ -358,11 +359,16 @@ function compareSemverIdentifiers(left, right, releaseOutranksPrerelease) {
   return 0;
 }
 
-function projectCurrentCatalogEntry(storedEntry) {
+export function projectCurrentCatalogEntry(storedEntry) {
   const entry = structuredClone(storedEntry);
-  if (entry.usability?.availability === "usable-now" && !hasFreshEvidence(entry)) {
-    entry.usability.availability = "not-verified";
+  const hasPositiveCapability = (entry.capability_readiness ?? [])
+    .some((capability) => isPositiveAvailability(capability.availability));
+  if ((entry.usability?.availability === "usable-now" || hasPositiveCapability) && !hasFreshEvidence(entry)) {
+    if (entry.usability?.availability === "usable-now") entry.usability.availability = "not-verified";
     entry.usability.source = "inferred";
+    for (const capability of entry.capability_readiness ?? []) {
+      if (isPositiveAvailability(capability.availability)) capability.availability = "not-verified";
+    }
   }
   if (entry.deprecated) {
     entry.readiness = "deprecated";
@@ -374,6 +380,12 @@ function projectCurrentCatalogEntry(storedEntry) {
     for (const helper of entry.usability?.executable_helpers ?? []) {
       if (isPositiveAvailability(helper.availability)) {
         helper.availability = "not-verified";
+        demoted = true;
+      }
+    }
+    for (const capability of entry.capability_readiness ?? []) {
+      if (isPositiveAvailability(capability.availability)) {
+        capability.availability = "not-verified";
         demoted = true;
       }
     }
@@ -499,7 +511,11 @@ function dependencyReferences(projection, includePluginComposition) {
   const references = [];
   const add = (module, ids) => {
     for (const id of ids ?? []) {
-      if (id.includes("/")) {
+      // Some legacy manifests list repository-relative schema or script paths
+      // under dependencies.tools. Only registry identities belong in a
+      // self-contained plugin closure; file dependencies remain part of their
+      // owning package.
+      if (id.includes("/") && sourceEntries.has(`${module}:${id}`)) {
         references.push({ module, id });
       }
     }
@@ -717,4 +733,6 @@ function writeOctal(buffer, offset, length, value) {
   writeString(buffer, offset, length, encoded);
 }
 
-await main();
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  await main();
+}

@@ -15,13 +15,16 @@ the install caller nor the installed agent package can select or replace it:
 
 Governed builds require `CODEX_MODEL_ATTESTATION_PUBLIC_KEY`,
 `CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY`, and
-`GENERIC_MODEL_ATTESTATION_PUBLIC_KEY`. `make cli-build`, CI, and the release-tag
-workflow inject those repository-managed public roots into the matching
+`GENERIC_MODEL_ATTESTATION_PUBLIC_KEY`. `make cli-build`, release-cut, and the
+release-tag workflow inject repository-managed public roots into the matching
 `internal/agents` linker variables. A missing root fails the governed build
 instead of producing an unusable release. Direct development builds contain no
-authority and fail closed. CI also builds a real CLI with an isolated test-only
-root and proves that a matching signed attestation reaches `ready`. The private
-keys are runtime-adapter deployment secrets and must never enter this repository.
+authority and fail closed. Pull-request CI uses `make cli-build-test`, which
+produces a separately named, non-release binary with an explicit public
+test-vector root; it cannot silently substitute for the governed release build.
+CI also proves with an isolated generated keypair that a matching signed
+attestation reaches `ready`. The private production keys are runtime-adapter
+deployment secrets and must never enter this repository.
 Users must verify the CLI through its normal distribution provenance; a locally
 modified binary is a different trust domain.
 

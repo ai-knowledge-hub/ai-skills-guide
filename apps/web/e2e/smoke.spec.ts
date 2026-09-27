@@ -62,10 +62,14 @@ test("agents route and detail smoke", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Operational Summary" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Coordinates" })).toBeVisible();
   await expect(page.getByText("semi-autonomous")).toBeVisible();
-  await expect(page.getByText("Template only", { exact: true })).toBeVisible();
-  await expect(page.getByText("no launchable orchestrator", { exact: false })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Reference template" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Install (Codex)" })).toHaveCount(0);
+  const usability = page.locator(".detail-panel").filter({ has: page.getByRole("heading", { name: "How You Can Use This" }) }).first();
+  await expect(usability.getByText("Setup required", { exact: true }).first()).toBeVisible();
+  await expect(usability.getByText("orchestrator", { exact: false })).toBeVisible();
+  await expect(usability.getByText("GA4 and BigQuery credentials", { exact: false })).toBeVisible();
+  await expect(page.getByText("Install this agent", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Install (Codex)" })).toBeVisible();
+  await expect(page.locator(".copy-button")).toHaveCount(3);
+  await expect(page.locator("pre.install").first()).toContainText("--module agents");
 });
 
 test("plugins route and detail smoke", async ({ page }) => {

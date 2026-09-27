@@ -79,4 +79,7 @@ python3 -m unittest discover -s "$ROOT/plugins/marketing/chatgpt-advertising-exp
 echo "[check] local plugin wave first-use scenarios"
 node --test "$ROOT/plugins/local_plugin_wave.test.mjs"
 
+echo "[check] public catalog capability projection"
+node --test "$ROOT/apps/web/scripts/prepare-public-assets.test.mjs"
+
 echo "All skill scripts passed deterministic checks."

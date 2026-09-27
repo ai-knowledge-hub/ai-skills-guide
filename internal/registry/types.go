@@ -1,33 +1,92 @@
 package registry
 
 type Manifest struct {
-	SchemaVersion     string                 `json:"schema_version"`
-	ID                string                 `json:"id"`
-	Name              string                 `json:"name"`
-	Description       string                 `json:"description"`
-	Version           string                 `json:"version"`
-	ReleasedAt        string                 `json:"released_at"`
-	Category          string                 `json:"category"`
-	Tags              []string               `json:"tags"`
-	Runtimes          []string               `json:"runtimes"`
-	Entrypoints       map[string]string      `json:"entrypoints"`
-	SecurityReviewed  bool                   `json:"-"`
-	Deprecated        bool                   `json:"deprecated"`
-	ReplacedBy        string                 `json:"replaced_by"`
-	Operational       OperationalMetadata    `json:"operational"`
-	Usability         UsabilityMetadata      `json:"usability"`
-	Execution         ExecutionMetadata      `json:"execution"`
-	Artifact          ArtifactMetadata       `json:"artifact"`
-	Authentication    AuthenticationMetadata `json:"authentication"`
-	Verification      VerificationMetadata   `json:"verification"`
-	Dependencies      DependencySet          `json:"dependencies"`
-	Includes          IncludeSet             `json:"includes"`
-	Requires          RequirementSet         `json:"requires"`
-	executionSet      bool
-	artifactSet       bool
-	authenticationSet bool
-	verificationSet   bool
-	usabilitySet      bool
+	SchemaVersion        string                        `json:"schema_version"`
+	ID                   string                        `json:"id"`
+	Name                 string                        `json:"name"`
+	Description          string                        `json:"description"`
+	Version              string                        `json:"version"`
+	ReleasedAt           string                        `json:"released_at"`
+	Category             string                        `json:"category"`
+	Tags                 []string                      `json:"tags"`
+	Runtimes             []string                      `json:"runtimes"`
+	Entrypoints          map[string]string             `json:"entrypoints"`
+	SecurityReviewed     bool                          `json:"-"`
+	Deprecated           bool                          `json:"deprecated"`
+	ReplacedBy           string                        `json:"replaced_by"`
+	Operational          OperationalMetadata           `json:"operational"`
+	Usability            UsabilityMetadata             `json:"usability"`
+	Execution            ExecutionMetadata             `json:"execution"`
+	Artifact             ArtifactMetadata              `json:"artifact"`
+	Authentication       AuthenticationMetadata        `json:"authentication"`
+	Verification         VerificationMetadata          `json:"verification"`
+	ProviderDependencies []ProviderDependencyMetadata  `json:"provider_dependencies,omitempty"`
+	CapabilityReadiness  []CapabilityReadinessMetadata `json:"capability_readiness,omitempty"`
+	Orchestration        *OrchestrationMetadata        `json:"orchestration,omitempty"`
+	Dependencies         DependencySet                 `json:"dependencies"`
+	Includes             IncludeSet                    `json:"includes"`
+	Requires             RequirementSet                `json:"requires"`
+	executionSet         bool
+	artifactSet          bool
+	authenticationSet    bool
+	verificationSet      bool
+	usabilitySet         bool
+}
+
+// OrchestrationMetadata is the install-time contract for an agent package.
+// It keeps logical workflow names separate from immutable catalog identities,
+// and makes unavailable capabilities explicit instead of leaving users to
+// invent local bindings.
+type OrchestrationMetadata struct {
+	Model      OrchestrationModelRequirement   `json:"model"`
+	Memory     OrchestrationProfileRequirement `json:"memory"`
+	Governance OrchestrationProfileRequirement `json:"governance"`
+	Bindings   []OrchestrationBinding          `json:"bindings"`
+}
+
+type OrchestrationModelRequirement struct {
+	Selection            string   `json:"selection"`
+	RequiredCapabilities []string `json:"required_capabilities"`
+}
+
+type OrchestrationProfileRequirement struct {
+	Mode     string `json:"mode"`
+	Path     string `json:"path,omitempty"`
+	Required bool   `json:"required"`
+}
+
+type OrchestrationBinding struct {
+	Name         string `json:"name"`
+	Kind         string `json:"kind"`
+	Package      string `json:"package,omitempty"`
+	Version      string `json:"version,omitempty"`
+	Requirement  string `json:"requirement"`
+	Access       string `json:"access,omitempty"`
+	Availability string `json:"availability"`
+	Reason       string `json:"reason,omitempty"`
+}
+
+// ProviderDependencyMetadata declares the provider authority a composed
+// plugin needs from one of its included tools. Credentials remain owned and
+// validated by that tool; the plugin only composes target-bound evidence.
+type ProviderDependencyMetadata struct {
+	Tool        string `json:"tool"`
+	Requirement string `json:"requirement"`
+	Access      string `json:"access"`
+}
+
+// CapabilityReadinessMetadata keeps independently usable plugin paths from
+// inheriting one package-level readiness claim. It is intentionally a static
+// catalog contract: runtime authentication and effect authority are still
+// verified by their owning tools before use.
+type CapabilityReadinessMetadata struct {
+	ID            string   `json:"id"`
+	Name          string   `json:"name"`
+	Description   string   `json:"description"`
+	Access        string   `json:"access"`
+	Availability  string   `json:"availability"`
+	RequiresSetup []string `json:"requires_setup,omitempty"`
+	Limitations   []string `json:"limitations,omitempty"`
 }
 
 type ExecutionMetadata struct {
@@ -123,28 +182,31 @@ type Index struct {
 }
 
 type SkillEntry struct {
-	SchemaVersion    string                  `json:"schema_version,omitempty"`
-	ID               string                  `json:"id"`
-	Name             string                  `json:"name"`
-	Description      string                  `json:"description"`
-	Category         string                  `json:"category"`
-	Latest           string                  `json:"latest"`
-	Versions         []VersionEntry          `json:"versions"`
-	Runtimes         []string                `json:"runtimes"`
-	Tags             []string                `json:"tags"`
-	Readiness        string                  `json:"readiness"`
-	SecurityReviewed bool                    `json:"security_reviewed"`
-	Deprecated       bool                    `json:"deprecated"`
-	ReplacedBy       string                  `json:"replaced_by,omitempty"`
-	Operational      *OperationalMetadata    `json:"operational,omitempty"`
-	Usability        UsabilityMetadata       `json:"usability"`
-	Execution        *ExecutionMetadata      `json:"execution,omitempty"`
-	Artifact         *ArtifactMetadata       `json:"artifact,omitempty"`
-	Authentication   *AuthenticationMetadata `json:"authentication,omitempty"`
-	Verification     *VerificationMetadata   `json:"verification,omitempty"`
-	Dependencies     *DependencySet          `json:"dependencies,omitempty"`
-	Includes         *IncludeSet             `json:"includes,omitempty"`
-	Requires         *RequirementSet         `json:"requires,omitempty"`
+	SchemaVersion        string                        `json:"schema_version,omitempty"`
+	ID                   string                        `json:"id"`
+	Name                 string                        `json:"name"`
+	Description          string                        `json:"description"`
+	Category             string                        `json:"category"`
+	Latest               string                        `json:"latest"`
+	Versions             []VersionEntry                `json:"versions"`
+	Runtimes             []string                      `json:"runtimes"`
+	Tags                 []string                      `json:"tags"`
+	Readiness            string                        `json:"readiness"`
+	SecurityReviewed     bool                          `json:"security_reviewed"`
+	Deprecated           bool                          `json:"deprecated"`
+	ReplacedBy           string                        `json:"replaced_by,omitempty"`
+	Operational          *OperationalMetadata          `json:"operational,omitempty"`
+	Usability            UsabilityMetadata             `json:"usability"`
+	Execution            *ExecutionMetadata            `json:"execution,omitempty"`
+	Artifact             *ArtifactMetadata             `json:"artifact,omitempty"`
+	Authentication       *AuthenticationMetadata       `json:"authentication,omitempty"`
+	Verification         *VerificationMetadata         `json:"verification,omitempty"`
+	ProviderDependencies []ProviderDependencyMetadata  `json:"provider_dependencies,omitempty"`
+	CapabilityReadiness  []CapabilityReadinessMetadata `json:"capability_readiness,omitempty"`
+	Orchestration        *OrchestrationMetadata        `json:"orchestration,omitempty"`
+	Dependencies         *DependencySet                `json:"dependencies,omitempty"`
+	Includes             *IncludeSet                   `json:"includes,omitempty"`
+	Requires             *RequirementSet               `json:"requires,omitempty"`
 }
 
 type VersionEntry struct {

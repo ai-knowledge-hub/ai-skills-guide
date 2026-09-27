@@ -101,6 +101,20 @@ export type RegistryEntry = {
     validation: string;
     revocation: string;
   };
+  provider_dependencies?: Array<{
+    tool: string;
+    requirement: "required" | "optional";
+    access: "read-only" | "read-write";
+  }>;
+  capability_readiness?: Array<{
+    id: string;
+    name: string;
+    description: string;
+    access: "offline" | "read-only" | "read-write";
+    availability: "usable-now" | "setup-required" | "not-verified" | "template-only";
+    requires_setup?: string[];
+    limitations?: string[];
+  }>;
   verification?: {
     evidence: string[];
     last_verified_at: string;

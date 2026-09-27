@@ -464,6 +464,8 @@ Example usage:
   --target ./my-agent/tools-mcp
 ./bin/skills-hub run-agent \
   --agent marketing/weekly-performance-supervisor \
+  --runtime codex \
+  --model-attestation "$MODEL_ATTESTATION_PATH" \
   --bindings agents/marketing/weekly-performance-supervisor/config/\
 tool-bindings.example.json \
   --memory agents/marketing/weekly-performance-supervisor/config/\
@@ -478,6 +480,8 @@ For packages with a versioned authentication contract, use `auth configure`,
 `auth status`, `doctor`, and `smoke` after installation. See
 [Authentication and Runtime Readiness](docs/authentication-readiness.md) for
 the credential-binding and provider-validation protocol.
+Runtime adapters must also provide signed model capability evidence as described
+in [Runtime model readiness attestation](docs/model-readiness-attestation.md).
 
 Runtime target defaults:
 

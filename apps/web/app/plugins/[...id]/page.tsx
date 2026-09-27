@@ -66,6 +66,32 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
 
       <section className="detail-grid">
         <UsabilityPanel usability={entry.usability} />
+        {entry.capability_readiness?.length ? (
+          <article className="card detail-panel">
+            <h2>Capability readiness</h2>
+            {entry.capability_readiness.map((capability) => (
+              <section key={capability.id}>
+                <h3>{capability.name}</h3>
+                <p>
+                  <span className="meta">Status:</span> {capability.availability}
+                  {" · "}
+                  <span className="meta">Access:</span> {capability.access}
+                </p>
+                <p>{capability.description}</p>
+                {capability.requires_setup?.length ? (
+                  <ul>
+                    {capability.requires_setup.map((requirement) => <li key={requirement}>{requirement}</li>)}
+                  </ul>
+                ) : null}
+                {capability.limitations?.length ? (
+                  <ul>
+                    {capability.limitations.map((limitation) => <li key={limitation}>{limitation}</li>)}
+                  </ul>
+                ) : null}
+              </section>
+            ))}
+          </article>
+        ) : null}
         <article className="card detail-panel">
           <h2>Status</h2>
           <p><span className="meta">Readiness:</span> {formatReadinessLabel(entry.readiness)}</p>

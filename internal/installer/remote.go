@@ -217,6 +217,14 @@ func InstallRemoteRelease(ctx context.Context, options RemoteInstallOptions) (Re
 		if err != nil {
 			return RemoteInstallResult{}, fmt.Errorf("plugin dependency admission failed: %w; the release was not installed", err)
 		}
+	} else if strings.EqualFold(options.Module, "agents") && manifest.Orchestration != nil {
+		installPlans, err = remoteAgentInstallPlans(extractRoot, options.TargetRoot, options.Runtime, options.ExecutionRuntimes, manifest)
+		if err != nil {
+			return RemoteInstallResult{}, fmt.Errorf("agent dependency admission failed: %w; the release was not installed", err)
+		}
+		if _, err := compileAgentRuntimePackage(extractRoot, options.Runtime, options.TargetRoot, extractRoot); err != nil {
+			return RemoteInstallResult{}, fmt.Errorf("agent runtime compilation failed: %w; the release was not installed", err)
+		}
 	}
 	runtimeContractSHA256, err := RuntimeContractSHA256(manifestEntry, version.Version)
 	if err != nil {
@@ -224,7 +232,7 @@ func InstallRemoteRelease(ctx context.Context, options RemoteInstallOptions) (Re
 	}
 	closure := make([]InstallReceiptMember, 0, len(installPlans))
 	for _, plan := range installPlans {
-		if plan.Module == "plugins" {
+		if plan.SourceDir == extractRoot {
 			continue
 		}
 		contractDigest, digestErr := RuntimeContractSHA256(plan.Entry, plan.Version)
@@ -758,6 +766,35 @@ func remotePluginInstallPlans(extractRoot, pluginTargetRoot, runtimeName string,
 				return nil, fmt.Errorf("%s dependency %s: %w", set.moduleName, id, err)
 			}
 			plans = append(plans, installTreePlan{SourceDir: sourceDir, TargetRoot: target.TargetPath, ID: id, Module: set.moduleName, Version: dependency.Version, Entry: registry.ProjectManifest(dependency)})
+		}
+	}
+	return plans, nil
+}
+
+func remoteAgentInstallPlans(extractRoot, agentTargetRoot, runtimeName string, executionRuntimes []string, manifest registry.Manifest) ([]installTreePlan, error) {
+	plans, err := remotePluginInstallPlans(extractRoot, agentTargetRoot, runtimeName, executionRuntimes, manifest)
+	if err != nil {
+		return nil, err
+	}
+	if len(plans) == 0 {
+		return nil, errors.New("empty agent closure")
+	}
+	plans[0].Module = "agents"
+	available := map[string]installTreePlan{}
+	for _, plan := range plans[1:] {
+		kind := map[string]string{"skills": "skill", "agents": "agent", "tools": "tool"}[plan.Module]
+		available[kind+":"+plan.ID] = plan
+	}
+	for _, binding := range manifest.Orchestration.Bindings {
+		if binding.Availability != "resolved" {
+			continue
+		}
+		plan, ok := available[binding.Kind+":"+binding.Package]
+		if !ok {
+			return nil, fmt.Errorf("agent closure is missing pinned %s %s@%s", binding.Kind, binding.Package, binding.Version)
+		}
+		if plan.Version != binding.Version {
+			return nil, fmt.Errorf("agent closure contains %s@%s for binding %s, want %s", binding.Package, plan.Version, binding.Name, binding.Version)
 		}
 	}
 	return plans, nil

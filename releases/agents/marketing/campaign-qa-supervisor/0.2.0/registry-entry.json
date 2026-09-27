@@ -1,0 +1,95 @@
+{
+  "schema_version": "1.1",
+  "id": "marketing/campaign-qa-supervisor",
+  "name": "Campaign QA Supervisor",
+  "description": "Validate campaign setup quality, tracking integrity, and policy compliance before launch or major edits.",
+  "category": "marketing-agents/governance",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "campaign-qa",
+    "policy",
+    "governance"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "May assess launch readiness and draft remediation alerts; require human approval before overriding critical failures or taking live launch actions.",
+    "role": "Governance agent for campaign QA, tracking integrity, and launch readiness.",
+    "coordinates": [
+      "Campaign payload validation",
+      "Policy and naming checks",
+      "Severity assessment and remediation routing"
+    ],
+    "autonomy_level": "execution-capable-with-approval",
+    "outputs": [
+      "Pass, warn, or fail decision",
+      "Critical blocker list",
+      "Remediation action list",
+      "Alert summary for escalation"
+    ]
+  },
+  "usability": {
+    "availability": "not-verified",
+    "execution": "orchestrator",
+    "limitations": [
+      "A cataloged campaign configuration reader is not yet available; alert delivery remains a human-owned draft."
+    ],
+    "quickstart": "Install for policy review only; the compiled contract blocks connected QA until a campaign reader is published.",
+    "source": "declared"
+  },
+  "orchestration": {
+    "model": {
+      "selection": "runtime-selected",
+      "required_capabilities": [
+        "tool-use",
+        "structured-output"
+      ]
+    },
+    "memory": {
+      "mode": "bundled",
+      "path": "config/memory-profile.example.json",
+      "required": true
+    },
+    "governance": {
+      "mode": "bundled",
+      "path": "config/governance.example.json",
+      "required": true
+    },
+    "bindings": [
+      {
+        "name": "policy_compliance",
+        "kind": "skill",
+        "package": "adtech/policy-brand-compliance-checker",
+        "version": "0.1.0",
+        "requirement": "required",
+        "availability": "resolved"
+      },
+      {
+        "name": "campaign_config_reader",
+        "kind": "tool",
+        "requirement": "required",
+        "access": "read-only",
+        "availability": "unavailable",
+        "reason": "No cataloged campaign configuration provider currently implements this capability."
+      },
+      {
+        "name": "slack_post",
+        "kind": "tool",
+        "requirement": "optional",
+        "access": "read-write",
+        "availability": "unavailable",
+        "reason": "No cataloged Slack provider is available; return an alert draft for human delivery."
+      }
+    ]
+  },
+  "dependencies": {
+    "skills": [
+      "adtech/policy-brand-compliance-checker"
+    ]
+  }
+}

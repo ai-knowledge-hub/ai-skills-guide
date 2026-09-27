@@ -52,6 +52,84 @@ func TestRuntimeContractDigestChangesWithExecutableOrAuthenticationSemantics(t *
 	}
 }
 
+func TestRuntimeContractDigestBindsPluginProviderAuthority(t *testing.T) {
+	entry := registry.SkillEntry{
+		ID:       "marketing/example-plugin",
+		Runtimes: []string{"generic"},
+		Includes: &registry.IncludeSet{Tools: []string{"ads/example"}},
+		ProviderDependencies: []registry.ProviderDependencyMetadata{
+			{Tool: "ads/example", Requirement: "required", Access: "read-only"},
+		},
+	}
+	original, err := RuntimeContractSHA256(entry, "1.0.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	entry.ProviderDependencies[0].Access = "read-write"
+	changed, err := RuntimeContractSHA256(entry, "1.0.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if original == changed {
+		t.Fatal("runtime contract digest did not change with provider authority")
+	}
+	entry.ProviderDependencies[0].Access = "read-only"
+	entry.Includes.Tools = append(entry.Includes.Tools, "analytics/example")
+	changed, err = RuntimeContractSHA256(entry, "1.0.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if original == changed {
+		t.Fatal("runtime contract digest did not change with plugin closure")
+	}
+}
+
+func TestRuntimeContractDigestBindsPluginCapabilityReadiness(t *testing.T) {
+	entry := registry.SkillEntry{
+		ID: "marketing/example-plugin", Runtimes: []string{"generic"},
+		CapabilityReadiness: []registry.CapabilityReadinessMetadata{{
+			ID: "live-write", Name: "Live write", Description: "Governed provider mutations.",
+			Access: "read-write", Availability: "not-verified", Limitations: []string{"No provider adapter."},
+		}},
+	}
+	original, err := RuntimeContractSHA256(entry, "1.0.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	entry.CapabilityReadiness[0].Availability = "setup-required"
+	changed, err := RuntimeContractSHA256(entry, "1.0.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if original == changed {
+		t.Fatal("runtime contract digest did not change with capability readiness")
+	}
+}
+
+func TestRuntimeContractDigestBindsAgentOrchestration(t *testing.T) {
+	entry := registry.SkillEntry{
+		ID: "marketing/example-agent", Runtimes: []string{"generic"},
+		Orchestration: &registry.OrchestrationMetadata{
+			Model:      registry.OrchestrationModelRequirement{Selection: "runtime-selected", RequiredCapabilities: []string{"tool-use"}},
+			Memory:     registry.OrchestrationProfileRequirement{Mode: "runtime", Required: true},
+			Governance: registry.OrchestrationProfileRequirement{Mode: "runtime", Required: true},
+			Bindings:   []registry.OrchestrationBinding{{Name: "query", Kind: "tool", Package: "analytics/example", Version: "1.0.0", Requirement: "required", Access: "read-only", Availability: "resolved"}},
+		},
+	}
+	original, err := RuntimeContractSHA256(entry, "1.0.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	entry.Orchestration.Bindings[0].Version = "1.1.0"
+	changed, err := RuntimeContractSHA256(entry, "1.0.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if original == changed {
+		t.Fatal("runtime contract digest did not change with pinned orchestration dependency")
+	}
+}
+
 func TestInstallReceiptRejectsIdentityMismatch(t *testing.T) {
 	root := t.TempDir()
 	if err := os.WriteFile(filepath.Join(root, "tool.yaml"), []byte("fixture\n"), 0o644); err != nil {

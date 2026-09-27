@@ -24,13 +24,11 @@ marketing analytics.
 ## Before you start
 
 1. Install this agent package.
-2. Install required skills.
-3. Install required tools/MCP connectors.
-4. Confirm your data sources are reachable.
-5. Copy and adapt config examples in `config/`:
-   - `tool-bindings.example.json`
-   - `memory-profile.example.json`
-   - `governance.example.json`
+2. The installer resolves and pins the declared skill and tool packages.
+3. Follow the generated `.runtime/<runtime>.json` readiness hints to configure
+   GA4 and BigQuery credentials and targets.
+4. Confirm your data sources are reachable. The bundled memory and governance
+   profiles are used without manual binding edits.
 
 Install commands (Codex example):
 
@@ -40,24 +38,6 @@ Install commands (Codex example):
   --entry adtech/bi-insights-orchestrator@latest \
   --runtime codex
 
-./bin/skills-hub install \
-  adtech/analyst-copilot-bigquery-redshift@latest \
-  --runtime codex
-./bin/skills-hub install \
-  adtech/dashboard-generator@latest \
-  --runtime codex
-./bin/skills-hub install \
-  adtech/dashboard-qa-checker@latest \
-  --runtime codex
-
-./bin/skills-hub install \
-  --module tools \
-  --entry warehouse/bigquery-mcp-query-runner@latest \
-  --runtime codex
-./bin/skills-hub install \
-  --module tools \
-  --entry analytics/ga4-mcp-connector@latest \
-  --runtime codex
 ```
 
 ## First run (copy/paste prompt)
@@ -93,12 +73,8 @@ Required output:
 ```bash
 ./bin/skills-hub run-agent \
   --agent adtech/bi-insights-orchestrator \
-  --bindings agents/adtech/bi-insights-orchestrator/config/\
-tool-bindings.example.json \
-  --memory agents/adtech/bi-insights-orchestrator/config/\
-memory-profile.example.json \
-  --governance agents/adtech/bi-insights-orchestrator/config/\
-governance.example.json \
+  --runtime codex \
+  --model-attestation "$MODEL_ATTESTATION_PATH" \
   --approve-live \
   --audit-log ./tmp/bi-insights-orchestrator-run.json
 ```

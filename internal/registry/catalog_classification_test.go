@@ -15,7 +15,7 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 		execution    string
 	}{
 		{name: "skills", build: BuildSkillsIndex, wantCount: 42, availability: "documentation-only", execution: "instructions"},
-		{name: "agents", build: BuildAgentsIndex, wantCount: 7, availability: "template-only", execution: "orchestrator"},
+		{name: "agents", build: BuildAgentsIndex, wantCount: 7, availability: "setup-required", execution: "orchestrator"},
 		{name: "plugins", build: BuildPluginsIndex, wantCount: 11, availability: "template-only", execution: "bundle"},
 	}
 	for _, test := range tests {
@@ -34,9 +34,9 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 					}
 					continue
 				}
-				if test.name == "agents" && entry.ID == "marketing/creative-operating-system-supervisor" {
-					if entry.SchemaVersion != "1.1" || entry.Usability.Availability != "not-verified" || entry.Usability.Execution != "orchestrator" {
-						t.Errorf("creative operating system supervisor classification = %#v", entry)
+				if test.name == "agents" && entry.ID == "marketing/campaign-qa-supervisor" {
+					if entry.SchemaVersion != "1.1" || entry.Usability.Availability != "not-verified" || entry.Usability.Execution != "orchestrator" || entry.Orchestration == nil {
+						t.Errorf("unavailable-provider agent classification = %#v", entry)
 					}
 					continue
 				}
@@ -121,12 +121,13 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 }
 
 var localPluginWave = map[string]bool{
-	"agentops/harness-governance-plugin":         true,
-	"engineering/code-maintenance-plugin":        true,
-	"marketing/competitive-intelligence-plugin":  true,
-	"marketing/content-repurposing-plugin":       true,
-	"marketing/creative-operating-system-plugin": true,
-	"security/runtime-safety-plugin":             true,
+	"agentops/harness-governance-plugin":              true,
+	"engineering/code-maintenance-plugin":             true,
+	"marketing/chatgpt-advertising-experiment-plugin": true,
+	"marketing/competitive-intelligence-plugin":       true,
+	"marketing/content-repurposing-plugin":            true,
+	"marketing/creative-operating-system-plugin":      true,
+	"security/runtime-safety-plugin":                  true,
 }
 
 func assertClassification(t *testing.T, entry SkillEntry, availability, execution string) {

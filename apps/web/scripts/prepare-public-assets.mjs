@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { execFile } from "node:child_process";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { promisify } from "node:util";
 import { gunzipSync, gzipSync } from "node:zlib";
 
@@ -50,7 +51,7 @@ async function main() {
   await publishRegistryIndexes();
 }
 
-async function loadSourceEntries() {
+export async function loadSourceEntries() {
   for (const moduleConfig of modules) {
     const indexPath = path.join(repoRoot, "registry", moduleConfig.index);
     const index = JSON.parse(await fs.readFile(indexPath, "utf-8"));
@@ -99,9 +100,22 @@ async function publishModuleManifests({ dir, manifest }) {
     if (!sourceEntry || sourceEntry.latest !== version) {
       throw new Error(`Current registry projection is missing for ${dir}:${id}@${version}`);
     }
-    const manifestBytes = await fs.readFile(manifestPath);
-    const artifactBytes = await createPackageTarball(dir, entryDir, sourceEntry.projection, version);
     const releaseDir = path.join(releaseStoreRoot, dir, ...id.split("/"), version);
+    const manifestBytes = await fs.readFile(manifestPath);
+    const retainedManifest = path.join(releaseDir, manifest);
+    const retainedArtifact = path.join(releaseDir, "package.tar.gz");
+    let artifactBytes;
+    if (await exists(retainedManifest) && await exists(retainedArtifact)) {
+      const previousManifest = await fs.readFile(retainedManifest);
+      if (!previousManifest.equals(manifestBytes)) {
+        throw new Error(`Immutable release collision for ${id}@${version}; increment the manifest version instead of replacing published bytes`);
+      }
+      // A retained self-contained release is already bound to its historical
+      // dependency closure. Never reconstruct it from today's registry state.
+      artifactBytes = await fs.readFile(retainedArtifact);
+    } else {
+      artifactBytes = await createPackageTarball(dir, entryDir, sourceEntry.projection, version);
+    }
     await persistImmutableRelease(
       releaseDir,
       manifest,
@@ -358,11 +372,16 @@ function compareSemverIdentifiers(left, right, releaseOutranksPrerelease) {
   return 0;
 }
 
-function projectCurrentCatalogEntry(storedEntry) {
+export function projectCurrentCatalogEntry(storedEntry) {
   const entry = structuredClone(storedEntry);
-  if (entry.usability?.availability === "usable-now" && !hasFreshEvidence(entry)) {
-    entry.usability.availability = "not-verified";
+  const hasPositiveCapability = (entry.capability_readiness ?? [])
+    .some((capability) => isPositiveAvailability(capability.availability));
+  if ((entry.usability?.availability === "usable-now" || hasPositiveCapability) && !hasFreshEvidence(entry)) {
+    if (entry.usability?.availability === "usable-now") entry.usability.availability = "not-verified";
     entry.usability.source = "inferred";
+    for (const capability of entry.capability_readiness ?? []) {
+      if (isPositiveAvailability(capability.availability)) capability.availability = "not-verified";
+    }
   }
   if (entry.deprecated) {
     entry.readiness = "deprecated";
@@ -374,6 +393,12 @@ function projectCurrentCatalogEntry(storedEntry) {
     for (const helper of entry.usability?.executable_helpers ?? []) {
       if (isPositiveAvailability(helper.availability)) {
         helper.availability = "not-verified";
+        demoted = true;
+      }
+    }
+    for (const capability of entry.capability_readiness ?? []) {
+      if (isPositiveAvailability(capability.availability)) {
+        capability.availability = "not-verified";
         demoted = true;
       }
     }
@@ -428,11 +453,16 @@ function extractScalar(raw, key) {
   return match[1].trim().replace(/^['"]|['"]$/g, "");
 }
 
-async function createPackageTarball(moduleDir, sourceDir, projection, version) {
+export async function createPackageTarball(moduleDir, sourceDir, projection, version) {
   const members = await collectArchiveMembers(sourceDir);
   if (moduleDir === "plugins" && projection.artifact?.self_contained) {
     const components = await collectPluginClosure(projection, members);
     addArtifactMetadata(projection, version, components, members);
+  } else if (moduleDir === "agents" && projection.orchestration) {
+    // Agent releases carry their pinned, transitive package closure so a clean
+    // client never resolves today's registry state for yesterday's agent.
+    validatePinnedAgentBindings(projection);
+    await collectPluginClosure(projection, members);
   }
   members.sort((left, right) => Buffer.compare(Buffer.from(left.path), Buffer.from(right.path)));
   for (let index = 1; index < members.length; index += 1) {
@@ -461,6 +491,19 @@ async function createPackageTarball(moduleDir, sourceDir, projection, version) {
   return archive;
 }
 
+function validatePinnedAgentBindings(projection) {
+  for (const binding of projection.orchestration?.bindings ?? []) {
+    if (binding.availability !== "resolved") {
+      continue;
+    }
+    const module = binding.kind === "tool" ? "tools-mcp" : `${binding.kind}s`;
+    const source = sourceEntries.get(`${module}:${binding.package}`);
+    if (!source || source.latest !== binding.version) {
+      throw new Error(`Agent ${projection.id} binding ${binding.name} cannot resolve pinned ${binding.package}@${binding.version}`);
+    }
+  }
+}
+
 async function collectPluginClosure(projection, members) {
   const queue = dependencyReferences(projection, true);
   const components = new Map();
@@ -487,6 +530,9 @@ async function collectPluginClosure(projection, members) {
       prefix,
       projection: sourceEntry.projection
     };
+    if (reference.module === "agents" && sourceEntry.projection.orchestration) {
+      validatePinnedAgentBindings(sourceEntry.projection);
+    }
     components.set(key, component);
     queue.push(...dependencyReferences(sourceEntry.projection, false));
   }
@@ -499,7 +545,11 @@ function dependencyReferences(projection, includePluginComposition) {
   const references = [];
   const add = (module, ids) => {
     for (const id of ids ?? []) {
-      if (id.includes("/")) {
+      // Some legacy manifests list repository-relative schema or script paths
+      // under dependencies.tools. Only registry identities belong in a
+      // self-contained plugin closure; file dependencies remain part of their
+      // owning package.
+      if (id.includes("/") && sourceEntries.has(`${module}:${id}`)) {
         references.push({ module, id });
       }
     }
@@ -717,4 +767,6 @@ function writeOctal(buffer, offset, length, value) {
   writeString(buffer, offset, length, encoded);
 }
 
-await main();
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  await main();
+}

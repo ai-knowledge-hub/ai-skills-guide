@@ -36,6 +36,17 @@ func TestManifestSchemasEmbedCanonicalV2Definitions(t *testing.T) {
 	}
 }
 
+func TestRegistrySchemaSharesAgentOrchestrationContract(t *testing.T) {
+	root := filepath.Join("..", "..")
+	agentDefs := schemaDefinitions(t, readSchema(t, filepath.Join(root, "shared", "schemas", "agent.schema.json")))
+	registryDefs := schemaDefinitions(t, readSchema(t, filepath.Join(root, "shared", "schemas", "registry-index.schema.json")))
+	for _, definition := range []string{"orchestration", "orchestration_profile", "orchestration_binding"} {
+		if !reflect.DeepEqual(agentDefs[definition], registryDefs[definition]) {
+			t.Fatalf("registry definition %q has drifted from agent.schema.json", definition)
+		}
+	}
+}
+
 func TestManifestSchemasRejectExecutableHelpersForV20(t *testing.T) {
 	root := filepath.Join("..", "..")
 	for _, name := range []string{

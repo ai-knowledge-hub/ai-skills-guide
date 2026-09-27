@@ -144,8 +144,19 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time, requ
 			return fmt.Errorf("manifest %s executable helper %s: %w", manifestPath, helper.Entrypoint, err)
 		}
 	}
+	if filepath.Base(manifestPath) == "agent.yaml" && manifest.Orchestration != nil {
+		if err := validateOrchestrationContract(packageDir, manifestPath, manifest); err != nil {
+			return err
+		}
+	}
 
 	if strings.HasPrefix(manifest.SchemaVersion, "2.") {
+		if err := validateProviderDependencyDeclarations(manifestPath, manifest); err != nil {
+			return err
+		}
+		if err := validateCapabilityReadinessDeclarations(manifestPath, manifest); err != nil {
+			return err
+		}
 		if filepath.Base(manifestPath) == "plugin.yaml" && manifest.Execution.Kind == "bundle" && !manifest.Artifact.SelfContained {
 			return fmt.Errorf("manifest %s bundle artifact must declare a self-contained dependency closure", manifestPath)
 		}
@@ -179,7 +190,7 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time, requ
 		if authenticationIsRequired(manifest) && manifest.Authentication.Status == "none" {
 			return fmt.Errorf("manifest %s requires authentication but declares authentication.status none", manifestPath)
 		}
-		if requireCurrentEvidence && manifest.Usability.Availability == "usable-now" {
+		if requireCurrentEvidence && (manifest.Usability.Availability == "usable-now" || manifest.Authentication.Status != "none") {
 			if err := validateFreshEvidence(manifestPath, manifest, now); err != nil {
 				return err
 			}
@@ -196,6 +207,135 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time, requ
 				return fmt.Errorf("manifest %s claims usable-now %s without a scripts_dir entrypoint", manifestPath, manifest.Usability.Execution)
 			}
 		}
+	}
+	return nil
+}
+
+func validateOrchestrationContract(packageDir, manifestPath string, manifest Manifest) error {
+	contract := manifest.Orchestration
+	if contract.Model.Selection != "runtime-selected" || len(contract.Model.RequiredCapabilities) == 0 {
+		return fmt.Errorf("manifest %s has incomplete orchestration model requirements", manifestPath)
+	}
+	for label, profile := range map[string]OrchestrationProfileRequirement{
+		"memory": contract.Memory, "governance": contract.Governance,
+	} {
+		if profile.Mode != "bundled" && profile.Mode != "runtime" {
+			return fmt.Errorf("manifest %s has unsupported orchestration %s mode %q", manifestPath, label, profile.Mode)
+		}
+		if profile.Mode == "bundled" {
+			if profile.Path == "" {
+				return fmt.Errorf("manifest %s bundled orchestration %s profile has no path", manifestPath, label)
+			}
+			if err := validateContainedPath(packageDir, profile.Path, false); err != nil {
+				return fmt.Errorf("manifest %s orchestration %s profile: %w", manifestPath, label, err)
+			}
+		}
+	}
+	if len(contract.Bindings) == 0 {
+		return fmt.Errorf("manifest %s orchestration contract declares no bindings", manifestPath)
+	}
+	dependencies := map[string]map[string]bool{
+		"agent": {}, "skill": {}, "tool": {},
+	}
+	for _, id := range manifest.Dependencies.Agents {
+		dependencies["agent"][id] = true
+	}
+	for _, id := range manifest.Dependencies.Skills {
+		dependencies["skill"][id] = true
+	}
+	for _, id := range manifest.Dependencies.Tools {
+		dependencies["tool"][id] = true
+	}
+	seenNames := map[string]bool{}
+	boundPackages := map[string]map[string]bool{"agent": {}, "skill": {}, "tool": {}}
+	for _, binding := range contract.Bindings {
+		if seenNames[binding.Name] {
+			return fmt.Errorf("manifest %s repeats orchestration binding %s", manifestPath, binding.Name)
+		}
+		seenNames[binding.Name] = true
+		if binding.Kind != "agent" && binding.Kind != "skill" && binding.Kind != "tool" {
+			return fmt.Errorf("manifest %s binding %s has unsupported kind %q", manifestPath, binding.Name, binding.Kind)
+		}
+		if binding.Requirement != "required" && binding.Requirement != "optional" {
+			return fmt.Errorf("manifest %s binding %s has unsupported requirement %q", manifestPath, binding.Name, binding.Requirement)
+		}
+		if binding.Kind == "tool" && binding.Access != "read-only" && binding.Access != "read-write" {
+			return fmt.Errorf("manifest %s tool binding %s must declare read-only or read-write access", manifestPath, binding.Name)
+		}
+		switch binding.Availability {
+		case "resolved":
+			if binding.Package == "" || !validSemver(binding.Version) {
+				return fmt.Errorf("manifest %s resolved binding %s must pin a package and semantic version", manifestPath, binding.Name)
+			}
+			if !dependencies[binding.Kind][binding.Package] {
+				return fmt.Errorf("manifest %s binding %s references undeclared %s dependency %s", manifestPath, binding.Name, binding.Kind, binding.Package)
+			}
+			boundPackages[binding.Kind][binding.Package] = true
+		case "unavailable":
+			if binding.Package != "" || binding.Version != "" || len(binding.Reason) < 10 {
+				return fmt.Errorf("manifest %s unavailable binding %s must contain only an actionable reason", manifestPath, binding.Name)
+			}
+		default:
+			return fmt.Errorf("manifest %s binding %s has unsupported availability %q", manifestPath, binding.Name, binding.Availability)
+		}
+	}
+	for kind, ids := range dependencies {
+		for id := range ids {
+			if !boundPackages[kind][id] {
+				return fmt.Errorf("manifest %s %s dependency %s has no pinned orchestration binding", manifestPath, kind, id)
+			}
+		}
+	}
+	return nil
+}
+
+func validateCapabilityReadinessDeclarations(manifestPath string, manifest Manifest) error {
+	seen := make(map[string]struct{}, len(manifest.CapabilityReadiness))
+	for _, capability := range manifest.CapabilityReadiness {
+		if _, duplicate := seen[capability.ID]; duplicate {
+			return fmt.Errorf("manifest %s repeats capability readiness id %q", manifestPath, capability.ID)
+		}
+		seen[capability.ID] = struct{}{}
+		if capability.Availability == "setup-required" && len(capability.RequiresSetup) == 0 {
+			return fmt.Errorf("manifest %s capability %q requires setup but declares no setup requirements", manifestPath, capability.ID)
+		}
+		if (capability.Availability == "not-verified" || capability.Availability == "template-only") && len(capability.Limitations) == 0 {
+			return fmt.Errorf("manifest %s capability %q must explain why it is unavailable", manifestPath, capability.ID)
+		}
+		if capability.Access == "read-write" && isPositiveUsability(capability.Availability) {
+			return fmt.Errorf("manifest %s capability %q claims positive read-write readiness without an exact effect-authority contract", manifestPath, capability.ID)
+		}
+	}
+	return nil
+}
+
+func validateProviderDependencyDeclarations(manifestPath string, manifest Manifest) error {
+	if len(manifest.ProviderDependencies) == 0 {
+		return nil
+	}
+	included := make(map[string]struct{}, len(manifest.Includes.Tools))
+	for _, tool := range manifest.Includes.Tools {
+		included[tool] = struct{}{}
+	}
+	seen := make(map[string]struct{}, len(manifest.ProviderDependencies))
+	hasRequired := false
+	for _, dependency := range manifest.ProviderDependencies {
+		if _, ok := included[dependency.Tool]; !ok {
+			return fmt.Errorf("manifest %s provider dependency %q is not present in includes.tools", manifestPath, dependency.Tool)
+		}
+		if _, duplicate := seen[dependency.Tool]; duplicate {
+			return fmt.Errorf("manifest %s repeats provider dependency %q", manifestPath, dependency.Tool)
+		}
+		seen[dependency.Tool] = struct{}{}
+		if dependency.Requirement == "required" {
+			hasRequired = true
+		}
+	}
+	if !hasRequired {
+		return fmt.Errorf("manifest %s provider dependencies must contain at least one required provider", manifestPath)
+	}
+	if manifest.Authentication.Status != "required" {
+		return fmt.Errorf("manifest %s with provider dependencies must declare authentication.status required", manifestPath)
 	}
 	return nil
 }
@@ -508,7 +648,7 @@ func dependencyKeys(manifest Manifest) []string {
 	keys := make([]string, 0)
 	add := func(module string, ids []string) {
 		for _, id := range ids {
-			if strings.Contains(id, "/") {
+			if packageIDPattern.MatchString(id) {
 				keys = append(keys, module+":"+id)
 			}
 		}
@@ -525,7 +665,7 @@ func dependencyRefsForManifest(manifest Manifest) []struct{ module, id string } 
 	seen := make(map[string]struct{})
 	add := func(module string, ids []string) {
 		for _, id := range ids {
-			if strings.Contains(id, "/") {
+			if packageIDPattern.MatchString(id) {
 				key := module + ":" + id
 				if _, exists := seen[key]; !exists {
 					seen[key] = struct{}{}
@@ -953,15 +1093,19 @@ func isExecutableKind(kind string) bool {
 }
 
 func validateFreshEvidence(manifestPath string, manifest Manifest, now time.Time) error {
+	claim := "requires current runtime evidence"
+	if manifest.Usability.Availability == "usable-now" {
+		claim = "claims usable-now"
+	}
 	if len(manifest.Verification.Evidence) == 0 {
-		return fmt.Errorf("manifest %s claims usable-now without evidence references", manifestPath)
+		return fmt.Errorf("manifest %s %s without evidence references", manifestPath, claim)
 	}
 	observedAt, err := time.Parse(time.RFC3339, manifest.Verification.LastVerifiedAt)
 	if err != nil {
-		return fmt.Errorf("manifest %s claims usable-now with invalid verification timestamp: %w", manifestPath, err)
+		return fmt.Errorf("manifest %s %s with invalid verification timestamp: %w", manifestPath, claim, err)
 	}
 	if observedAt.After(now.Add(5 * time.Minute)) {
-		return fmt.Errorf("manifest %s claims usable-now with a future verification timestamp", manifestPath)
+		return fmt.Errorf("manifest %s %s with a future verification timestamp", manifestPath, claim)
 	}
 	lifetime := instructionEvidenceLifetime
 	if isExecutableKind(manifest.Execution.Kind) {
@@ -971,7 +1115,7 @@ func validateFreshEvidence(manifestPath string, manifest Manifest, now time.Time
 		lifetime = authEvidenceLifetime
 	}
 	if now.Sub(observedAt) > lifetime {
-		return fmt.Errorf("manifest %s claims usable-now with evidence older than %s", manifestPath, lifetime)
+		return fmt.Errorf("manifest %s %s with evidence older than %s", manifestPath, claim, lifetime)
 	}
 	return nil
 }
@@ -1007,6 +1151,32 @@ func validateDependencyGraph(root string, records []manifestRecord) error {
 			}
 			edges[from] = append(edges[from], dependency.kind+":"+dependency.id)
 		}
+		for _, provider := range record.manifest.ProviderDependencies {
+			target, exists := byKind["tool"][provider.Tool]
+			if !exists {
+				continue
+			}
+			if err := validateProviderDependencyAuthority(record.path, provider, target.manifest); err != nil {
+				return err
+			}
+		}
+		if record.manifest.Orchestration != nil {
+			for _, binding := range record.manifest.Orchestration.Bindings {
+				if binding.Availability != "resolved" {
+					continue
+				}
+				target, exists := byKind[binding.Kind][binding.Package]
+				if !exists {
+					return fmt.Errorf("manifest %s orchestration binding %s references missing %s %q", record.path, binding.Name, binding.Kind, binding.Package)
+				}
+				if target.manifest.Version != binding.Version {
+					return fmt.Errorf("manifest %s orchestration binding %s pins %s@%s but repository contains %s", record.path, binding.Name, binding.Package, binding.Version, target.manifest.Version)
+				}
+				if binding.Kind == "tool" && target.manifest.Operational.AccessLevel != binding.Access {
+					return fmt.Errorf("manifest %s orchestration binding %s declares %s access but tool %s declares %s", record.path, binding.Name, binding.Access, binding.Package, target.manifest.Operational.AccessLevel)
+				}
+			}
+		}
 	}
 
 	state := map[string]uint8{}
@@ -1040,6 +1210,16 @@ func validateDependencyGraph(root string, records []manifestRecord) error {
 				return err
 			}
 		}
+	}
+	return nil
+}
+
+func validateProviderDependencyAuthority(manifestPath string, provider ProviderDependencyMetadata, target Manifest) error {
+	if target.Authentication.Status == "none" {
+		return fmt.Errorf("manifest %s provider dependency %q has no provider authentication contract", manifestPath, provider.Tool)
+	}
+	if provider.Access != target.Operational.AccessLevel {
+		return fmt.Errorf("manifest %s provider dependency %q declares %s access but the tool access level is %q", manifestPath, provider.Tool, provider.Access, target.Operational.AccessLevel)
 	}
 	return nil
 }

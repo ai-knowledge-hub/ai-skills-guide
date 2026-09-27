@@ -1,6 +1,6 @@
 {
   "registry_version": "1.3",
-  "generated_at": "2026-09-22T00:00:00Z",
+  "generated_at": "2026-09-23T00:00:00Z",
   "skills": [
     {
       "schema_version": "2.1",
@@ -338,20 +338,20 @@
       }
     },
     {
-      "schema_version": "1.1",
+      "schema_version": "2.1",
       "id": "marketing/chatgpt-advertising-experiment-plugin",
       "name": "ChatGPT Advertising Experiment Plugin",
-      "description": "Install a task-led ChatGPT Ads experiment workflow with planning skills, supervisors, read-only API access, conversion reconciliation, policy gates, and a one-command mock lab.",
+      "description": "Install a task-led ChatGPT Ads experiment workflow with planning skills, read-only API access, conversion reconciliation, policy gates, and a one-command mock lab.",
       "category": "marketing-plugins/intelligence",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-07-25T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/chatgpt-advertising-experiment-plugin/0.1.0.yaml",
-          "manifest_sha256": "d99aaa5b7a48960e407f49f702e73c0b60abb6324a4c5f0b06a090fe458199db",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/chatgpt-advertising-experiment-plugin/0.1.0.tar.gz",
-          "sha256": "c029d38d883bc9974665b31e3f7f5491565a0fcda76bea3f2acb85e2e355f8ef"
+          "version": "0.2.0",
+          "released_at": "2026-09-23T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/plugins/marketing/chatgpt-advertising-experiment-plugin/0.2.0.yaml",
+          "manifest_sha256": "4ad6d555b6b76fbf51eb1bb560ebf32c21c219976bccd1db952afa7223d63c80",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/chatgpt-advertising-experiment-plugin/0.2.0.tar.gz",
+          "sha256": "2709ae746ced344991fac0d171a02c43c2c980570efffeb11f934d27801df5c3"
         }
       ],
       "runtimes": [
@@ -371,16 +371,111 @@
       "security_reviewed": false,
       "deprecated": false,
       "usability": {
-        "availability": "template-only",
+        "availability": "usable-now",
         "execution": "bundle",
-        "limitations": [
-          "Source composition and advisory hooks only; no self-contained verified runtime bundle is published.",
-          "The included OpenAI Ads client does not mutate campaigns, ad groups, ads, files, or feeds.",
-          "The bundled executor remains a reference template rather than a live OpenAI Ads writer."
+        "requires_setup": [
+          "Python 3.9 or newer is required to run the offline mock lab."
         ],
-        "quickstart": "Review README.md and implement and register the bundled dependencies and hooks before use.",
+        "limitations": [
+          "The included OpenAI Ads client does not mutate campaigns, ad groups, ads, files, or feeds.",
+          "Live provider writes remain unavailable until a supported OpenAI Ads mutation adapter is implemented and independently verified."
+        ],
+        "quickstart": "Run `python3 scripts/run_mock_lab.py` after installation to create an offline evidence bundle.",
+        "executable_helpers": [
+          {
+            "entrypoint": "scripts/run_mock_lab.py",
+            "availability": "usable-now",
+            "execution": "local-tool",
+            "limitations": [
+              "Requires Python 3.9 or newer and performs no network calls."
+            ],
+            "quickstart": "python3 scripts/run_mock_lab.py"
+          }
+        ],
         "source": "declared"
       },
+      "execution": {
+        "kind": "bundle",
+        "supported_platforms": [
+          "linux",
+          "macos",
+          "windows"
+        ],
+        "supported_runtimes": [
+          "python3"
+        ]
+      },
+      "artifact": {
+        "self_contained": true,
+        "dependency_lock": "dependencies.lock.json",
+        "checksums": "checksums.txt",
+        "sbom": "sbom.cdx.json",
+        "provenance": "provenance.json"
+      },
+      "authentication": {
+        "status": "required",
+        "methods": [
+          "api-key"
+        ],
+        "credential_bindings": [
+          "OPENAI_ADS_API_KEY"
+        ],
+        "scopes": [],
+        "setup_url": "https://developers.openai.com/ads/api-reference/authentication",
+        "credential_storage": "The account-scoped API key remains in the provider tool's explicitly bound environment source and is never copied into plugin state.",
+        "validation": "The included provider tool calls GET /ad_account and binds readiness to the provider-attested account identifier.",
+        "revocation": "Revoke or rotate the account-scoped API key in OpenAI Ads Manager and remove its provider-tool binding."
+      },
+      "verification": {
+        "evidence": [
+          "evidence://tests/chatgpt-advertising-experiment-plugin/mock-clean-client-lab",
+          "evidence://tests/chatgpt-advertising-experiment-plugin/capability-readiness-projection",
+          "evidence://tests/chatgpt-advertising-experiment-plugin/write-unavailable-without-provider-adapter"
+        ],
+        "last_verified_at": "2026-09-23T00:00:00Z"
+      },
+      "provider_dependencies": [
+        {
+          "tool": "adtech/openai-ads-api-client",
+          "requirement": "required",
+          "access": "read-only"
+        }
+      ],
+      "capability_readiness": [
+        {
+          "id": "mock-lab",
+          "name": "Mock lab",
+          "description": "Run the deterministic experiment, conversion-validation, and reconciliation workflow without credentials or network access.",
+          "access": "offline",
+          "availability": "usable-now",
+          "limitations": [
+            "Uses packaged fixtures only and cannot establish provider readiness."
+          ]
+        },
+        {
+          "id": "live-read",
+          "name": "Live read",
+          "description": "Read bounded OpenAI Ads account, campaign, ad, and insights data through the authenticated read-only client.",
+          "access": "read-only",
+          "availability": "setup-required",
+          "requires_setup": [
+            "Configure and verify the included OpenAI Ads API client against the intended provider account."
+          ],
+          "limitations": [
+            "Provider authentication attests the ad account rather than the individual human owner of the API key."
+          ]
+        },
+        {
+          "id": "live-write",
+          "name": "Live write",
+          "description": "Apply a provider mutation only through exact approval, a single-use grant, governed execution, and reconciliation.",
+          "access": "read-write",
+          "availability": "not-verified",
+          "limitations": [
+            "No supported OpenAI Ads mutation adapter is included, so control-plane or executor setup cannot enable provider writes."
+          ]
+        }
+      ],
       "includes": {
         "skills": [
           "marketing/task-map-designer",
@@ -389,29 +484,12 @@
           "marketing/agent-share-of-choice-evaluator",
           "agentops/ad-platform-policy-gate-designer"
         ],
-        "agents": [
-          "adtech/chatgpt-ads-experiment-supervisor",
-          "marketing/creative-operating-system-supervisor",
-          "adtech/ad-platform-control-plane-supervisor"
-        ],
         "tools": [
           "adtech/conversion-event-reconciler",
-          "adtech/openai-ads-api-client",
-          "adtech/ad-platform-executor-template"
+          "adtech/openai-ads-api-client"
         ],
         "hooks": [
           "require-measurement-before-activation"
-        ]
-      },
-      "requires": {
-        "secrets": [
-          "OPENAI_ADS_API_KEY",
-          "OPENAI_ADS_PIXEL_ID",
-          "OPENAI_ADS_CONVERSIONS_API_KEY"
-        ],
-        "approvals": [
-          "human-approval-before-live-campaign-write",
-          "human-approval-before-tracking-change"
         ]
       }
     },

@@ -45,6 +45,9 @@ def main():
         "network_calls": 0,
         "next_step": "Review this bundle with adtech/chatgpt-ads-experiment-supervisor in mock-run mode."
     }
+    if "--check" in sys.argv[1:]:
+        print(json.dumps({"valid": True, "network_calls": bundle["network_calls"]}, sort_keys=True))
+        return 0
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     OUTPUT.write_text(json.dumps(bundle, indent=2, sort_keys=True) + "\n")
     print(OUTPUT)

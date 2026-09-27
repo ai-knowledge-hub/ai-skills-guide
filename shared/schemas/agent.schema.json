@@ -223,6 +223,9 @@
         }
       }
     },
+    "orchestration": {
+      "$ref": "#/$defs/orchestration"
+    },
     "usability": {
       "$ref": "#/$defs/usability"
     },
@@ -255,6 +258,82 @@
     }
   },
   "$defs": {
+    "orchestration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["model", "memory", "governance", "bindings"],
+      "properties": {
+        "model": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["selection", "required_capabilities"],
+          "properties": {
+            "selection": {"type": "string", "enum": ["runtime-selected"]},
+            "required_capabilities": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9.-]{1,63}$"}
+            }
+          }
+        },
+        "memory": {"$ref": "#/$defs/orchestration_profile"},
+        "governance": {"$ref": "#/$defs/orchestration_profile"},
+        "bindings": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/orchestration_binding"}
+        }
+      }
+    },
+    "orchestration_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "required"],
+      "properties": {
+        "mode": {"type": "string", "enum": ["bundled", "runtime"]},
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^(?!/)(?![A-Za-z]:)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+        },
+        "required": {"type": "boolean"}
+      },
+      "allOf": [{
+        "if": {"properties": {"mode": {"const": "bundled"}}, "required": ["mode"]},
+        "then": {"required": ["path"]}
+      }]
+    },
+    "orchestration_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "kind", "requirement", "availability"],
+      "properties": {
+        "name": {"type": "string", "pattern": "^[a-z][a-z0-9_]{1,63}$"},
+        "kind": {"type": "string", "enum": ["agent", "skill", "tool"]},
+        "package": {"type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9-]+$"},
+        "version": {"type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$"},
+        "requirement": {"type": "string", "enum": ["required", "optional"]},
+        "access": {"type": "string", "enum": ["read-only", "read-write"]},
+        "availability": {"type": "string", "enum": ["resolved", "unavailable"]},
+        "reason": {"type": "string", "minLength": 10, "maxLength": 300}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"availability": {"const": "resolved"}}, "required": ["availability"]},
+          "then": {"required": ["package", "version"], "not": {"required": ["reason"]}}
+        },
+        {
+          "if": {"properties": {"availability": {"const": "unavailable"}}, "required": ["availability"]},
+          "then": {"required": ["reason"], "not": {"anyOf": [{"required": ["package"]}, {"required": ["version"]}]}}
+        },
+        {
+          "if": {"properties": {"kind": {"const": "tool"}}, "required": ["kind"]},
+          "then": {"required": ["access"]},
+          "else": {"not": {"required": ["access"]}}
+        }
+      ]
+    },
     "usability": {
       "type": "object",
       "additionalProperties": false,

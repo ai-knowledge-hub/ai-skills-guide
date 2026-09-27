@@ -1,0 +1,40 @@
+{
+  "provenance_version": "1.0",
+  "subject": {
+    "module": "plugins",
+    "id": "marketing/chatgpt-advertising-experiment-plugin",
+    "version": "0.2.0",
+    "closure_sha256": "772bf1e8d2deefceb5bf4426a4bfdbda07794bd5d7048ce8b3995f57e721be97"
+  },
+  "builder": "ai-skills-guide/prepare-public-assets",
+  "materials": [
+    {
+      "ref": "skills:adtech/advertising-signal-ownership-auditor@0.1.0",
+      "sha256": "123256be1dc8dbfb43a689c901ecf32cc869932d4bb09f611748c9f824872868"
+    },
+    {
+      "ref": "skills:agentops/ad-platform-policy-gate-designer@0.1.0",
+      "sha256": "c13078c937bd0f4f6ba0fe2b8d1f70f4707967644b7f2070455370fbe29bb4bb"
+    },
+    {
+      "ref": "skills:marketing/agent-share-of-choice-evaluator@0.1.0",
+      "sha256": "69f1ec0f22745bf247c1606d754326d24bd8d7aaecd0547107e2c4e038b55a52"
+    },
+    {
+      "ref": "skills:marketing/ai-output-eval-scorecard@0.1.0",
+      "sha256": "0b1f20517d784b85873b5ab0fe75d0876be59caf83c90c63ed28fdfaee40569e"
+    },
+    {
+      "ref": "skills:marketing/task-map-designer@0.1.0",
+      "sha256": "6e35afd4ec3e6185fa8885b9737b6e6afc2fe9561e11e8e9da53326ecfc33740"
+    },
+    {
+      "ref": "tools-mcp:adtech/conversion-event-reconciler@0.1.0",
+      "sha256": "c58cc0a2439bf0fca64533dc8185f63773974ef068f6cf4f7215ef8bd7b578fd"
+    },
+    {
+      "ref": "tools-mcp:adtech/openai-ads-api-client@0.2.0",
+      "sha256": "ef1edc2aab52e3a216fb412095fd25fadc9384af8b20b818484ef451477060ef"
+    }
+  ]
+}

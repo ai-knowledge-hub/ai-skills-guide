@@ -1,6 +1,6 @@
 {
   "registry_version": "1.3",
-  "generated_at": "2026-09-22T00:00:00Z",
+  "generated_at": "2026-09-26T00:00:00Z",
   "skills": [
     {
       "schema_version": "1.1",
@@ -8,15 +8,15 @@
       "name": "Ad Platform Control Plane Supervisor",
       "description": "Advisory supervisor for DV360 and Google Ads agents, coordinating auth review, policy gates, executor readiness, approvals, audit, and rollback planning.",
       "category": "adtech-agents/governance",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-05-06T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/adtech/ad-platform-control-plane-supervisor/0.1.0.yaml",
-          "manifest_sha256": "e00b4a376c8035586b470e42ba51db1ca9cefe0b2256c8053e25dfaa655e1412",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/ad-platform-control-plane-supervisor/0.1.0.tar.gz",
-          "sha256": "e629bf4dbcfe897421e9d2bcd15f7183bd24eb84f7c85af38498e5a621926f1f"
+          "version": "0.2.0",
+          "released_at": "2026-09-26T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/adtech/ad-platform-control-plane-supervisor/0.2.0.yaml",
+          "manifest_sha256": "7e683ce370b39576622a9ffd15ba8a0e581d74e4f4ce3714db9ae3f7da8f84b2",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/ad-platform-control-plane-supervisor/0.2.0.tar.gz",
+          "sha256": "01e42a75b09448f332f916a314f7448cf80f2659fd8edf6ab08878092d987218"
         }
       ],
       "runtimes": [
@@ -52,13 +52,76 @@
         ]
       },
       "usability": {
-        "availability": "template-only",
+        "availability": "setup-required",
         "execution": "orchestrator",
         "limitations": [
-          "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged."
+          "Required control-plane and executor providers must be configured and approved before live use."
         ],
-        "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+        "quickstart": "Install the agent, then follow the compiled runtime contract readiness hints for its pinned providers.",
         "source": "declared"
+      },
+      "orchestration": {
+        "model": {
+          "selection": "runtime-selected",
+          "required_capabilities": [
+            "tool-use",
+            "structured-output"
+          ]
+        },
+        "memory": {
+          "mode": "bundled",
+          "path": "config/memory-profile.default.json",
+          "required": false
+        },
+        "governance": {
+          "mode": "bundled",
+          "path": "config/governance.example.json",
+          "required": true
+        },
+        "bindings": [
+          {
+            "name": "ad_platform_auth_review",
+            "kind": "skill",
+            "package": "security/ad-platform-agent-auth-review",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "policy_gate_design",
+            "kind": "skill",
+            "package": "agentops/ad-platform-policy-gate-designer",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "control_plane_review",
+            "kind": "skill",
+            "package": "agentops/agent-control-plane-review",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "ad_platform_executor",
+            "kind": "tool",
+            "package": "adtech/ad-platform-executor-template",
+            "version": "0.2.0",
+            "requirement": "required",
+            "access": "read-write",
+            "availability": "resolved"
+          },
+          {
+            "name": "agent_control_plane_server",
+            "kind": "tool",
+            "package": "agentops/agent-control-plane-server",
+            "version": "0.2.1",
+            "requirement": "required",
+            "access": "read-write",
+            "availability": "resolved"
+          }
+        ]
       },
       "dependencies": {
         "skills": [
@@ -67,8 +130,8 @@
           "agentops/agent-control-plane-review"
         ],
         "tools": [
-          "ad_platform_executor_template",
-          "agent_control_plane_server"
+          "adtech/ad-platform-executor-template",
+          "agentops/agent-control-plane-server"
         ]
       }
     },
@@ -78,15 +141,15 @@
       "name": "BI Insights Orchestrator",
       "description": "Orchestrate warehouse and ad platform data analysis into standardized BI insights with QA-aware controls.",
       "category": "adtech-agents/analytics",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-03-02T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/adtech/bi-insights-orchestrator/0.1.0.yaml",
-          "manifest_sha256": "fe91b5ee919e46b545ef48c951349f49885280a0e2577db8164c5de00ec22edb",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/bi-insights-orchestrator/0.1.0.tar.gz",
-          "sha256": "a1197e4fb0093cd03d4f93d1b25101c49ee06aea5af5dd6885bd8dd5206e471a"
+          "version": "0.2.0",
+          "released_at": "2026-09-26T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/adtech/bi-insights-orchestrator/0.2.0.yaml",
+          "manifest_sha256": "02297a4c13cb7802256ffbe3f3c18e2ea043be71b90cea1569966f387f2059d8",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/bi-insights-orchestrator/0.2.0.tar.gz",
+          "sha256": "767c12f9c15838b4da8876d554922f01698bbccbf5cee7eb08d8a8547053cd40"
         }
       ],
       "runtimes": [
@@ -119,13 +182,76 @@
         ]
       },
       "usability": {
-        "availability": "template-only",
+        "availability": "setup-required",
         "execution": "orchestrator",
         "limitations": [
-          "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged."
+          "GA4 and BigQuery credentials and provider targets must be configured before data collection."
         ],
-        "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+        "quickstart": "Install the agent, then configure each provider named by the generated runtime contract.",
         "source": "declared"
+      },
+      "orchestration": {
+        "model": {
+          "selection": "runtime-selected",
+          "required_capabilities": [
+            "tool-use",
+            "structured-output"
+          ]
+        },
+        "memory": {
+          "mode": "bundled",
+          "path": "config/memory-profile.example.json",
+          "required": true
+        },
+        "governance": {
+          "mode": "bundled",
+          "path": "config/governance.example.json",
+          "required": true
+        },
+        "bindings": [
+          {
+            "name": "warehouse_analysis",
+            "kind": "skill",
+            "package": "adtech/analyst-copilot-bigquery-redshift",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "dashboard_generation",
+            "kind": "skill",
+            "package": "adtech/dashboard-generator",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "dashboard_qa",
+            "kind": "skill",
+            "package": "adtech/dashboard-qa-checker",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "bigquery_sql",
+            "kind": "tool",
+            "package": "warehouse/bigquery-mcp-query-runner",
+            "version": "0.2.0",
+            "requirement": "required",
+            "access": "read-only",
+            "availability": "resolved"
+          },
+          {
+            "name": "ga4_query",
+            "kind": "tool",
+            "package": "analytics/ga4-mcp-connector",
+            "version": "0.2.0",
+            "requirement": "required",
+            "access": "read-only",
+            "availability": "resolved"
+          }
+        ]
       },
       "dependencies": {
         "skills": [
@@ -134,8 +260,8 @@
           "adtech/dashboard-qa-checker"
         ],
         "tools": [
-          "bigquery_sql",
-          "ga4_query"
+          "warehouse/bigquery-mcp-query-runner",
+          "analytics/ga4-mcp-connector"
         ]
       }
     },
@@ -145,15 +271,15 @@
       "name": "ChatGPT Ads Experiment Supervisor",
       "description": "Coordinate task-led ChatGPT advertising experiments across creative, policy, measurement ownership, platform inspection, reconciliation, and memory.",
       "category": "adtech-agents/experimentation",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-07-24T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/adtech/chatgpt-ads-experiment-supervisor/0.1.0.yaml",
-          "manifest_sha256": "4847f62518f2fd9f95934decb234ae48b8d9ebbb3c8e2304bef52c4b059eef98",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/chatgpt-ads-experiment-supervisor/0.1.0.tar.gz",
-          "sha256": "a039bee5a51e4a5f3315e548738cf3cc398a79a2aafe93147474111020d053f0"
+          "version": "0.2.0",
+          "released_at": "2026-09-26T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/adtech/chatgpt-ads-experiment-supervisor/0.2.0.yaml",
+          "manifest_sha256": "ee1a33fe13925f0343c4cc94adf89fc84f3d980db54e2759506cc5eb5d105577",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/adtech/chatgpt-ads-experiment-supervisor/0.2.0.tar.gz",
+          "sha256": "be8c52952a43ad56b7841950e3f9dd13d0b6cfecd410ccfeef3c052be8711bdd"
         }
       ],
       "runtimes": [
@@ -190,14 +316,118 @@
         ]
       },
       "usability": {
-        "availability": "template-only",
+        "availability": "setup-required",
         "execution": "orchestrator",
         "limitations": [
-          "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged.",
+          "Provider authentication and the pinned control-plane dependencies must pass readiness before connected use.",
           "The supervisor is advisory and does not execute campaign writes."
         ],
-        "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+        "quickstart": "Install the agent and begin with its mock workflow; use the compiled contract to configure connected providers.",
         "source": "declared"
+      },
+      "orchestration": {
+        "model": {
+          "selection": "runtime-selected",
+          "required_capabilities": [
+            "tool-use",
+            "structured-output"
+          ]
+        },
+        "memory": {
+          "mode": "bundled",
+          "path": "config/memory-profile.default.json",
+          "required": true
+        },
+        "governance": {
+          "mode": "bundled",
+          "path": "config/governance.default.json",
+          "required": true
+        },
+        "bindings": [
+          {
+            "name": "creative_supervisor",
+            "kind": "agent",
+            "package": "marketing/creative-operating-system-supervisor",
+            "version": "0.3.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "control_plane_supervisor",
+            "kind": "agent",
+            "package": "adtech/ad-platform-control-plane-supervisor",
+            "version": "0.2.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "task_map_design",
+            "kind": "skill",
+            "package": "marketing/task-map-designer",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "output_evaluation",
+            "kind": "skill",
+            "package": "marketing/ai-output-eval-scorecard",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "signal_ownership",
+            "kind": "skill",
+            "package": "adtech/advertising-signal-ownership-auditor",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "share_of_choice",
+            "kind": "skill",
+            "package": "marketing/agent-share-of-choice-evaluator",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "policy_gate_design",
+            "kind": "skill",
+            "package": "agentops/ad-platform-policy-gate-designer",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "reconcile_conversion_events",
+            "kind": "tool",
+            "package": "adtech/conversion-event-reconciler",
+            "version": "0.1.0",
+            "requirement": "required",
+            "access": "read-only",
+            "availability": "resolved"
+          },
+          {
+            "name": "inspect_openai_ads",
+            "kind": "tool",
+            "package": "adtech/openai-ads-api-client",
+            "version": "0.2.0",
+            "requirement": "required",
+            "access": "read-only",
+            "availability": "resolved"
+          },
+          {
+            "name": "execute_ad_platform_plan",
+            "kind": "tool",
+            "package": "adtech/ad-platform-executor-template",
+            "version": "0.2.0",
+            "requirement": "optional",
+            "access": "read-write",
+            "availability": "resolved"
+          }
+        ]
       },
       "dependencies": {
         "agents": [
@@ -224,15 +454,15 @@
       "name": "Agent Control Plane Supervisor",
       "description": "Advisory supervisor for reviewing, routing, and documenting governed marketing agent workflows before production deployment.",
       "category": "agentops/harness-governance",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-04-26T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/agentops/agent-control-plane-supervisor/0.1.0.yaml",
-          "manifest_sha256": "b27b89975bdd73a7f849c5288129ed2d1c3277be95a8c7f9fe4865b331a67953",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/agent-control-plane-supervisor/0.1.0.tar.gz",
-          "sha256": "943fa52c8377a9d5ee881c1063a5d1a3985bdfe4f417f05b0ce8c567f63033fd"
+          "version": "0.2.0",
+          "released_at": "2026-09-26T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/agentops/agent-control-plane-supervisor/0.2.0.yaml",
+          "manifest_sha256": "1cd7a73674551648ceb04a207c6e96f3e21d3ad4f13292c28d7eb83e9eac008a",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/agentops/agent-control-plane-supervisor/0.2.0.tar.gz",
+          "sha256": "61ec896e6e879ae4ee02a6cc1812c09760a679af24c81e6c8e9585e5aa3ca75f"
         }
       ],
       "runtimes": [
@@ -268,13 +498,59 @@
         ]
       },
       "usability": {
-        "availability": "template-only",
+        "availability": "setup-required",
         "execution": "orchestrator",
         "limitations": [
-          "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged."
+          "The control-plane server and issuer profile must be configured before governed execution can be assessed."
         ],
-        "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+        "quickstart": "Install the agent, then follow the compiled control-plane binding readiness hint.",
         "source": "declared"
+      },
+      "orchestration": {
+        "model": {
+          "selection": "runtime-selected",
+          "required_capabilities": [
+            "tool-use",
+            "structured-output"
+          ]
+        },
+        "memory": {
+          "mode": "bundled",
+          "path": "config/memory-profile.default.json",
+          "required": false
+        },
+        "governance": {
+          "mode": "bundled",
+          "path": "config/governance.example.json",
+          "required": true
+        },
+        "bindings": [
+          {
+            "name": "control_plane_review",
+            "kind": "skill",
+            "package": "agentops/agent-control-plane-review",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "marketing_risk_review",
+            "kind": "skill",
+            "package": "security/marketing-agent-risk-review",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "agent_control_plane_server",
+            "kind": "tool",
+            "package": "agentops/agent-control-plane-server",
+            "version": "0.2.1",
+            "requirement": "required",
+            "access": "read-write",
+            "availability": "resolved"
+          }
+        ]
       },
       "dependencies": {
         "skills": [
@@ -282,7 +558,7 @@
           "security/marketing-agent-risk-review"
         ],
         "tools": [
-          "agent_control_plane_server"
+          "agentops/agent-control-plane-server"
         ]
       }
     },
@@ -292,15 +568,15 @@
       "name": "Campaign QA Supervisor",
       "description": "Validate campaign setup quality, tracking integrity, and policy compliance before launch or major edits.",
       "category": "marketing-agents/governance",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-03-02T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/marketing/campaign-qa-supervisor/0.1.0.yaml",
-          "manifest_sha256": "dcbed17fd333826b9b3e3bc59e9eab3fe6f3b86b9c7c219dd3b9865f16872967",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/campaign-qa-supervisor/0.1.0.tar.gz",
-          "sha256": "0cf52d0fe6e71d5b22ee650db4c9de7646f21526b0032c1093a4d0a22444e289"
+          "version": "0.2.0",
+          "released_at": "2026-09-26T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/marketing/campaign-qa-supervisor/0.2.0.yaml",
+          "manifest_sha256": "045f5988b88ac760932bed49041ceef55b2b4fe75ebca4665c6fdd54139c6971",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/campaign-qa-supervisor/0.2.0.tar.gz",
+          "sha256": "3845d57aa76697a64b7fdfe4f30ba7474e19c45058793ddfc4bea891ec88fc4d"
         }
       ],
       "runtimes": [
@@ -333,21 +609,62 @@
         ]
       },
       "usability": {
-        "availability": "template-only",
+        "availability": "not-verified",
         "execution": "orchestrator",
         "limitations": [
-          "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged."
+          "A cataloged campaign configuration reader is not yet available; alert delivery remains a human-owned draft."
         ],
-        "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+        "quickstart": "Install for policy review only; the compiled contract blocks connected QA until a campaign reader is published.",
         "source": "declared"
+      },
+      "orchestration": {
+        "model": {
+          "selection": "runtime-selected",
+          "required_capabilities": [
+            "tool-use",
+            "structured-output"
+          ]
+        },
+        "memory": {
+          "mode": "bundled",
+          "path": "config/memory-profile.example.json",
+          "required": true
+        },
+        "governance": {
+          "mode": "bundled",
+          "path": "config/governance.example.json",
+          "required": true
+        },
+        "bindings": [
+          {
+            "name": "policy_compliance",
+            "kind": "skill",
+            "package": "adtech/policy-brand-compliance-checker",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "campaign_config_reader",
+            "kind": "tool",
+            "requirement": "required",
+            "access": "read-only",
+            "availability": "unavailable",
+            "reason": "No cataloged campaign configuration provider currently implements this capability."
+          },
+          {
+            "name": "slack_post",
+            "kind": "tool",
+            "requirement": "optional",
+            "access": "read-write",
+            "availability": "unavailable",
+            "reason": "No cataloged Slack provider is available; return an alert draft for human delivery."
+          }
+        ]
       },
       "dependencies": {
         "skills": [
           "adtech/policy-brand-compliance-checker"
-        ],
-        "tools": [
-          "campaign_config_reader",
-          "slack_post"
         ]
       }
     },
@@ -357,15 +674,15 @@
       "name": "Creative Operating System Supervisor",
       "description": "Coordinate the Creative Operating System workflow from brand memory and utility concepts to creator briefs, cultural timing, and final quality evaluation.",
       "category": "marketing-agents/creative-ops",
-      "latest": "0.2.0",
+      "latest": "0.3.0",
       "versions": [
         {
-          "version": "0.2.0",
-          "released_at": "2026-09-22T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/marketing/creative-operating-system-supervisor/0.2.0.yaml",
-          "manifest_sha256": "c10181cfe415b6a30bee018a93e93628ee902f33c622e1b8617b5aae44923d66",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-operating-system-supervisor/0.2.0.tar.gz",
-          "sha256": "d2b09333d305dc51ed75f12c7ff5117c13ed0956079008f24d6efc745bb5f1d5"
+          "version": "0.3.0",
+          "released_at": "2026-09-26T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/marketing/creative-operating-system-supervisor/0.3.0.yaml",
+          "manifest_sha256": "45df3af5f64c0d5de405a446bdec9616452eac0a28b3884926a7c3b09d08e266",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/creative-operating-system-supervisor/0.3.0.tar.gz",
+          "sha256": "fedf8d51850fcbe84a941d3d4446082ea75e960c3d543ddef709dcf531c2f645"
         }
       ],
       "runtimes": [
@@ -406,13 +723,89 @@
         ]
       },
       "usability": {
-        "availability": "not-verified",
+        "availability": "setup-required",
         "execution": "orchestrator",
         "limitations": [
           "Produces plans and routing recommendations only; external activation and product changes remain human-approved."
         ],
-        "quickstart": "Use Claude for native plugin-agent discovery; Codex and generic installations expose this definition as advisory guidance only.",
+        "quickstart": "Install the agent to compile its pinned skill, memory, governance, and runtime model bindings.",
         "source": "declared"
+      },
+      "orchestration": {
+        "model": {
+          "selection": "runtime-selected",
+          "required_capabilities": [
+            "structured-output"
+          ]
+        },
+        "memory": {
+          "mode": "bundled",
+          "path": "config/memory-profile.example.json",
+          "required": true
+        },
+        "governance": {
+          "mode": "bundled",
+          "path": "config/governance.example.json",
+          "required": true
+        },
+        "bindings": [
+          {
+            "name": "operating_system_audit",
+            "kind": "skill",
+            "package": "marketing/creative-operating-system-audit",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "utility_concepts",
+            "kind": "skill",
+            "package": "marketing/utility-campaign-concept-designer",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "product_as_media",
+            "kind": "skill",
+            "package": "marketing/product-as-media-mapper",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "cultural_timing",
+            "kind": "skill",
+            "package": "marketing/cultural-timing-signal-triage",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "creator_strategy",
+            "kind": "skill",
+            "package": "marketing/creator-strategy-brief",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "output_evaluation",
+            "kind": "skill",
+            "package": "marketing/ai-output-eval-scorecard",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "brand_memory_bootstrap",
+            "kind": "skill",
+            "package": "adtech/brand-rag-memory-bootstrap",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          }
+        ]
       },
       "dependencies": {
         "skills": [
@@ -432,15 +825,15 @@
       "name": "Weekly Performance Supervisor",
       "description": "Orchestrate weekly performance reporting by chaining dashboard generation, QA checks, and executive narrative output.",
       "category": "marketing-agents/performance",
-      "latest": "0.1.0",
+      "latest": "0.2.0",
       "versions": [
         {
-          "version": "0.1.0",
-          "released_at": "2026-03-02T00:00:00Z",
-          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/marketing/weekly-performance-supervisor/0.1.0.yaml",
-          "manifest_sha256": "947c310b64c112979a160fa7c0b4a1144d1291b46bd1a1b65c80de9b43433632",
-          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/weekly-performance-supervisor/0.1.0.tar.gz",
-          "sha256": "613de1bca7d6edf8a1e39c29753a2a8179933b32c9be8f8bddfb3fc9aae9b5b9"
+          "version": "0.2.0",
+          "released_at": "2026-09-26T00:00:00Z",
+          "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/agents/marketing/weekly-performance-supervisor/0.2.0.yaml",
+          "manifest_sha256": "6d16ea216cee898e532aa5b9d176a921c3d730d56ab918829ff7a8b1bab06e48",
+          "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/marketing/weekly-performance-supervisor/0.2.0.tar.gz",
+          "sha256": "d86df1675fbc278b7c980f09127c0d51dd37ac3d1ffbe538dbd5568d79cc4e9f"
         }
       ],
       "runtimes": [
@@ -473,13 +866,76 @@
         ]
       },
       "usability": {
-        "availability": "template-only",
+        "availability": "setup-required",
         "execution": "orchestrator",
         "limitations": [
-          "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged."
+          "GA4 and BigQuery credentials and provider targets must be configured before reporting."
         ],
-        "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+        "quickstart": "Install the agent, then configure each provider named by the generated runtime contract.",
         "source": "declared"
+      },
+      "orchestration": {
+        "model": {
+          "selection": "runtime-selected",
+          "required_capabilities": [
+            "tool-use",
+            "structured-output"
+          ]
+        },
+        "memory": {
+          "mode": "bundled",
+          "path": "config/memory-profile.example.json",
+          "required": true
+        },
+        "governance": {
+          "mode": "bundled",
+          "path": "config/governance.example.json",
+          "required": true
+        },
+        "bindings": [
+          {
+            "name": "dashboard_generation",
+            "kind": "skill",
+            "package": "adtech/dashboard-generator",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "dashboard_qa",
+            "kind": "skill",
+            "package": "adtech/dashboard-qa-checker",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "executive_narrative",
+            "kind": "skill",
+            "package": "adtech/executive-narrative-writer",
+            "version": "0.1.0",
+            "requirement": "required",
+            "availability": "resolved"
+          },
+          {
+            "name": "ga4_query",
+            "kind": "tool",
+            "package": "analytics/ga4-mcp-connector",
+            "version": "0.2.0",
+            "requirement": "required",
+            "access": "read-only",
+            "availability": "resolved"
+          },
+          {
+            "name": "warehouse_query",
+            "kind": "tool",
+            "package": "warehouse/bigquery-mcp-query-runner",
+            "version": "0.2.0",
+            "requirement": "required",
+            "access": "read-only",
+            "availability": "resolved"
+          }
+        ]
       },
       "dependencies": {
         "skills": [
@@ -488,8 +944,8 @@
           "adtech/executive-narrative-writer"
         ],
         "tools": [
-          "ga4_query",
-          "warehouse_query"
+          "analytics/ga4-mcp-connector",
+          "warehouse/bigquery-mcp-query-runner"
         ]
       }
     }

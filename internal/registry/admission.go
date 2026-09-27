@@ -144,6 +144,11 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time, requ
 			return fmt.Errorf("manifest %s executable helper %s: %w", manifestPath, helper.Entrypoint, err)
 		}
 	}
+	if filepath.Base(manifestPath) == "agent.yaml" && manifest.Orchestration != nil {
+		if err := validateOrchestrationContract(packageDir, manifestPath, manifest); err != nil {
+			return err
+		}
+	}
 
 	if strings.HasPrefix(manifest.SchemaVersion, "2.") {
 		if err := validateProviderDependencyDeclarations(manifestPath, manifest); err != nil {
@@ -200,6 +205,84 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time, requ
 		case "local-tool", "remote-integration":
 			if _, ok := manifest.Entrypoints["scripts_dir"]; !ok {
 				return fmt.Errorf("manifest %s claims usable-now %s without a scripts_dir entrypoint", manifestPath, manifest.Usability.Execution)
+			}
+		}
+	}
+	return nil
+}
+
+func validateOrchestrationContract(packageDir, manifestPath string, manifest Manifest) error {
+	contract := manifest.Orchestration
+	if contract.Model.Selection != "runtime-selected" || len(contract.Model.RequiredCapabilities) == 0 {
+		return fmt.Errorf("manifest %s has incomplete orchestration model requirements", manifestPath)
+	}
+	for label, profile := range map[string]OrchestrationProfileRequirement{
+		"memory": contract.Memory, "governance": contract.Governance,
+	} {
+		if profile.Mode != "bundled" && profile.Mode != "runtime" {
+			return fmt.Errorf("manifest %s has unsupported orchestration %s mode %q", manifestPath, label, profile.Mode)
+		}
+		if profile.Mode == "bundled" {
+			if profile.Path == "" {
+				return fmt.Errorf("manifest %s bundled orchestration %s profile has no path", manifestPath, label)
+			}
+			if err := validateContainedPath(packageDir, profile.Path, false); err != nil {
+				return fmt.Errorf("manifest %s orchestration %s profile: %w", manifestPath, label, err)
+			}
+		}
+	}
+	if len(contract.Bindings) == 0 {
+		return fmt.Errorf("manifest %s orchestration contract declares no bindings", manifestPath)
+	}
+	dependencies := map[string]map[string]bool{
+		"agent": {}, "skill": {}, "tool": {},
+	}
+	for _, id := range manifest.Dependencies.Agents {
+		dependencies["agent"][id] = true
+	}
+	for _, id := range manifest.Dependencies.Skills {
+		dependencies["skill"][id] = true
+	}
+	for _, id := range manifest.Dependencies.Tools {
+		dependencies["tool"][id] = true
+	}
+	seenNames := map[string]bool{}
+	boundPackages := map[string]map[string]bool{"agent": {}, "skill": {}, "tool": {}}
+	for _, binding := range contract.Bindings {
+		if seenNames[binding.Name] {
+			return fmt.Errorf("manifest %s repeats orchestration binding %s", manifestPath, binding.Name)
+		}
+		seenNames[binding.Name] = true
+		if binding.Kind != "agent" && binding.Kind != "skill" && binding.Kind != "tool" {
+			return fmt.Errorf("manifest %s binding %s has unsupported kind %q", manifestPath, binding.Name, binding.Kind)
+		}
+		if binding.Requirement != "required" && binding.Requirement != "optional" {
+			return fmt.Errorf("manifest %s binding %s has unsupported requirement %q", manifestPath, binding.Name, binding.Requirement)
+		}
+		if binding.Kind == "tool" && binding.Access != "read-only" && binding.Access != "read-write" {
+			return fmt.Errorf("manifest %s tool binding %s must declare read-only or read-write access", manifestPath, binding.Name)
+		}
+		switch binding.Availability {
+		case "resolved":
+			if binding.Package == "" || !validSemver(binding.Version) {
+				return fmt.Errorf("manifest %s resolved binding %s must pin a package and semantic version", manifestPath, binding.Name)
+			}
+			if !dependencies[binding.Kind][binding.Package] {
+				return fmt.Errorf("manifest %s binding %s references undeclared %s dependency %s", manifestPath, binding.Name, binding.Kind, binding.Package)
+			}
+			boundPackages[binding.Kind][binding.Package] = true
+		case "unavailable":
+			if binding.Package != "" || binding.Version != "" || len(binding.Reason) < 10 {
+				return fmt.Errorf("manifest %s unavailable binding %s must contain only an actionable reason", manifestPath, binding.Name)
+			}
+		default:
+			return fmt.Errorf("manifest %s binding %s has unsupported availability %q", manifestPath, binding.Name, binding.Availability)
+		}
+	}
+	for kind, ids := range dependencies {
+		for id := range ids {
+			if !boundPackages[kind][id] {
+				return fmt.Errorf("manifest %s %s dependency %s has no pinned orchestration binding", manifestPath, kind, id)
 			}
 		}
 	}
@@ -1075,6 +1158,23 @@ func validateDependencyGraph(root string, records []manifestRecord) error {
 			}
 			if err := validateProviderDependencyAuthority(record.path, provider, target.manifest); err != nil {
 				return err
+			}
+		}
+		if record.manifest.Orchestration != nil {
+			for _, binding := range record.manifest.Orchestration.Bindings {
+				if binding.Availability != "resolved" {
+					continue
+				}
+				target, exists := byKind[binding.Kind][binding.Package]
+				if !exists {
+					return fmt.Errorf("manifest %s orchestration binding %s references missing %s %q", record.path, binding.Name, binding.Kind, binding.Package)
+				}
+				if target.manifest.Version != binding.Version {
+					return fmt.Errorf("manifest %s orchestration binding %s pins %s@%s but repository contains %s", record.path, binding.Name, binding.Package, binding.Version, target.manifest.Version)
+				}
+				if binding.Kind == "tool" && target.manifest.Operational.AccessLevel != binding.Access {
+					return fmt.Errorf("manifest %s orchestration binding %s declares %s access but tool %s declares %s", record.path, binding.Name, binding.Access, binding.Package, target.manifest.Operational.AccessLevel)
+				}
 			}
 		}
 	}

@@ -1,0 +1,122 @@
+{
+  "schema_version": "1.1",
+  "id": "adtech/ad-platform-control-plane-supervisor",
+  "name": "Ad Platform Control Plane Supervisor",
+  "description": "Advisory supervisor for DV360 and Google Ads agents, coordinating auth review, policy gates, executor readiness, approvals, audit, and rollback planning.",
+  "category": "adtech-agents/governance",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "adtech",
+    "control-plane",
+    "dv360",
+    "google-ads",
+    "governance"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "May recommend readiness and governance changes; must not approve live writes, grant credentials, or execute ad-platform changes.",
+    "role": "Governance supervisor for ad-platform agents that read, propose, approve, and execute campaign changes.",
+    "coordinates": [
+      "Ad-platform auth review",
+      "Policy gate design",
+      "Executor-readiness review",
+      "Audit and rollback checklist"
+    ],
+    "autonomy_level": "advisory",
+    "outputs": [
+      "Deployment readiness decision",
+      "Auth and policy gap list",
+      "Approval map",
+      "Executor and rollback checklist"
+    ]
+  },
+  "usability": {
+    "availability": "setup-required",
+    "execution": "orchestrator",
+    "limitations": [
+      "Required control-plane and executor providers must be configured and approved before live use."
+    ],
+    "quickstart": "Install the agent, then follow the compiled runtime contract readiness hints for its pinned providers.",
+    "source": "declared"
+  },
+  "orchestration": {
+    "model": {
+      "selection": "runtime-selected",
+      "required_capabilities": [
+        "tool-use",
+        "structured-output"
+      ]
+    },
+    "memory": {
+      "mode": "bundled",
+      "path": "config/memory-profile.default.json",
+      "required": false
+    },
+    "governance": {
+      "mode": "bundled",
+      "path": "config/governance.example.json",
+      "required": true
+    },
+    "bindings": [
+      {
+        "name": "ad_platform_auth_review",
+        "kind": "skill",
+        "package": "security/ad-platform-agent-auth-review",
+        "version": "0.1.0",
+        "requirement": "required",
+        "availability": "resolved"
+      },
+      {
+        "name": "policy_gate_design",
+        "kind": "skill",
+        "package": "agentops/ad-platform-policy-gate-designer",
+        "version": "0.1.0",
+        "requirement": "required",
+        "availability": "resolved"
+      },
+      {
+        "name": "control_plane_review",
+        "kind": "skill",
+        "package": "agentops/agent-control-plane-review",
+        "version": "0.1.0",
+        "requirement": "required",
+        "availability": "resolved"
+      },
+      {
+        "name": "ad_platform_executor",
+        "kind": "tool",
+        "package": "adtech/ad-platform-executor-template",
+        "version": "0.2.0",
+        "requirement": "required",
+        "access": "read-write",
+        "availability": "resolved"
+      },
+      {
+        "name": "agent_control_plane_server",
+        "kind": "tool",
+        "package": "agentops/agent-control-plane-server",
+        "version": "0.2.1",
+        "requirement": "required",
+        "access": "read-write",
+        "availability": "resolved"
+      }
+    ]
+  },
+  "dependencies": {
+    "skills": [
+      "security/ad-platform-agent-auth-review",
+      "agentops/ad-platform-policy-gate-designer",
+      "agentops/agent-control-plane-review"
+    ],
+    "tools": [
+      "adtech/ad-platform-executor-template",
+      "agentops/agent-control-plane-server"
+    ]
+  }
+}

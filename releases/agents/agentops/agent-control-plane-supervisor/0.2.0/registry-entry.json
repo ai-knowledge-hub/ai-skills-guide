@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.1",
+  "id": "agentops/agent-control-plane-supervisor",
+  "name": "Agent Control Plane Supervisor",
+  "description": "Advisory supervisor for reviewing, routing, and documenting governed marketing agent workflows before production deployment.",
+  "category": "agentops/harness-governance",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "governance",
+    "control-plane",
+    "approvals",
+    "audit",
+    "agentops"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "May recommend policy and approval changes; must not grant access, execute actions, or alter production policy.",
+    "role": "Governance supervisor for agent identity, policy, approval, and audit readiness.",
+    "coordinates": [
+      "Control-plane review",
+      "Marketing-agent risk review",
+      "Approval-boundary recommendations",
+      "Audit-readiness summary"
+    ],
+    "autonomy_level": "advisory",
+    "outputs": [
+      "Deployment readiness decision",
+      "Missing control list",
+      "Policy and approval recommendations",
+      "Audit evidence checklist"
+    ]
+  },
+  "usability": {
+    "availability": "setup-required",
+    "execution": "orchestrator",
+    "limitations": [
+      "The control-plane server and issuer profile must be configured before governed execution can be assessed."
+    ],
+    "quickstart": "Install the agent, then follow the compiled control-plane binding readiness hint.",
+    "source": "declared"
+  },
+  "orchestration": {
+    "model": {
+      "selection": "runtime-selected",
+      "required_capabilities": [
+        "tool-use",
+        "structured-output"
+      ]
+    },
+    "memory": {
+      "mode": "bundled",
+      "path": "config/memory-profile.default.json",
+      "required": false
+    },
+    "governance": {
+      "mode": "bundled",
+      "path": "config/governance.example.json",
+      "required": true
+    },
+    "bindings": [
+      {
+        "name": "control_plane_review",
+        "kind": "skill",
+        "package": "agentops/agent-control-plane-review",
+        "version": "0.1.0",
+        "requirement": "required",
+        "availability": "resolved"
+      },
+      {
+        "name": "marketing_risk_review",
+        "kind": "skill",
+        "package": "security/marketing-agent-risk-review",
+        "version": "0.1.0",
+        "requirement": "required",
+        "availability": "resolved"
+      },
+      {
+        "name": "agent_control_plane_server",
+        "kind": "tool",
+        "package": "agentops/agent-control-plane-server",
+        "version": "0.2.1",
+        "requirement": "required",
+        "access": "read-write",
+        "availability": "resolved"
+      }
+    ]
+  },
+  "dependencies": {
+    "skills": [
+      "agentops/agent-control-plane-review",
+      "security/marketing-agent-risk-review"
+    ],
+    "tools": [
+      "agentops/agent-control-plane-server"
+    ]
+  }
+}

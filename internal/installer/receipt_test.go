@@ -106,6 +106,30 @@ func TestRuntimeContractDigestBindsPluginCapabilityReadiness(t *testing.T) {
 	}
 }
 
+func TestRuntimeContractDigestBindsAgentOrchestration(t *testing.T) {
+	entry := registry.SkillEntry{
+		ID: "marketing/example-agent", Runtimes: []string{"generic"},
+		Orchestration: &registry.OrchestrationMetadata{
+			Model:      registry.OrchestrationModelRequirement{Selection: "runtime-selected", RequiredCapabilities: []string{"tool-use"}},
+			Memory:     registry.OrchestrationProfileRequirement{Mode: "runtime", Required: true},
+			Governance: registry.OrchestrationProfileRequirement{Mode: "runtime", Required: true},
+			Bindings:   []registry.OrchestrationBinding{{Name: "query", Kind: "tool", Package: "analytics/example", Version: "1.0.0", Requirement: "required", Access: "read-only", Availability: "resolved"}},
+		},
+	}
+	original, err := RuntimeContractSHA256(entry, "1.0.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	entry.Orchestration.Bindings[0].Version = "1.1.0"
+	changed, err := RuntimeContractSHA256(entry, "1.0.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if original == changed {
+		t.Fatal("runtime contract digest did not change with pinned orchestration dependency")
+	}
+}
+
 func TestInstallReceiptRejectsIdentityMismatch(t *testing.T) {
 	root := t.TempDir()
 	if err := os.WriteFile(filepath.Join(root, "tool.yaml"), []byte("fixture\n"), 0o644); err != nil {

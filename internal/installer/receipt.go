@@ -201,6 +201,99 @@ func VerifyInstallClosure(packageDir, pluginTargetRoot string, receipt InstallRe
 	return nil
 }
 
+// VerifyAgentInstallClosure derives the complete expected dependency graph from
+// the installed, receipt-bound orchestration manifests. The receipt is evidence
+// for that independently derived graph; it is never allowed to define its own
+// completeness.
+func VerifyAgentInstallClosure(receipt InstallReceipt, moduleRoots map[string]string, orchestration *registry.OrchestrationMetadata) error {
+	if receipt.Module != "agents" {
+		return errors.New("agent closure verification requires an agent receipt")
+	}
+	if orchestration == nil {
+		return errors.New("installed agent has no orchestration contract")
+	}
+	type expectedMember struct {
+		module, id, version, contractSHA256 string
+	}
+	expected := map[string]expectedMember{}
+	bindings := append([]registry.OrchestrationBinding(nil), orchestration.Bindings...)
+	visitedAgents := map[string]bool{}
+	for index := 0; index < len(bindings); index++ {
+		binding := bindings[index]
+		if binding.Availability != "resolved" {
+			continue
+		}
+		module := map[string]string{"skill": "skills", "agent": "agents", "tool": "tools"}[binding.Kind]
+		root := strings.TrimSpace(moduleRoots[module])
+		if module == "" || root == "" {
+			return fmt.Errorf("installed agent dependency %s has no module root", binding.Name)
+		}
+		key := module + "\x00" + binding.Package
+		if prior, ok := expected[key]; ok {
+			if prior.version != binding.Version {
+				return fmt.Errorf("installed agent contract pins conflicting versions of %s", binding.Package)
+			}
+			continue
+		}
+		manifestName, err := manifestNameForModule(module)
+		if err != nil {
+			return err
+		}
+		memberDir := filepath.Join(root, filepath.FromSlash(binding.Package))
+		manifest, err := registry.ValidateHistoricalPackageManifest(filepath.Join(memberDir, manifestName))
+		if err != nil {
+			return fmt.Errorf("validate installed agent dependency %s %s: %w", module, binding.Package, err)
+		}
+		if manifest.ID != binding.Package || manifest.Version != binding.Version {
+			return fmt.Errorf("installed agent dependency %s %s does not match pinned version %s", module, binding.Package, binding.Version)
+		}
+		contractSHA256, err := RuntimeContractSHA256(registry.ProjectManifest(manifest), binding.Version)
+		if err != nil {
+			return fmt.Errorf("derive installed agent dependency contract %s %s: %w", module, binding.Package, err)
+		}
+		expected[key] = expectedMember{module: module, id: binding.Package, version: binding.Version, contractSHA256: contractSHA256}
+		if binding.Kind == "agent" && !visitedAgents[binding.Package] {
+			visitedAgents[binding.Package] = true
+			if manifest.Orchestration == nil {
+				return fmt.Errorf("installed transitive agent %s has no orchestration contract", binding.Package)
+			}
+			bindings = append(bindings, manifest.Orchestration.Bindings...)
+		}
+	}
+
+	if len(receipt.Closure) != len(expected) {
+		return errors.New("install receipt does not describe the complete agent closure")
+	}
+	seen := make(map[string]struct{}, len(receipt.Closure))
+	for _, member := range receipt.Closure {
+		key := member.Module + "\x00" + member.ID
+		want, ok := expected[key]
+		if !ok {
+			return errors.New("install receipt contains an unexpected agent dependency")
+		}
+		if _, duplicate := seen[key]; duplicate {
+			return errors.New("install receipt contains a duplicate agent dependency")
+		}
+		seen[key] = struct{}{}
+		if member.Version != want.version || !strings.EqualFold(member.RuntimeContractSHA256, want.contractSHA256) {
+			return fmt.Errorf("installed agent dependency %s %s is not bound to its pinned contract", member.Module, member.ID)
+		}
+		memberDir := filepath.Join(moduleRoots[want.module], filepath.FromSlash(want.id))
+		installed, err := VerifyInstallReceipt(memberDir, want.module, want.id, want.version, receipt.Runtime, "", want.contractSHA256)
+		if err != nil {
+			return fmt.Errorf("verify installed agent dependency %s %s: %w", want.module, want.id, err)
+		}
+		sourceBound := installed.Source == "local"
+		if receipt.Source == "remote" {
+			sourceBound = installed.Source == "bundled" && strings.EqualFold(installed.ParentArtifactSHA256, receipt.ArtifactSHA256)
+		}
+		if !sourceBound || !strings.EqualFold(installed.TreeSHA256, member.TreeSHA256) {
+			return fmt.Errorf("installed agent dependency %s %s is not bound to the agent release", want.module, want.id)
+		}
+	}
+	return nil
+}
+
 func RuntimeContractSHA256(entry registry.SkillEntry, version string) (string, error) {
 	contract := struct {
 		ID                   string                                 `json:"id"`
@@ -212,10 +305,12 @@ func RuntimeContractSHA256(entry registry.SkillEntry, version string) (string, e
 		Includes             *registry.IncludeSet                   `json:"includes,omitempty"`
 		ProviderDependencies []registry.ProviderDependencyMetadata  `json:"provider_dependencies,omitempty"`
 		CapabilityReadiness  []registry.CapabilityReadinessMetadata `json:"capability_readiness,omitempty"`
+		Orchestration        *registry.OrchestrationMetadata        `json:"orchestration,omitempty"`
 	}{
 		ID: entry.ID, Version: version, Runtimes: entry.Runtimes, Execution: entry.Execution,
 		Artifact: entry.Artifact, Authentication: entry.Authentication, Includes: entry.Includes,
 		ProviderDependencies: entry.ProviderDependencies, CapabilityReadiness: entry.CapabilityReadiness,
+		Orchestration: entry.Orchestration,
 	}
 	payload, err := json.Marshal(contract)
 	if err != nil {

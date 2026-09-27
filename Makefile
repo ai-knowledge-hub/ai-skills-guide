@@ -1,6 +1,9 @@
 SHELL := /bin/bash
 
-.PHONY: help doctor validate manifests registry release-assets-check test-scripts test ci-local cli-build cli-test web-dev web-build web-lint web-e2e release-cut
+.PHONY: help doctor validate manifests registry release-assets-check test-scripts test ci-local cli-build cli-build-test cli-test check-runtime-trust release-cli-artifacts web-dev web-build web-lint web-e2e release-cut
+
+RUNTIME_TRUST_LDFLAGS = -X github.com/ai-knowledge-hub/ai-skills-guide/internal/agents.codexModelAttestationPublicKey=$(CODEX_MODEL_ATTESTATION_PUBLIC_KEY) -X github.com/ai-knowledge-hub/ai-skills-guide/internal/agents.claudeModelAttestationPublicKey=$(CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY) -X github.com/ai-knowledge-hub/ai-skills-guide/internal/agents.genericModelAttestationPublicKey=$(GENERIC_MODEL_ATTESTATION_PUBLIC_KEY)
+CI_TEST_MODEL_ATTESTATION_PUBLIC_KEY = 11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=
 
 help:
 	@echo "Targets:"
@@ -14,6 +17,8 @@ help:
 	@echo "  make ci-local      - Run local checks similar to CI"
 	@echo "  make cli-test      - Run Go unit tests for CLI packages"
 	@echo "  make cli-build     - Build the skills-hub CLI binary"
+	@echo "  make cli-build-test - Build a non-release CLI with an explicit test-only trust root"
+	@echo "  make release-cli-artifacts VERSION=vX.Y.Z - Build governed release binaries and checksums"
 	@echo "  make web-dev       - Run Next.js hub app in dev mode"
 	@echo "  make web-build     - Build Next.js hub app"
 	@echo "  make web-lint      - Lint Next.js hub app"
@@ -56,8 +61,24 @@ ci-local: test registry manifests cli-test
 cli-test:
 	go test ./...
 
-cli-build:
-	go build -o bin/skills-hub ./cmd/skills-hub
+check-runtime-trust:
+	@go run ./cmd/runtime-trust-validator \
+		--codex "$(CODEX_MODEL_ATTESTATION_PUBLIC_KEY)" \
+		--claude "$(CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY)" \
+		--generic "$(GENERIC_MODEL_ATTESTATION_PUBLIC_KEY)"
+
+cli-build: check-runtime-trust
+	go build -ldflags "$(RUNTIME_TRUST_LDFLAGS)" -o bin/skills-hub ./cmd/skills-hub
+
+cli-build-test: CODEX_MODEL_ATTESTATION_PUBLIC_KEY = $(CI_TEST_MODEL_ATTESTATION_PUBLIC_KEY)
+cli-build-test: CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY = $(CI_TEST_MODEL_ATTESTATION_PUBLIC_KEY)
+cli-build-test: GENERIC_MODEL_ATTESTATION_PUBLIC_KEY = $(CI_TEST_MODEL_ATTESTATION_PUBLIC_KEY)
+cli-build-test: check-runtime-trust
+	go build -ldflags "$(RUNTIME_TRUST_LDFLAGS)" -o bin/skills-hub-test ./cmd/skills-hub
+
+release-cli-artifacts: check-runtime-trust
+	@if [ -z "$(VERSION)" ]; then echo "Usage: make release-cli-artifacts VERSION=vX.Y.Z"; exit 1; fi
+	bash scripts/build-governed-cli-release.sh "$(VERSION)" "dist"
 
 web-dev:
 	cd apps/web && pnpm dev

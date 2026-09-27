@@ -22,6 +22,7 @@ type Manifest struct {
 	Verification         VerificationMetadata          `json:"verification"`
 	ProviderDependencies []ProviderDependencyMetadata  `json:"provider_dependencies,omitempty"`
 	CapabilityReadiness  []CapabilityReadinessMetadata `json:"capability_readiness,omitempty"`
+	Orchestration        *OrchestrationMetadata        `json:"orchestration,omitempty"`
 	Dependencies         DependencySet                 `json:"dependencies"`
 	Includes             IncludeSet                    `json:"includes"`
 	Requires             RequirementSet                `json:"requires"`
@@ -30,6 +31,39 @@ type Manifest struct {
 	authenticationSet    bool
 	verificationSet      bool
 	usabilitySet         bool
+}
+
+// OrchestrationMetadata is the install-time contract for an agent package.
+// It keeps logical workflow names separate from immutable catalog identities,
+// and makes unavailable capabilities explicit instead of leaving users to
+// invent local bindings.
+type OrchestrationMetadata struct {
+	Model      OrchestrationModelRequirement   `json:"model"`
+	Memory     OrchestrationProfileRequirement `json:"memory"`
+	Governance OrchestrationProfileRequirement `json:"governance"`
+	Bindings   []OrchestrationBinding          `json:"bindings"`
+}
+
+type OrchestrationModelRequirement struct {
+	Selection            string   `json:"selection"`
+	RequiredCapabilities []string `json:"required_capabilities"`
+}
+
+type OrchestrationProfileRequirement struct {
+	Mode     string `json:"mode"`
+	Path     string `json:"path,omitempty"`
+	Required bool   `json:"required"`
+}
+
+type OrchestrationBinding struct {
+	Name         string `json:"name"`
+	Kind         string `json:"kind"`
+	Package      string `json:"package,omitempty"`
+	Version      string `json:"version,omitempty"`
+	Requirement  string `json:"requirement"`
+	Access       string `json:"access,omitempty"`
+	Availability string `json:"availability"`
+	Reason       string `json:"reason,omitempty"`
 }
 
 // ProviderDependencyMetadata declares the provider authority a composed
@@ -169,6 +203,7 @@ type SkillEntry struct {
 	Verification         *VerificationMetadata         `json:"verification,omitempty"`
 	ProviderDependencies []ProviderDependencyMetadata  `json:"provider_dependencies,omitempty"`
 	CapabilityReadiness  []CapabilityReadinessMetadata `json:"capability_readiness,omitempty"`
+	Orchestration        *OrchestrationMetadata        `json:"orchestration,omitempty"`
 	Dependencies         *DependencySet                `json:"dependencies,omitempty"`
 	Includes             *IncludeSet                   `json:"includes,omitempty"`
 	Requires             *RequirementSet               `json:"requires,omitempty"`

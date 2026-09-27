@@ -443,6 +443,10 @@ func runInstall(args []string) error {
 		); err != nil {
 			return err
 		}
+	} else if moduleName == "agents" && skill.Orchestration != nil {
+		if _, err := installer.PreflightAgentDependencies(skill, rt.Runtime, rt.TargetPath, dependencyModuleRoots, dependencyRegistryPaths); err != nil {
+			return err
+		}
 	}
 	manifestNames := map[string]string{"skills": "skill.yaml", "agents": "agent.yaml", "tools": "tool.yaml", "plugins": "plugin.yaml"}
 	validatedManifest, err := registry.ValidatePackageManifest(filepath.Join(sourceDir, manifestNames[moduleName]))
@@ -474,6 +478,18 @@ func runInstall(args []string) error {
 		if err != nil {
 			return err
 		}
+	} else if moduleName == "agents" && skill.Orchestration != nil {
+		dependencyResult, err = installer.InstallAgentDependencies(
+			skill, rt.Runtime, rt.TargetPath, dependencyModuleRoots, dependencyRegistryPaths, *force,
+		)
+		if err != nil {
+			return err
+		}
+		runtimeContract, compileErr := installer.CompileAgentRuntimePackage(destination, rt.Runtime, rt.TargetPath)
+		if compileErr != nil {
+			return compileErr
+		}
+		runtimeArtifacts = append(runtimeArtifacts, runtimeContract)
 	}
 	runtimeContractSHA256, err := installer.RuntimeContractSHA256(skill, resolvedVersion.Version)
 	if err != nil {
@@ -490,6 +506,9 @@ func runInstall(args []string) error {
 	printUsabilitySummary(os.Stdout, skill)
 	if moduleName == "plugins" {
 		printPluginInstallNotes(os.Stdout, os.Stderr, skill, rt.Runtime, destination, runtimeArtifacts, dependencyResult)
+	} else if moduleName == "agents" && skill.Orchestration != nil {
+		fmt.Printf("install.runtime_artifacts: %s\n", strings.Join(runtimeArtifacts, ", "))
+		printPluginDependencySummary(os.Stdout, dependencyResult)
 	}
 	return nil
 }
@@ -729,7 +748,7 @@ func printUsage() {
 		"  skills-hub auth status marketing/performance-reporting-plugin@latest --module plugins --runtime codex",
 		"  skills-hub doctor ads/example@latest --module tools --runtime codex",
 		"  skills-hub smoke ads/example@latest --module tools --runtime codex",
-		"  skills-hub run-agent --agent marketing/weekly-performance-supervisor --bindings agents/marketing/weekly-performance-supervisor/config/tool-bindings.example.json --approve-live",
+		"  skills-hub run-agent --agent marketing/weekly-performance-supervisor --runtime codex --model-attestation /path/from/runtime/model-attestation.json --approve-live",
 	}
 	fmt.Println(strings.Join(lines, "\n"))
 }
@@ -737,9 +756,12 @@ func printUsage() {
 func runAgent(args []string) error {
 	fs := flag.NewFlagSet("run-agent", flag.ContinueOnError)
 	agentID := fs.String("agent", "", "agent id in <domain>/<slug> format")
-	agentsRoot := fs.String("agents-root", "agents", "agents root directory")
-	skillsRoot := fs.String("skills-root", "skills", "skills root directory")
-	toolsRoot := fs.String("tools-root", "tools-mcp", "tools root directory")
+	runtimeName := fs.String("runtime", "generic", "compiled runtime binding set (codex, claude, generic)")
+	stateDir := fs.String("state-dir", defaultStateDir(), "non-secret provider authentication state directory")
+	agentsRoot := fs.String("agents-root", "", "agents root directory override")
+	skillsRoot := fs.String("skills-root", "", "skills root directory override")
+	toolsRoot := fs.String("tools-root", "", "tools root directory override")
+	modelAttestationPath := fs.String("model-attestation", "", "path to a signed runtime model attestation")
 	bindingsPath := fs.String("bindings", "", "path to JSON tool bindings")
 	memoryPath := fs.String("memory", "", "path to JSON memory profile")
 	governancePath := fs.String("governance", "", "path to JSON governance profile")
@@ -751,17 +773,24 @@ func runAgent(args []string) error {
 	if strings.TrimSpace(*agentID) == "" {
 		return errors.New("--agent is required")
 	}
+	resolvedAgentsRoot, resolvedSkillsRoot, resolvedToolsRoot, err := resolveRunAgentRoots(*runtimeName, *agentsRoot, *skillsRoot, *toolsRoot)
+	if err != nil {
+		return err
+	}
 
 	report, err := agents.RunPreflight(agents.RunOptions{
-		AgentsRoot:     *agentsRoot,
-		SkillsRoot:     *skillsRoot,
-		ToolsRoot:      *toolsRoot,
-		AgentID:        strings.TrimSpace(*agentID),
-		BindingsPath:   strings.TrimSpace(*bindingsPath),
-		MemoryPath:     strings.TrimSpace(*memoryPath),
-		GovernancePath: strings.TrimSpace(*governancePath),
-		ApproveLive:    *approveLive,
-		AuditPath:      strings.TrimSpace(*auditPath),
+		AgentsRoot:           resolvedAgentsRoot,
+		SkillsRoot:           resolvedSkillsRoot,
+		ToolsRoot:            resolvedToolsRoot,
+		AgentID:              strings.TrimSpace(*agentID),
+		Runtime:              strings.TrimSpace(*runtimeName),
+		StateDir:             strings.TrimSpace(*stateDir),
+		BindingsPath:         strings.TrimSpace(*bindingsPath),
+		MemoryPath:           strings.TrimSpace(*memoryPath),
+		GovernancePath:       strings.TrimSpace(*governancePath),
+		ApproveLive:          *approveLive,
+		AuditPath:            strings.TrimSpace(*auditPath),
+		ModelAttestationPath: strings.TrimSpace(*modelAttestationPath),
 	})
 	if err != nil {
 		return err
@@ -789,6 +818,29 @@ func runAgent(args []string) error {
 		return fmt.Errorf("agent preflight not ready: %s", report.Status)
 	}
 	return nil
+}
+
+func resolveRunAgentRoots(runtimeName, agentsRoot, skillsRoot, toolsRoot string) (string, string, string, error) {
+	resolve := func(module, explicit string) (string, error) {
+		target, err := installer.ResolveRuntimeTargetForModule(runtimeName, module, strings.TrimSpace(explicit))
+		if err != nil {
+			return "", fmt.Errorf("resolve %s root: %w", module, err)
+		}
+		return target.TargetPath, nil
+	}
+	agentsPath, err := resolve("agents", agentsRoot)
+	if err != nil {
+		return "", "", "", err
+	}
+	skillsPath, err := resolve("skills", skillsRoot)
+	if err != nil {
+		return "", "", "", err
+	}
+	toolsPath, err := resolve("tools", toolsRoot)
+	if err != nil {
+		return "", "", "", err
+	}
+	return agentsPath, skillsPath, toolsPath, nil
 }
 
 func normalizeModule(raw string) (string, error) {

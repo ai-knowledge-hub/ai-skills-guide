@@ -196,6 +196,12 @@ func ProjectManifest(m Manifest) SkillEntry {
 		requires := m.Requires
 		entry.Requires = &requires
 	}
+	if m.Orchestration != nil {
+		orchestration := *m.Orchestration
+		orchestration.Model.RequiredCapabilities = append([]string(nil), m.Orchestration.Model.RequiredCapabilities...)
+		orchestration.Bindings = append([]OrchestrationBinding(nil), m.Orchestration.Bindings...)
+		entry.Orchestration = &orchestration
+	}
 	return ApplyLifecycleProjection(entry)
 }
 

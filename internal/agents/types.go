@@ -12,11 +12,57 @@ type Manifest struct {
 	DependencyAgents []string
 	DependencySkills []string
 	DependencyTools  []string
+	Orchestration    *OrchestrationContract
+}
+
+type OrchestrationContract struct {
+	Model      ModelRequirement   `json:"model" yaml:"model"`
+	Memory     ProfileRequirement `json:"memory" yaml:"memory"`
+	Governance ProfileRequirement `json:"governance" yaml:"governance"`
+	Bindings   []PackageBinding   `json:"bindings" yaml:"bindings"`
+}
+
+type ModelRequirement struct {
+	Selection            string   `json:"selection" yaml:"selection"`
+	RequiredCapabilities []string `json:"required_capabilities" yaml:"required_capabilities"`
+}
+
+type ProfileRequirement struct {
+	Mode     string `json:"mode" yaml:"mode"`
+	Path     string `json:"path,omitempty" yaml:"path,omitempty"`
+	Required bool   `json:"required" yaml:"required"`
+}
+
+type PackageBinding struct {
+	Name         string `json:"name" yaml:"name"`
+	Kind         string `json:"kind" yaml:"kind"`
+	Package      string `json:"package,omitempty" yaml:"package,omitempty"`
+	Version      string `json:"version,omitempty" yaml:"version,omitempty"`
+	Requirement  string `json:"requirement" yaml:"requirement"`
+	Access       string `json:"access,omitempty" yaml:"access,omitempty"`
+	Availability string `json:"availability" yaml:"availability"`
+	Reason       string `json:"reason,omitempty" yaml:"reason,omitempty"`
 }
 
 type ToolBinding struct {
-	Endpoint string `json:"endpoint"`
-	Mode     string `json:"mode"` // read_only | read_write
+	Package       string `json:"package,omitempty"`
+	Version       string `json:"version,omitempty"`
+	Requirement   string `json:"requirement,omitempty"`
+	Endpoint      string `json:"endpoint"`
+	Mode          string `json:"mode"` // read_only | read_write
+	Status        string `json:"status,omitempty"`
+	Reason        string `json:"reason,omitempty"`
+	ConfigureHint string `json:"configure_hint,omitempty"`
+}
+
+type ModelReadiness struct {
+	Selection            string   `json:"selection,omitempty"`
+	Status               string   `json:"status"` // not-applicable | unverified | ready
+	Identity             string   `json:"identity,omitempty"`
+	Version              string   `json:"version,omitempty"`
+	EvidenceReference    string   `json:"evidence_reference,omitempty"`
+	RequiredCapabilities []string `json:"required_capabilities,omitempty"`
+	AttestedCapabilities []string `json:"attested_capabilities,omitempty"`
 }
 
 type ToolBindingsFile struct {
@@ -45,5 +91,6 @@ type RunReport struct {
 	DependencySkills []string               `json:"dependency_skills"`
 	DependencyTools  []string               `json:"dependency_tools"`
 	ResolvedTools    map[string]ToolBinding `json:"resolved_tools"`
+	Model            ModelReadiness         `json:"model"`
 	WorkflowSteps    []string               `json:"workflow_steps"`
 }

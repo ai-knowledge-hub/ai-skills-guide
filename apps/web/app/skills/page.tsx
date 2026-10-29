@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { loadSkillsRegistry, uniqueValues } from "@/lib/registry";
 import CatalogClient from "@/components/CatalogClient";
 import { parseMultiValue, type SearchParamValue } from "@/lib/catalogFilters";
 import { getDomainKey } from "@/lib/categoryLabels";
+
+export const metadata: Metadata = { title: "Skills Catalog", description: "Task-level expertise for recurring work. Search by purpose, domain or runtime, then inspect the requirements before installing." };
 
 type SearchParams = {
   q?: SearchParamValue;
@@ -21,17 +24,12 @@ export default async function SkillsPage({ searchParams = {} }: { searchParams?:
   const availableTags = uniqueValues(registry.skills.flatMap((s) => s.tags));
 
   return (
-    <main>
-      <div className="nav">
-        <a href="/" className="pill">Home</a>
-        <a href="/agents" className="pill">Agents</a>
-        <a href="/plugins" className="pill">Plugins</a>
-        <a href="/tools-mcp" className="pill">Tools &amp; MCP</a>
-        <span className="pill">Catalog</span>
-      </div>
-
-      <h1>Skills Catalog</h1>
-      <p>Filter by intent, runtime, and category to find install-ready skills.</p>
+    <main id="main" tabIndex={-1} className="catalogue-main">
+      <header className="catalogue-heading">
+        <h1 aria-label="Skills Catalog">Skills</h1>
+        <p>Task-level expertise for recurring work. Search by purpose, domain or runtime, then inspect the requirements before installing.</p>
+      </header>
+      <div className="catalogue-content">
 
       <CatalogClient
         entries={registry.skills}
@@ -40,6 +38,7 @@ export default async function SkillsPage({ searchParams = {} }: { searchParams?:
         basePath="/skills"
         initial={{ q, tags, categories: categoriesSelected, runtimes }}
       />
+      </div>
     </main>
   );
 }

@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { loadPluginsRegistry, uniqueValues } from "@/lib/registry";
 import CatalogClient from "@/components/CatalogClient";
 import { parseMultiValue, type SearchParamValue } from "@/lib/catalogFilters";
 import { getDomainKey } from "@/lib/categoryLabels";
+
+export const metadata: Metadata = { title: "Plugins Catalog", description: "Installable bundles of skills, agents, tools, hooks and setup guidance." };
 
 type SearchParams = {
   q?: SearchParamValue;
@@ -21,17 +24,12 @@ export default async function PluginsPage({ searchParams = {} }: { searchParams?
   const availableTags = uniqueValues(registry.skills.flatMap((s) => s.tags));
 
   return (
-    <main>
-      <div className="nav">
-        <a href="/" className="pill">Home</a>
-        <a href="/skills" className="pill">Skills</a>
-        <a href="/agents" className="pill">Agents</a>
-        <a href="/tools-mcp" className="pill">Tools &amp; MCP</a>
-        <span className="pill">Plugins</span>
-      </div>
-
-      <h1>Plugins Catalog</h1>
-      <p>Browse installable bundles that package skills, agents, tools, hooks, and setup guidance into portable team capabilities.</p>
+    <main id="main" tabIndex={-1} className="catalogue-main">
+      <header className="catalogue-heading">
+        <h1 aria-label="Plugins Catalog">Plugins</h1>
+        <p>Installable bundles of skills, agents, tools, hooks and setup guidance.</p>
+      </header>
+      <div className="catalogue-content">
 
       <CatalogClient
         entries={registry.skills}
@@ -40,6 +38,7 @@ export default async function PluginsPage({ searchParams = {} }: { searchParams?
         basePath="/plugins"
         initial={{ q, tags, categories: categoriesSelected, runtimes }}
       />
+      </div>
     </main>
   );
 }

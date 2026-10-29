@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "version": "0.1.0",
+  "basis": "Observed publication working-tree CSS, captured 2026-10-24; channel adaptations require their own previews.",
+  "color": {
+    "light": {
+      "paper": "#faf9f6",
+      "ink": "#171717",
+      "muted": "#626262",
+      "rule": "#deddd9",
+      "surface": "#efeeeb"
+    },
+    "dark": {
+      "paper": "#000000",
+      "ink": "#f4f3ed",
+      "muted": "#b5b4b0",
+      "rule": "#272727",
+      "surface": "#111111"
+    },
+    "artwork": { "black": "#000000", "white": "#ffffff" }
+  },
+  "typography": {
+    "sans": "Arial, Helvetica, sans-serif",
+    "code": "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+    "body": {
+      "desktopPx": 18,
+      "mobilePx": 17,
+      "lineHeight": 1.75,
+      "measureCh": 70
+    },
+    "heading": { "weight": 700, "trackingEm": -0.035 },
+    "entrance": {
+      "headingPx": 76,
+      "headingWeight": 900,
+      "lineHeight": 1.02,
+      "trackingPx": -2.5,
+      "descriptorPx": 22,
+      "navDesktopMinPx": 20,
+      "navDesktopMaxPx": 22,
+      "navWeight": 500
+    }
+  },
+  "layout": {
+    "minimumTargetPx": 44,
+    "entrancePlane": [1920, 1080],
+    "titlePosition": [300, 680],
+    "titleSize": [643, 250],
+    "titlePadding": [24, 28]
+  },
+  "motion": {
+    "fps": 30,
+    "entranceSeconds": 12,
+    "wallAmountPx": 14,
+    "stationaryText": true
+  }
+}

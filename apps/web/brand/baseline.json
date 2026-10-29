@@ -1,0 +1,30 @@
+{
+  "version": "0.1.0",
+  "capturedOn": "2026-10-29",
+  "ownerSelectedOn": "2026-10-24",
+  "sources": [
+    {
+      "source": "brand-studio/brand/GUIDELINES.md",
+      "sha256": "17d0b767b0113fd7376a62107030dccc45f2d6a2d5b3de38a64b8b29c99ed731"
+    },
+    {
+      "source": "brand-studio/brand/tokens.json",
+      "sha256": "0e221dfa4418c829094dd381d39383a2d137227cc93b5eda5111824449c5ad8d"
+    },
+    {
+      "source": "independent-ai-publication/src/styles/typography.css",
+      "sha256": "6eaf8d4616e57b0f8f2c2e6e450f5c20521eb5d7918c55247048dbe7c1b05e4e"
+    },
+    {
+      "source": "independent-ai-publication/src/styles/op-art.css",
+      "sha256": "46a0cb9b8a61e6adb23b4e608c6bf24c7fdcb7c5d9ffc71e3fca42063ee0239e"
+    }
+  ],
+  "adaptations": [
+    "Catalogue-specific descriptor and four existing module destinations.",
+    "Static full-width entrance with stable semantic title and immediately available catalogue action.",
+    "Shared community frontispiece on catalogue pages, with a solid reading surface.",
+    "Native checkbox groups for multi-select filters; URL state survives navigation.",
+    "No runtime dependency on the publication or brand-studio checkouts."
+  ]
+}

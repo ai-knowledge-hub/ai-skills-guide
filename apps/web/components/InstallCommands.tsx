@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type InstallCommandsProps = {
   codex: string;
@@ -13,14 +13,29 @@ type RuntimeKey = "codex" | "claude" | "generic";
 
 export default function InstallCommands({ codex, claude, generic, compact = false }: InstallCommandsProps) {
   const [copied, setCopied] = useState<RuntimeKey | null>(null);
+  const [failed, setFailed] = useState<RuntimeKey | null>(null);
+  const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const attempt = useRef(0);
+
+  useEffect(() => () => {
+    attempt.current += 1;
+    if (timeout.current) clearTimeout(timeout.current);
+  }, []);
 
   async function copy(runtime: RuntimeKey, value: string) {
+    const current = ++attempt.current;
+    if (timeout.current) clearTimeout(timeout.current);
+    setCopied(null);
+    setFailed(null);
     try {
       await navigator.clipboard.writeText(value);
+      if (current !== attempt.current) return;
       setCopied(runtime);
-      window.setTimeout(() => setCopied((prev) => (prev === runtime ? null : prev)), 1400);
+      timeout.current = setTimeout(() => setCopied(null), 2000);
     } catch {
+      if (current !== attempt.current) return;
       setCopied(null);
+      setFailed(runtime);
     }
   }
 
@@ -39,12 +54,14 @@ export default function InstallCommands({ codex, claude, generic, compact = fals
             <button
               type="button"
               className="button button--secondary copy-button"
+              aria-label={`Copy ${row.key} installation command`}
               onClick={() => copy(row.key, row.command)}
             >
               {copied === row.key ? "Copied" : "Copy"}
             </button>
           </div>
-          <pre className="install">{row.command}</pre>
+          <pre className="install" tabIndex={0} aria-label={`${row.key} installation command`}>{row.command}</pre>
+          <p className="copy-status" role="status">{failed === row.key ? "Clipboard unavailable. Select and copy the command above." : copied === row.key ? "Command copied." : ""}</p>
         </section>
       ))}
     </article>

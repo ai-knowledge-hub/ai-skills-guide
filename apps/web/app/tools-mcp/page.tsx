@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { loadToolsRegistry, uniqueValues } from "@/lib/registry";
 import CatalogClient from "@/components/CatalogClient";
 import { parseMultiValue, type SearchParamValue } from "@/lib/catalogFilters";
 import { getDomainKey } from "@/lib/categoryLabels";
+
+export const metadata: Metadata = { title: "Tools & MCP Catalog", description: "Tool integrations and MCP adapters used by skills and agent templates." };
 
 type SearchParams = {
   q?: SearchParamValue;
@@ -21,17 +24,12 @@ export default async function ToolsMcpPage({ searchParams = {} }: { searchParams
   const availableTags = uniqueValues(registry.skills.flatMap((s) => s.tags));
 
   return (
-    <main>
-      <div className="nav">
-        <a href="/" className="pill">Home</a>
-        <a href="/skills" className="pill">Skills</a>
-        <a href="/agents" className="pill">Agents</a>
-        <a href="/plugins" className="pill">Plugins</a>
-        <span className="pill">Tools &amp; MCP</span>
-      </div>
-
-      <h1>Tools &amp; MCP Catalog</h1>
-      <p>Browse tool integrations and MCP adapters used by skills and agent templates.</p>
+    <main id="main" tabIndex={-1} className="catalogue-main">
+      <header className="catalogue-heading">
+        <h1 aria-label="Tools & MCP Catalog">Tools &amp; MCP</h1>
+        <p>Tool integrations and MCP adapters used by skills and agent templates.</p>
+      </header>
+      <div className="catalogue-content">
 
       <CatalogClient
         entries={registry.skills}
@@ -40,6 +38,7 @@ export default async function ToolsMcpPage({ searchParams = {} }: { searchParams
         basePath="/tools-mcp"
         initial={{ q, tags, categories: categoriesSelected, runtimes }}
       />
+      </div>
     </main>
   );
 }

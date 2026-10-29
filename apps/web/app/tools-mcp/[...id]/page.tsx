@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
+import UsabilityBadge from "@/components/UsabilityBadge";
 import { notFound } from "next/navigation";
 import InstallCommands from "@/components/InstallCommands";
 import { buildModuleInstallSnippet, getEntryById, loadToolsRegistry } from "@/lib/registry";
 import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
 import UsabilityPanel from "@/components/UsabilityPanel";
+
+export async function generateMetadata({ params }: { params: { id: string[] } }): Promise<Metadata> {
+  const entry = await getEntryById("tools", params.id.join("/"));
+  return { title: entry?.name ?? "Entry not found", description: entry?.description };
+}
 
 export async function generateStaticParams() {
   const registry = await loadToolsRegistry();
@@ -18,21 +25,17 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
   const latestVersion = entry.versions.find((v) => v.version === entry.latest) ?? entry.versions[0];
 
   return (
-    <main>
-      <div className="nav">
-        <a href="/" className="pill">Home</a>
-        <a href="/plugins" className="pill">Plugins</a>
-        <a href="/tools-mcp" className="pill">Tools &amp; MCP</a>
-        <span className="pill">{entry.id}</span>
-      </div>
+    <main id="main" tabIndex={-1} className="detail-page">
+      <nav className="breadcrumb" aria-label="Breadcrumb"><a href="/tools-mcp">All Tools &amp; MCP</a><span aria-hidden="true">/</span><span>{entry.id}</span></nav>
 
-      <article className="card">
+      <article className="card detail-lead">
         <p className="meta">{formatCategoryLabel(entry.category)}</p>
         <h1>{entry.name}</h1>
         <p>{entry.description}</p>
         <p className="meta">{entry.tags.join(", ")}</p>
+        <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{entry.usability.execution}</span><a href="#usability" className="text-link">Requirements &amp; limits</a></div>
         <div className="detail-install-lead">
-          <p className="meta">Install this connector</p>
+          <h2 className="meta">Install this connector</h2>
           <InstallCommands
             compact
             codex={buildModuleInstallSnippet("tools", entry, "codex")}

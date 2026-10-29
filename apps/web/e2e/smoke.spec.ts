@@ -13,7 +13,7 @@ test("home route smoke", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Skills", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Agents", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Plugins", exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Tools & MCP" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Tools & MCP", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Explore skills" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Know what you are installing" })).toBeVisible();
 });
@@ -29,7 +29,7 @@ test("skill detail copy-button smoke", async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "clipboard", {
       configurable: true,
-      value: { writeText: async () => {} }
+      value: { writeText: async (value: string) => { (window as Window & { __copiedCommand?: string }).__copiedCommand = value; } }
     });
   });
 
@@ -42,6 +42,10 @@ test("skill detail copy-button smoke", async ({ page }) => {
 
   await expect(copyButtons).toHaveCount(3);
   await expect(copyButtons.first()).toHaveText("Copy");
+  const command = await page.locator("pre.install").first().textContent();
+  await copyButtons.first().click();
+  await expect(copyButtons.first()).toHaveText("Copied");
+  await expect.poll(() => page.evaluate(() => (window as Window & { __copiedCommand?: string }).__copiedCommand)).toBe(command);
 });
 
 test("agents route and detail smoke", async ({ page }) => {
@@ -115,4 +119,92 @@ test("tools route and detail smoke", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Operational Summary" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Capabilities" })).toBeVisible();
   await expect(page.getByText("remote-mcp-server")).toBeVisible();
+});
+
+test("catalogue filters survive reload and detail navigation, then recover from no results", async ({ page }) => {
+  await page.goto("/skills");
+  const total = await page.locator(".results-count").textContent();
+  await page.getByRole("searchbox", { name: "Search the catalogue" }).fill("weekly");
+  await expect(page).toHaveURL(/q=weekly/);
+  await page.getByRole("button", { name: "Runtime", exact: true }).click();
+  await page.getByRole("checkbox", { name: "codex", exact: true }).check();
+  await page.getByRole("checkbox", { name: "claude", exact: true }).check();
+  await expect.poll(() => new URL(page.url()).searchParams.getAll("runtime")).toEqual(["codex", "claude"]);
+  await page.getByRole("checkbox", { name: "claude", exact: true }).press("Escape");
+  await expect(page.getByRole("button", { name: "Runtime", exact: true })).toBeFocused();
+  await page.getByRole("button", { name: "Remove runtime codex", exact: true }).click();
+  await page.reload();
+  await expect(page.getByRole("searchbox")).toHaveValue("weekly");
+  await expect(page.getByRole("button", { name: "Remove runtime claude", exact: true })).toBeVisible();
+  await page.getByRole("link", { name: /Meta \+ Google Weekly Performance Review/ }).click();
+  await expect(page).toHaveURL(new RegExp(sampleSkillPath));
+  await expect(page.getByRole("heading", { name: "Meta + Google Weekly Performance Review", exact: true })).toBeVisible();
+  await page.goBack();
+  await expect(page).toHaveURL(/q=weekly/);
+  await expect(page.getByRole("searchbox")).toHaveValue("weekly");
+  await expect(page.getByRole("button", { name: "Remove runtime claude", exact: true })).toBeVisible();
+  await page.getByRole("searchbox").fill("no-matching-package-987654");
+  await expect(page.getByRole("heading", { name: "No matching entries" })).toBeVisible();
+  await page.getByRole("button", { name: "Clear search and filters" }).click();
+  await expect(page.getByRole("searchbox")).toHaveValue("");
+  await expect(page.locator(".results-count")).toHaveText(total!);
+  await expect(page).toHaveURL(/\/skills$/);
+});
+
+test("deep links retain combined domain, tag and runtime selections", async ({ page }) => {
+  await page.goto("/skills?q=weekly&category=marketing-tools&tag=paid-media&runtime=claude");
+  await expect(page.getByRole("link", { name: /Meta \+ Google Weekly Performance Review/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Remove category marketing-tools" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Remove tag paid-media" })).toBeVisible();
+  await page.getByRole("button", { name: "Domain", exact: true }).click();
+  await expect(page.getByRole("checkbox", { name: "Marketing Tools", exact: true })).toBeChecked();
+  await page.getByRole("button", { name: "Clear domain" }).click();
+  await expect.poll(() => new URL(page.url()).searchParams.has("category")).toBe(false);
+  await expect.poll(() => new URL(page.url()).searchParams.get("tag")).toBe("paid-media");
+  await page.getByRole("button", { name: "Done", exact: true }).click();
+  await page.getByRole("button", { name: "Reset Filters" }).click();
+  await expect(page).toHaveURL(/\/skills$/);
+});
+
+test("theme preference survives navigation and reload", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Switch to light mode" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.getByRole("link", { name: "Explore skills", exact: true }).click();
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.getByRole("button", { name: "Switch to dark mode" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+});
+
+test("storage and clipboard failures leave a usable page with truthful feedback", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, "localStorage", { get: () => { throw new Error("Storage blocked"); } });
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async () => { throw new Error("Clipboard blocked"); } } });
+  });
+  await page.goto(sampleSkillPath);
+  await page.getByRole("button", { name: "Switch to light mode" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  const copy = page.getByRole("button", { name: "Copy codex installation command" });
+  await copy.click();
+  await expect(page.getByText("Clipboard unavailable. Select and copy the command above.")).toBeVisible();
+  await expect(copy).toHaveText("Copy");
+  await expect(page.locator("pre.install").first()).toContainText("skills-hub install");
+});
+
+test("phone navigation works by keyboard and representative pages reflow at 320px", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 780 });
+  await page.goto("/");
+  const menu = page.locator(".mobile-menu summary");
+  await menu.focus();
+  await menu.press("Enter");
+  await expect(page.locator(".mobile-menu")).toHaveAttribute("open", "");
+  await menu.press("Escape");
+  await expect(page.locator(".mobile-menu")).not.toHaveAttribute("open", "");
+  await expect(menu).toBeFocused();
+  for (const route of ["/", "/skills", sampleSkillPath, "/plugins", sampleToolPath]) {
+    await page.goto(route);
+    await expect(page.locator("main h1")).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  }
 });

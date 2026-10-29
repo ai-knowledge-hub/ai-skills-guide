@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import { loadAgentsRegistry, uniqueValues } from "@/lib/registry";
 import CatalogClient from "@/components/CatalogClient";
 import { parseMultiValue, type SearchParamValue } from "@/lib/catalogFilters";
 import { getDomainKey } from "@/lib/categoryLabels";
+
+export const metadata: Metadata = { title: "Agents Catalog", description: "Orchestrated agent templates composed from roles, memory, skills and tools." };
 
 type SearchParams = {
   q?: SearchParamValue;
@@ -21,17 +24,12 @@ export default async function AgentsPage({ searchParams = {} }: { searchParams?:
   const availableTags = uniqueValues(registry.skills.flatMap((s) => s.tags));
 
   return (
-    <main>
-      <div className="nav">
-        <a href="/" className="pill">Home</a>
-        <a href="/skills" className="pill">Skills</a>
-        <a href="/plugins" className="pill">Plugins</a>
-        <a href="/tools-mcp" className="pill">Tools &amp; MCP</a>
-        <span className="pill">Agents</span>
-      </div>
-
-      <h1>Agents Catalog</h1>
-      <p>Browse orchestrated agent templates composed from role, memory, skills, and tools.</p>
+    <main id="main" tabIndex={-1} className="catalogue-main">
+      <header className="catalogue-heading">
+        <h1 aria-label="Agents Catalog">Agents</h1>
+        <p>Orchestrated agent templates composed from roles, memory, skills and tools.</p>
+      </header>
+      <div className="catalogue-content">
 
       <CatalogClient
         entries={registry.skills}
@@ -40,6 +38,7 @@ export default async function AgentsPage({ searchParams = {} }: { searchParams?:
         basePath="/agents"
         initial={{ q, tags, categories: categoriesSelected, runtimes }}
       />
+      </div>
     </main>
   );
 }

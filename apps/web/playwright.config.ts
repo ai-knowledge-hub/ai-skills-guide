@@ -17,7 +17,12 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] }
+      use: {
+        ...devices["Desktop Chrome"],
+        // Optional local fallback when the pinned Chromium cannot run on the host OS.
+        // CI continues to use the Playwright-managed Chromium by default.
+        channel: process.env.PLAYWRIGHT_BROWSER_CHANNEL
+      }
     }
   ],
   webServer: {

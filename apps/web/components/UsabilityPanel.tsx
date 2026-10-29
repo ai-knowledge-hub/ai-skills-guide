@@ -3,8 +3,8 @@ import UsabilityBadge from "@/components/UsabilityBadge";
 
 export default function UsabilityPanel({ usability }: { usability: RegistryEntry["usability"] }) {
   return (
-    <article className="card detail-panel">
-      <h2>How You Can Use This</h2>
+    <article id="usability" className="card detail-panel" aria-labelledby="usability-heading">
+      <h2 id="usability-heading">How You Can Use This</h2>
       <p><UsabilityBadge availability={usability.availability} /></p>
       <p><span className="meta">Execution:</span> {usability.execution}</p>
       {usability.quickstart ? <p><span className="meta">First run:</span> <code>{usability.quickstart}</code></p> : null}

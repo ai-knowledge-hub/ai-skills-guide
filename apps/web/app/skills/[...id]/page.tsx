@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
+import UsabilityBadge from "@/components/UsabilityBadge";
 import { notFound } from "next/navigation";
 import { buildInstallSnippet, getSkillById, loadSkillsRegistry } from "@/lib/registry";
 import InstallCommands from "@/components/InstallCommands";
 import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
 import UsabilityPanel from "@/components/UsabilityPanel";
+
+export async function generateMetadata({ params }: { params: { id: string[] } }): Promise<Metadata> {
+  const entry = await getSkillById(params.id.join("/"));
+  return { title: entry?.name ?? "Entry not found", description: entry?.description };
+}
 
 export async function generateStaticParams() {
   const registry = await loadSkillsRegistry();
@@ -17,23 +24,17 @@ export default async function SkillDetailPage({ params }: { params: { id: string
   }
 
   return (
-    <main>
-      <div className="nav">
-        <a href="/" className="pill">Home</a>
-        <a href="/skills" className="pill">Catalog</a>
-        <a href="/agents" className="pill">Agents</a>
-        <a href="/plugins" className="pill">Plugins</a>
-        <a href="/tools-mcp" className="pill">Tools &amp; MCP</a>
-        <span className="pill">{skill.id}</span>
-      </div>
+    <main id="main" tabIndex={-1} className="detail-page">
+      <nav className="breadcrumb" aria-label="Breadcrumb"><a href="/skills">All Skills</a><span aria-hidden="true">/</span><span>{skill.id}</span></nav>
 
-      <article className="card">
+      <article className="card detail-lead">
         <p className="meta">{formatCategoryLabel(skill.category)}</p>
         <h1>{skill.name}</h1>
         <p>{skill.description}</p>
         <p className="meta">{skill.tags.join(", ")}</p>
+        <div className="detail-use-summary"><UsabilityBadge availability={skill.usability.availability} /><span className="meta">{skill.usability.execution}</span><a href="#usability" className="text-link">Requirements &amp; limits</a></div>
         <div className="detail-install-lead">
-          <p className="meta">Install this skill</p>
+          <h2 className="meta">Install this skill</h2>
           <InstallCommands
             compact
             codex={buildInstallSnippet(skill, "codex")}

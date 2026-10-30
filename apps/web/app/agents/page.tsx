@@ -1,3 +1,4 @@
+import CatalogueArtwork from "@/components/CatalogueArtwork";
 import type { Metadata } from "next";
 import { loadAgentsRegistry, uniqueValues } from "@/lib/registry";
 import CatalogClient from "@/components/CatalogClient";
@@ -25,6 +26,7 @@ export default async function AgentsPage({ searchParams = {} }: { searchParams?:
 
   return (
     <main id="main" tabIndex={-1} className="catalogue-main">
+      <CatalogueArtwork />
       <header className="catalogue-heading">
         <h1 aria-label="Agents Catalog">Agents</h1>
         <p>Orchestrated agent templates composed from roles, memory, skills and tools.</p>

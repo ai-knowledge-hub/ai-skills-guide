@@ -104,6 +104,25 @@ a.catalog-card:hover { text-decoration: none; }
 .catalogue-heading h1 { display: inline-block; padding: 20px 26px; background: #fff; color: #171717; font-size: clamp(46px, 6vw, 86px); text-transform: uppercase; margin-left: clamp(20px, 14vw, 200px); }
 .catalogue-heading > p { margin-left: 30%; margin-top: 28px; max-width: 56ch; font-size: 17px; background: var(--paper); padding: 12px 0 18px 26px; }
 .catalogue-content { position: relative; background: var(--paper); max-width: 1030px; margin: 0 auto; padding-left: 26px; margin-left: max(25%, calc((100% - 1440px) / 2 + 360px)); }
+.catalogue-artwork { display: none; }
+/* The rail belongs to main, so its sticky panel stops before the footer.
+   Compact/portrait layouts retain the existing artwork heading. */
+@media (min-width: 1000px) and (min-aspect-ratio: 4/5) {
+  .catalogue-main {
+    --catalogue-sticky-top: calc(var(--header-height) + 1px); /* Header's bottom border. */
+    --catalogue-rail-width: clamp(220px, calc((100svh - var(--catalogue-sticky-top)) * .5023125), 34vw);
+    --catalogue-rail-gap: clamp(28px, 3vw, 48px);
+    padding-inline: 0;
+  }
+  .catalogue-artwork { display: block; position: absolute; inset: 0 auto 0 0; width: var(--catalogue-rail-width); z-index: -1; pointer-events: none; }
+  .catalogue-artwork-panel { position: sticky; top: var(--catalogue-sticky-top); height: calc(100svh - var(--catalogue-sticky-top)); max-height: 100%; background: #fff url('/brand/community-1600.webp') 40% 0 / auto 100% no-repeat; }
+  .catalogue-main .catalogue-heading { max-width: none; }
+  .catalogue-heading::before { content: none; }
+  .catalogue-heading h1 { margin-left: calc(var(--catalogue-rail-width) - 48px); max-width: calc(100% - var(--catalogue-rail-width) + 48px - var(--gutter)); }
+  .catalogue-heading > p { margin-left: var(--catalogue-rail-width); max-width: calc(56ch + var(--catalogue-rail-gap) + var(--gutter)); padding-inline: var(--catalogue-rail-gap) var(--gutter); }
+  .catalogue-main .catalogue-content { margin-left: var(--catalogue-rail-width); margin-right: 0; max-width: none; padding-inline: var(--catalogue-rail-gap) var(--gutter); }
+  .catalogue-content > * { max-width: 1030px; }
+}
 .filters { display: grid; grid-template-columns: minmax(180px, 2fr) repeat(3, minmax(100px, 1fr)) auto; gap: 8px; align-items: end; padding-block: 14px 26px; }
 .search-label { display: grid; gap: 7px; font-size: 11px; color: var(--ink-soft); }
 .input { width: 100%; min-width: 0; min-height: 44px; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 10px 0; background: var(--paper); color: var(--ink); font-size: 14px; }

@@ -1,3 +1,4 @@
+import CatalogueArtwork from "@/components/CatalogueArtwork";
 import type { Metadata } from "next";
 import { loadToolsRegistry, uniqueValues } from "@/lib/registry";
 import CatalogClient from "@/components/CatalogClient";
@@ -25,6 +26,7 @@ export default async function ToolsMcpPage({ searchParams = {} }: { searchParams
 
   return (
     <main id="main" tabIndex={-1} className="catalogue-main">
+      <CatalogueArtwork />
       <header className="catalogue-heading">
         <h1 aria-label="Tools & MCP Catalog">Tools &amp; MCP</h1>
         <p>Tool integrations and MCP adapters used by skills and agent templates.</p>

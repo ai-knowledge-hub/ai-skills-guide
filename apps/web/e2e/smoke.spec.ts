@@ -281,3 +281,42 @@ test("open filter menus stay within the viewport across catalogue breakpoints", 
     await menu.getByRole("button", { name: "Done", exact: true }).click();
   }
 });
+
+test("desktop catalogue rail stays at the page edge and stops before the footer", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const route of ["/skills", "/agents", "/plugins", "/tools-mcp"]) {
+    await page.goto(route);
+    const rail = page.locator(".catalogue-artwork-panel");
+    await expect(rail).toBeVisible();
+    await expect.poll(() => page.evaluate(() => {
+      const rail = document.querySelector(".catalogue-artwork-panel")!.getBoundingClientRect();
+      const header = document.querySelector(".site-header")!.getBoundingClientRect();
+      const reading = document.querySelector(".catalogue-content")!.getBoundingClientRect();
+      return Math.abs(rail.left) < 1 && Math.abs(rail.top - header.bottom) < 1
+        && Math.abs(rail.bottom - window.innerHeight) < 1 && Math.abs(reading.left - rail.right) < 1;
+    })).toBe(true);
+    await page.evaluate(() => window.scrollTo(0, 500));
+    await expect.poll(() => page.evaluate(() => {
+      const rail = document.querySelector(".catalogue-artwork-panel")!.getBoundingClientRect();
+      const header = document.querySelector(".site-header")!.getBoundingClientRect();
+      return Math.abs(rail.top - header.bottom) < 1;
+    })).toBe(true);
+    await page.locator(".site-footer").scrollIntoViewIfNeeded();
+    await expect.poll(() => page.evaluate(() => {
+      const rail = document.querySelector(".catalogue-artwork-panel")!.getBoundingClientRect();
+      const footer = document.querySelector(".site-footer")!.getBoundingClientRect();
+      return rail.bottom <= footer.top + 1;
+    })).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  }
+  // Short filtered lists also contain the rail before the footer.
+  await page.goto("/skills?q=no-matching-package-987654");
+  await expect(page.getByRole("heading", { name: "No matching entries" })).toBeVisible();
+  await page.locator(".site-footer").scrollIntoViewIfNeeded();
+  expect(await page.evaluate(() => document.querySelector(".catalogue-artwork-panel")!.getBoundingClientRect().bottom <= document.querySelector(".site-footer")!.getBoundingClientRect().top + 1)).toBe(true);
+  for (const size of [{ width: 390, height: 844 }, { width: 1100, height: 1450 }]) {
+    await page.setViewportSize(size);
+    await expect(page.locator(".catalogue-artwork")).toBeHidden();
+    expect(await page.locator(".catalogue-heading").evaluate(el => getComputedStyle(el, "::before").content)).not.toBe("none");
+  }
+});

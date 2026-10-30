@@ -151,3 +151,30 @@ local Playwright browser overrides. The rebrand adds presentation and
 interaction changes without changing those operational contracts. The merged
 browser suite contains 14 tests, including the upstream capability-readiness
 regression and the new open-filter viewport regression.
+
+## Desktop artwork rail · 30 October 2026
+
+The owner requested the publication-style rail as part of PR #82. All four
+catalogue pages now use a decorative, full-height sticky artwork panel, flush to
+the viewport left edge. The solid reading surface defines the vertical boundary;
+the title plate overlaps the rail. The rail stays below the header and is
+contained within main, ending before the footer even for short filtered lists.
+
+The rail applies from 1000px at aspect ratios of at least 4:5. Narrower and
+tall portrait layouts retain the compact artwork heading. The source remains
+proportional with an auto-width, full-height crop and no repetition, stretching,
+animation or
+scroll event handler. The publication's existing 1600px compressed community
+image is imported byte-for-byte, with its hash recorded in the delivery
+manifest. No original artwork was changed.
+
+A browser regression checks edge alignment, viewport coverage, normal scrolling,
+footer containment and empty results across all four catalogues, plus compact
+phone/portrait behaviour. The existing open-menu bounds and resize regression
+remains part of the full suite.
+
+Verification: all 15 Chrome browser tests pass, including the open-menu and
+rail regressions. Production build, lint and type checks pass. Desktop dark
+and light, mid-scroll, the footer boundary and compact mobile were inspected
+in the production preview. The rail bottom matches the footer top exactly.
+All five imported delivery asset hashes match their recorded sources.

@@ -2,7 +2,7 @@
   "brandVersion": "0.1.0",
   "importedOn": "2026-10-29",
   "technique": "Exact compressed raster delivery copies of the selected publication artwork; not editable vectors.",
-  "usage": "Static catalogue application for visual review. Entrance on homepage; community artwork as the shared catalogue frontispiece, not a module taxonomy.",
+  "usage": "Static catalogue application: entrance on homepage; community artwork at compact headers and in the desktop rail. No module-to-motif taxonomy.",
   "originals": "Preserved in the publication. No source artwork was edited or replaced.",
   "generation": "AI-assisted originals; complete original model/prompt and rights records are not asserted by this delivery manifest.",
   "assets": [
@@ -29,6 +29,14 @@
       "source": "independent-ai-publication/public/images/op-art/delivery/community-web-1200-3f3e6b6c1ad3.webp",
       "sha256": "3f3e6b6c1ad386093af321a827843a12cf350c6d27c4b1d7d34bf2a3b60551dc",
       "bytes": 150080
+    },
+    {
+      "file": "community-1600.webp",
+      "source": "independent-ai-publication/public/images/op-art/delivery/community-web-1600-55ba5d82612c.webp",
+      "sha256": "55ba5d82612c41f94f87eaec7ebd6ca63003aeaf35e8cd1a416d9bfa6515f475",
+      "bytes": 196936,
+      "importedOn": "2026-10-30",
+      "usage": "Desktop viewport-height catalogue rail; approved publication delivery copy."
     }
   ]
 }

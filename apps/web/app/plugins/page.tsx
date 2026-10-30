@@ -1,3 +1,4 @@
+import CatalogueArtwork from "@/components/CatalogueArtwork";
 import type { Metadata } from "next";
 import { loadPluginsRegistry, uniqueValues } from "@/lib/registry";
 import CatalogClient from "@/components/CatalogClient";
@@ -25,6 +26,7 @@ export default async function PluginsPage({ searchParams = {} }: { searchParams?
 
   return (
     <main id="main" tabIndex={-1} className="catalogue-main">
+      <CatalogueArtwork />
       <header className="catalogue-heading">
         <h1 aria-label="Plugins Catalog">Plugins</h1>
         <p>Browse source-composition templates that reference skills, agents, tools, hooks, and setup guidance. Operational installation remains blocked until implementation and verification.</p>

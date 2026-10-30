@@ -1,3 +1,4 @@
+import CatalogueArtwork from "@/components/CatalogueArtwork";
 import type { Metadata } from "next";
 import { loadSkillsRegistry, uniqueValues } from "@/lib/registry";
 import CatalogClient from "@/components/CatalogClient";
@@ -25,6 +26,7 @@ export default async function SkillsPage({ searchParams = {} }: { searchParams?:
 
   return (
     <main id="main" tabIndex={-1} className="catalogue-main">
+      <CatalogueArtwork />
       <header className="catalogue-heading">
         <h1 aria-label="Skills Catalog">Skills</h1>
         <p>Filter instruction packages by intent, runtime, and category, then inspect any independently classified executable helpers.</p>

@@ -1,0 +1,50 @@
+schema_version: "1.1"
+id: ads/meta-ads-mcp-connector
+name: Meta Ads MCP Connector
+description: Implementation specification and template for a read-only Meta Ads MCP connector; no launchable server is packaged.
+version: 0.1.0
+released_at: "2026-03-02T00:00:00Z"
+category: tools-mcp/ads
+tags:
+  - meta-ads
+  - mcp
+  - paid-social
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  spec: TOOL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  mcp_servers:
+    - meta-ads
+operational:
+  connected_system: Meta Ads
+  capabilities:
+    - Pull campaign, ad set, and ad metrics for fixed reporting windows.
+    - Return spend, delivery, click, and conversion fields in normalized rows.
+    - Preserve source timestamps for QA and freshness validation.
+  auth_required:
+    - Meta Ads account scope via authenticated MCP runtime
+  access_level: read-only
+  trust_boundary: remote-mcp-server
+  approval_boundary: Safe for reporting queries only; require human approval before pairing with any workflow that can modify campaigns, budgets, or creative state.
+usability:
+  availability: template-only
+  execution: integration-template
+  limitations:
+    - Specification, prompts, and examples only; no launchable MCP transport is packaged.
+  quickstart: Review TOOL.md as an implementation contract; do not register this package as an MCP server.
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

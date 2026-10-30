@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.1",
+  "id": "adtech/playwright-vscode-loop-codex",
+  "name": "Playwright VS Code Loop for Codex",
+  "description": "Orchestrate Playwright planner, generator, and healer workflows from Codex with VS Code loop execution for reusable web UX QA.",
+  "category": "adtech/other",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "qa",
+    "playwright",
+    "codex",
+    "vscode",
+    "ux-testing"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "May run local QA workflows and propose test updates; require human approval before accepting broad healing changes.",
+    "outputs": [
+      "Test plan",
+      "Generated spec",
+      "Healing notes"
+    ],
+    "use_when": "Use when Codex is orchestrating a VS Code-compatible Playwright planner, generator, and healer loop.",
+    "execution_mode": "may-run-local-verification"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "executable_helpers": [
+      {
+        "entrypoint": "scripts/install-global-codex.sh",
+        "availability": "not-verified",
+        "execution": "local-tool",
+        "limitations": [
+          "Packaged helper exists, but current clean-client executable evidence is not recorded.",
+          "The installer replaces an existing skill at the resolved Codex skills destination."
+        ],
+        "quickstart": "Review scripts/install-global-codex.sh and its destination before running it."
+      }
+    ],
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "node",
+      "npx",
+      "playwright"
+    ]
+  }
+}

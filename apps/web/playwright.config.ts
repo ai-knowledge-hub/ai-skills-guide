@@ -2,6 +2,7 @@ import path from "node:path";
 import { defineConfig, devices } from "@playwright/test";
 
 const webAppRoot = __dirname;
+const chromiumExecutablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH;
 
 export default defineConfig({
   testDir: path.join(webAppRoot, "e2e"),
@@ -21,7 +22,10 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
         // Optional local fallback when the pinned Chromium cannot run on the host OS.
         // CI continues to use the Playwright-managed Chromium by default.
-        channel: process.env.PLAYWRIGHT_BROWSER_CHANNEL
+        channel: process.env.PLAYWRIGHT_BROWSER_CHANNEL,
+        ...(chromiumExecutablePath
+          ? { launchOptions: { executablePath: chromiumExecutablePath } }
+          : {})
       }
     }
   ],

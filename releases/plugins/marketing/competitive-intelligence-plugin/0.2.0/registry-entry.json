@@ -1,0 +1,91 @@
+{
+  "schema_version": "2.1",
+  "id": "marketing/competitive-intelligence-plugin",
+  "name": "Competitive Intelligence Plugin",
+  "description": "Bundle competitor signal collection, evidence review, and insight packaging into a reusable plugin for marketing strategy teams.",
+  "category": "marketing-plugins/intelligence",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "competitive-intelligence",
+    "research",
+    "strategy",
+    "insight"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "usability": {
+    "availability": "usable-now",
+    "execution": "bundle",
+    "limitations": [
+      "External claims remain human-reviewed; the packaged Markdown hook is advisory on runtimes without a native enforcement mapping."
+    ],
+    "quickstart": "Run `node scripts/first_use.mjs examples/first-use-input.json` after installation to produce an evidence-labelled signal digest.",
+    "executable_helpers": [
+      {
+        "entrypoint": "scripts/first_use.mjs",
+        "availability": "usable-now",
+        "execution": "local-tool",
+        "limitations": [
+          "Requires a declared Node.js 22 execution capability; it never authorizes publication."
+        ],
+        "quickstart": "node scripts/first_use.mjs examples/first-use-input.json"
+      }
+    ],
+    "source": "declared"
+  },
+  "execution": {
+    "kind": "bundle",
+    "supported_platforms": [
+      "linux",
+      "macos",
+      "windows"
+    ],
+    "supported_runtimes": [
+      "node22"
+    ]
+  },
+  "artifact": {
+    "self_contained": true,
+    "dependency_lock": "dependencies.lock.json",
+    "checksums": "checksums.txt",
+    "sbom": "sbom.cdx.json",
+    "provenance": "provenance.json"
+  },
+  "authentication": {
+    "status": "none",
+    "methods": [
+      "none"
+    ],
+    "credential_bindings": [],
+    "scopes": [],
+    "credential_storage": "No credentials are used by this instruction bundle.",
+    "validation": "Confirm no authentication challenge is introduced by runtime wiring.",
+    "revocation": "Not applicable; remove the installed bundle to withdraw it."
+  },
+  "verification": {
+    "evidence": [
+      "evidence://tests/local-plugin-wave/competitive-intelligence-first-use"
+    ],
+    "last_verified_at": "2026-09-22T00:00:00Z"
+  },
+  "includes": {
+    "skills": [
+      "adtech/brand-rag-memory-bootstrap",
+      "marketing/ai-output-eval-scorecard",
+      "security/handle-untrusted-content"
+    ],
+    "hooks": [
+      "weekly-competitor-signal-digest"
+    ]
+  },
+  "requires": {
+    "approvals": [
+      "human-review-for-external-claims"
+    ]
+  }
+}

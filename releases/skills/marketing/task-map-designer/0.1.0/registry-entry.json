@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.1",
+  "id": "marketing/task-map-designer",
+  "name": "Task Map Designer",
+  "description": "Convert customer situations into testable task and context hypotheses for agent-mediated advertising and commerce.",
+  "category": "marketing-tools/ads-ops",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "task-design",
+    "chatgpt-ads",
+    "experimentation",
+    "agentic-commerce",
+    "planning"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Advisory planning only; targeting, activation, and data collection require platform and privacy approval.",
+    "outputs": [
+      "Task map",
+      "Testable hypotheses",
+      "Measurement plan"
+    ],
+    "use_when": "Use when an advertising or commerce experiment should begin from a customer task rather than a keyword or placement list.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "shared/schemas/advertising/task-map.schema.json"
+    ]
+  }
+}

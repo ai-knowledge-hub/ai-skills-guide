@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.1",
+  "id": "adtech/bi-insights-orchestrator",
+  "name": "BI Insights Orchestrator",
+  "description": "Orchestrate warehouse and ad platform data analysis into standardized BI insights with QA-aware controls.",
+  "category": "adtech-agents/analytics",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "bi",
+    "analytics",
+    "orchestration"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "May coordinate read-only data analysis and draft reporting outputs; require human approval before any publish or stakeholder-distribution decision.",
+    "role": "Analytics orchestration agent for warehouse-backed BI reporting.",
+    "coordinates": [
+      "Warehouse and platform metric collection",
+      "KPI normalization across sources",
+      "Dashboard and insight generation"
+    ],
+    "autonomy_level": "semi-autonomous",
+    "outputs": [
+      "Normalized KPI table",
+      "Anomaly summary with evidence",
+      "Publish recommendation",
+      "Risks and data limitations"
+    ]
+  },
+  "usability": {
+    "availability": "template-only",
+    "execution": "orchestrator",
+    "limitations": [
+      "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged."
+    ],
+    "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "skills": [
+      "adtech/analyst-copilot-bigquery-redshift",
+      "adtech/dashboard-generator",
+      "adtech/dashboard-qa-checker"
+    ],
+    "tools": [
+      "bigquery_sql",
+      "ga4_query"
+    ]
+  }
+}

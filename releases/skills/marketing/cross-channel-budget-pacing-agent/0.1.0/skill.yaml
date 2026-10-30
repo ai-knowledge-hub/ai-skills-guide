@@ -1,0 +1,49 @@
+schema_version: "1.1"
+id: marketing/cross-channel-budget-pacing-agent
+name: Cross-Channel Budget Pacing Agent
+description: Monitor pacing across paid channels, detect anomalies, and recommend budget reallocation actions.
+version: 0.1.0
+released_at: "2026-02-23T00:00:00Z"
+category: marketing-tools/ads-ops
+tags:
+  - paid-media
+  - budget-pacing
+  - anomaly-detection
+  - meta-ads
+  - google-ads
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  tools:
+    - python3
+operational:
+  use_when: Use when pacing and efficiency signals across channels need bounded reallocation recommendations.
+  execution_mode: analysis-only
+  outputs:
+    - Pacing summary
+    - Anomaly list
+    - Reallocation plan
+  approval_boundary: Safe for analysis and recommendation; require human approval before changing live budgets.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

@@ -10,7 +10,7 @@ Portable bundle for evidence-based competitor monitoring and synthesis.
 
 ## Install Behavior
 
-This plugin is a packaging layer.
+This plugin is published as a self-contained, integrity-locked packaging layer.
 
 On install:
 
@@ -18,13 +18,15 @@ On install:
 - bundled skills are installed into the runtime `skills/...` directory
 - packaged hooks remain inside this plugin's `hooks/` directory
 
-Bundled skills do not live inside the plugin directory itself. That keeps the
-plugin lightweight and avoids duplicating the source component packages.
+The release archive carries the pinned skill closure, dependency lock,
+checksums, SBOM, and provenance. Installation never depends on sibling source
+directories.
 
 ## Install Command
 
 ```bash
-./bin/skills-hub install --module plugins --entry marketing/competitive-intelligence-plugin@0.1.0 --runtime claude
+./bin/skills-hub install --module plugins --entry marketing/competitive-intelligence-plugin@0.2.0 \
+  --runtime claude --execution-runtime node22
 ```
 
 ## Installed Dependencies
@@ -38,6 +40,18 @@ Skills installed into `skills/...`:
 
 Hooks kept inside this plugin package:
 - `weekly-competitor-signal-digest`
+
+This Markdown hook is compiled as visible advisory guidance unless a runtime
+provides an equivalent native enforcement mapping.
+
+## First Use
+
+```bash
+node scripts/first_use.mjs examples/first-use-input.json
+```
+
+The command labels every external signal as untrusted and requiring human
+review before publication.
 
 ## Use Case
 Install when a team needs a repeatable, safer workflow for collecting competitor signals, structuring observations, and sharing evidence-backed summaries without treating external content as trusted instructions.

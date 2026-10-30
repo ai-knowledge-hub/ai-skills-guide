@@ -1,0 +1,111 @@
+{
+  "schema_version": "2.0",
+  "id": "analytics/ga4-mcp-connector",
+  "name": "GA4 MCP Connector",
+  "description": "Launchable read-only GA4 Data API MCP server with bounded queries, property isolation, typed authentication, and normalized source metadata.",
+  "category": "tools-mcp/analytics",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "ga4",
+    "mcp",
+    "analytics",
+    "read-only"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "connected_system": "Google Analytics 4",
+    "capabilities": [
+      "Run bounded read-only reports for explicitly allowed GA4 properties.",
+      "Return normalized dimensions, metrics, pagination, and source freshness.",
+      "Live-verify bearer or service-account identity and property access."
+    ],
+    "auth_required": [
+      "GA4 read-only OAuth credential with access to each allowed property"
+    ],
+    "access_level": "read-only",
+    "trust_boundary": "remote-mcp-server",
+    "approval_boundary": "Read-only report retrieval only; property, field, date, pagination, timeout, and response-size bounds are enforced before results are returned."
+  },
+  "usability": {
+    "availability": "setup-required",
+    "execution": "remote-integration",
+    "requires_setup": [
+      "Node.js 22 or newer.",
+      "GA4_CREDENTIAL runtime binding and GA4_ALLOWED_PROPERTY_IDS configuration.",
+      "Google Analytics Data API enabled with read access to each allowed property."
+    ],
+    "limitations": [
+      "The connector does not expose GA4 administration or mutation endpoints.",
+      "Reports are limited to the packaged dimension and metric allowlists."
+    ],
+    "quickstart": "Configure GA4_CREDENTIAL, set GA4_ALLOWED_PROPERTY_IDS, then register .mcp.json with Codex, Claude, or a generic MCP client.",
+    "source": "declared"
+  },
+  "execution": {
+    "kind": "mcp-server",
+    "command": [
+      "node",
+      "scripts/ga4_mcp_server.mjs"
+    ],
+    "healthcheck": [
+      "node",
+      "scripts/ga4_mcp_server.mjs",
+      "--healthcheck"
+    ],
+    "smoke_test": [
+      "node",
+      "scripts/ga4_mcp_server.mjs",
+      "--smoke"
+    ],
+    "supported_platforms": [
+      "linux",
+      "macos"
+    ],
+    "supported_runtimes": [
+      "node22"
+    ]
+  },
+  "artifact": {
+    "self_contained": true,
+    "dependency_lock": null,
+    "checksums": null,
+    "sbom": null
+  },
+  "authentication": {
+    "status": "required",
+    "methods": [
+      "bearer-token",
+      "service-account"
+    ],
+    "credential_bindings": [
+      "GA4_CREDENTIAL"
+    ],
+    "scopes": [
+      "https://www.googleapis.com/auth/analytics.readonly"
+    ],
+    "setup_url": "https://console.cloud.google.com/apis/library/analyticsdata.googleapis.com",
+    "credential_storage": "Credential JSON remains in an explicitly bound runtime environment source and is never written into the package or readiness profile.",
+    "validation": "The packaged driver obtains an access token, verifies principal, scopes, and lifetime with Google's token-info endpoint, and uses that same token for a one-row read-only report against the selected property.",
+    "revocation": "Revoke user grants in the Google Account or disable and rotate the service-account key in Google Cloud IAM."
+  },
+  "verification": {
+    "evidence": [
+      "evidence://tests/ga4-mcp/json-rpc",
+      "evidence://tests/ga4-mcp/pagination-quota-timeout-malformed-revoked",
+      "evidence://tests/ga4-mcp/property-isolation-auth-driver",
+      "evidence://tests/ga4-mcp/provider-attested-identity-aggregate-result-bound"
+    ],
+    "last_verified_at": "2026-09-17T00:00:00Z"
+  },
+  "dependencies": {
+    "apis": [
+      "Google Analytics Data API v1beta"
+    ]
+  }
+}

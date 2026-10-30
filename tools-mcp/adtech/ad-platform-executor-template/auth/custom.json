@@ -1,0 +1,10 @@
+{
+  "schema_version": "skills-hub.auth-driver/v1",
+  "credential_mode": "external-env",
+  "method": "custom",
+  "flow": "custom",
+  "runtimes": ["codex", "claude", "generic"],
+  "bootstrap": {"command": ["scripts/ad_platform_executor_auth_driver.mjs", "custom", "bootstrap"]},
+  "credential": {"command": ["scripts/ad_platform_executor_auth_driver.mjs", "custom", "credential"]},
+  "status": {"command": ["scripts/ad_platform_executor_auth_driver.mjs", "custom", "status"]}
+}

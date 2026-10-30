@@ -24,13 +24,10 @@ QA-gated publish control.
 ## Before you start
 
 1. Install this agent package.
-2. Install required skills.
-3. Install required tools/MCP connectors.
-4. Confirm date windows and required channels.
-5. Copy and adapt config examples in `config/`:
-   - `tool-bindings.example.json`
-   - `memory-profile.example.json`
-   - `governance.example.json`
+2. The installer resolves and pins the required skills and provider packages.
+3. Follow `.runtime/<runtime>.json` to configure GA4 and BigQuery.
+4. Confirm date windows and required channels. Bundled memory and governance
+   profiles require no manual binding edits.
 
 Install commands (Codex example):
 
@@ -40,24 +37,6 @@ Install commands (Codex example):
   --entry marketing/weekly-performance-supervisor@latest \
   --runtime codex
 
-./bin/skills-hub install \
-  adtech/dashboard-generator@latest \
-  --runtime codex
-./bin/skills-hub install \
-  adtech/dashboard-qa-checker@latest \
-  --runtime codex
-./bin/skills-hub install \
-  adtech/executive-narrative-writer@latest \
-  --runtime codex
-
-./bin/skills-hub install \
-  --module tools \
-  --entry analytics/ga4-mcp-connector@latest \
-  --runtime codex
-./bin/skills-hub install \
-  --module tools \
-  --entry warehouse/bigquery-mcp-query-runner@latest \
-  --runtime codex
 ```
 
 ## First run (copy/paste prompt)
@@ -94,12 +73,8 @@ Required output in this order:
 ```bash
 ./bin/skills-hub run-agent \
   --agent marketing/weekly-performance-supervisor \
-  --bindings agents/marketing/weekly-performance-supervisor/config/\
-tool-bindings.example.json \
-  --memory agents/marketing/weekly-performance-supervisor/config/\
-memory-profile.example.json \
-  --governance agents/marketing/weekly-performance-supervisor/config/\
-governance.example.json \
+  --runtime codex \
+  --model-attestation "$MODEL_ATTESTATION_PATH" \
   --approve-live \
   --audit-log ./tmp/weekly-performance-supervisor-run.json
 ```

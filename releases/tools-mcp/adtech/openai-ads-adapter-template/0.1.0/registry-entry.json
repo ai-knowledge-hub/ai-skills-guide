@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.1",
+  "id": "adtech/openai-ads-adapter-template",
+  "name": "OpenAI Ads Adapter Template",
+  "description": "Mock-first read-only adapter contract for OpenAI Ads accounts, campaigns, ads, insights, and product feeds.",
+  "category": "tools-mcp/adtech",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "openai-ads",
+    "adapter",
+    "read-only",
+    "campaign-insights",
+    "product-feeds"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "connected_system": "OpenAI Ads API or local mock fixtures",
+    "capabilities": [
+      "Read advertiser account metadata.",
+      "List campaigns and ads.",
+      "Retrieve campaign insights.",
+      "Validate product-feed records."
+    ],
+    "auth_required": [
+      "Account-scoped OpenAI Ads API credential for live bindings"
+    ],
+    "access_level": "read-only",
+    "trust_boundary": "third-party-hosted",
+    "approval_boundary": "Read-only by design; future writes must use the existing policy-gated ad-platform executor."
+  },
+  "usability": {
+    "availability": "template-only",
+    "execution": "integration-template",
+    "limitations": [
+      "Reference adapter contract only; no connected executable integration is packaged."
+    ],
+    "quickstart": "Use adtech/openai-ads-api-client for an executable mock or live read-only integration.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "secret_manager"
+    ],
+    "apis": [
+      "OpenAI Ads API"
+    ]
+  }
+}

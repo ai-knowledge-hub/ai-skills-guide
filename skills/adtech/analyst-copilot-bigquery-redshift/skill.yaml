@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: adtech/analyst-copilot-bigquery-redshift
 name: Analyst Co-pilot (BigQuery + Redshift)
 description: Assist analysts with safe SQL drafting, metric validation,
@@ -36,6 +37,19 @@ operational:
     - Metric logic notes
     - Stakeholder summary
   approval_boundary: Safe for read-only analysis and SQL drafting; require human approval before executing queries against production warehouses.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
+  executable_helpers:
+    - entrypoint: scripts/query_safety_check.py
+      availability: not-verified
+      execution: local-tool
+      limitations:
+        - Packaged helper exists, but current clean-client executable evidence is not recorded.
+      quickstart: printf 'SELECT 1' | python3 scripts/query_safety_check.py
 verification:
   tests_min_prompts: 5
   deterministic_scripts: true

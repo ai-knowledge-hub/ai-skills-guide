@@ -4,7 +4,7 @@ import CatalogClient from "@/components/CatalogClient";
 import { parseMultiValue, type SearchParamValue } from "@/lib/catalogFilters";
 import { getDomainKey } from "@/lib/categoryLabels";
 
-export const metadata: Metadata = { title: "Skills Catalog", description: "Task-level expertise for recurring work. Search by purpose, domain or runtime, then inspect the requirements before installing." };
+export const metadata: Metadata = { title: "Skills Catalog", description: "Filter instruction packages by intent, runtime, and category, then inspect any independently classified executable helpers." };
 
 type SearchParams = {
   q?: SearchParamValue;
@@ -27,7 +27,7 @@ export default async function SkillsPage({ searchParams = {} }: { searchParams?:
     <main id="main" tabIndex={-1} className="catalogue-main">
       <header className="catalogue-heading">
         <h1 aria-label="Skills Catalog">Skills</h1>
-        <p>Task-level expertise for recurring work. Search by purpose, domain or runtime, then inspect the requirements before installing.</p>
+        <p>Filter instruction packages by intent, runtime, and category, then inspect any independently classified executable helpers.</p>
       </header>
       <div className="catalogue-content">
 

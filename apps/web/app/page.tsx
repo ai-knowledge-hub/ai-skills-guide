@@ -22,7 +22,7 @@ export default async function HomePage() {
   const modules = [
     { href: "/skills", name: "Skills", count: skills.length, description: "Task-level instructions and local tools for recurring work." },
     { href: "/agents", name: "Agents", count: agentsRegistry.skills.length, description: "Orchestrated templates that connect roles, skills and tools." },
-    { href: "/plugins", name: "Plugins", count: plugins.length, description: "Packaged capabilities, hooks and setup guidance." },
+    { href: "/plugins", name: "Plugins", count: plugins.length, description: "Composition templates for skills, tools and team workflows." },
     { href: "/tools-mcp", name: "Tools & MCP", count: toolsRegistry.skills.length, description: "Integrations and adapters for connecting to other systems." }
   ];
 
@@ -85,8 +85,9 @@ export default async function HomePage() {
           <div className="usability-guide-grid">
             <article><UsabilityBadge availability="usable-now" /><p>Instructions or a local executable you can use after installation.</p></article>
             <article><UsabilityBadge availability="setup-required" /><p>An integration or orchestrator that needs credentials, bindings or local policy.</p></article>
+            <article><UsabilityBadge availability="not-verified" /><p>Implementation exists, but current target-scoped operational evidence is not recorded.</p></article>
             <article><UsabilityBadge availability="template-only" /><p>A reference contract or scaffold to adapt before it can execute.</p></article>
-            <article><UsabilityBadge availability="documentation-only" /><p>A learning pack or architecture guide, outside the installable runtime capabilities.</p></article>
+            <article><UsabilityBadge availability="documentation-only" /><p>An instruction package or guide; it does not provide executable runtime capability.</p></article>
           </div>
         </div>
       </section>

@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.1",
+  "id": "engineering/code-change-verification",
+  "name": "Code Change Verification",
+  "description": "Run change-aware lint, typecheck, build, and test verification based on the files and stack touched by a code change.",
+  "category": "engineering/code-maintenance",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "verification",
+    "tests",
+    "lint",
+    "typecheck"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "May run local verification commands; require human approval before retrying destructive setup or environment-changing commands.",
+    "outputs": [
+      "Verification report",
+      "Failed command summary",
+      "Residual risk note"
+    ],
+    "use_when": "Use when a code change needs stack-aware lint, typecheck, build, and test verification based on touched files.",
+    "execution_mode": "may-run-local-verification"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "bash"
+    ]
+  }
+}

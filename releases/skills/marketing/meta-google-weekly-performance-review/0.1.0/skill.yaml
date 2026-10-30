@@ -1,0 +1,56 @@
+schema_version: "1.1"
+id: marketing/meta-google-weekly-performance-review
+name: Meta + Google Weekly Performance Review
+description: Analyze weekly paid media performance across Meta and Google Ads with KPI deltas and prioritized actions.
+version: 0.1.0
+released_at: "2026-02-23T00:00:00Z"
+category: marketing-tools/ads-ops
+tags:
+  - paid-media
+  - weekly-reporting
+  - meta-ads
+  - google-ads
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  scripts_dir: scripts
+  examples_dir: examples
+dependencies:
+  tools:
+    - python3
+operational:
+  use_when: Use when weekly performance across Meta and Google Ads needs KPI comparison and prioritized actions.
+  execution_mode: may-run-local-verification
+  outputs:
+    - KPI summary
+    - Insight list
+    - Recommended actions
+  approval_boundary: Safe for read-only analysis and reporting; require human approval before using outputs to make live media changes.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
+  executable_helpers:
+    - entrypoint: scripts/compute_metrics.py
+      availability: not-verified
+      execution: local-tool
+      limitations:
+        - Packaged helper exists, but current clean-client executable evidence is not recorded.
+      quickstart: python3 scripts/compute_metrics.py < examples/input.json
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: true
+  security_reviewed: false
+deprecated: false

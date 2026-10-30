@@ -1,0 +1,6 @@
+{
+  "title": "A practical guide to governed AI workflows",
+  "audience": "product and operations teams",
+  "source_summary": "Governed workflows separate model reasoning from deterministic authority, record evidence, and keep consequential actions behind explicit approval boundaries.",
+  "call_to_action": "Review the workflow with its accountable owner before adoption."
+}

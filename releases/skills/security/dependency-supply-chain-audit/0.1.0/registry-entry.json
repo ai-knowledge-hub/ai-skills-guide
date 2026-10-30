@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.1",
+  "id": "security/dependency-supply-chain-audit",
+  "name": "Dependency Supply Chain Audit",
+  "description": "Review manifests and lockfiles for vulnerable, suspicious, or overpowered dependencies and recommend mitigations.",
+  "category": "security/supply-chain",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "dependencies",
+    "sca",
+    "cve",
+    "supply-chain"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "May run local scanners and review package risk; require human approval before removing dependencies or changing production lockfiles.",
+    "outputs": [
+      "Dependency findings",
+      "Risk ranking",
+      "Mitigation recommendations"
+    ],
+    "use_when": "Use when manifests and lockfiles need vulnerability, provenance, and package risk review before trust is granted.",
+    "execution_mode": "may-run-local-verification"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "trivy",
+      "osv-scanner"
+    ]
+  }
+}

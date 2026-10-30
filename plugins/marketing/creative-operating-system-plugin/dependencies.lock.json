@@ -1,0 +1,82 @@
+{
+  "lock_version": "1.0",
+  "root": {
+    "module": "plugins",
+    "id": "marketing/creative-operating-system-plugin",
+    "version": "0.2.0"
+  },
+  "components": [
+    {
+      "module": "agents",
+      "id": "marketing/creative-operating-system-supervisor",
+      "version": "0.2.0",
+      "content_sha256": "8af63993e4ac5d930bb9814233f638d60112d088416f5ec82b650a209fb4eafe",
+      "manifest_path": "bundled/agents/marketing/creative-operating-system-supervisor/agent.yaml",
+      "dependencies": [
+        "skills:adtech/brand-rag-memory-bootstrap",
+        "skills:marketing/ai-output-eval-scorecard",
+        "skills:marketing/creative-operating-system-audit",
+        "skills:marketing/creator-strategy-brief",
+        "skills:marketing/cultural-timing-signal-triage",
+        "skills:marketing/product-as-media-mapper",
+        "skills:marketing/utility-campaign-concept-designer"
+      ]
+    },
+    {
+      "module": "skills",
+      "id": "adtech/brand-rag-memory-bootstrap",
+      "version": "0.1.0",
+      "content_sha256": "813c0ff3ed32cc39ec137aaffbe10915ac646c2a0beb0bec9bfa6f33ca30eca9",
+      "manifest_path": "bundled/skills/adtech/brand-rag-memory-bootstrap/skill.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "skills",
+      "id": "marketing/ai-output-eval-scorecard",
+      "version": "0.1.0",
+      "content_sha256": "0b1f20517d784b85873b5ab0fe75d0876be59caf83c90c63ed28fdfaee40569e",
+      "manifest_path": "bundled/skills/marketing/ai-output-eval-scorecard/skill.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "skills",
+      "id": "marketing/creative-operating-system-audit",
+      "version": "0.1.0",
+      "content_sha256": "4f1bbaea55d449bf7a937e7bffec103249754c659ad107271fce4bfb87af98bf",
+      "manifest_path": "bundled/skills/marketing/creative-operating-system-audit/skill.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "skills",
+      "id": "marketing/creator-strategy-brief",
+      "version": "0.1.0",
+      "content_sha256": "459b015b80f48d64451d9e4e846a2787125f04f5ed832afdbf795139133ea030",
+      "manifest_path": "bundled/skills/marketing/creator-strategy-brief/skill.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "skills",
+      "id": "marketing/cultural-timing-signal-triage",
+      "version": "0.1.0",
+      "content_sha256": "a3134db7902624fb604b6cdf75ba7e0d02a56795c8ac81cfcb01f7705decd705",
+      "manifest_path": "bundled/skills/marketing/cultural-timing-signal-triage/skill.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "skills",
+      "id": "marketing/product-as-media-mapper",
+      "version": "0.1.0",
+      "content_sha256": "66ad1ce2eff519052e3523cd858cde0cb5e49039c39cbd7f0b98b6fccf30be17",
+      "manifest_path": "bundled/skills/marketing/product-as-media-mapper/skill.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "skills",
+      "id": "marketing/utility-campaign-concept-designer",
+      "version": "0.1.0",
+      "content_sha256": "c43d1756c86962c09601641a3b61ceea7f031bee1b1d7b1ba42a613efb50cb79",
+      "manifest_path": "bundled/skills/marketing/utility-campaign-concept-designer/skill.yaml",
+      "dependencies": []
+    }
+  ]
+}

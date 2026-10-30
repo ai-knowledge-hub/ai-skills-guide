@@ -1,8 +1,9 @@
+schema_version: "1.1"
 id: adtech/chatgpt-ads-experiment-supervisor
 name: ChatGPT Ads Experiment Supervisor
 description: Coordinate task-led ChatGPT advertising experiments across creative, policy, measurement ownership, platform inspection, reconciliation, and memory.
-version: 0.1.0
-released_at: "2026-07-24T00:00:00Z"
+version: 0.2.0
+released_at: "2026-09-26T00:00:00Z"
 category: adtech-agents/experimentation
 tags:
   - chatgpt-ads
@@ -38,6 +39,29 @@ dependencies:
     - adtech/conversion-event-reconciler
     - adtech/openai-ads-api-client
     - adtech/ad-platform-executor-template
+orchestration:
+  model:
+    selection: runtime-selected
+    required_capabilities: [tool-use, structured-output]
+  memory:
+    mode: bundled
+    path: config/memory-profile.default.json
+    required: true
+  governance:
+    mode: bundled
+    path: config/governance.default.json
+    required: true
+  bindings:
+    - {name: creative_supervisor, kind: agent, package: marketing/creative-operating-system-supervisor, version: 0.3.0, requirement: required, availability: resolved}
+    - {name: control_plane_supervisor, kind: agent, package: adtech/ad-platform-control-plane-supervisor, version: 0.2.0, requirement: required, availability: resolved}
+    - {name: task_map_design, kind: skill, package: marketing/task-map-designer, version: 0.1.0, requirement: required, availability: resolved}
+    - {name: output_evaluation, kind: skill, package: marketing/ai-output-eval-scorecard, version: 0.1.0, requirement: required, availability: resolved}
+    - {name: signal_ownership, kind: skill, package: adtech/advertising-signal-ownership-auditor, version: 0.1.0, requirement: required, availability: resolved}
+    - {name: share_of_choice, kind: skill, package: marketing/agent-share-of-choice-evaluator, version: 0.1.0, requirement: required, availability: resolved}
+    - {name: policy_gate_design, kind: skill, package: agentops/ad-platform-policy-gate-designer, version: 0.1.0, requirement: required, availability: resolved}
+    - {name: reconcile_conversion_events, kind: tool, package: adtech/conversion-event-reconciler, version: 0.1.0, requirement: required, access: read-only, availability: resolved}
+    - {name: inspect_openai_ads, kind: tool, package: adtech/openai-ads-api-client, version: 0.2.0, requirement: required, access: read-only, availability: resolved}
+    - {name: execute_ad_platform_plan, kind: tool, package: adtech/ad-platform-executor-template, version: 0.2.0, requirement: optional, access: read-write, availability: resolved}
 operational:
   role: Experiment supervisor for task-led conversational advertising and agent-mediated commerce.
   coordinates:
@@ -56,12 +80,10 @@ operational:
 usability:
   availability: setup-required
   execution: orchestrator
-  requires_setup:
-    - Install all declared agent, skill, and tool dependencies, preferably through the ChatGPT Advertising Experiment Plugin.
-    - Configure mock or live read-only tool bindings and a governance profile.
   limitations:
+    - Provider authentication and the pinned control-plane dependencies must pass readiness before connected use.
     - The supervisor is advisory and does not execute campaign writes.
-  quickstart: Run the plugin mock lab, then invoke this agent in mock-run mode with the generated evidence bundle.
+  quickstart: Install the agent and begin with its mock workflow; use the compiled contract to configure connected providers.
 verification:
   tests_min_prompts: 5
   security_reviewed: false

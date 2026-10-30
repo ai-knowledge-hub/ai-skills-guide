@@ -22,7 +22,6 @@ Advertising inside an agent-mediated channel needs two control planes:
 | `marketing/agent-share-of-choice-evaluator` | Evaluate progression through agent-mediated decision stages. |
 | `adtech/conversion-event-reconciler` | Deduplicate Pixel and server events and verify first-party outcomes. |
 | `adtech/openai-ads-api-client` | Run mock or live read-only OpenAI Ads retrieval and validate conversion batches without saving them. |
-| `adtech/openai-ads-adapter-template` | Reference the provider-boundary contract when building another integration. |
 | `adtech/chatgpt-ads-experiment-supervisor` | Coordinate the end-to-end experiment. |
 
 ## Reused foundations
@@ -51,3 +50,8 @@ Stop if the measurement ledger cannot independently verify conversion quality.
 ## Live-system boundary
 
 The installable plugin includes a live read-only OpenAI Ads client and non-persisting conversion validation. It does not grant write authority. Route all future mutations through a reviewed policy-gated executor with human approval and rollback evidence.
+
+The former `adtech/openai-ads-adapter-template` path is deprecated. Existing
+pack or plugin references should migrate directly to
+`adtech/openai-ads-api-client`; no compatibility wrapper is required because
+the executable client includes deterministic mock mode.

@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: marketing/ai-output-eval-scorecard
 name: AI Output Eval Scorecard
 description: Score AI-generated marketing outputs across accuracy, clarity, brand fit, policy compliance, actionability, and creative operating system fit.
@@ -38,6 +39,12 @@ operational:
     - Rewrite recommendations
     - Creative operating system scores
   approval_boundary: Safe for evaluation and recommendation; require human approval before approving externally visible copy.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

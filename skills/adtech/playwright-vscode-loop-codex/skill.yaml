@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: adtech/playwright-vscode-loop-codex
 name: Playwright VS Code Loop for Codex
 description: Orchestrate Playwright planner, generator, and healer workflows from Codex with VS Code loop execution for reusable web UX QA.
@@ -38,6 +39,20 @@ operational:
     - Generated spec
     - Healing notes
   approval_boundary: May run local QA workflows and propose test updates; require human approval before accepting broad healing changes.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
+  executable_helpers:
+    - entrypoint: scripts/install-global-codex.sh
+      availability: not-verified
+      execution: local-tool
+      limitations:
+        - Packaged helper exists, but current clean-client executable evidence is not recorded.
+        - The installer replaces an existing skill at the resolved Codex skills destination.
+      quickstart: Review scripts/install-global-codex.sh and its destination before running it.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["executions", "artifacts", "authentications", "verifications"],
+  "properties": {
+    "executions": {
+      "type": "array",
+      "items": { "$ref": "../../manifest-contract-v2.schema.json#/$defs/execution" },
+      "minItems": 1
+    },
+    "artifacts": {
+      "type": "array",
+      "items": { "$ref": "../../manifest-contract-v2.schema.json#/$defs/artifact" },
+      "minItems": 1
+    },
+    "authentications": {
+      "type": "array",
+      "items": { "$ref": "../../manifest-contract-v2.schema.json#/$defs/authentication" },
+      "minItems": 1
+    },
+    "verifications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["evidence", "last_verified_at"],
+        "properties": {
+          "evidence": { "$ref": "../../manifest-contract-v2.schema.json#/$defs/evidence" },
+          "last_verified_at": { "$ref": "../../manifest-contract-v2.schema.json#/$defs/last_verified_at" }
+        }
+      },
+      "minItems": 1
+    }
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.1",
+  "id": "adtech/brand-rag-memory-bootstrap",
+  "name": "Brand RAG Memory Bootstrap",
+  "description": "Build a private retrieval-ready brand memory from product, campaign, and policy context for downstream agent skills.",
+  "category": "adtech/analytics-engineering",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "rag",
+    "brand-memory",
+    "knowledge-base",
+    "retrieval",
+    "governance"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for planning and document classification; require human approval before indexing sensitive or unapproved source material.",
+    "outputs": [
+      "Source inventory",
+      "Metadata schema",
+      "Refresh plan"
+    ],
+    "use_when": "Use when you need to structure approved brand, campaign, and policy documents into a retrieval-ready memory layer.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "python3"
+    ]
+  }
+}

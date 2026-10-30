@@ -21,6 +21,9 @@ func main() {
 	if err != nil {
 		fatal(err)
 	}
+	if _, err := registry.ValidateRepository(absRoot); err != nil {
+		fatal(fmt.Errorf("repository admission failed: %w", err))
+	}
 
 	switch *module {
 	case "skills":

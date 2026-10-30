@@ -1,4 +1,7 @@
-# OpenAI Ads Adapter Template
+# OpenAI Ads Adapter Template (deprecated)
+
+> Replaced by `adtech/openai-ads-api-client`. This document describes the old
+> contract only so existing consumers can migrate without guessing.
 
 ## Purpose
 Provide a mock-first, read-only provider boundary for OpenAI Ads account, campaign, ad, insight, and product-feed data.
@@ -23,5 +26,16 @@ Provide a mock-first, read-only provider boundary for OpenAI Ads account, campai
 - Never expose credentials to the agent.
 - Do not infer that mock schemas match current production schemas.
 
-## Status
-This repository ships contracts and fixtures, not a live OpenAI Ads client. Confirm current API availability and official schemas before implementing a production binding.
+## Migration
+
+1. Replace dependency ID `adtech/openai-ads-adapter-template` with
+   `adtech/openai-ads-api-client`.
+2. Replace direct fixture reads with the client mock commands documented in its
+   `TOOL.md`.
+3. For live reads, bind `OPENAI_ADS_API_KEY` through the runtime-owned
+   environment and run the packaged authentication readiness flow.
+4. Keep all campaign writes outside the client and behind the governed
+   ad-platform executor.
+
+The historical template must not be reactivated or treated as operational
+evidence for the replacement package.

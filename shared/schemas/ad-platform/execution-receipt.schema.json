@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skills.ai-knowledge-hub.org/schemas/ad-platform/execution-receipt.schema.json",
+  "title": "Governed Ad Platform Execution Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "execution_id", "grant_id", "plan_id", "target", "status", "pre_image_hash", "post_image_hash", "rollback_patch_hash", "provider_receipt", "recorded_at", "reconciled"],
+  "properties": {
+    "schema_version": {"const": "ad-platform.execution-receipt/v1"},
+    "execution_id": {"type": "string", "pattern": "^(exec|rollback)_[a-f0-9]{32}$"},
+    "grant_id": {"type": "string", "pattern": "^grant_[a-f0-9]{32}$"},
+    "plan_id": {"type": "string", "minLength": 2, "maxLength": 128},
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "account_id", "resource_type", "resource_id"],
+      "properties": {
+        "provider": {"enum": ["google_ads", "dv360"]},
+        "account_id": {"type": "string", "pattern": "^[1-9][0-9]{3,29}$"},
+        "resource_type": {"enum": ["campaign", "campaign_budget", "ad_group", "line_item"]},
+        "resource_id": {"type": "string", "pattern": "^[1-9][0-9]{3,29}$"}
+      }
+    },
+    "status": {"enum": ["executed", "verification_failed", "rolled_back"]},
+    "pre_image_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "post_image_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "rollback_patch_hash": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "provider_receipt": {"type": "string", "minLength": 1, "maxLength": 512},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "reconciled": {"type": "boolean"}
+  }
+}

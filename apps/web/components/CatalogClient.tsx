@@ -90,6 +90,8 @@ export default function CatalogClient({ entries, categories, tags, basePath, ini
         <Link href={`${basePath}/${entry.id}`} className="catalog-card-link">
           <div className="catalog-card-head"><p className="meta catalog-card-domain">{formatCategoryFamily(entry.category)}</p><UsabilityBadge availability={entry.usability.availability} /></div>
           <h2>{entry.name}</h2><p>{entry.description}</p>
+          <p className="meta">Execution: {entry.usability.execution}</p>
+          {entry.usability.limitations?.[0] ? <p className="meta">Limit: {entry.usability.limitations[0]}</p> : null}
         </Link>
         {basePath === "/plugins" ? <div className="catalog-card-actions"><a href={`${brand.repository}/blob/main/plugins/${entry.id}/plugin.yaml`} className="catalog-card-secondary-link" target="_blank" rel="noreferrer">View package file</a></div> : null}
       </article>)}

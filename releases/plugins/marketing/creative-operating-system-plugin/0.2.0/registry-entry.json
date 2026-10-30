@@ -1,0 +1,102 @@
+{
+  "schema_version": "2.1",
+  "id": "marketing/creative-operating-system-plugin",
+  "name": "Creative Operating System Plugin",
+  "description": "Bundle the Creative Operating System workflow into one installable package with audit, concepting, creator, timing, evaluation, and first-run operational templates.",
+  "category": "marketing-plugins/creative",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "creative-operating-system",
+    "anti-slop",
+    "creator-ops",
+    "product-as-media",
+    "cultural-timing",
+    "governance"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "usability": {
+    "availability": "usable-now",
+    "execution": "bundle",
+    "limitations": [
+      "Launch and product-surface changes remain human-approved; packaged Markdown hooks are advisory on runtimes without native enforcement mappings."
+    ],
+    "quickstart": "Run `node scripts/first_use.mjs examples/first-use-input.json` after installation to generate a first-run operating-system checklist.",
+    "executable_helpers": [
+      {
+        "entrypoint": "scripts/first_use.mjs",
+        "availability": "usable-now",
+        "execution": "local-tool",
+        "limitations": [
+          "Requires a declared Node.js 22 execution capability; it never authorizes launch."
+        ],
+        "quickstart": "node scripts/first_use.mjs examples/first-use-input.json"
+      }
+    ],
+    "source": "declared"
+  },
+  "execution": {
+    "kind": "bundle",
+    "supported_platforms": [
+      "linux",
+      "macos",
+      "windows"
+    ],
+    "supported_runtimes": [
+      "node22"
+    ]
+  },
+  "artifact": {
+    "self_contained": true,
+    "dependency_lock": "dependencies.lock.json",
+    "checksums": "checksums.txt",
+    "sbom": "sbom.cdx.json",
+    "provenance": "provenance.json"
+  },
+  "authentication": {
+    "status": "none",
+    "methods": [
+      "none"
+    ],
+    "credential_bindings": [],
+    "scopes": [],
+    "credential_storage": "No credentials are used by this instruction bundle.",
+    "validation": "Confirm no authentication challenge is introduced by runtime wiring.",
+    "revocation": "Not applicable; remove the installed bundle to withdraw it."
+  },
+  "verification": {
+    "evidence": [
+      "evidence://tests/local-plugin-wave/creative-operating-system-first-use"
+    ],
+    "last_verified_at": "2026-09-22T00:00:00Z"
+  },
+  "includes": {
+    "skills": [
+      "adtech/brand-rag-memory-bootstrap",
+      "marketing/creative-operating-system-audit",
+      "marketing/utility-campaign-concept-designer",
+      "marketing/product-as-media-mapper",
+      "marketing/cultural-timing-signal-triage",
+      "marketing/creator-strategy-brief",
+      "marketing/ai-output-eval-scorecard"
+    ],
+    "agents": [
+      "marketing/creative-operating-system-supervisor"
+    ],
+    "hooks": [
+      "require-memory-before-ideation",
+      "require-launch-gate-review"
+    ]
+  },
+  "requires": {
+    "approvals": [
+      "human-review-before-public-launch",
+      "human-review-before-product-surface-change"
+    ]
+  }
+}

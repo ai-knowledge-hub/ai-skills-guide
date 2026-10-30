@@ -1,0 +1,11 @@
+{
+  "schema_version": "control-plane.identity/v1",
+  "actor_id": "control-plane-owner",
+  "tenant_id": "tenant-example",
+  "roles": ["policy_admin", "budget_owner"],
+  "capabilities": ["administer_control_plane"],
+  "scopes": [{"provider": "google_ads", "account_id": "account-example"}],
+  "issued_at": "2026-09-20T09:00:00.000Z",
+  "expires_at": "2026-09-20T17:00:00.000Z",
+  "key_id": "local-v1"
+}

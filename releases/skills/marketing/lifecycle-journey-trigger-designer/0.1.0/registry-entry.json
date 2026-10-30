@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.1",
+  "id": "marketing/lifecycle-journey-trigger-designer",
+  "name": "Lifecycle Journey Trigger Designer",
+  "description": "Design lifecycle triggers and channel sequencing for CRM journeys with measurable guardrails and rollout rules.",
+  "category": "marketing-tools/lifecycle-crm",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "lifecycle",
+    "crm",
+    "journey-design",
+    "triggers",
+    "retention"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for planning and design; require human approval before activating live messaging journeys.",
+    "outputs": [
+      "Journey blueprint",
+      "Trigger rules",
+      "Measurement plan"
+    ],
+    "use_when": "Use when lifecycle entry, progression, and suppression rules need to be designed with measurement plans.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "python3"
+    ]
+  }
+}

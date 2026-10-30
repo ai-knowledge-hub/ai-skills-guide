@@ -48,7 +48,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Install check-jsonschema
-        run: python3 -m pip install --upgrade pip check-jsonschema
+        run: python3 -m pip install --upgrade pip "check-jsonschema==0.37.0"
 
       - name: Compute next tag
         id: version
@@ -123,6 +123,15 @@ jobs:
 
       - name: Validate manifests and registry schemas
         run: bash scripts/validate-manifests.sh
+
+      - name: Test and build CLI with governed runtime trust roots
+        env:
+          CODEX_MODEL_ATTESTATION_PUBLIC_KEY: ${{ vars.CODEX_MODEL_ATTESTATION_PUBLIC_KEY }}
+          CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY: ${{ vars.CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY }}
+          GENERIC_MODEL_ATTESTATION_PUBLIC_KEY: ${{ vars.GENERIC_MODEL_ATTESTATION_PUBLIC_KEY }}
+        run: |
+          make cli-test
+          make cli-build
 
       - name: Ensure generated registry is committed
         run: |

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "meta-ads": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["scripts/meta_ads_mcp_server.mjs"],
+      "cwd": "."
+    }
+  }
+}

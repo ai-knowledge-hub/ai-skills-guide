@@ -38,15 +38,20 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
         <p className="meta">{entry.tags.join(", ")}</p>
         <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{entry.usability.execution}</span><a href="#usability" className="text-link">Requirements &amp; limits</a></div>
         <div className="detail-install-lead">
-          <h2 className="meta">Install this plugin</h2>
+          <h2 className="meta">{entry.usability.availability === "template-only" ? "Reference composition" : "Install this plugin"}</h2>
           <InstallCommands
             compact
+            availability={entry.usability.availability}
             codex={buildModuleInstallSnippet("plugins", entry, "codex")}
             claude={buildModuleInstallSnippet("plugins", entry, "claude")}
             generic={buildModuleInstallSnippet("plugins", entry, "generic")}
           />
-          <p className="meta">Plugin installs also resolve bundled skills, agents, and tools into their native runtime directories. Packaged hooks stay inside the plugin directory.</p>
-          <p className="meta">Codex and Claude installs also generate a runtime-specific plugin manifest inside the installed plugin directory.</p>
+          {entry.usability.availability !== "template-only" ? (
+            <>
+              <p className="meta">Plugin installs also resolve bundled skills, agents, and tools into their native runtime directories. Packaged hooks stay inside the plugin directory.</p>
+              <p className="meta">Codex and Claude installs also generate a runtime-specific plugin manifest inside the installed plugin directory.</p>
+            </>
+          ) : null}
           {!entry.security_reviewed ? (
             <p className="meta">This plugin is still experimental. Review bundled components, required secrets, and approval rules before enabling it in a live runtime.</p>
           ) : null}
@@ -65,6 +70,32 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
 
       <section className="detail-grid">
         <UsabilityPanel usability={entry.usability} />
+        {entry.capability_readiness?.length ? (
+          <article className="card detail-panel">
+            <h2>Capability readiness</h2>
+            {entry.capability_readiness.map((capability) => (
+              <section key={capability.id}>
+                <h3>{capability.name}</h3>
+                <p>
+                  <span className="meta">Status:</span> {capability.availability}
+                  {" · "}
+                  <span className="meta">Access:</span> {capability.access}
+                </p>
+                <p>{capability.description}</p>
+                {capability.requires_setup?.length ? (
+                  <ul>
+                    {capability.requires_setup.map((requirement) => <li key={requirement}>{requirement}</li>)}
+                  </ul>
+                ) : null}
+                {capability.limitations?.length ? (
+                  <ul>
+                    {capability.limitations.map((limitation) => <li key={limitation}>{limitation}</li>)}
+                  </ul>
+                ) : null}
+              </section>
+            ))}
+          </article>
+        ) : null}
         <article className="card detail-panel">
           <h2>Status</h2>
           <p><span className="meta">Readiness:</span> {formatReadinessLabel(entry.readiness)}</p>
@@ -72,14 +103,14 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
           <p><span className="meta">Lifecycle:</span> {entry.deprecated ? "Deprecated" : "Active"}</p>
         </article>
         <article className="card detail-panel">
-          <h2>Install Summary</h2>
-          <p><span className="meta">Installed skills:</span> {entry.includes?.skills?.length ?? 0}</p>
-          <p><span className="meta">Installed agents:</span> {entry.includes?.agents?.length ?? 0}</p>
-          <p><span className="meta">Installed tools:</span> {entry.includes?.tools?.length ?? 0}</p>
+          <h2>{entry.usability.availability === "template-only" ? "Declared Composition" : "Install Summary"}</h2>
+          <p><span className="meta">Referenced skills:</span> {entry.includes?.skills?.length ?? 0}</p>
+          <p><span className="meta">Referenced agents:</span> {entry.includes?.agents?.length ?? 0}</p>
+          <p><span className="meta">Referenced tools:</span> {entry.includes?.tools?.length ?? 0}</p>
           <p><span className="meta">Packaged hooks:</span> {entry.includes?.hooks?.length ?? 0}</p>
         </article>
         <article className="card detail-panel">
-          <h2>Installed Skills</h2>
+          <h2>{entry.usability.availability === "template-only" ? "Referenced Skills" : "Installed Skills"}</h2>
           {entry.includes?.skills?.length ? (
             <ul>
               {entry.includes.skills.map((skillId) => (
@@ -93,7 +124,7 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
           )}
         </article>
         <article className="card detail-panel">
-          <h2>Installed Agents</h2>
+          <h2>{entry.usability.availability === "template-only" ? "Referenced Agents" : "Installed Agents"}</h2>
           {entry.includes?.agents?.length ? (
             <ul>
               {entry.includes.agents.map((agentId) => (
@@ -107,7 +138,7 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
           )}
         </article>
         <article className="card detail-panel">
-          <h2>Installed Tools</h2>
+          <h2>{entry.usability.availability === "template-only" ? "Referenced Tools" : "Installed Tools"}</h2>
           {entry.includes?.tools?.length ? (
             <ul>
               {entry.includes.tools.map((toolId) => (

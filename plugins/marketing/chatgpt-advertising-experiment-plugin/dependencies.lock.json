@@ -1,0 +1,68 @@
+{
+  "lock_version": "1.0",
+  "root": {
+    "module": "plugins",
+    "id": "marketing/chatgpt-advertising-experiment-plugin",
+    "version": "0.2.0"
+  },
+  "components": [
+    {
+      "module": "skills",
+      "id": "adtech/advertising-signal-ownership-auditor",
+      "version": "0.1.0",
+      "content_sha256": "123256be1dc8dbfb43a689c901ecf32cc869932d4bb09f611748c9f824872868",
+      "manifest_path": "bundled/skills/adtech/advertising-signal-ownership-auditor/skill.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "skills",
+      "id": "agentops/ad-platform-policy-gate-designer",
+      "version": "0.1.0",
+      "content_sha256": "c13078c937bd0f4f6ba0fe2b8d1f70f4707967644b7f2070455370fbe29bb4bb",
+      "manifest_path": "bundled/skills/agentops/ad-platform-policy-gate-designer/skill.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "skills",
+      "id": "marketing/agent-share-of-choice-evaluator",
+      "version": "0.1.0",
+      "content_sha256": "69f1ec0f22745bf247c1606d754326d24bd8d7aaecd0547107e2c4e038b55a52",
+      "manifest_path": "bundled/skills/marketing/agent-share-of-choice-evaluator/skill.yaml",
+      "dependencies": [
+        "skills:marketing/ai-output-eval-scorecard"
+      ]
+    },
+    {
+      "module": "skills",
+      "id": "marketing/ai-output-eval-scorecard",
+      "version": "0.1.0",
+      "content_sha256": "0b1f20517d784b85873b5ab0fe75d0876be59caf83c90c63ed28fdfaee40569e",
+      "manifest_path": "bundled/skills/marketing/ai-output-eval-scorecard/skill.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "skills",
+      "id": "marketing/task-map-designer",
+      "version": "0.1.0",
+      "content_sha256": "6e35afd4ec3e6185fa8885b9737b6e6afc2fe9561e11e8e9da53326ecfc33740",
+      "manifest_path": "bundled/skills/marketing/task-map-designer/skill.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "tools-mcp",
+      "id": "adtech/conversion-event-reconciler",
+      "version": "0.1.0",
+      "content_sha256": "c58cc0a2439bf0fca64533dc8185f63773974ef068f6cf4f7215ef8bd7b578fd",
+      "manifest_path": "bundled/tools-mcp/adtech/conversion-event-reconciler/tool.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "tools-mcp",
+      "id": "adtech/openai-ads-api-client",
+      "version": "0.2.0",
+      "content_sha256": "ef1edc2aab52e3a216fb412095fd25fadc9384af8b20b818484ef451477060ef",
+      "manifest_path": "bundled/tools-mcp/adtech/openai-ads-api-client/tool.yaml",
+      "dependencies": []
+    }
+  ]
+}

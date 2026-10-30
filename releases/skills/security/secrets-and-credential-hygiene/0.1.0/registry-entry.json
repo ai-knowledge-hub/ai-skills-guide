@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.1",
+  "id": "security/secrets-and-credential-hygiene",
+  "name": "Secrets and Credential Hygiene",
+  "description": "Scan diffs and repository context for leaked secrets, risky credential placement, and over-broad environment exposure.",
+  "category": "security/runtime-hardening",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "secrets",
+    "credentials",
+    "hygiene",
+    "audit"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "May run local secret scanners and redact findings; require human approval before revocation or rotation actions.",
+    "outputs": [
+      "Secret findings",
+      "Severity matrix",
+      "Remediation steps"
+    ],
+    "use_when": "Use when diffs or repository context need secret scanning and credential exposure review.",
+    "execution_mode": "may-run-local-verification"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "gitleaks"
+    ]
+  }
+}

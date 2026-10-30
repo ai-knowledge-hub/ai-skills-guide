@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: agentops/ad-platform-policy-gate-designer
 name: Ad Platform Policy Gate Designer
 description: Design policy gates, approval thresholds, deny rules, and bounded execution rules for marketing agents that change bids, budgets, targeting, audiences, feeds, or tracking.
@@ -33,6 +34,12 @@ operational:
     - Deny rule set
     - Audit evidence checklist
   approval_boundary: Analysis-only; must not change live policy, approve campaign changes, or execute platform writes.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.1",
+  "id": "marketing/agent-share-of-choice-evaluator",
+  "name": "Agent Share of Choice Evaluator",
+  "description": "Evaluate brand progression across retrieval, consideration, recommendation, selection, transaction, completion, and reuse in agent-mediated tasks.",
+  "category": "marketing-tools/measurement",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "agent-visibility",
+    "share-of-choice",
+    "chatgpt-ads",
+    "agentic-commerce",
+    "evaluation"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Evaluation only; do not publish comparative claims without methodology and human review.",
+    "outputs": [
+      "Stage evidence",
+      "Route comparison",
+      "Confidence and next-test report"
+    ],
+    "use_when": "Use when a team needs a repeatable task-panel evaluation of paid, earned, and executable brand participation.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "skills": [
+      "marketing/ai-output-eval-scorecard"
+    ]
+  }
+}

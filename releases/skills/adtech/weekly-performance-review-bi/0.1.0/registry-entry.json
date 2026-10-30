@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.1",
+  "id": "adtech/weekly-performance-review-bi",
+  "name": "Weekly Performance Review BI",
+  "description": "Chain dashboard generation, QA gating, and executive narrative writing for deterministic weekly BI reporting.",
+  "category": "adtech/analytics-engineering",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "bi",
+    "orchestration",
+    "weekly-reporting",
+    "qa-gating",
+    "dashboard"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for orchestrating read-only reporting steps; require human approval before external publication.",
+    "outputs": [
+      "Publish decision",
+      "QA package",
+      "Narrative package"
+    ],
+    "use_when": "Use when weekly BI reporting needs deterministic orchestration across dashboard generation, QA, and narrative drafting.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "python3"
+    ]
+  }
+}

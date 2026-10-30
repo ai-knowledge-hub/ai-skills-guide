@@ -1,11 +1,57 @@
 package registry
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
+
+func TestProjectManifestForCurrentCatalogSuppressesDeprecatedUsability(t *testing.T) {
+	now := time.Date(2026, 9, 15, 8, 0, 0, 0, time.UTC)
+	for _, availability := range []string{"usable-now", "setup-required"} {
+		t.Run(availability, func(t *testing.T) {
+			manifest := Manifest{
+				SchemaVersion: "2.1",
+				ID:            "shared/deprecated-projection",
+				Deprecated:    true,
+				ReplacedBy:    "shared/replacement-projection",
+				Usability: UsabilityMetadata{
+					Availability: availability,
+					Execution:    "local-tool",
+					ExecutableHelpers: []ExecutableHelperMetadata{
+						{Entrypoint: "bin/ready", Availability: "usable-now", Execution: "local-tool"},
+						{Entrypoint: "bin/setup", Availability: "setup-required", Execution: "local-tool"},
+						{Entrypoint: "bin/unverified", Availability: "not-verified", Execution: "local-tool"},
+					},
+				},
+				Execution:      ExecutionMetadata{Kind: "cli"},
+				Authentication: AuthenticationMetadata{Status: "none"},
+				Verification: VerificationMetadata{
+					Evidence:       []string{"evidence://tests/deprecated-projection"},
+					LastVerifiedAt: now.Format(time.RFC3339),
+				},
+			}
+
+			entry := ProjectManifestForCurrentCatalog(manifest, now)
+			if entry.Readiness != "deprecated" || entry.Usability.Availability != "not-verified" || entry.Usability.Source != "inferred" {
+				t.Fatalf("deprecated root usability was not suppressed: %#v", entry)
+			}
+			for _, helper := range entry.Usability.ExecutableHelpers {
+				if helper.Availability != "not-verified" {
+					t.Fatalf("deprecated helper usability was not suppressed: %#v", helper)
+				}
+			}
+			if manifest.Usability.ExecutableHelpers[0].Availability != "usable-now" || manifest.Usability.ExecutableHelpers[1].Availability != "setup-required" {
+				t.Fatalf("catalog projection mutated manifest audit evidence: %#v", manifest.Usability.ExecutableHelpers)
+			}
+		})
+	}
+}
 
 func TestBuildSkillsIndex(t *testing.T) {
 	root := t.TempDir()
@@ -28,6 +74,9 @@ runtimes:
   - codex
 entrypoints:
   skill_md: SKILL.md
+usability:
+  availability: documentation-only
+  execution: instructions
 dependencies:
   tools:
     - rg
@@ -54,14 +103,104 @@ deprecated: false
 		t.Fatalf("expected 1 entry, got %d", len(idx.Skills))
 	}
 	entry := idx.Skills[0]
+	manifestSum := sha256.Sum256([]byte(mf))
+	if entry.Versions[0].ManifestSHA256 != hex.EncodeToString(manifestSum[:]) {
+		t.Fatalf("release was not bound to the exact manifest bytes: %#v", entry.Versions[0])
+	}
 	if entry.Operational == nil || entry.Operational.UseWhen != "Use when repo planning is needed." {
 		t.Fatalf("expected operational metadata in index, got %#v", entry.Operational)
 	}
 	if entry.Dependencies == nil || len(entry.Dependencies.Tools) != 1 {
 		t.Fatalf("expected dependencies in index, got %#v", entry.Dependencies)
 	}
-	if entry.Usability.Availability != "usable-now" || entry.Usability.Execution != "instructions" || entry.Usability.Source != "inferred" {
-		t.Fatalf("unexpected default usability: %#v", entry.Usability)
+	if entry.Usability.Availability != "documentation-only" || entry.Usability.Execution != "instructions" || entry.Usability.Source != "declared" {
+		t.Fatalf("unexpected declared usability: %#v", entry.Usability)
+	}
+}
+
+func TestBuildIndexUsesExactRetainedArchiveDigest(t *testing.T) {
+	root := t.TempDir()
+	entryDir := filepath.Join(root, "skills", "engineering", "demo-skill")
+	if err := os.MkdirAll(entryDir, 0o755); err != nil {
+		t.Fatalf("mkdir package: %v", err)
+	}
+	manifest := `id: engineering/demo-skill
+name: Demo Skill
+description: Demo skill manifest used for retained archive digest tests.
+version: 0.1.0
+released_at: "2026-03-30T00:00:00Z"
+category: engineering/code-maintenance
+tags: [planning]
+license: MIT
+author: {name: Tests}
+runtimes: [codex]
+entrypoints: {skill_md: SKILL.md}
+usability: {availability: documentation-only, execution: instructions}
+deprecated: false
+`
+	if err := os.WriteFile(filepath.Join(entryDir, "skill.yaml"), []byte(manifest), 0o644); err != nil {
+		t.Fatalf("write manifest: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(entryDir, "SKILL.md"), []byte("# Demo\n"), 0o644); err != nil {
+		t.Fatalf("write spec: %v", err)
+	}
+	archive := []byte("exact retained archive bytes")
+	archivePath := filepath.Join(root, "releases", "skills", "engineering", "demo-skill", "0.1.0", "package.tar.gz")
+	if err := os.MkdirAll(filepath.Dir(archivePath), 0o755); err != nil {
+		t.Fatalf("mkdir release: %v", err)
+	}
+	if err := os.WriteFile(archivePath, archive, 0o644); err != nil {
+		t.Fatalf("write release: %v", err)
+	}
+
+	index, err := BuildSkillsIndex(root)
+	if err != nil {
+		t.Fatalf("build index: %v", err)
+	}
+	want := sha256.Sum256(archive)
+	if got := index.Skills[0].Versions[0].SHA256; got != hex.EncodeToString(want[:]) {
+		t.Fatalf("registry checksum = %s, want exact archive checksum %x", got, want)
+	}
+}
+
+func TestTrackedRegistryChecksumsMatchEveryRetainedRelease(t *testing.T) {
+	root, err := filepath.Abs(filepath.Join("..", ".."))
+	if err != nil {
+		t.Fatalf("resolve repository root: %v", err)
+	}
+	for _, target := range []struct {
+		index  string
+		module string
+	}{
+		{index: "skills-index.json", module: "skills"},
+		{index: "agents-index.json", module: "agents"},
+		{index: "tools-index.json", module: "tools-mcp"},
+		{index: "plugins-index.json", module: "plugins"},
+	} {
+		t.Run(target.module, func(t *testing.T) {
+			data, err := os.ReadFile(filepath.Join(root, "registry", target.index))
+			if err != nil {
+				t.Fatalf("read tracked registry: %v", err)
+			}
+			var index Index
+			if err := json.Unmarshal(data, &index); err != nil {
+				t.Fatalf("decode tracked registry: %v", err)
+			}
+			for _, entry := range index.Skills {
+				for _, version := range entry.Versions {
+					archivePath := filepath.Join(root, "releases", target.module, filepath.FromSlash(entry.ID), version.Version, "package.tar.gz")
+					archive, err := os.ReadFile(archivePath)
+					if err != nil {
+						t.Errorf("%s@%s: read retained archive: %v", entry.ID, version.Version, err)
+						continue
+					}
+					digest := sha256.Sum256(archive)
+					if got, want := version.SHA256, hex.EncodeToString(digest[:]); got != want {
+						t.Errorf("%s@%s: registry checksum %s does not match retained archive %s", entry.ID, version.Version, got, want)
+					}
+				}
+			}
+		})
 	}
 }
 
@@ -86,6 +225,9 @@ runtimes:
   - codex
 entrypoints:
   spec: AGENT.md
+usability:
+  availability: template-only
+  execution: orchestrator
 dependencies:
   agents:
     - marketing/creative-operating-system-supervisor
@@ -127,10 +269,10 @@ deprecated: false
 	if entry.Dependencies == nil || len(entry.Dependencies.Agents) != 1 || len(entry.Dependencies.Skills) != 1 {
 		t.Fatalf("expected agent and skill dependencies in index, got %#v", entry.Dependencies)
 	}
-	if entry.Usability.Availability != "setup-required" || entry.Usability.Execution != "orchestrator" {
+	if entry.Usability.Availability != "template-only" || entry.Usability.Execution != "orchestrator" || entry.Usability.Source != "declared" {
 		t.Fatalf("unexpected agent usability: %#v", entry.Usability)
 	}
-	if !strings.Contains(entry.Versions[0].ManifestURL, "/agents/marketing/demo-agent/agent.yaml") {
+	if !strings.Contains(entry.Versions[0].ManifestURL, "/release-manifests/agents/marketing/demo-agent/0.1.0.yaml") {
 		t.Fatalf("unexpected manifest url: %s", entry.Versions[0].ManifestURL)
 	}
 	if !strings.Contains(entry.Versions[0].ArtifactURL, "/artifacts/marketing/demo-agent/0.1.0.tar.gz") {
@@ -159,6 +301,9 @@ runtimes:
   - codex
 entrypoints:
   spec: TOOL.md
+usability:
+  availability: template-only
+  execution: integration-template
 dependencies:
   mcp_servers:
     - demo-mcp
@@ -197,7 +342,7 @@ deprecated: false
 	if entry.Dependencies == nil || len(entry.Dependencies.MCPServers) != 1 {
 		t.Fatalf("expected dependencies in index, got %#v", entry.Dependencies)
 	}
-	if !strings.Contains(entry.Versions[0].ManifestURL, "/tools-mcp/analytics/demo-tool/tool.yaml") {
+	if !strings.Contains(entry.Versions[0].ManifestURL, "/release-manifests/tools-mcp/analytics/demo-tool/0.1.0.yaml") {
 		t.Fatalf("unexpected manifest url: %s", entry.Versions[0].ManifestURL)
 	}
 	if !strings.Contains(entry.Versions[0].ArtifactURL, "/artifacts/analytics/demo-tool/0.1.0.tar.gz") {
@@ -226,6 +371,9 @@ runtimes:
   - codex
 entrypoints:
   spec: plugin.json
+usability:
+  availability: template-only
+  execution: bundle
 includes:
   skills:
     - marketing/meta-google-weekly-performance-review
@@ -258,7 +406,7 @@ deprecated: false
 	if entry.Requires == nil || len(entry.Requires.Secrets) != 1 {
 		t.Fatalf("expected required secrets in index, got %#v", entry.Requires)
 	}
-	if !strings.Contains(entry.Versions[0].ManifestURL, "/plugins/marketing/demo-plugin/plugin.yaml") {
+	if !strings.Contains(entry.Versions[0].ManifestURL, "/release-manifests/plugins/marketing/demo-plugin/0.1.0.yaml") {
 		t.Fatalf("unexpected manifest url: %s", entry.Versions[0].ManifestURL)
 	}
 }
@@ -307,5 +455,304 @@ func TestDigestSkillDirIgnoresPythonCache(t *testing.T) {
 	}
 	if afterSource == before {
 		t.Fatal("tracked source change did not alter digest")
+	}
+}
+
+func TestBuildIndexPreservesV2Contracts(t *testing.T) {
+	root := t.TempDir()
+	entryDir := filepath.Join(root, "tools-mcp", "adtech", "v2-tool")
+	if err := os.MkdirAll(entryDir, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	mf := `schema_version: "2.1"
+id: adtech/v2-tool
+name: V2 Tool
+description: V2 tool manifest used for registry preservation testing.
+version: 1.0.0
+released_at: "2026-09-13T00:00:00Z"
+category: tools-mcp/adtech
+tags:
+  - testing
+license: MIT
+author:
+  name: Tests
+runtimes:
+  - codex
+entrypoints:
+  spec: TOOL.md
+usability:
+  availability: not-verified
+  execution: local-tool
+execution:
+  kind: cli
+  command:
+    - bin/v2-tool
+  smoke_test:
+    - bin/v2-tool
+    - --smoke
+  supported_platforms:
+    - linux
+  supported_runtimes:
+    - native
+artifact:
+  self_contained: true
+  dependency_lock: null
+  checksums: checksums.txt
+  sbom: sbom.cdx.json
+authentication:
+  status: none
+  methods:
+    - none
+  credential_bindings: []
+  scopes: []
+  credential_storage: No credentials are used.
+  validation: Confirm no credentials are requested.
+  revocation: No revocation applies.
+verification:
+  evidence:
+    - evidence://tests/v2-tool/smoke
+  last_verified_at: "2026-09-13T00:00:00Z"
+deprecated: false
+`
+	if err := os.WriteFile(filepath.Join(entryDir, "tool.yaml"), []byte(mf), 0o644); err != nil {
+		t.Fatalf("write manifest: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(entryDir, "TOOL.md"), []byte("# V2 Tool\n"), 0o644); err != nil {
+		t.Fatalf("write spec: %v", err)
+	}
+	writeV2ArtifactFiles(t, entryDir, "bin/v2-tool")
+
+	idx, err := BuildToolsIndex(root)
+	if err != nil {
+		t.Fatalf("build index: %v", err)
+	}
+	entry := idx.Skills[0]
+	if idx.RegistryVersion != "1.3" || entry.SchemaVersion != "2.1" {
+		t.Fatalf("unexpected registry versions: %#v", entry)
+	}
+	if entry.Execution == nil || entry.Execution.Kind != "cli" || entry.Artifact == nil {
+		t.Fatalf("execution and artifact contracts were not preserved: %#v", entry)
+	}
+	if entry.Authentication == nil || entry.Authentication.Status != "none" || entry.Verification == nil {
+		t.Fatalf("authentication and verification contracts were not preserved: %#v", entry)
+	}
+	if entry.Authentication.CredentialBindings == nil || entry.Authentication.Scopes == nil {
+		t.Fatalf("empty authentication arrays must remain arrays: %#v", entry.Authentication)
+	}
+}
+
+func TestProjectManifestPreservesCompositeProviderDependencies(t *testing.T) {
+	manifest := Manifest{
+		SchemaVersion: "2.1", ID: "marketing/reporting-plugin",
+		ProviderDependencies: []ProviderDependencyMetadata{
+			{Tool: "analytics/ga4-mcp-connector", Requirement: "required", Access: "read-only"},
+			{Tool: "warehouse/bigquery-mcp-query-runner", Requirement: "optional", Access: "read-only"},
+		},
+	}
+	entry := ProjectManifest(manifest)
+	if len(entry.ProviderDependencies) != 2 || entry.ProviderDependencies[0].Tool != "analytics/ga4-mcp-connector" || entry.ProviderDependencies[1].Requirement != "optional" {
+		t.Fatalf("provider dependency contract was not preserved: %#v", entry.ProviderDependencies)
+	}
+	manifest.ProviderDependencies[0].Tool = "changed/source"
+	if entry.ProviderDependencies[0].Tool != "analytics/ga4-mcp-connector" {
+		t.Fatal("registry projection aliases the manifest provider dependency slice")
+	}
+}
+
+func TestProjectManifestPreservesIndependentCapabilityReadiness(t *testing.T) {
+	manifest := Manifest{SchemaVersion: "2.1", ID: "marketing/experiment-plugin", CapabilityReadiness: []CapabilityReadinessMetadata{{
+		ID: "mock", Name: "Mock lab", Description: "Offline deterministic experiment lab.",
+		Access: "offline", Availability: "usable-now", Limitations: []string{"No provider calls."},
+	}}}
+	entry := ProjectManifest(manifest)
+	if len(entry.CapabilityReadiness) != 1 || entry.CapabilityReadiness[0].Availability != "usable-now" {
+		t.Fatalf("capability readiness was not preserved: %#v", entry.CapabilityReadiness)
+	}
+	manifest.CapabilityReadiness[0].Limitations[0] = "changed"
+	if entry.CapabilityReadiness[0].Limitations[0] != "No provider calls." {
+		t.Fatal("registry projection aliases capability readiness")
+	}
+}
+
+func TestExpiredEvidenceDemotesEveryPositiveCapability(t *testing.T) {
+	verifiedAt := time.Date(2026, 9, 23, 0, 0, 0, 0, time.UTC)
+	manifest := Manifest{
+		SchemaVersion: "2.1", ID: "marketing/experiment-plugin",
+		Usability:      UsabilityMetadata{Availability: "usable-now"},
+		Execution:      ExecutionMetadata{Kind: "bundle"},
+		Authentication: AuthenticationMetadata{Status: "none"},
+		Verification:   VerificationMetadata{Evidence: []string{"evidence://tests/mock"}, LastVerifiedAt: verifiedAt.Format(time.RFC3339)},
+		CapabilityReadiness: []CapabilityReadinessMetadata{
+			{ID: "mock", Availability: "usable-now"},
+			{ID: "live-read", Availability: "setup-required"},
+			{ID: "live-write", Availability: "not-verified"},
+		},
+	}
+	entry := ProjectManifestForCurrentCatalog(manifest, verifiedAt.Add(executableEvidenceLifetime+time.Second))
+	for _, capability := range entry.CapabilityReadiness {
+		if capability.Availability != "not-verified" {
+			t.Fatalf("expired capability %s retained availability %s", capability.ID, capability.Availability)
+		}
+	}
+}
+
+func TestExpiredCapabilityEvidenceIsIndependentOfAggregateUsability(t *testing.T) {
+	verifiedAt := time.Date(2026, 9, 23, 0, 0, 0, 0, time.UTC)
+	manifest := Manifest{
+		SchemaVersion: "2.1", ID: "marketing/experiment-plugin",
+		Usability:      UsabilityMetadata{Availability: "setup-required"},
+		Execution:      ExecutionMetadata{Kind: "bundle"},
+		Authentication: AuthenticationMetadata{Status: "none"},
+		Verification:   VerificationMetadata{Evidence: []string{"evidence://tests/mock"}, LastVerifiedAt: verifiedAt.Format(time.RFC3339)},
+		CapabilityReadiness: []CapabilityReadinessMetadata{
+			{ID: "mock", Availability: "usable-now"},
+			{ID: "live-read", Availability: "setup-required"},
+			{ID: "live-write", Availability: "not-verified"},
+		},
+	}
+	entry := ProjectManifestForCurrentCatalog(manifest, verifiedAt.Add(executableEvidenceLifetime+time.Second))
+	if entry.Usability.Availability != "setup-required" {
+		t.Fatalf("aggregate setup state changed to %s", entry.Usability.Availability)
+	}
+	if entry.Usability.Source != "inferred" {
+		t.Fatalf("capability demotion did not mark the projection inferred: %#v", entry.Usability)
+	}
+	for _, capability := range entry.CapabilityReadiness {
+		if capability.Availability != "not-verified" {
+			t.Fatalf("expired capability %s retained availability %s", capability.ID, capability.Availability)
+		}
+	}
+}
+
+func TestSchemaValidFlowSequencesRoundTripToRegistry(t *testing.T) {
+	root := t.TempDir()
+	entryDir := filepath.Join(root, "tools-mcp", "adtech", "flow-sequence-fixture")
+	if err := os.MkdirAll(entryDir, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	fixturePath := filepath.Join(
+		"..", "..", "shared", "schemas", "fixtures", "manifest-v2",
+		"tool-flow-sequences.valid.yaml",
+	)
+	manifest, err := os.ReadFile(fixturePath)
+	if err != nil {
+		t.Fatalf("read schema-valid fixture: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(entryDir, "tool.yaml"), manifest, 0o644); err != nil {
+		t.Fatalf("write manifest: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(entryDir, "TOOL.md"), []byte("# Flow fixture\n"), 0o644); err != nil {
+		t.Fatalf("write spec: %v", err)
+	}
+	writeV2ArtifactFiles(t, entryDir, "bin/example")
+
+	idx, err := BuildToolsIndex(root)
+	if err != nil {
+		t.Fatalf("build index from schema-valid flow YAML: %v", err)
+	}
+	entry := idx.Skills[0]
+	if len(entry.Runtimes) != 2 || entry.Execution == nil {
+		t.Fatalf("flow sequences were not preserved: %#v", entry)
+	}
+	if len(entry.Execution.Command) != 2 || len(entry.Execution.SupportedPlatforms) != 3 {
+		t.Fatalf("execution flow sequences were not preserved: %#v", entry.Execution)
+	}
+	if entry.Authentication == nil || len(entry.Authentication.Methods) != 1 || entry.Verification == nil || len(entry.Verification.Evidence) != 1 {
+		t.Fatalf("contract flow sequences were not preserved: %#v", entry)
+	}
+}
+
+func TestBuildIndexRejectsUnversionedV2Contract(t *testing.T) {
+	root := t.TempDir()
+	entryDir := filepath.Join(root, "tools-mcp", "adtech", "unversioned-v2-tool")
+	if err := os.MkdirAll(entryDir, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(entryDir, "tool.yaml"), []byte(unversionedV2ToolManifest), 0o644); err != nil {
+		t.Fatalf("write manifest: %v", err)
+	}
+
+	idx, err := BuildToolsIndex(root)
+	if err == nil {
+		t.Fatalf("expected builder rejection, got index %#v", idx)
+	}
+	if !strings.Contains(err.Error(), "declares v2 contract field $.execution without schema_version") {
+		t.Fatalf("unexpected builder error: %v", err)
+	}
+}
+
+func TestBuildIndexRejectsCommonAPIKeyFormat(t *testing.T) {
+	root := t.TempDir()
+	entryDir := filepath.Join(root, "tools-mcp", "adtech", "credential-bearing-tool")
+	if err := os.MkdirAll(entryDir, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	credential := "sk_" + "live_51ReviewFixtureAbCdEf123456789"
+	manifest := "schema_version: \"2.0\"\n" + unversionedV2ToolManifest
+	manifest = strings.Replace(
+		manifest,
+		"validation: Validate the configured identity.",
+		"validation: "+credential,
+		1,
+	)
+	if err := os.WriteFile(filepath.Join(entryDir, "tool.yaml"), []byte(manifest), 0o644); err != nil {
+		t.Fatalf("write manifest: %v", err)
+	}
+
+	idx, err := BuildToolsIndex(root)
+	if err == nil {
+		t.Fatalf("expected builder rejection, got index %#v", idx)
+	}
+	if !strings.Contains(err.Error(), "$.authentication.validation") {
+		t.Fatalf("unexpected builder error: %v", err)
+	}
+	if strings.Contains(err.Error(), credential) {
+		t.Fatal("credential-shaped value was echoed in the builder error")
+	}
+}
+
+func TestBuildIndexAllowsBenignCredentialSentinel(t *testing.T) {
+	root := t.TempDir()
+	entryDir := filepath.Join(root, "tools-mcp", "adtech", "sentinel-tool")
+	if err := os.MkdirAll(entryDir, 0o755); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	manifest := "schema_version: \"2.0\"\n" + unversionedV2ToolManifest
+	manifest = strings.Replace(
+		manifest,
+		"validation: Validate the configured identity.",
+		"validation: token=not-applicable",
+		1,
+	)
+	if err := os.WriteFile(filepath.Join(entryDir, "tool.yaml"), []byte(manifest), 0o644); err != nil {
+		t.Fatalf("write manifest: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(entryDir, "TOOL.md"), []byte("# Sentinel Tool\n"), 0o644); err != nil {
+		t.Fatalf("write spec: %v", err)
+	}
+	writeV2ArtifactFiles(t, entryDir, "bin/tool")
+
+	idx, err := BuildToolsIndex(root)
+	if err != nil {
+		t.Fatalf("build index with benign credential sentinel: %v", err)
+	}
+	if len(idx.Skills) != 1 || idx.Skills[0].Authentication == nil {
+		t.Fatalf("expected one v2 registry entry, got %#v", idx.Skills)
+	}
+	if got := idx.Skills[0].Authentication.Validation; got != "token=not-applicable" {
+		t.Fatalf("benign guidance was not preserved in registry: %q", got)
+	}
+}
+
+func writeV2ArtifactFiles(t *testing.T, entryDir, executable string) {
+	t.Helper()
+	for _, relative := range []string{"checksums.txt", "sbom.cdx.json", executable} {
+		path := filepath.Join(entryDir, filepath.FromSlash(relative))
+		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+			t.Fatalf("mkdir artifact path: %v", err)
+		}
+		if err := os.WriteFile(path, []byte("fixture\n"), 0o755); err != nil {
+			t.Fatalf("write artifact path: %v", err)
+		}
 	}
 }

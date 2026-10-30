@@ -4,7 +4,7 @@ import CatalogClient from "@/components/CatalogClient";
 import { parseMultiValue, type SearchParamValue } from "@/lib/catalogFilters";
 import { getDomainKey } from "@/lib/categoryLabels";
 
-export const metadata: Metadata = { title: "Plugins Catalog", description: "Installable bundles of skills, agents, tools, hooks and setup guidance." };
+export const metadata: Metadata = { title: "Plugins Catalog", description: "Browse source-composition templates that reference skills, agents, tools, hooks, and setup guidance. Operational installation remains blocked until implementation and verification." };
 
 type SearchParams = {
   q?: SearchParamValue;
@@ -27,7 +27,7 @@ export default async function PluginsPage({ searchParams = {} }: { searchParams?
     <main id="main" tabIndex={-1} className="catalogue-main">
       <header className="catalogue-heading">
         <h1 aria-label="Plugins Catalog">Plugins</h1>
-        <p>Installable bundles of skills, agents, tools, hooks and setup guidance.</p>
+        <p>Browse source-composition templates that reference skills, agents, tools, hooks, and setup guidance. Operational installation remains blocked until implementation and verification.</p>
       </header>
       <div className="catalogue-content">
 

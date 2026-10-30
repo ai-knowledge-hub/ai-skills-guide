@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.1",
+  "id": "marketing/cross-channel-budget-pacing-agent",
+  "name": "Cross-Channel Budget Pacing Agent",
+  "description": "Monitor pacing across paid channels, detect anomalies, and recommend budget reallocation actions.",
+  "category": "marketing-tools/ads-ops",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "paid-media",
+    "budget-pacing",
+    "anomaly-detection",
+    "meta-ads",
+    "google-ads"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for analysis and recommendation; require human approval before changing live budgets.",
+    "outputs": [
+      "Pacing summary",
+      "Anomaly list",
+      "Reallocation plan"
+    ],
+    "use_when": "Use when pacing and efficiency signals across channels need bounded reallocation recommendations.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "python3"
+    ]
+  }
+}

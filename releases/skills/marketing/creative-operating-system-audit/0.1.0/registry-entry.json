@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.1",
+  "id": "marketing/creative-operating-system-audit",
+  "name": "Creative Operating System Audit",
+  "description": "Audit whether a marketing team has the memory, context, evaluation, creator, product-as-media, feedback, and governance machinery needed for AI-era creative work.",
+  "category": "marketing-tools/creative-ops",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "creative-operating-system",
+    "cannes-2026",
+    "anti-slop",
+    "brand-memory",
+    "governance"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for analysis and planning; require human approval before changing process, governance, or live campaign workflows.",
+    "outputs": [
+      "Creative operating system maturity score",
+      "Gap analysis",
+      "Prioritized action plan",
+      "Evidence table"
+    ],
+    "use_when": "Use when a brand or team wants to assess whether it can turn AI output into distinctive, useful, governed creative work.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  }
+}

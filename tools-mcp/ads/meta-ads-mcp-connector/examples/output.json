@@ -1,11 +1,32 @@
 {
-  "rows": [
-    {
-      "campaign": "Always On Prospecting",
-      "spend": 5400,
-      "impressions": 880000,
-      "clicks": 14900,
-      "conversions": 301
-    }
-  ]
+  "schema_version": "skills-hub.meta-ads-insights/v1",
+  "ad_account_id": "act_1234567890",
+  "business_id": "1234567890",
+  "level": "campaign",
+  "date_range": {"start_date": "2026-09-01", "end_date": "2026-09-07"},
+  "fields": ["campaign_id", "campaign_name", "impressions", "clicks", "spend", "actions", "action_values", "account_id", "date_start", "date_stop", "attribution_setting"],
+  "breakdowns": ["publisher_platform"],
+  "rows": [{
+    "account_id": "1234567890",
+    "campaign_id": "23850000000000001",
+    "campaign_name": "Example campaign",
+    "impressions": "12000",
+    "clicks": "320",
+    "spend": "475.25",
+    "actions": [{"action_type": "purchase", "value": "18"}],
+    "action_values": [{"action_type": "purchase", "value": "1450.00"}],
+    "date_start": "2026-09-01",
+    "date_stop": "2026-09-07",
+    "attribution_setting": "7d_click,1d_view"
+  }],
+  "pagination": {"returned_rows": 1, "truncated": false, "requests": 1},
+  "attribution": {"mode": "account-setting", "account_spec": [{"event_type": "CLICK_THROUGH", "window_days": 7}]},
+  "source": {
+    "provider": "Meta Marketing API",
+    "api_version": "v24.0",
+    "retrieved_at": "2026-09-19T12:00:00.000Z",
+    "provider_response_dates": ["2026-09-19T12:00:00.000Z"],
+    "account_timezone": "Europe/London",
+    "account_currency": "GBP"
+  }
 }

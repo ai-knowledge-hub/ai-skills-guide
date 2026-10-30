@@ -1,0 +1,23 @@
+schema_version: "2.0"
+id: engineering/partial-v2-skill
+name: Partial V2 Skill
+description: Invalid v2 skill missing the required contract sections.
+version: 1.0.0
+released_at: "2026-09-13T00:00:00Z"
+category: engineering/testing-quality
+tags:
+  - contract-test
+license: MIT
+author:
+  name: Schema Tests
+runtimes:
+  - codex
+entrypoints:
+  skill_md: SKILL.md
+execution:
+  kind: instructions
+  supported_platforms:
+    - linux
+  supported_runtimes:
+    - codex
+deprecated: false

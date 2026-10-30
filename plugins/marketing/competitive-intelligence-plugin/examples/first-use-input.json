@@ -1,0 +1,10 @@
+{
+  "subject": "Example competitor",
+  "signals": [
+    {
+      "claim": "A new product page was observed.",
+      "source": "https://example.invalid/product",
+      "observed_at": "2026-09-22T00:00:00Z"
+    }
+  ]
+}

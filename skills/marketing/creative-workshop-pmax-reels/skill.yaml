@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: marketing/creative-workshop-pmax-reels
 name: Creative Workshop (PMax + Reels)
 description: Generate channel-specific creative variants for Google PMax
@@ -36,6 +37,19 @@ operational:
     - Angle summary
     - Compliance notes
   approval_boundary: Safe for draft creative generation; require human approval before publishing or trafficking assets.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
+  executable_helpers:
+    - entrypoint: scripts/validate_lengths.py
+      availability: not-verified
+      execution: local-tool
+      limitations:
+        - Packaged helper exists, but current clean-client executable evidence is not recorded.
+      quickstart: python3 scripts/validate_lengths.py < examples/input.json
 verification:
   tests_min_prompts: 5
   deterministic_scripts: true

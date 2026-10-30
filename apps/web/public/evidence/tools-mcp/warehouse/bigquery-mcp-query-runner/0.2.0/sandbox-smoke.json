@@ -1,0 +1,47 @@
+{
+  "schema_version": "skills-hub.smoke-evidence/v1",
+  "contract_id": "operational-readiness",
+  "contract_version": "1.0.3",
+  "evidence_scope": "executable",
+  "test_id": "skills-hub/declared-smoke",
+  "test_version": "1",
+  "producer": "skills-hub",
+  "entry_id": "warehouse/bigquery-mcp-query-runner",
+  "entry_version": "0.2.0",
+  "artifact_sha256": "0ea4c8301f2292f4790ae8d18344fffc9bc6e4aa8dbf82244574f21608745871",
+  "dependency_lock_sha256": "not-applicable",
+  "install_source": "remote",
+  "module": "tools",
+  "runtime": "generic",
+  "platform": "macos",
+  "command": [
+    "node",
+    "scripts/bigquery_mcp_server.mjs",
+    "--smoke"
+  ],
+  "publication_class": "public-redacted-summary",
+  "redaction_reason": "Provider identity, target, credential generation, attestation, granted scopes, and environment bindings are retained only in the private runtime evidence store.",
+  "redacted_fields": [
+    "credential_binding_keys",
+    "provider_principal",
+    "provider_account",
+    "provider_target_fingerprint",
+    "attestation_reference",
+    "granted_scopes",
+    "environment_id"
+  ],
+  "validator_sha256": "f73cb5989dc74c6f9fdad6c036d06fdef88a70c0f5669bd21d2a28b10b6b61a1",
+  "execution_runtime_fingerprint": "1b05cec2d1cf70e7269aaa3707ffbc40e93a9f02315dc96512067b645ce722d3",
+  "environment_id": "redacted",
+  "configuration_class": "redacted-summary",
+  "coverage": [
+    "install-receipt",
+    "installed-tree",
+    "declared-smoke-test"
+  ],
+  "started_at": "2026-09-19T07:03:01.513279Z",
+  "observed_at": "2026-09-19T07:03:04.070121Z",
+  "expires_at": "2026-09-19T07:08:02.825Z",
+  "result": "passed",
+  "promotion_eligible": false
+}

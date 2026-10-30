@@ -1,0 +1,28 @@
+{
+  "provenance_version": "1.0",
+  "subject": {
+    "module": "plugins",
+    "id": "security/runtime-safety-plugin",
+    "version": "0.2.0",
+    "closure_sha256": "7383b400abce1e068bb69c484bac3f62b78f79ba405e6412a7678bb5a38b4c92"
+  },
+  "builder": "ai-skills-guide/prepare-public-assets",
+  "materials": [
+    {
+      "ref": "skills:security/dependency-supply-chain-audit@0.1.0",
+      "sha256": "5df9d8a73cf84c5b2d42736ef6a709095b9454db4abf9a3c62236b42d037b4a0"
+    },
+    {
+      "ref": "skills:security/environment-risk-assessment@0.1.0",
+      "sha256": "a147e3269b5dba2b8913bd774ab447f58090974d66df13dad085aecf117e50af"
+    },
+    {
+      "ref": "skills:security/handle-untrusted-content@0.1.0",
+      "sha256": "fcd8143b73aa5db90c48125e8997f503ab19d2e4b719803baeeaf5a103295b6b"
+    },
+    {
+      "ref": "skills:security/secrets-and-credential-hygiene@0.1.0",
+      "sha256": "4dd0b029e7ec6664a0057e1f75ed63646028d57fc508696050a38d3479420084"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.1",
+  "id": "marketing/creator-strategy-brief",
+  "name": "Creator Strategy Brief",
+  "description": "Create creator briefs that treat creators as strategic collaborators with audience trust, format expertise, and cultural intelligence.",
+  "category": "marketing-tools/creative-ops",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "creators",
+    "creator-commerce",
+    "brief",
+    "cultural-intelligence",
+    "governance"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for brief drafting; require human approval before creator outreach, contracting, claims, or publication.",
+    "outputs": [
+      "Creator role definition",
+      "Brief",
+      "Freedom boundaries",
+      "Measurement plan",
+      "Risk notes"
+    ],
+    "use_when": "Use when building creator-led campaigns where creators should shape the idea, not just distribute it.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  }
+}

@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: adtech/policy-brand-compliance-checker
 name: Policy + Brand Compliance Checker
 description: Validate ad copy, landing URLs, and UTM tracking for policy
@@ -36,6 +37,19 @@ operational:
     - Severity ranking
     - Launch recommendation
   approval_boundary: Safe for analysis and recommendation; require human approval before changing live assets or overriding blocked findings.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
+  executable_helpers:
+    - entrypoint: scripts/utm_lint.py
+      availability: not-verified
+      execution: local-tool
+      limitations:
+        - Packaged helper exists, but current clean-client executable evidence is not recorded.
+      quickstart: python3 scripts/utm_lint.py < examples/input.json
 verification:
   tests_min_prompts: 5
   deterministic_scripts: true

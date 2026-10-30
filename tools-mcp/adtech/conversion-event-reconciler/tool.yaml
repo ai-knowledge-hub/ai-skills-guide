@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: adtech/conversion-event-reconciler
 name: Conversion Event Reconciler
 description: Deterministically deduplicate browser and server conversion events and reconcile them with first-party business outcomes.
@@ -23,6 +24,7 @@ entrypoints:
   spec: TOOL.md
   readme: README.md
   tests: tests/test-prompts.md
+  scripts_dir: scripts
   examples_dir: examples
 dependencies:
   tools:
@@ -39,8 +41,11 @@ operational:
   trust_boundary: local-tool
   approval_boundary: Reads supplied files and writes JSON to stdout; live event collection and platform uploads are out of scope.
 usability:
-  availability: usable-now
+  availability: not-verified
   execution: local-tool
+  limitations:
+    - A local deterministic script is packaged, but clean-client installation evidence is not yet recorded.
+    - Live event collection and platform uploads are outside this package.
   quickstart: python3 scripts/reconcile_events.py examples/input.json
 verification:
   tests_min_prompts: 5

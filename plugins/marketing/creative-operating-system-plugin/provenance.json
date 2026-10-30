@@ -1,0 +1,44 @@
+{
+  "provenance_version": "1.0",
+  "subject": {
+    "module": "plugins",
+    "id": "marketing/creative-operating-system-plugin",
+    "version": "0.2.0",
+    "closure_sha256": "5500cfaf0936805e8fb9f3cf8cb2c95a9598f51a59a9ff9250485766c3c35ca2"
+  },
+  "builder": "ai-skills-guide/prepare-public-assets",
+  "materials": [
+    {
+      "ref": "agents:marketing/creative-operating-system-supervisor@0.2.0",
+      "sha256": "8af63993e4ac5d930bb9814233f638d60112d088416f5ec82b650a209fb4eafe"
+    },
+    {
+      "ref": "skills:adtech/brand-rag-memory-bootstrap@0.1.0",
+      "sha256": "813c0ff3ed32cc39ec137aaffbe10915ac646c2a0beb0bec9bfa6f33ca30eca9"
+    },
+    {
+      "ref": "skills:marketing/ai-output-eval-scorecard@0.1.0",
+      "sha256": "0b1f20517d784b85873b5ab0fe75d0876be59caf83c90c63ed28fdfaee40569e"
+    },
+    {
+      "ref": "skills:marketing/creative-operating-system-audit@0.1.0",
+      "sha256": "4f1bbaea55d449bf7a937e7bffec103249754c659ad107271fce4bfb87af98bf"
+    },
+    {
+      "ref": "skills:marketing/creator-strategy-brief@0.1.0",
+      "sha256": "459b015b80f48d64451d9e4e846a2787125f04f5ed832afdbf795139133ea030"
+    },
+    {
+      "ref": "skills:marketing/cultural-timing-signal-triage@0.1.0",
+      "sha256": "a3134db7902624fb604b6cdf75ba7e0d02a56795c8ac81cfcb01f7705decd705"
+    },
+    {
+      "ref": "skills:marketing/product-as-media-mapper@0.1.0",
+      "sha256": "66ad1ce2eff519052e3523cd858cde0cb5e49039c39cbd7f0b98b6fccf30be17"
+    },
+    {
+      "ref": "skills:marketing/utility-campaign-concept-designer@0.1.0",
+      "sha256": "c43d1756c86962c09601641a3b61ceea7f031bee1b1d7b1ba42a613efb50cb79"
+    }
+  ]
+}

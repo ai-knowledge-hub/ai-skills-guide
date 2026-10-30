@@ -1,0 +1,57 @@
+schema_version: "1.1"
+id: adtech/openai-ads-adapter-template
+name: OpenAI Ads Adapter Template
+description: Deprecated reference contract retained for migration; use the executable OpenAI Ads API Client.
+version: 0.2.0
+released_at: "2026-09-21T00:00:00Z"
+category: tools-mcp/adtech
+tags:
+  - openai-ads
+  - adapter
+  - read-only
+  - campaign-insights
+  - product-feeds
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  spec: TOOL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  apis:
+    - OpenAI Ads API
+  tools:
+    - secret_manager
+operational:
+  connected_system: OpenAI Ads API or local mock fixtures
+  capabilities:
+    - Read advertiser account metadata.
+    - List campaigns and ads.
+    - Retrieve campaign insights.
+    - Validate product-feed records.
+  auth_required:
+    - Account-scoped OpenAI Ads API credential for live bindings
+  access_level: read-only
+  trust_boundary: third-party-hosted
+  approval_boundary: Read-only by design; future writes must use the existing policy-gated ad-platform executor.
+usability:
+  availability: template-only
+  execution: integration-template
+  limitations:
+    - Deprecated reference contract only; no executable integration is packaged.
+    - New installations and plugin references must use adtech/openai-ads-api-client.
+  quickstart: Replace this package with adtech/openai-ads-api-client and follow its migration guidance.
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: true
+replaced_by: adtech/openai-ads-api-client

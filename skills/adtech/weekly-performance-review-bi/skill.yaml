@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: adtech/weekly-performance-review-bi
 name: Weekly Performance Review BI
 description: Chain dashboard generation, QA gating, and executive narrative writing for deterministic weekly BI reporting.
@@ -35,6 +36,12 @@ operational:
     - QA package
     - Narrative package
   approval_boundary: Safe for orchestrating read-only reporting steps; require human approval before external publication.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

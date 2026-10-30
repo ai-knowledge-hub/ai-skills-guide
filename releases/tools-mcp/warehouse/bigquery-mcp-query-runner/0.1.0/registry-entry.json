@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.1",
+  "id": "warehouse/bigquery-mcp-query-runner",
+  "name": "BigQuery MCP Query Runner",
+  "description": "Implementation specification and template for a read-only BigQuery MCP query runner; no launchable server is packaged.",
+  "category": "tools-mcp/warehouse",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "bigquery",
+    "mcp",
+    "sql"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "connected_system": "Google BigQuery",
+    "capabilities": [
+      "Execute parameterized read-only SQL templates for analytics workflows.",
+      "Return typed warehouse rows for BI transformations and reporting.",
+      "Enforce query guardrails such as timeout, limits, and statement restrictions."
+    ],
+    "auth_required": [
+      "BigQuery dataset access via authenticated MCP runtime"
+    ],
+    "access_level": "read-only",
+    "trust_boundary": "remote-mcp-server",
+    "approval_boundary": "Safe for parameterized read-only queries; require human approval before broadening dataset scope or enabling any non-read-only SQL path."
+  },
+  "usability": {
+    "availability": "template-only",
+    "execution": "integration-template",
+    "limitations": [
+      "Specification, prompts, and examples only; no launchable MCP transport is packaged."
+    ],
+    "quickstart": "Review TOOL.md as an implementation contract; do not register this package as an MCP server.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "mcp_servers": [
+      "bigquery"
+    ]
+  }
+}

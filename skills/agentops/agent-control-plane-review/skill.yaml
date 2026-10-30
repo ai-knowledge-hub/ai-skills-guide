@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: agentops/agent-control-plane-review
 name: Agent Control Plane Review
 description: Review an agent workflow for identity, gateway, policy, approval, inspection, and audit coverage before it touches production systems.
@@ -32,6 +33,12 @@ operational:
     - Missing guardrail list
     - Approval boundary recommendations
   approval_boundary: Analysis-only; must not grant permissions, create credentials, or enable production tool access.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

@@ -1,0 +1,145 @@
+{
+  "schema_version": "2.1",
+  "id": "marketing/chatgpt-advertising-experiment-plugin",
+  "name": "ChatGPT Advertising Experiment Plugin",
+  "description": "Install a task-led ChatGPT Ads experiment workflow with planning skills, read-only API access, conversion reconciliation, policy gates, and a one-command mock lab.",
+  "category": "marketing-plugins/intelligence",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "chatgpt-ads",
+    "advertiser-api",
+    "experimentation",
+    "measurement",
+    "agentic-commerce",
+    "governance"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "usability": {
+    "availability": "usable-now",
+    "execution": "bundle",
+    "requires_setup": [
+      "Python 3.9 or newer is required to run the offline mock lab."
+    ],
+    "limitations": [
+      "The included OpenAI Ads client does not mutate campaigns, ad groups, ads, files, or feeds.",
+      "Live provider writes remain unavailable until a supported OpenAI Ads mutation adapter is implemented and independently verified."
+    ],
+    "quickstart": "Run `python3 scripts/run_mock_lab.py` after installation to create an offline evidence bundle.",
+    "executable_helpers": [
+      {
+        "entrypoint": "scripts/run_mock_lab.py",
+        "availability": "usable-now",
+        "execution": "local-tool",
+        "limitations": [
+          "Requires Python 3.9 or newer and performs no network calls."
+        ],
+        "quickstart": "python3 scripts/run_mock_lab.py"
+      }
+    ],
+    "source": "declared"
+  },
+  "execution": {
+    "kind": "bundle",
+    "supported_platforms": [
+      "linux",
+      "macos",
+      "windows"
+    ],
+    "supported_runtimes": [
+      "python3"
+    ]
+  },
+  "artifact": {
+    "self_contained": true,
+    "dependency_lock": "dependencies.lock.json",
+    "checksums": "checksums.txt",
+    "sbom": "sbom.cdx.json",
+    "provenance": "provenance.json"
+  },
+  "authentication": {
+    "status": "required",
+    "methods": [
+      "api-key"
+    ],
+    "credential_bindings": [
+      "OPENAI_ADS_API_KEY"
+    ],
+    "scopes": [],
+    "setup_url": "https://developers.openai.com/ads/api-reference/authentication",
+    "credential_storage": "The account-scoped API key remains in the provider tool's explicitly bound environment source and is never copied into plugin state.",
+    "validation": "The included provider tool calls GET /ad_account and binds readiness to the provider-attested account identifier.",
+    "revocation": "Revoke or rotate the account-scoped API key in OpenAI Ads Manager and remove its provider-tool binding."
+  },
+  "verification": {
+    "evidence": [
+      "evidence://tests/chatgpt-advertising-experiment-plugin/mock-clean-client-lab",
+      "evidence://tests/chatgpt-advertising-experiment-plugin/capability-readiness-projection",
+      "evidence://tests/chatgpt-advertising-experiment-plugin/write-unavailable-without-provider-adapter"
+    ],
+    "last_verified_at": "2026-09-23T00:00:00Z"
+  },
+  "provider_dependencies": [
+    {
+      "tool": "adtech/openai-ads-api-client",
+      "requirement": "required",
+      "access": "read-only"
+    }
+  ],
+  "capability_readiness": [
+    {
+      "id": "mock-lab",
+      "name": "Mock lab",
+      "description": "Run the deterministic experiment, conversion-validation, and reconciliation workflow without credentials or network access.",
+      "access": "offline",
+      "availability": "usable-now",
+      "limitations": [
+        "Uses packaged fixtures only and cannot establish provider readiness."
+      ]
+    },
+    {
+      "id": "live-read",
+      "name": "Live read",
+      "description": "Read bounded OpenAI Ads account, campaign, ad, and insights data through the authenticated read-only client.",
+      "access": "read-only",
+      "availability": "setup-required",
+      "requires_setup": [
+        "Configure and verify the included OpenAI Ads API client against the intended provider account."
+      ],
+      "limitations": [
+        "Provider authentication attests the ad account rather than the individual human owner of the API key."
+      ]
+    },
+    {
+      "id": "live-write",
+      "name": "Live write",
+      "description": "Apply a provider mutation only through exact approval, a single-use grant, governed execution, and reconciliation.",
+      "access": "read-write",
+      "availability": "not-verified",
+      "limitations": [
+        "No supported OpenAI Ads mutation adapter is included, so control-plane or executor setup cannot enable provider writes."
+      ]
+    }
+  ],
+  "includes": {
+    "skills": [
+      "marketing/task-map-designer",
+      "marketing/ai-output-eval-scorecard",
+      "adtech/advertising-signal-ownership-auditor",
+      "marketing/agent-share-of-choice-evaluator",
+      "agentops/ad-platform-policy-gate-designer"
+    ],
+    "tools": [
+      "adtech/conversion-event-reconciler",
+      "adtech/openai-ads-api-client"
+    ],
+    "hooks": [
+      "require-measurement-before-activation"
+    ]
+  }
+}

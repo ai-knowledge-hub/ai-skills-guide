@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.1",
+  "id": "marketing/ab-test-planner-analyzer",
+  "name": "A/B Test Planner + Analyzer",
+  "description": "Plan and analyze A/B tests with explicit hypotheses, sample sizing assumptions, and decision rules.",
+  "category": "marketing-tools/measurement",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "experimentation",
+    "ab-testing",
+    "hypothesis",
+    "measurement",
+    "decisioning"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for planning and analysis; require human approval before launching experiments or changing traffic allocation.",
+    "outputs": [
+      "Experiment plan",
+      "Decision framework",
+      "Analysis summary"
+    ],
+    "use_when": "Use when an A/B test needs explicit hypotheses, sample-size assumptions, and decision rules.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "python3"
+    ]
+  }
+}

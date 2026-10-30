@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.1",
+  "id": "adtech/playwright-agentic-e2e",
+  "name": "Playwright Agentic E2E QA",
+  "description": "Build and maintain reusable Playwright smoke tests with planner, generator, and healer loops for web app regression checks.",
+  "category": "adtech/other",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "qa",
+    "e2e",
+    "playwright",
+    "smoke-tests",
+    "ci"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "May run local test commands and propose fixes; require human approval before deleting tests or broadening coverage scope.",
+    "outputs": [
+      "Playwright spec",
+      "Run summary",
+      "Healing suggestions"
+    ],
+    "use_when": "Use when a web app needs Playwright smoke coverage, failure diagnosis, and minimal healing suggestions.",
+    "execution_mode": "may-run-local-verification"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "node",
+      "pnpm",
+      "npx"
+    ]
+  }
+}

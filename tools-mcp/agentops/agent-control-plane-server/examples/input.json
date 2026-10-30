@@ -1,13 +1,17 @@
 {
   "tool": "check_policy",
   "arguments": {
-    "agent_id": "campaign-optimization-agent",
+    "action_id": "budget-shift-2026-09-20-001",
+    "agent_run_id": "weekly-optimization-run-001",
     "capability": "apply_budget_shift",
-    "scope": {
-      "channel": "google_ads",
-      "account_id": "act_123"
-    },
+    "capability_version": "v1",
     "risk_tier": "high",
-    "inputs_hash": "sha256:example-input-hash"
+    "target": {
+      "provider": "google_ads",
+      "account_id": "account-example",
+      "resource_type": "campaign",
+      "resource_id": "campaign-example"
+    },
+    "inputs_hash": "sha256:2f8f7d9e1ae7c3d4a21e15bb973e61ed7d27c68870c1ae3f081d8d92b8b3bd58"
   }
 }

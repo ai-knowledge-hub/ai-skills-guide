@@ -1,0 +1,92 @@
+{
+  "schema_version": "2.1",
+  "id": "marketing/content-repurposing-plugin",
+  "name": "Content Repurposing Plugin",
+  "description": "Bundle content transformation, review guidance, and publishing-oriented workflow references into a portable plugin for multi-channel reuse.",
+  "category": "marketing-plugins/content",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "content",
+    "repurposing",
+    "publishing",
+    "workflow"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "usability": {
+    "availability": "usable-now",
+    "execution": "bundle",
+    "limitations": [
+      "Publishing remains human-approved; the bundle does not grant external publishing authority."
+    ],
+    "quickstart": "Run `node scripts/first_use.mjs examples/first-use-input.json <output-directory>` to create the documented multi-format deliverable without installing dependencies.",
+    "executable_helpers": [
+      {
+        "entrypoint": "scripts/first_use.mjs",
+        "availability": "usable-now",
+        "execution": "local-tool",
+        "limitations": [
+          "Requires a declared Node.js 22 execution capability; generated content remains human-review-required."
+        ],
+        "quickstart": "node scripts/first_use.mjs examples/first-use-input.json <output-directory>"
+      }
+    ],
+    "source": "declared"
+  },
+  "execution": {
+    "kind": "bundle",
+    "supported_platforms": [
+      "linux",
+      "macos",
+      "windows"
+    ],
+    "supported_runtimes": [
+      "node22"
+    ]
+  },
+  "artifact": {
+    "self_contained": true,
+    "dependency_lock": "dependencies.lock.json",
+    "checksums": "checksums.txt",
+    "sbom": "sbom.cdx.json",
+    "provenance": "provenance.json"
+  },
+  "authentication": {
+    "status": "none",
+    "methods": [
+      "none"
+    ],
+    "credential_bindings": [],
+    "scopes": [],
+    "credential_storage": "No credentials are used by this instruction bundle.",
+    "validation": "Confirm no authentication challenge is introduced by runtime wiring.",
+    "revocation": "Not applicable; remove the installed bundle to withdraw it."
+  },
+  "verification": {
+    "evidence": [
+      "evidence://tests/local-plugin-wave/content-repurposing-first-use",
+      "evidence://tests/local-plugin-wave/clean-client-runtime-matrix"
+    ],
+    "last_verified_at": "2026-09-22T00:00:00Z"
+  },
+  "includes": {
+    "skills": [
+      "marketing/creative-workshop-pmax-reels",
+      "marketing/ai-output-eval-scorecard",
+      "marketing/dynamic-creative-rules-engine"
+    ],
+    "hooks": [
+      "content-review-before-publish"
+    ]
+  },
+  "requires": {
+    "approvals": [
+      "human-review-for-publish"
+    ]
+  }
+}

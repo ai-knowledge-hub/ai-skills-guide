@@ -1,8 +1,9 @@
+schema_version: "1.1"
 id: adtech/openai-ads-adapter-template
 name: OpenAI Ads Adapter Template
-description: Mock-first read-only adapter contract for OpenAI Ads accounts, campaigns, ads, insights, and product feeds.
-version: 0.1.0
-released_at: "2026-07-24T00:00:00Z"
+description: Deprecated reference contract retained for migration; use the executable OpenAI Ads API Client.
+version: 0.2.0
+released_at: "2026-09-21T00:00:00Z"
 category: tools-mcp/adtech
 tags:
   - openai-ads
@@ -45,10 +46,12 @@ usability:
   availability: template-only
   execution: integration-template
   limitations:
-    - This package contains contracts and fixtures, not an API client.
-  quickstart: Use adtech/openai-ads-api-client for an executable mock or live read-only integration.
+    - Deprecated reference contract only; no executable integration is packaged.
+    - New installations and plugin references must use adtech/openai-ads-api-client.
+  quickstart: Replace this package with adtech/openai-ads-api-client and follow its migration guidance.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false
   security_reviewed: false
-deprecated: false
+deprecated: true
+replaced_by: adtech/openai-ads-api-client

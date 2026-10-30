@@ -1,9 +1,26 @@
 {
-  "rows": [
-    {
-      "channel": "Paid Search",
-      "spend": 17320
-    }
+  "schema_version": "skills-hub.bigquery-result/v1",
+  "project_id": "data-project",
+  "billing_project_id": "billing-project",
+  "location": "EU",
+  "schema": [
+    {"name": "channel", "type": "STRING", "mode": "NULLABLE"},
+    {"name": "spend", "type": "NUMERIC", "mode": "NULLABLE"}
   ],
-  "row_count": 1
+  "rows": [{"channel": "Paid Search", "spend": "17320.00"}],
+  "pagination": {"returned_rows": 1, "total_rows": 1, "truncated": false, "pages": 1},
+  "diagnostics": {
+    "job_id": "redacted-example-job",
+    "dry_run_bytes_processed": "1048576",
+    "bytes_processed": "1048576",
+    "bytes_billed": "1048576",
+    "slot_millis": "120",
+    "cache_hit": false,
+    "timeout_ms": 30000,
+    "provider_job_timeout_ms": 30000,
+    "maximum_bytes_billed": "1000000000",
+    "table_references": ["data-project.analytics.performance"],
+    "warning_reasons": []
+  },
+  "source": {"provider": "Google BigQuery", "api_version": "v2", "retrieved_at": "2026-09-18T10:00:00.000Z", "freshness": "retrieved-live"}
 }

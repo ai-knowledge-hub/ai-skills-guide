@@ -35,9 +35,10 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
         <p className="meta">{entry.tags.join(", ")}</p>
         <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{entry.usability.execution}</span><a href="#usability" className="text-link">Requirements &amp; limits</a></div>
         <div className="detail-install-lead">
-          <h2 className="meta">Install this connector</h2>
+          <h2 className="meta">{entry.usability.availability === "template-only" ? "Reference template" : "Install this connector"}</h2>
           <InstallCommands
             compact
+            availability={entry.usability.availability}
             codex={buildModuleInstallSnippet("tools", entry, "codex")}
             claude={buildModuleInstallSnippet("tools", entry, "claude")}
             generic={buildModuleInstallSnippet("tools", entry, "generic")}

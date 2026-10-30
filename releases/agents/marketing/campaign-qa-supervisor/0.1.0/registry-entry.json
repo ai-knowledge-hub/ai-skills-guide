@@ -1,0 +1,54 @@
+{
+  "schema_version": "1.1",
+  "id": "marketing/campaign-qa-supervisor",
+  "name": "Campaign QA Supervisor",
+  "description": "Validate campaign setup quality, tracking integrity, and policy compliance before launch or major edits.",
+  "category": "marketing-agents/governance",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "campaign-qa",
+    "policy",
+    "governance"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "May assess launch readiness and draft remediation alerts; require human approval before overriding critical failures or taking live launch actions.",
+    "role": "Governance agent for campaign QA, tracking integrity, and launch readiness.",
+    "coordinates": [
+      "Campaign payload validation",
+      "Policy and naming checks",
+      "Severity assessment and remediation routing"
+    ],
+    "autonomy_level": "execution-capable-with-approval",
+    "outputs": [
+      "Pass, warn, or fail decision",
+      "Critical blocker list",
+      "Remediation action list",
+      "Alert summary for escalation"
+    ]
+  },
+  "usability": {
+    "availability": "template-only",
+    "execution": "orchestrator",
+    "limitations": [
+      "Declarative agent definition only; no launchable orchestrator or verified runtime bindings are packaged."
+    ],
+    "quickstart": "Review AGENT.md and implement and register the declared runtime bindings before launch.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "skills": [
+      "adtech/policy-brand-compliance-checker"
+    ],
+    "tools": [
+      "campaign_config_reader",
+      "slack_post"
+    ]
+  }
+}

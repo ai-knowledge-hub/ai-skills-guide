@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.1",
+  "id": "marketing/dynamic-creative-rules-engine",
+  "name": "Dynamic Creative Rules Engine",
+  "description": "Define dynamic creative assembly rules per audience and context while enforcing brand and policy constraints.",
+  "category": "marketing-tools/creative-ops",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "personalization",
+    "creative-ops",
+    "dynamic-creative",
+    "brand-safety",
+    "experimentation"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for rule design and evaluation; require human approval before deploying personalization logic.",
+    "outputs": [
+      "Ruleset",
+      "Blocked combinations",
+      "Test matrix"
+    ],
+    "use_when": "Use when audience-aware creative assembly rules need to be defined under brand and policy constraints.",
+    "execution_mode": "analysis-only"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "python3"
+    ]
+  }
+}

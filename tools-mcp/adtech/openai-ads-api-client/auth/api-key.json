@@ -1,0 +1,10 @@
+{
+  "schema_version": "skills-hub.auth-driver/v1",
+  "credential_mode": "external-env",
+  "method": "api-key",
+  "flow": "credential-binding",
+  "runtimes": ["codex", "claude", "generic"],
+  "bootstrap": {"command": ["scripts/openai_ads_auth_driver.py", "api-key", "bootstrap"]},
+  "credential": {"command": ["scripts/openai_ads_auth_driver.py", "api-key", "credential"]},
+  "status": {"command": ["scripts/openai_ads_auth_driver.py", "api-key", "status"]}
+}

@@ -7,16 +7,44 @@ on:
 
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 
 jobs:
   publish-release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Verify exact tagged source
+        run: test "$(git rev-list -n 1 '${{ github.ref_name }}')" = "${{ github.sha }}"
+      - name: Test governed CLI
+        run: make cli-test
+      - name: Build governed release binaries and checksums
+        env:
+          CODEX_MODEL_ATTESTATION_PUBLIC_KEY: ${{ vars.CODEX_MODEL_ATTESTATION_PUBLIC_KEY }}
+          CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY: ${{ vars.CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY }}
+          GENERIC_MODEL_ATTESTATION_PUBLIC_KEY: ${{ vars.GENERIC_MODEL_ATTESTATION_PUBLIC_KEY }}
+        run: make release-cli-artifacts VERSION="${{ github.ref_name }}"
+      - name: Attest release binaries and checksums
+        id: attest
+        uses: actions/attest@v4
+        with:
+          subject-checksums: dist/SHA256SUMS
+      - name: Include provenance bundle in release assets
+        run: cp "${{ steps.attest.outputs.bundle-path }}" "dist/skills-hub_${{ github.ref_name }}_provenance.json"
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          target_commitish: main
+          target_commitish: ${{ github.sha }}
           generate_release_notes: true
           prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
+          fail_on_unmatched_files: true
+          files: dist/*

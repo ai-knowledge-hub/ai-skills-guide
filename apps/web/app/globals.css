@@ -92,7 +92,7 @@ a.catalog-card:hover { text-decoration: none; }
 .is-template-only::before { border-style: dashed; }
 .usability-guide { background: var(--paper-muted); }
 .usability-guide .home-section { padding-block: 56px; }
-.usability-guide-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-top: 32px; }
+.usability-guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 32px; margin-top: 32px; }
 .usability-guide-grid p { font-size: 14px; margin-top: 14px; }
 .home-recent { padding-block: 64px 80px; display: grid; grid-template-columns: 1fr 2fr; gap: 64px; }
 .home-recent li { padding-block: 15px; font-size: 18px; line-height: 1.5; }

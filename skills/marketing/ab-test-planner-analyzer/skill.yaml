@@ -1,3 +1,4 @@
+schema_version: "1.1"
 id: marketing/ab-test-planner-analyzer
 name: A/B Test Planner + Analyzer
 description: Plan and analyze A/B tests with explicit hypotheses, sample sizing assumptions, and decision rules.
@@ -35,6 +36,12 @@ operational:
     - Decision framework
     - Analysis summary
   approval_boundary: Safe for planning and analysis; require human approval before launching experiments or changing traffic allocation.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
 verification:
   tests_min_prompts: 5
   deterministic_scripts: false

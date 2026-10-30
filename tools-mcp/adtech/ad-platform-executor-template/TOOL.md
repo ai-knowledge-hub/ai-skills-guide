@@ -1,71 +1,72 @@
-# Ad Platform Executor Template
+# Governed Ad Platform Executor
 
-## Purpose
+## Tools
 
-This template defines a narrow executor for DV360, Google Ads, and similar ad-platform writes. The executor applies only structured, policy-approved changes. It should not expose broad platform APIs directly to an LLM.
+### `preview_ad_platform_change`
 
-## Capabilities
+Accepts one closed `ad-platform.change-plan/v2` document and an optional bounded timeout. It validates the executor policy and reads the exact provider-native target. It returns state hashes and whether the approved precondition currently matches. It never calls the control plane, claims a grant, or mutates provider state.
 
-### `read_campaign_state`
+### `execute_approved_change`
 
-Reads current state for a scoped account, advertiser, campaign, line item, ad group, keyword, audience, or feed item.
+Accepts only `{grant, plan, timeout_ms?}`. The plan is closed and supports one provider-native target and one field transition. Before mutation the executor requires:
 
-### `validate_change_plan`
+1. plan lifetime of at most 15 minutes and current, canonical timestamps;
+2. an allowlisted sandbox target, or an explicitly enabled live policy;
+3. exact equality between the plan target and grant target;
+4. an `ad_platform.execute` capability and matching action ID;
+5. a grant input digest equal to the canonical complete plan;
+6. current provider state equal to the approved `from` value;
+7. a successful atomic `validate_execution_grant` claim from the Agent Control Plane.
 
-Checks a structured change plan against current platform state, policy decision, approval record, and bounded execution grant.
+The executor then records `executing`, applies one fixed provider operation, re-reads state, persists an authenticated receipt, and records the terminal control-plane result. The successful response omits stored pre/post values and returns only their hashes, target identity, receipt reference, and reconciliation flag.
 
-### `apply_approved_change`
+### `reconcile_ambiguous_execution`
 
-Applies one approved bid, budget, targeting, status, feed, or tracking change through the relevant platform API.
+Requires the same exact grant and plan. It is available only after a durable claim without a receipt. Current provider state is authoritative:
 
-### `apply_bulk_targeting_change`
+- exact proposed post-image: persist a reconciled success receipt and terminal action;
+- exact pre-image: record a verified no-effect failure;
+- any other state: stop with `MANUAL_RECONCILIATION_REQUIRED`.
 
-Applies a validated bulk targeting diff. For DV360, queue updates to the same line item and prefer bulk edit operations where supported.
+The tool never repeats the provider mutation.
 
-### `rollback_last_execution`
+### `rollback_execution`
 
-Uses stored pre-image and rollback patch to revert the last execution when supported by the platform and policy.
+Requires a new `ad_platform.rollback` grant. Its input digest must bind:
 
-## Expected input shape
+- the original execution ID;
+- the complete authenticated execution-receipt digest;
+- the authenticated rollback-patch digest.
 
-```json
-{
-  "change_plan_id": "plan_123",
-  "execution_grant": {
-    "workspace_id": "client-123",
-    "platform": "dv360",
-    "advertiser_id": "987654",
-    "entity_type": "line_item",
-    "entity_id": "li_456",
-    "allowed_action": "apply_bid_delta",
-    "max_delta_percent": 10,
-    "expires_at": "2026-05-06T18:00:00Z",
-    "approval_id": "approval_abc"
-  },
-  "proposed_diff": {
-    "field": "bid",
-    "from": 1.2,
-    "to": 1.08,
-    "delta_percent": -10
-  }
-}
-```
+Rollback stops if provider state no longer equals the original verified post-image. It claims the new grant, applies the reverse bounded field transition, and verifies the original pre-image before recording success.
 
-## Required execution sequence
+### `get_execution`
 
-1. Resolve the scoped execution grant.
-2. Retrieve current platform state.
-3. Confirm the proposed diff still applies to current state.
-4. Confirm policy and approval are valid.
-5. Apply the API write.
-6. Verify post-write state.
-7. Store audit event and rollback patch.
+Returns a redacted authenticated receipt or nonterminal intent. Local state whose HMAC no longer verifies is rejected rather than projected.
+
+## Provider mapping
+
+- Google Ads reads use `googleAds:searchStream`; writes use only fixed v25 mutate services and update masks.
+- DV360 reads and patches use only v4 advertiser-scoped line-item paths and fixed update masks.
+- Redirects, caller-supplied origins, caller-supplied URLs, arbitrary methods, and arbitrary fields are rejected.
+- Noncanonical origins are accepted only for explicit loopback test mode.
+
+## Failure semantics
+
+- Provider rejection known to precede an effect may be recorded as failed.
+- Mutation timeout, transport loss, retryable server failure, or process loss after claim is ambiguous and requires reconciliation.
+- Duplicate requests return the existing verified receipt.
+- Concurrent requests for one provider resource serialize locally; stale sequential plans fail their provider-state precondition.
+- A post-write mismatch is a conflict: the executor records it and never overwrites the observed third state automatically.
+- Rollback persists authenticated state before claiming its grant and reconciles crashes or ambiguous provider outcomes without replaying an uncertain effect.
+- Authority cancellation is a durable two-step transition: authenticated `cancellation_pending`, idempotent control-plane `cancelled`, then local `terminal_no_effect`. Dependency failure or process loss leaves the operation resumable and never projects a local terminal state before the authoritative cancellation exists.
 
 ## Guardrails
 
-- Do not accept free-form natural-language write requests.
-- Do not expose raw Google refresh tokens, service-account keys, or API credentials to the agent runtime.
-- Do not execute without a valid scoped grant and policy decision.
-- Do not execute medium/high-risk changes without approval evidence.
-- Do not run concurrent writes against the same DV360 line item; queue or merge them.
-- Do not hide API failures. Return structured failure reasons and preserve pre-image state.
+- Never translate free-form text into a provider mutation.
+- Never accept caller-selected URLs, HTTP methods, fields, update masks, accounts, resources, or credentials.
+- Never mutate before the provider pre-image matches and the control plane durably claims the exact grant.
+- Never replay a claimed mutation whose provider outcome is ambiguous; reconcile current provider state first.
+- Never treat a provider acknowledgement as success without a verified post-image and authenticated local receipt.
+- Never roll back without a new exact grant or when current state diverges from the original verified post-image.
+- Never expose provider tokens, control-plane keys, raw identity envelopes, or receipt contents in MCP responses or diagnostics.

@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 )
 
 const baseURL = "https://skills.ai-knowledge-hub.org"
@@ -48,53 +49,28 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 			return Index{}, err
 		}
 		skillDir := filepath.Dir(manifestPath)
-		sha, err := digestSkillDir(skillDir)
+		if err := validatePackage(manifestPath, m, time.Now().UTC(), true, false); err != nil {
+			return Index{}, err
+		}
+		sha, err := digestPublishedArtifact(root, moduleDir, m, skillDir)
 		if err != nil {
 			return Index{}, err
 		}
-		relManifest, err := filepath.Rel(root, manifestPath)
+		manifestSHA, err := digestFile(manifestPath)
 		if err != nil {
-			return Index{}, fmt.Errorf("compute relative manifest path: %w", err)
+			return Index{}, err
 		}
-		relManifest = filepath.ToSlash(relManifest)
 
-		entry := SkillEntry{
-			ID:          m.ID,
-			Name:        m.Name,
-			Description: m.Description,
-			Category:    m.Category,
-			Latest:      m.Version,
-			Versions: []VersionEntry{{
-				Version:     m.Version,
-				ReleasedAt:  m.ReleasedAt,
-				ManifestURL: fmt.Sprintf("%s/%s", baseURL, relManifest),
-				ArtifactURL: fmt.Sprintf("%s/artifacts/%s/%s.tar.gz", baseURL, m.ID, m.Version),
-				SHA256:      sha,
-			}},
-			Runtimes:         append([]string{}, m.Runtimes...),
-			Tags:             append([]string{}, m.Tags...),
-			Readiness:        readinessFor(m),
-			SecurityReviewed: m.SecurityReviewed,
-			Deprecated:       m.Deprecated,
-			ReplacedBy:       m.ReplacedBy,
-			Usability:        usabilityFor(m, moduleDir),
-		}
-		if hasOperational(m.Operational) {
-			operational := m.Operational
-			entry.Operational = &operational
-		}
-		if hasDependencies(m.Dependencies) {
-			dependencies := m.Dependencies
-			entry.Dependencies = &dependencies
-		}
-		if hasIncludes(m.Includes) {
-			includes := m.Includes
-			entry.Includes = &includes
-		}
-		if hasRequirements(m.Requires) {
-			requires := m.Requires
-			entry.Requires = &requires
-		}
+		entry := ProjectManifest(m)
+		entry.Latest = m.Version
+		entry.Versions = []VersionEntry{{
+			Version:        m.Version,
+			ReleasedAt:     m.ReleasedAt,
+			ManifestURL:    fmt.Sprintf("%s/release-manifests/%s/%s/%s.yaml", baseURL, moduleDir, m.ID, m.Version),
+			ManifestSHA256: manifestSHA,
+			ArtifactURL:    fmt.Sprintf("%s/artifacts/%s/%s.tar.gz", baseURL, m.ID, m.Version),
+			SHA256:         sha,
+		}}
 		skills = append(skills, entry)
 	}
 
@@ -112,66 +88,201 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 	}
 
 	return Index{
-		RegistryVersion: "1.0",
+		RegistryVersion: "1.3",
 		GeneratedAt:     generatedAt,
 		Skills:          skills,
 	}, nil
 }
 
-func usabilityFor(m Manifest, moduleDir string) UsabilityMetadata {
-	result := m.Usability
-	declared := result.Availability != "" || result.Execution != "" || result.Quickstart != "" ||
-		len(result.RequiresSetup) > 0 || len(result.Limitations) > 0
+// digestPublishedArtifact binds a registry release to the exact bytes a
+// remote installer downloads. During initial release creation the retained
+// archive does not exist yet, so the source-tree digest remains a bootstrap
+// value; publication must rebuild the tracked registry after persisting the
+// final immutable archive.
+func digestPublishedArtifact(root, moduleDir string, manifest Manifest, sourceDir string) (string, error) {
+	archivePath := filepath.Join(root, "releases", moduleDir, filepath.FromSlash(manifest.ID), manifest.Version, "package.tar.gz")
+	info, err := os.Stat(archivePath)
+	if err == nil {
+		if !info.Mode().IsRegular() {
+			return "", fmt.Errorf("retained release is not a regular file: %s", archivePath)
+		}
+		return digestFile(archivePath)
+	}
+	if !os.IsNotExist(err) {
+		return "", fmt.Errorf("inspect retained release %s: %w", archivePath, err)
+	}
+	return digestSkillDir(sourceDir)
+}
 
-	if result.Availability == "" {
-		switch moduleDir {
-		case "skills":
-			result.Availability = "usable-now"
-		case "agents", "plugins":
-			result.Availability = "setup-required"
-		case "tools-mcp":
-			if strings.Contains(m.ID, "template") || strings.Contains(strings.ToLower(m.Name), "template") {
-				result.Availability = "template-only"
-			} else if m.Operational.TrustBoundary == "local-tool" {
-				result.Availability = "usable-now"
-			} else {
-				result.Availability = "setup-required"
-			}
+func digestFile(path string) (string, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return "", fmt.Errorf("open %s for digest: %w", path, err)
+	}
+	defer file.Close()
+	hash := sha256.New()
+	if _, err := io.Copy(hash, file); err != nil {
+		return "", fmt.Errorf("digest %s: %w", path, err)
+	}
+	return hex.EncodeToString(hash.Sum(nil)), nil
+}
+
+func declaredUsability(m Manifest) UsabilityMetadata {
+	result := m.Usability
+	result.RequiresSetup = cloneNonEmptyStrings(m.Usability.RequiresSetup)
+	result.Limitations = cloneNonEmptyStrings(m.Usability.Limitations)
+	result.ExecutableHelpers = nil
+	if len(m.Usability.ExecutableHelpers) > 0 {
+		result.ExecutableHelpers = make([]ExecutableHelperMetadata, len(m.Usability.ExecutableHelpers))
+		for index, helper := range m.Usability.ExecutableHelpers {
+			result.ExecutableHelpers[index] = helper
+			result.ExecutableHelpers[index].Limitations = cloneNonEmptyStrings(helper.Limitations)
 		}
 	}
-	if result.Execution == "" {
-		switch moduleDir {
-		case "skills":
-			result.Execution = "instructions"
-		case "agents":
-			result.Execution = "orchestrator"
-		case "plugins":
-			result.Execution = "bundle"
-		case "tools-mcp":
-			if m.Operational.TrustBoundary == "local-tool" {
-				result.Execution = "local-tool"
-			} else if result.Availability == "template-only" {
-				result.Execution = "integration-template"
-			} else {
-				result.Execution = "remote-integration"
-			}
+	result.Source = "declared"
+	return result
+}
+
+func cloneNonEmptyStrings(values []string) []string {
+	if len(values) == 0 {
+		return nil
+	}
+	return append([]string(nil), values...)
+}
+
+// ProjectManifest returns every registry entry field derived from a manifest.
+// Release catalog fields (latest, versions, URLs, and checksums) are populated
+// separately by the publisher.
+func ProjectManifest(m Manifest) SkillEntry {
+	entry := SkillEntry{
+		SchemaVersion:    m.SchemaVersion,
+		ID:               m.ID,
+		Name:             m.Name,
+		Description:      m.Description,
+		Category:         m.Category,
+		Runtimes:         append([]string{}, m.Runtimes...),
+		Tags:             append([]string{}, m.Tags...),
+		Readiness:        readinessFor(m),
+		SecurityReviewed: m.SecurityReviewed,
+		Deprecated:       m.Deprecated,
+		ReplacedBy:       m.ReplacedBy,
+		Usability:        declaredUsability(m),
+	}
+	if strings.HasPrefix(m.SchemaVersion, "2.") {
+		execution := m.Execution
+		artifact := m.Artifact
+		authentication := m.Authentication
+		verification := m.Verification
+		entry.Execution = &execution
+		entry.Artifact = &artifact
+		entry.Authentication = &authentication
+		entry.Verification = &verification
+		entry.ProviderDependencies = append([]ProviderDependencyMetadata(nil), m.ProviderDependencies...)
+		entry.CapabilityReadiness = cloneCapabilityReadiness(m.CapabilityReadiness)
+	}
+	if hasOperational(m.Operational) {
+		operational := m.Operational
+		entry.Operational = &operational
+	}
+	if hasDependencies(m.Dependencies) {
+		dependencies := m.Dependencies
+		entry.Dependencies = &dependencies
+	}
+	if hasIncludes(m.Includes) {
+		includes := m.Includes
+		entry.Includes = &includes
+	}
+	if hasRequirements(m.Requires) {
+		requires := m.Requires
+		entry.Requires = &requires
+	}
+	if m.Orchestration != nil {
+		orchestration := *m.Orchestration
+		orchestration.Model.RequiredCapabilities = append([]string(nil), m.Orchestration.Model.RequiredCapabilities...)
+		orchestration.Bindings = append([]OrchestrationBinding(nil), m.Orchestration.Bindings...)
+		entry.Orchestration = &orchestration
+	}
+	return ApplyLifecycleProjection(entry)
+}
+
+// ApplyLifecycleProjection suppresses readiness claims whenever entry-level
+// deprecation is effective. The manifest and verification fields remain intact
+// as audit evidence, while every user-facing usability scope becomes
+// conservative and deterministic.
+func ApplyLifecycleProjection(entry SkillEntry) SkillEntry {
+	if !entry.Deprecated {
+		return entry
+	}
+	entry.Readiness = "deprecated"
+	demoted := false
+	if isPositiveUsability(entry.Usability.Availability) {
+		entry.Usability.Availability = "not-verified"
+		demoted = true
+	}
+	for index := range entry.Usability.ExecutableHelpers {
+		if isPositiveUsability(entry.Usability.ExecutableHelpers[index].Availability) {
+			entry.Usability.ExecutableHelpers[index].Availability = "not-verified"
+			demoted = true
 		}
 	}
-	if result.Availability == "setup-required" && len(result.RequiresSetup) == 0 {
-		if moduleDir == "agents" {
-			result.RequiresSetup = []string{"Install declared dependencies and configure tool bindings."}
-		} else if moduleDir == "plugins" {
-			result.RequiresSetup = []string{"Review bundled components, secrets, and approval rules before enabling."}
-		} else if moduleDir == "tools-mcp" {
-			result.RequiresSetup = []string{"Configure the connected system and authentication outside agent context."}
+	for index := range entry.CapabilityReadiness {
+		if isPositiveUsability(entry.CapabilityReadiness[index].Availability) {
+			entry.CapabilityReadiness[index].Availability = "not-verified"
+			demoted = true
 		}
 	}
-	if declared {
-		result.Source = "declared"
-	} else {
-		result.Source = "inferred"
+	if demoted {
+		entry.Usability.Source = "inferred"
+	}
+	return entry
+}
+
+func isPositiveUsability(availability string) bool {
+	return availability == "usable-now" || availability == "setup-required"
+}
+
+func cloneCapabilityReadiness(values []CapabilityReadinessMetadata) []CapabilityReadinessMetadata {
+	if len(values) == 0 {
+		return nil
+	}
+	result := make([]CapabilityReadinessMetadata, len(values))
+	for index, value := range values {
+		result[index] = value
+		result[index].RequiresSetup = cloneNonEmptyStrings(value.RequiresSetup)
+		result[index].Limitations = cloneNonEmptyStrings(value.Limitations)
 	}
 	return result
+}
+
+func hasPositiveCapabilityReadiness(values []CapabilityReadinessMetadata) bool {
+	for _, capability := range values {
+		if isPositiveUsability(capability.Availability) {
+			return true
+		}
+	}
+	return false
+}
+
+// ProjectManifestForCurrentCatalog derives the operator-visible projection at
+// publication time without changing the immutable manifest or release
+// sidecar. An expired usable-now claim is retained for audit in Verification,
+// but it cannot remain advertised as current readiness.
+func ProjectManifestForCurrentCatalog(m Manifest, now time.Time) SkillEntry {
+	entry := ProjectManifest(m)
+	if m.Usability.Availability == "usable-now" || hasPositiveCapabilityReadiness(m.CapabilityReadiness) {
+		if err := validateFreshEvidence(m.ID, m, now.UTC()); err != nil {
+			if entry.Usability.Availability == "usable-now" {
+				entry.Usability.Availability = "not-verified"
+			}
+			entry.Usability.Source = "inferred"
+			for index := range entry.CapabilityReadiness {
+				if isPositiveUsability(entry.CapabilityReadiness[index].Availability) {
+					entry.CapabilityReadiness[index].Availability = "not-verified"
+				}
+			}
+		}
+	}
+	return ApplyLifecycleProjection(entry)
 }
 
 func hasIncludes(includes IncludeSet) bool {

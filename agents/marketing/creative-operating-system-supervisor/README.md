@@ -10,7 +10,9 @@ This agent coordinates the Creative Operating System workflow described in the d
 
 ## Runtime assumptions
 
-- The documented workflow is installable through the listed skills and this agent.
+- Claude registers this agent natively from the plugin package.
+- Codex and generic runtimes install the definition as advisory guidance because
+  they do not currently expose a native plugin-agent registration contract.
 - Brand memory, campaign archive, trend, and approval integrations are optional local environment bindings, not cataloged tool dependencies in this repo.
 - Example binding shapes are documented in `config/tool-bindings.example.json`.
 
@@ -30,15 +32,15 @@ Use it for:
 Preferred for first-time users:
 
 ```bash
-./bin/skills-hub install --module plugins --entry marketing/creative-operating-system-plugin@0.1.0 --runtime codex
+./bin/skills-hub install --module plugins --entry marketing/creative-operating-system-plugin@0.2.0 \
+  --runtime codex --execution-runtime node22
 ```
 
 Agent-only install if you already have the surrounding workflow and templates:
 
 ```bash
-./bin/skills-hub install \
-  marketing/creative-operating-system-supervisor@latest \
-  --runtime codex
+./bin/skills-hub install marketing/creative-operating-system-supervisor@latest \
+  --module agents --runtime codex
 ```
 
 ## First run prompt

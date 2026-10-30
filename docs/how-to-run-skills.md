@@ -7,7 +7,7 @@ Open the entry `README.md` and spec file:
 - agents: `AGENT.md`
 - tools-mcp: `TOOL.md`
 
-Run `skills-hub info` and inspect `usability` first. `template-only` entries need implementation; `setup-required` entries need their listed credentials, bindings, and policies.
+Run `skills-hub info` and inspect `usability` first. `documentation-only` entries provide guidance, `template-only` entries need implementation, `not-verified` entries need current operational evidence, and `setup-required` entries need their listed credentials, bindings, and policies.
 
 ## 2. Provide minimum context
 

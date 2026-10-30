@@ -1,0 +1,47 @@
+schema_version: "2.0"
+id: engineering/contract-fixture-skill
+name: Contract Fixture Skill
+description: Valid v2 skill manifest used for schema contract testing.
+version: 1.0.0
+released_at: "2026-09-13T00:00:00Z"
+category: engineering/testing-quality
+tags:
+  - contract-test
+license: MIT
+author:
+  name: Schema Tests
+runtimes:
+  - codex
+entrypoints:
+  skill_md: SKILL.md
+usability:
+  availability: documentation-only
+  execution: instructions
+execution:
+  kind: instructions
+  supported_platforms:
+    - linux
+    - macos
+    - windows
+  supported_runtimes:
+    - codex
+artifact:
+  self_contained: true
+  dependency_lock: null
+  checksums: checksums.txt
+  sbom: sbom.cdx.json
+authentication:
+  status: none
+  methods:
+    - none
+  credential_bindings: []
+  scopes: []
+  credential_storage: No credentials are used.
+  validation: Confirm the instruction path does not request credentials.
+  revocation: No credential revocation applies.
+verification:
+  security_reviewed: false
+  evidence:
+    - evidence://fixture/skill/instruction-run
+  last_verified_at: "2026-09-13T00:00:00Z"
+deprecated: false

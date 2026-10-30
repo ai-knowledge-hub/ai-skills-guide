@@ -1,0 +1,49 @@
+schema_version: "1.1"
+id: adtech/weekly-performance-review-bi
+name: Weekly Performance Review BI
+description: Chain dashboard generation, QA gating, and executive narrative writing for deterministic weekly BI reporting.
+version: 0.1.0
+released_at: "2026-02-27T00:00:00Z"
+category: adtech/analytics-engineering
+tags:
+  - bi
+  - orchestration
+  - weekly-reporting
+  - qa-gating
+  - dashboard
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  tools:
+    - python3
+operational:
+  use_when: Use when weekly BI reporting needs deterministic orchestration across dashboard generation, QA, and narrative drafting.
+  execution_mode: analysis-only
+  outputs:
+    - Publish decision
+    - QA package
+    - Narrative package
+  approval_boundary: Safe for orchestrating read-only reporting steps; require human approval before external publication.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

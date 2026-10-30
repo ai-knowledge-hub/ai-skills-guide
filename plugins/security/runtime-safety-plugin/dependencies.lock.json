@@ -1,0 +1,42 @@
+{
+  "lock_version": "1.0",
+  "root": {
+    "module": "plugins",
+    "id": "security/runtime-safety-plugin",
+    "version": "0.2.0"
+  },
+  "components": [
+    {
+      "module": "skills",
+      "id": "security/dependency-supply-chain-audit",
+      "version": "0.1.0",
+      "content_sha256": "5df9d8a73cf84c5b2d42736ef6a709095b9454db4abf9a3c62236b42d037b4a0",
+      "manifest_path": "bundled/skills/security/dependency-supply-chain-audit/skill.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "skills",
+      "id": "security/environment-risk-assessment",
+      "version": "0.1.0",
+      "content_sha256": "a147e3269b5dba2b8913bd774ab447f58090974d66df13dad085aecf117e50af",
+      "manifest_path": "bundled/skills/security/environment-risk-assessment/skill.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "skills",
+      "id": "security/handle-untrusted-content",
+      "version": "0.1.0",
+      "content_sha256": "fcd8143b73aa5db90c48125e8997f503ab19d2e4b719803baeeaf5a103295b6b",
+      "manifest_path": "bundled/skills/security/handle-untrusted-content/skill.yaml",
+      "dependencies": []
+    },
+    {
+      "module": "skills",
+      "id": "security/secrets-and-credential-hygiene",
+      "version": "0.1.0",
+      "content_sha256": "4dd0b029e7ec6664a0057e1f75ed63646028d57fc508696050a38d3479420084",
+      "manifest_path": "bundled/skills/security/secrets-and-credential-hygiene/skill.yaml",
+      "dependencies": []
+    }
+  ]
+}

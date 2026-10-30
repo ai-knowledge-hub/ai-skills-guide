@@ -1,0 +1,41 @@
+schema_version: "2.1"
+id: adtech/flow-sequence-fixture
+name: Flow Sequence Fixture
+description: Valid v2 tool manifest using YAML flow-style sequences throughout.
+version: 1.0.0
+released_at: "2026-09-13T00:00:00Z"
+category: tools-mcp/adtech
+tags: [contract-test, yaml-flow]
+license: MIT
+author:
+  name: Schema Tests
+runtimes: [codex, generic]
+entrypoints:
+  spec: TOOL.md
+usability:
+  availability: not-verified
+  execution: local-tool
+execution:
+  kind: cli
+  command: [bin/example, run]
+  smoke_test: [bin/example, --smoke]
+  supported_platforms: [linux, macos, windows]
+  supported_runtimes: [native]
+artifact:
+  self_contained: true
+  dependency_lock: null
+  checksums: checksums.txt
+  sbom: sbom.cdx.json
+authentication:
+  status: required
+  methods: [api-key]
+  credential_bindings: [PROVIDER_API_KEY]
+  scopes: [read]
+  credential_storage: Runtime credential store.
+  validation: Call the provider identity endpoint without mutation.
+  revocation: Revoke the key in the provider console.
+verification:
+  security_reviewed: false
+  evidence: [evidence://fixture/tool/flow-smoke]
+  last_verified_at: "2026-09-13T00:00:00Z"
+deprecated: false

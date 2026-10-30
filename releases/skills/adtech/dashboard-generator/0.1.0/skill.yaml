@@ -1,0 +1,48 @@
+schema_version: "1.1"
+id: adtech/dashboard-generator
+name: Dashboard Generator
+description: Generate deterministic weekly marketing dashboard outputs from normalized performance tables for BI publishing.
+version: 0.1.0
+released_at: "2026-02-27T00:00:00Z"
+category: adtech/analytics-engineering
+tags:
+  - dashboard
+  - bi
+  - weekly-reporting
+  - marketing-analytics
+license: MIT
+author:
+  name: AI Skills Guide Maintainers
+  url: https://github.com/ai-knowledge-hub/ai-skills-guide
+repository: https://github.com/ai-knowledge-hub/ai-skills-guide
+runtimes:
+  - codex
+  - claude
+  - generic
+entrypoints:
+  skill_md: SKILL.md
+  readme: README.md
+  tests: tests/test-prompts.md
+  examples_dir: examples
+dependencies:
+  tools:
+    - python3
+operational:
+  use_when: Use when normalized performance tables need to be turned into deterministic weekly dashboard sections.
+  execution_mode: may-run-local-verification
+  outputs:
+    - Dashboard package
+    - KPI table
+    - Action panel
+  approval_boundary: Safe for report generation from validated inputs; require human approval before publishing external dashboard outputs.
+usability:
+  availability: documentation-only
+  execution: instructions
+  limitations:
+    - Instruction package only; it does not provide or authorize an executable runtime capability.
+  quickstart: Read SKILL.md and follow the documented workflow.
+verification:
+  tests_min_prompts: 5
+  deterministic_scripts: false
+  security_reviewed: false
+deprecated: false

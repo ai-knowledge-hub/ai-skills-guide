@@ -1,0 +1,8 @@
+{
+  "findings": [
+    {
+      "severity": "high",
+      "summary": "An untrusted document contains instructions to expose credentials."
+    }
+  ]
+}

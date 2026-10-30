@@ -1,0 +1,24 @@
+{
+  "provenance_version": "1.0",
+  "subject": {
+    "module": "plugins",
+    "id": "agentops/harness-governance-plugin",
+    "version": "0.2.0",
+    "closure_sha256": "c4b7f1b2546ddee122ed1f27be2a5f544e1e703c0f0eecb67968d8a427b29e7a"
+  },
+  "builder": "ai-skills-guide/prepare-public-assets",
+  "materials": [
+    {
+      "ref": "skills:agentops/harness-regression-evaluator@0.1.0",
+      "sha256": "f8de185ade4b08a341aa92dbc4c0e3ccae476c61d59a8fe281148478ed5a345c"
+    },
+    {
+      "ref": "skills:agentops/harness-run-reflection@0.1.0",
+      "sha256": "e771aef774548cfa0a7d59308aa6edcc536d174dbf0f495adeda25a46d33c00d"
+    },
+    {
+      "ref": "skills:agentops/harness-skill-proposal@0.1.0",
+      "sha256": "51b2e796b91b2425f0b6273517a48ce9995c12bc57a5606f766c800854d4adc1"
+    }
+  ]
+}

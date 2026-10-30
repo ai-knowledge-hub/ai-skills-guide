@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.1",
+  "id": "engineering/implementation-strategy",
+  "name": "Implementation Strategy",
+  "description": "Plan repo-aware code changes before editing by mapping scope, commands, risks, and likely side effects.",
+  "category": "engineering/code-maintenance",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "planning",
+    "repo-analysis",
+    "maintenance",
+    "strategy"
+  ],
+  "readiness": "experimental",
+  "security_reviewed": false,
+  "deprecated": false,
+  "operational": {
+    "approval_boundary": "Safe for repo inspection and planning; does not require write access and should precede code edits.",
+    "outputs": [
+      "Change strategy",
+      "Impacted files",
+      "Verification command list"
+    ],
+    "use_when": "Use when a repository needs scope analysis, impact mapping, and change planning before edits begin.",
+    "execution_mode": "read-only-local-inspection"
+  },
+  "usability": {
+    "availability": "documentation-only",
+    "execution": "instructions",
+    "limitations": [
+      "Instruction package only; it does not provide or authorize an executable runtime capability."
+    ],
+    "quickstart": "Read SKILL.md and follow the documented workflow.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "rg"
+    ]
+  }
+}

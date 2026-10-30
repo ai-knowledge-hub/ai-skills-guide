@@ -23,12 +23,10 @@ Agent template for campaign QA gating with clear remediation outputs.
 ## Before you start
 
 1. Install this agent package.
-2. Install its required skill dependency.
-3. Connect campaign config and alerting tools.
-4. Copy and adapt config examples in `config/`:
-   - `tool-bindings.example.json`
-   - `memory-profile.example.json`
-   - `governance.example.json`
+2. The installer resolves and pins its policy skill and compiles a runtime
+   binding contract.
+3. Connected QA remains blocked until a cataloged campaign configuration
+   reader exists. Slack delivery is optional and remains a human-owned draft.
 
 Install commands (Codex example):
 
@@ -38,9 +36,6 @@ Install commands (Codex example):
   --entry marketing/campaign-qa-supervisor@latest \
   --runtime codex
 
-./bin/skills-hub install \
-  adtech/policy-brand-compliance-checker@latest \
-  --runtime codex
 ```
 
 ## First run (copy/paste prompt)
@@ -77,12 +72,8 @@ Return:
 ```bash
 ./bin/skills-hub run-agent \
   --agent marketing/campaign-qa-supervisor \
-  --bindings agents/marketing/campaign-qa-supervisor/config/\
-tool-bindings.example.json \
-  --memory agents/marketing/campaign-qa-supervisor/config/\
-memory-profile.example.json \
-  --governance agents/marketing/campaign-qa-supervisor/config/\
-governance.example.json \
+  --runtime codex \
+  --model-attestation "$MODEL_ATTESTATION_PATH" \
   --approve-live \
   --audit-log ./tmp/campaign-qa-supervisor-run.json
 ```

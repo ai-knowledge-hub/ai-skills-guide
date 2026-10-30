@@ -6,6 +6,7 @@ const samplePluginPath = "/plugins/marketing/performance-reporting-plugin";
 const sampleEngineeringPluginPath = "/plugins/engineering/code-maintenance-plugin";
 const sampleSecurityPluginPath = "/plugins/security/runtime-safety-plugin";
 const sampleHarnessPluginPath = "/plugins/agentops/harness-governance-plugin";
+const sampleAdvertisingExperimentPluginPath = "/plugins/marketing/chatgpt-advertising-experiment-plugin";
 const sampleToolPath = "/tools-mcp/analytics/ga4-mcp-connector";
 
 test("home route smoke", async ({ page }) => {
@@ -16,6 +17,7 @@ test("home route smoke", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Tools & MCP", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Explore skills" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Know what you are installing" })).toBeVisible();
+  await expect(page.getByText("Not verified", { exact: true })).toBeVisible();
 });
 
 test("skills route filter interaction smoke", async ({ page }) => {
@@ -38,6 +40,11 @@ test("skill detail copy-button smoke", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "How You Can Use This" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Outputs" })).toBeVisible();
   await expect(page.getByText("may-run-local-verification")).toBeVisible();
+  await expect(page.locator("#usability").getByText("Documentation", { exact: true })).toBeVisible();
+  await expect(page.getByText("Instruction package only", { exact: false })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Packaged executable helpers" })).toBeVisible();
+  await expect(page.getByText("scripts/compute_metrics.py", { exact: true })).toBeVisible();
+  await expect(page.getByText("Not verified", { exact: true })).toBeVisible();
   const copyButtons = page.locator(".copy-button");
 
   await expect(copyButtons).toHaveCount(3);
@@ -59,6 +66,14 @@ test("agents route and detail smoke", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Operational Summary" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Coordinates" })).toBeVisible();
   await expect(page.getByText("semi-autonomous")).toBeVisible();
+  const usability = page.locator(".detail-panel").filter({ has: page.getByRole("heading", { name: "How You Can Use This" }) }).first();
+  await expect(usability.getByText("Setup required", { exact: true }).first()).toBeVisible();
+  await expect(usability.getByText("orchestrator", { exact: false })).toBeVisible();
+  await expect(usability.getByText("GA4 and BigQuery credentials", { exact: false })).toBeVisible();
+  await expect(page.getByText("Install this agent", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Install (Codex)" })).toBeVisible();
+  await expect(page.locator(".copy-button")).toHaveCount(3);
+  await expect(page.locator("pre.install").first()).toContainText("--module agents");
 });
 
 test("plugins route and detail smoke", async ({ page }) => {
@@ -77,8 +92,10 @@ test("plugins route and detail smoke", async ({ page }) => {
   await page.goto(samplePluginPath);
   await expect(page.getByRole("heading", { name: "Performance Reporting Plugin" })).toBeVisible();
   await expect(page.getByText("Marketing Plugins / Reporting")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Install Summary" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Installed Skills" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Declared Composition" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Referenced Skills" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Reference template" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Install (Codex)" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Packaged Hooks" })).toBeVisible();
   await expect(page.getByRole("link", { name: "marketing/meta-google-weekly-performance-review" })).toBeVisible();
 });
@@ -108,6 +125,19 @@ test("new plugin domains smoke", async ({ page }) => {
   await expect(harnessRequirements.getByText("human-approval-for-harness-update")).toBeVisible();
 });
 
+test("effectful plugin capabilities remain independently projected", async ({ page }) => {
+  await page.goto(sampleAdvertisingExperimentPluginPath);
+  await expect(page.getByRole("heading", { name: "ChatGPT Advertising Experiment Plugin" })).toBeVisible();
+  const readiness = page.locator(".detail-panel").filter({ has: page.getByRole("heading", { name: "Capability readiness" }) }).first();
+  await expect(readiness.getByRole("heading", { name: "Mock lab" })).toBeVisible();
+  await expect(readiness.getByRole("heading", { name: "Live read" })).toBeVisible();
+  await expect(readiness.getByRole("heading", { name: "Live write" })).toBeVisible();
+  await expect(readiness.getByText("usable-now", { exact: false })).toBeVisible();
+  await expect(readiness.getByText("setup-required", { exact: false })).toBeVisible();
+  await expect(readiness.getByText("not-verified", { exact: false })).toBeVisible();
+  await expect(readiness.getByText("No supported OpenAI Ads mutation adapter", { exact: false })).toBeVisible();
+});
+
 test("tools route and detail smoke", async ({ page }) => {
   await page.goto("/tools-mcp");
   await expect(page.getByRole("heading", { name: "Tools & MCP Catalog" })).toBeVisible();
@@ -119,6 +149,12 @@ test("tools route and detail smoke", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Operational Summary" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Capabilities" })).toBeVisible();
   await expect(page.getByText("remote-mcp-server")).toBeVisible();
+  const ga4Usability = page.locator(".detail-panel").filter({ has: page.getByRole("heading", { name: "How You Can Use This" }) }).first();
+  await expect(ga4Usability.getByText("Setup required", { exact: true }).first()).toBeVisible();
+  await expect(ga4Usability.getByText("remote-integration", { exact: false })).toBeVisible();
+  await expect(ga4Usability.getByText("GA4_CREDENTIAL runtime binding", { exact: false })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Install (Codex)" })).toBeVisible();
+  await expect(page.locator(".copy-button")).toHaveCount(3);
 });
 
 test("catalogue filters survive reload and detail navigation, then recover from no results", async ({ page }) => {

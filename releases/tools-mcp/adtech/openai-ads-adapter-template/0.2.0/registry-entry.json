@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.1",
+  "id": "adtech/openai-ads-adapter-template",
+  "name": "OpenAI Ads Adapter Template",
+  "description": "Deprecated reference contract retained for migration; use the executable OpenAI Ads API Client.",
+  "category": "tools-mcp/adtech",
+  "runtimes": [
+    "codex",
+    "claude",
+    "generic"
+  ],
+  "tags": [
+    "openai-ads",
+    "adapter",
+    "read-only",
+    "campaign-insights",
+    "product-feeds"
+  ],
+  "readiness": "deprecated",
+  "security_reviewed": false,
+  "deprecated": true,
+  "replaced_by": "adtech/openai-ads-api-client",
+  "operational": {
+    "connected_system": "OpenAI Ads API or local mock fixtures",
+    "capabilities": [
+      "Read advertiser account metadata.",
+      "List campaigns and ads.",
+      "Retrieve campaign insights.",
+      "Validate product-feed records."
+    ],
+    "auth_required": [
+      "Account-scoped OpenAI Ads API credential for live bindings"
+    ],
+    "access_level": "read-only",
+    "trust_boundary": "third-party-hosted",
+    "approval_boundary": "Read-only by design; future writes must use the existing policy-gated ad-platform executor."
+  },
+  "usability": {
+    "availability": "template-only",
+    "execution": "integration-template",
+    "limitations": [
+      "Deprecated reference contract only; no executable integration is packaged.",
+      "New installations and plugin references must use adtech/openai-ads-api-client."
+    ],
+    "quickstart": "Replace this package with adtech/openai-ads-api-client and follow its migration guidance.",
+    "source": "declared"
+  },
+  "dependencies": {
+    "tools": [
+      "secret_manager"
+    ],
+    "apis": [
+      "OpenAI Ads API"
+    ]
+  }
+}

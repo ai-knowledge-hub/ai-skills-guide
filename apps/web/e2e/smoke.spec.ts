@@ -208,3 +208,40 @@ test("phone navigation works by keyboard and representative pages reflow at 320p
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   }
 });
+
+test("open filter menus stay within the viewport across catalogue breakpoints", async ({ page }) => {
+  const menu = page.locator(".filter-menu");
+  async function expectMenuToFit(context: string) {
+    await expect(menu).toBeVisible();
+    await expect.poll(() => menu.evaluate(el => {
+      const bounds = el.getBoundingClientRect();
+      const viewport = document.documentElement.clientWidth;
+      return bounds.left >= 0 && bounds.right <= viewport
+        && document.documentElement.scrollWidth <= viewport
+        && el.scrollWidth <= el.clientWidth;
+    }), { message: `${context} must not create horizontal overflow` }).toBe(true);
+  }
+  for (const route of ["/skills", "/agents", "/plugins", "/tools-mcp"]) {
+    await page.goto(route);
+    const widths = route === "/skills" ? [320, 390, 760, 761, 768, 1024, 1150, 1151, 1280] : [320, 768];
+    for (const width of widths) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const filter of ["Domain", "Tag", "Runtime"]) {
+        const trigger = page.getByRole("button", { name: filter, exact: true });
+        await trigger.click();
+        await expectMenuToFit(`${route}: ${filter} at ${width}px`);
+        await menu.getByRole("button", { name: "Done", exact: true }).click();
+        await expect(trigger).toBeFocused();
+      }
+    }
+  }
+  // Reposition an already-open menu when the grid crosses its breakpoints.
+  for (const filter of ["Domain", "Tag", "Runtime"]) {
+    await page.getByRole("button", { name: filter, exact: true }).click();
+    for (const width of [1280, 320, 768]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expectMenuToFit(`Resizing open ${filter} to ${width}px`);
+    }
+    await menu.getByRole("button", { name: "Done", exact: true }).click();
+  }
+});

@@ -53,3 +53,13 @@ Local screenshots belong in ignored `output/playwright/`. Verification results a
 - In-app browser: inspected desktop and 390px mobile, dark/light. Actual clipboard value matches the displayed Codex command. Static artwork needs no pause/failure lifecycle controls. Final screenshots are local, ignored review evidence under `output/playwright/`.
 
 This is a local review build. Homepage/catalogue artwork adaptation is proposed for this product; it is not recorded as owner-approved. Final visual rollout, motion if selected, and full release verification remain under #79–#81. Nothing has been pushed or deployed.
+
+## Review fix · 30 October 2026: open filter menu bounds
+
+The local P2 review reported Tag expanding a 320px page to 349px and Runtime expanding a 768px page to 795px. The original reflow check only measured closed menus. A regression opening each menu reproduced Tag overflow at 320px before the fix.
+
+`FilterSelect` now measures the usable viewport and anchors an open panel within 16px horizontal gutters before paint. Menu width also uses that usable width, including scrollbar space. A resize listener and scoped ResizeObserver keep it positioned when the viewport, trigger or panel changes; both are cleaned up on close/unmount. Removed the Runtime-only mobile alignment and minimum-width overrides. Long option text can wrap inside the panel; page overflow is not hidden.
+
+The new browser regression checks Domain, Tag and Runtime at 320, 390, 760, 761, 768, 1024, 1150, 1151 and 1280px on Skills, plus 320/768px on the other three catalogues. It asserts actual menu bounds, page width and internal scroll width, verifies focus returns to the trigger, and resizes already-open menus. The complete suite passes all 13 tests; the focused regression also passes after the final scrollbar-aware width refinement. Production build results and exact reported-case measurements are checked before delivery.
+
+Production confirmation: build/type/lint checks pass. With Tag open at a 320px browser width, usable viewport and page width both measure 305px (15px scrollbar); the menu stays between x=41.31 and x=289. With Runtime open at 768px, usable viewport/page both measure 753px and the menu stays between x=507 and x=737. Screenshots: `output/playwright/filter-tag-320-fixed.jpg` and `filter-runtime-768-fixed.jpg`. The local production preview was restarted with the fix; nothing was pushed or deployed.

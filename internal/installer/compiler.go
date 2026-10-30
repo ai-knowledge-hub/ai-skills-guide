@@ -120,7 +120,7 @@ func CompilePluginRuntimePackage(packageDir, runtimeName string) ([]string, erro
 		return nil, fmt.Errorf("parse compiler source manifest: %w", err)
 	}
 	if !manifest.Artifact.SelfContained || manifest.Artifact.DependencyLock == nil {
-		if manifest.SchemaVersion != "2.1" {
+		if manifest.SchemaVersion != "2.1" && manifest.SchemaVersion != "2.2" {
 			return prepareLegacyRuntimeArtifact(packageDir, runtimeName)
 		}
 		return nil, fmt.Errorf("plugin %s@%s has no self-contained dependency lock; minimal plugin metadata is not a complete runtime package", manifest.ID, manifest.Version)

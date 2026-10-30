@@ -47,7 +47,7 @@ export default async function AgentDetailPage({ params }: { params: { id: string
       </article>
 
       <section className="detail-grid">
-        <UsabilityPanel usability={entry.usability} />
+        <UsabilityPanel compatibility={entry.compatibility} usability={entry.usability} />
         <article className="card detail-panel">
           <h2>Operational Summary</h2>
           <p><span className="meta">Role:</span> {entry.operational?.role ?? "Not documented"}</p>

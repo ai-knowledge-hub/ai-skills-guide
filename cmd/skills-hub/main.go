@@ -205,6 +205,7 @@ func runInfo(args []string) error {
 	fmt.Printf("versions: %s\n", strings.Join(versions, ", "))
 	fmt.Printf("runtimes: %s\n", strings.Join(skill.Runtimes, ", "))
 	printUsabilitySummary(os.Stdout, skill)
+	printCompatibilitySummary(os.Stdout, skill, resolvedVersion.Version)
 	fmt.Printf("deprecated: %t\n", skill.Deprecated)
 	if strings.TrimSpace(*readinessRuntime) != "" {
 		installed, targetErr := installer.ResolveRuntimeTargetForModule(*readinessRuntime, moduleName, *readinessTarget)

@@ -34,8 +34,17 @@ export type VersionEntry = {
   sha256: string;
 };
 
+export type CompatibilityRequirement = {
+ kind: "api" | "sdk" | "protocol" | "runtime" | "platform";
+ name: string;
+ versions?: string[];
+ capabilities?: string[];
+ notes?: string;
+};
+
 export type RegistryEntry = {
-  schema_version?: "1.1" | "2.0" | "2.1";
+ compatibility?: CompatibilityRequirement[];
+  schema_version?: "1.1" | "2.0" | "2.1" | "2.2";
   id: string;
   name: string;
   description: string;

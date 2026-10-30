@@ -478,7 +478,7 @@ func validatePluginArchiveClosure(packageDir, manifestPath string, manifest Mani
 			return fmt.Errorf("manifest %s self-contained closure is missing hook %s", manifestPath, hook)
 		}
 	}
-	if manifest.SchemaVersion == "2.1" || manifest.Artifact.DependencyLock != nil || manifest.Artifact.Checksums != nil || manifest.Artifact.SBOM != nil || manifest.Artifact.Provenance != nil {
+	if manifest.SchemaVersion == "2.1" || manifest.SchemaVersion == "2.2" || manifest.Artifact.DependencyLock != nil || manifest.Artifact.Checksums != nil || manifest.Artifact.SBOM != nil || manifest.Artifact.Provenance != nil {
 		if err := validateArtifactMetadata(packageDir, manifestPath, manifest, now, requireCurrentEvidence); err != nil {
 			return err
 		}

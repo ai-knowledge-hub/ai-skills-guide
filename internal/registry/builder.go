@@ -158,6 +158,7 @@ func cloneNonEmptyStrings(values []string) []string {
 func ProjectManifest(m Manifest) SkillEntry {
 	entry := SkillEntry{
 		SchemaVersion:    m.SchemaVersion,
+		Compatibility:    m.Compatibility,
 		ID:               m.ID,
 		Name:             m.Name,
 		Description:      m.Description,

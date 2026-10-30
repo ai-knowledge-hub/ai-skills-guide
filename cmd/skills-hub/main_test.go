@@ -18,6 +18,7 @@ import (
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/installer"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
+	"github.com/ai-knowledge-hub/ai-skills-guide/internal/testutil"
 )
 
 func TestPrintPluginSummary(t *testing.T) {
@@ -234,6 +235,8 @@ func TestShellQuoteCommandPreservesArgumentBoundaries(t *testing.T) {
 }
 
 func TestBindReadinessEntryUsesReceiptVerifiedSelectedVersionManifest(t *testing.T) {
+	// Exercise this retained release at a known admissible instant.
+	testutil.PackageEvidenceAt(t, time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
 		t.Fatal("resolve test source path")
@@ -277,6 +280,8 @@ func TestBindReadinessEntryUsesReceiptVerifiedSelectedVersionManifest(t *testing
 }
 
 func TestRunAuthConfigureBindsHistoricalInstalledContract(t *testing.T) {
+	// Exercise this retained release at a known admissible instant.
+	testutil.PackageEvidenceAt(t, time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
 		t.Fatal("resolve test source path")

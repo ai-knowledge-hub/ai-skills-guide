@@ -6,11 +6,15 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
+	"github.com/ai-knowledge-hub/ai-skills-guide/internal/testutil"
 )
 
 func TestAgentInstallCompilesPinnedBindingsWithoutManualFile(t *testing.T) {
+	// Exercise this retained release at a known admissible instant.
+	testutil.PackageEvidenceAt(t, time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
 	repositoryRoot := filepath.Clean(filepath.Join("..", ".."))
 	indexes := writeAgentTestIndexes(t, repositoryRoot)
 	agentManifest, err := registry.ValidatePackageManifest(filepath.Join(repositoryRoot, "agents", "adtech", "bi-insights-orchestrator", "agent.yaml"))
@@ -108,6 +112,8 @@ func TestAgentInstallCompilesPinnedBindingsWithoutManualFile(t *testing.T) {
 }
 
 func TestAgentCompileBlocksUnavailableRequiredCapability(t *testing.T) {
+	// Exercise this retained release at a known admissible instant.
+	testutil.PackageEvidenceAt(t, time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
 	repositoryRoot := filepath.Clean(filepath.Join("..", ".."))
 	indexes := writeAgentTestIndexes(t, repositoryRoot)
 	manifest, err := registry.ValidatePackageManifest(filepath.Join(repositoryRoot, "agents", "marketing", "campaign-qa-supervisor", "agent.yaml"))
@@ -140,6 +146,8 @@ func TestAgentCompileBlocksUnavailableRequiredCapability(t *testing.T) {
 }
 
 func TestReleasedAgentArchiveInstallsSelfContainedClosure(t *testing.T) {
+	// Exercise this retained release at a known admissible instant.
+	testutil.PackageEvidenceAt(t, time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
 	repositoryRoot := filepath.Clean(filepath.Join("..", ".."))
 	archive := filepath.Join(repositoryRoot, "releases", "agents", "adtech", "bi-insights-orchestrator", "0.2.0", "package.tar.gz")
 	extractRoot := t.TempDir()

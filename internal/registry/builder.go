@@ -49,7 +49,9 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 			return Index{}, err
 		}
 		skillDir := filepath.Dir(manifestPath)
-		if err := validatePackage(manifestPath, m, time.Now().UTC(), true, false); err != nil {
+		// A committed index records canonical declarations. Current catalog
+		// projections and operational admission evaluate freshness separately.
+		if err := validatePackage(manifestPath, m, time.Time{}, false, false); err != nil {
 			return Index{}, err
 		}
 		sha, err := digestPublishedArtifact(root, moduleDir, m, skillDir)

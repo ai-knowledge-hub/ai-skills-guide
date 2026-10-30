@@ -184,9 +184,14 @@ Repository admission additionally verifies that declared entrypoint, artifact,
 and package-relative command paths exist and remain contained in the package.
 It resolves internal skill, agent, tool, and plugin-include references against
 the repository, rejects incompatible runtime closure and dependency cycles, and
-requires a current verification reference and timestamp for an explicit v2
-`usable-now` claim. These checks do not turn an opaque evidence reference into
-proof: release promotion must still resolve the authoritative evidence record
+requires verification references and a well-formed timestamp for v2 contracts.
+Repository validation and canonical index generation are independent of elapsed
+evidence age: they preserve declarations and immutable release identities.
+Operational package admission at install or use time still requires current
+evidence for an explicit v2 `usable-now` or authenticated contract. Current
+catalog projections suppress expired positive claims without rewriting retained
+manifests. These checks do not turn an opaque evidence reference into proof:
+release promotion must still resolve the authoritative evidence record
 and validate its target, artifact digest, observations, producer, disposition,
 and expiry under the operational readiness contract.
 

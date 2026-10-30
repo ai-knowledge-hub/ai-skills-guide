@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
+	"github.com/ai-knowledge-hub/ai-skills-guide/internal/testutil"
 	"github.com/gofrs/flock"
 )
 
@@ -1097,6 +1098,8 @@ func TestInstallRemoteReleaseAcceptsPublishedArchive(t *testing.T) {
 }
 
 func TestInstallPublishedContentRepurposingPluginWithoutSourceSiblings(t *testing.T) {
+	// Exercise this retained release at a known admissible instant.
+	testutil.PackageEvidenceAt(t, time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
 	workingDirectory, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("get working directory: %v", err)
@@ -1188,6 +1191,8 @@ func TestInstallPublishedContentRepurposingPluginWithoutSourceSiblings(t *testin
 }
 
 func TestInstallPublishedLocalPluginWaveWithoutSourceSiblings(t *testing.T) {
+	// Exercise this retained release at a known admissible instant.
+	testutil.PackageEvidenceAt(t, time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
 	workingDirectory, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("get working directory: %v", err)

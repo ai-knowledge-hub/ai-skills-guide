@@ -12,7 +12,24 @@ import (
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/installer"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
+	"github.com/ai-knowledge-hub/ai-skills-guide/internal/testutil"
 )
+
+func TestCompositeStatusUsesSuppliedEvaluationTime(t *testing.T) {
+	// A different default admission clock must not override this evaluation's
+	// explicit instant, even when the default would expire the fixture.
+	testutil.PackageEvidenceAt(t, time.Date(2100, 1, 1, 0, 0, 0, 0, time.UTC))
+	now := time.Date(2026, 9, 23, 12, 0, 0, 0, time.UTC)
+	fixture := installCompositeStatusFixture(t, "read-only")
+	configureCompositeProvider(t, fixture.stateDir, fixture.toolEntries[0], now)
+	report, err := CompositeStatus(context.Background(), fixture.options(now))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !report.Ready || report.CoverageState != "partial" || report.Providers[0].State != "ready" {
+		t.Fatalf("nested admission ignored the supplied evaluation instant: %#v", report)
+	}
+}
 
 func TestCompositeStatusDerivesRequiredAndOptionalCoverage(t *testing.T) {
 	now := time.Date(2026, 9, 23, 12, 0, 0, 0, time.UTC)

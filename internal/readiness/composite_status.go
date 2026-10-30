@@ -54,6 +54,9 @@ type CompositeStatusReport struct {
 // identity and scope verification to the provider tool's existing auth driver.
 // The plugin derives coverage only; it never reads or stores provider secrets.
 func CompositeStatus(ctx context.Context, opts CompositeStatusOptions) (CompositeStatusReport, error) {
+	if opts.Now.IsZero() {
+		opts.Now = time.Now().UTC()
+	}
 	report := CompositeStatusReport{
 		EntryID: opts.Entry.ID, EntryVersion: opts.Version, Runtime: opts.Runtime,
 		CoverageState: "complete", Ready: true, Providers: []CompositeProviderStatus{},
@@ -106,7 +109,7 @@ func CompositeStatus(ctx context.Context, opts CompositeStatusOptions) (Composit
 			manifestPath := filepath.Join(toolDir, "tool.yaml")
 			manifest, manifestErr := registry.ValidateHistoricalPackageManifest(manifestPath)
 			if manifestErr == nil {
-				manifest, manifestErr = registry.ValidatePackageManifest(manifestPath)
+				manifest, manifestErr = registry.ValidatePackageManifestAt(manifestPath, opts.Now)
 			}
 			if manifestErr != nil || manifest.ID != dependency.Tool || manifest.Version != provider.ToolVersion {
 				provider.Reason = "installed provider contract is unavailable, expired, or does not match the plugin lock"

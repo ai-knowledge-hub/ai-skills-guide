@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import UsabilityBadge from "@/components/UsabilityBadge";
 import { notFound } from "next/navigation";
 import InstallCommands from "@/components/InstallCommands";
 import { buildModuleInstallSnippet, getEntryById, loadPluginsRegistry } from "@/lib/registry";
@@ -5,6 +7,11 @@ import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels"
 import UsabilityPanel from "@/components/UsabilityPanel";
 
 const REPO_BLOB_BASE = "https://github.com/ai-knowledge-hub/ai-skills-guide/blob/main";
+
+export async function generateMetadata({ params }: { params: { id: string[] } }): Promise<Metadata> {
+  const entry = await getEntryById("plugins", params.id.join("/"));
+  return { title: entry?.name ?? "Entry not found", description: entry?.description };
+}
 
 export async function generateStaticParams() {
   const registry = await loadPluginsRegistry();
@@ -21,20 +28,17 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
   const packageBasePath = `plugins/${entry.id}`;
 
   return (
-    <main>
-      <div className="nav">
-        <a href="/" className="pill">Home</a>
-        <a href="/plugins" className="pill">Plugins</a>
-        <span className="pill">{entry.id}</span>
-      </div>
+    <main id="main" tabIndex={-1} className="detail-page">
+      <nav className="breadcrumb" aria-label="Breadcrumb"><a href="/plugins">All Plugins</a><span aria-hidden="true">/</span><span>{entry.id}</span></nav>
 
-      <article className="card">
+      <article className="card detail-lead">
         <p className="meta">{formatCategoryLabel(entry.category)}</p>
         <h1>{entry.name}</h1>
         <p>{entry.description}</p>
         <p className="meta">{entry.tags.join(", ")}</p>
+        <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{entry.usability.execution}</span><a href="#usability" className="text-link">Requirements &amp; limits</a></div>
         <div className="detail-install-lead">
-          <p className="meta">{entry.usability.availability === "template-only" ? "Reference composition" : "Install this plugin"}</p>
+          <h2 className="meta">{entry.usability.availability === "template-only" ? "Reference composition" : "Install this plugin"}</h2>
           <InstallCommands
             compact
             availability={entry.usability.availability}

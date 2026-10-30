@@ -16,6 +16,7 @@ import (
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/installer"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
+	"github.com/ai-knowledge-hub/ai-skills-guide/internal/testutil"
 )
 
 func TestValidateCompiledAgentContractFailsClosed(t *testing.T) {
@@ -66,6 +67,8 @@ func TestLoadCompiledAgentContractRejectsUnknownFields(t *testing.T) {
 }
 
 func TestRunPreflightVerifiesInstalledAgentClosureEndToEnd(t *testing.T) {
+	// Exercise this retained release at a known admissible instant.
+	testutil.PackageEvidenceAt(t, time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
 	repositoryRoot := filepath.Clean(filepath.Join("..", ".."))
 	manifest, err := registry.ValidatePackageManifest(filepath.Join(repositoryRoot, "agents", "adtech", "bi-insights-orchestrator", "agent.yaml"))
 	if err != nil {

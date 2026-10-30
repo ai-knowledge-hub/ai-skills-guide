@@ -30,11 +30,11 @@ jobs:
           cache: true
       - name: Install check-jsonschema
         run: python3 -m pip install --upgrade pip "check-jsonschema==0.37.0"
-      - name: Run manifest and registry contract tests
+      - name: Test structural contracts and runtime freshness enforcement
         run: make cli-test
       - name: Build CLI with an explicit test-only runtime trust root
         run: make cli-build-test
-      - name: Generate registry index
+      - name: Generate canonical registry indexes
         run: make registry
       - name: Validate manifests and registry schemas
         run: bash scripts/validate-manifests.sh

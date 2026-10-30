@@ -12,9 +12,13 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/ai-knowledge-hub/ai-skills-guide/internal/evidenceclock"
 )
 
 const (
+	// Legacy manifest evidence caps from operational-readiness-v1 section 9.
+	// These govern readiness at use time, not immutable package integrity.
 	instructionEvidenceLifetime = 180 * 24 * time.Hour
 	executableEvidenceLifetime  = 90 * 24 * time.Hour
 	authEvidenceLifetime        = 30 * 24 * time.Hour
@@ -66,10 +70,11 @@ type manifestRecord struct {
 
 // ValidateRepository performs registry-admission checks that need repository
 // context. Schema validation remains a separate CI gate; this function proves
-// package-local paths and the internal dependency graph.
+// package-local paths and the internal dependency graph. Elapsed evidence age
+// does not corrupt source or retained releases; operational admission below
+// still checks freshness at use time.
 func ValidateRepository(root string) (int, error) {
 	records := make([]manifestRecord, 0)
-	now := time.Now().UTC()
 	for _, definition := range moduleDefinitions {
 		paths, err := findManifests(filepath.Join(root, definition.directory), definition.manifest)
 		if err != nil {
@@ -80,7 +85,7 @@ func ValidateRepository(root string) (int, error) {
 			if err != nil {
 				return 0, err
 			}
-			if err := validatePackage(path, manifest, now, true, false); err != nil {
+			if err := validatePackage(path, manifest, time.Time{}, false, false); err != nil {
 				return 0, err
 			}
 			records = append(records, manifestRecord{kind: definition.kind, path: path, manifest: manifest})
@@ -92,10 +97,20 @@ func ValidateRepository(root string) (int, error) {
 	return len(records), nil
 }
 
-// ValidatePackageManifest applies the semantic and package-layout admission
-// checks used by registry generation to one extracted package.
+// ValidatePackageManifest applies schema, package-layout, and current-evidence
+// admission checks to one extracted package before operational use.
 func ValidatePackageManifest(manifestPath string) (Manifest, error) {
-	return validatePackageManifest(manifestPath, time.Now().UTC(), true)
+	return ValidatePackageManifestAt(manifestPath, evidenceclock.Now())
+}
+
+// ValidatePackageManifestAt applies the same operational admission checks at
+// one explicit evaluation instant. Composite evaluations use this to avoid
+// mixing their supplied clock with the wall clock during nested validation.
+func ValidatePackageManifestAt(manifestPath string, now time.Time) (Manifest, error) {
+	if now.IsZero() {
+		now = evidenceclock.Now()
+	}
+	return validatePackageManifest(manifestPath, now.UTC(), true)
 }
 
 // ValidateHistoricalPackageManifest verifies immutable package history against
@@ -151,6 +166,9 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time, requ
 	}
 
 	if strings.HasPrefix(manifest.SchemaVersion, "2.") {
+		if _, err := time.Parse(time.RFC3339, manifest.Verification.LastVerifiedAt); err != nil {
+			return fmt.Errorf("manifest %s has invalid verification timestamp: %w", manifestPath, err)
+		}
 		if err := validateProviderDependencyDeclarations(manifestPath, manifest); err != nil {
 			return err
 		}
@@ -1114,7 +1132,7 @@ func validateFreshEvidence(manifestPath string, manifest Manifest, now time.Time
 	if manifest.Authentication.Status != "none" {
 		lifetime = authEvidenceLifetime
 	}
-	if now.Sub(observedAt) > lifetime {
+	if !now.Before(observedAt.Add(lifetime)) {
 		return fmt.Errorf("manifest %s %s with evidence older than %s", manifestPath, claim, lifetime)
 	}
 	return nil

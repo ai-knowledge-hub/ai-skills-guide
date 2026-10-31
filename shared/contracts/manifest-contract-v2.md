@@ -216,8 +216,8 @@ These are maintainer declarations, not test results or live readiness evidence.
 Absent metadata means unknown. Schema 2.1 and earlier reject the new field;
 older consumers reject 2.2 rather than silently claiming support.
 
-The semantics and staged migration are defined in
-[operational readiness v2](operational-readiness-v2.md). Adding declarations does
-not opt a package into new runtime admission behavior. Actual test observations,
-composition evaluation and replacement of v1 age gates require the migration
-steps specified there. Released manifests must not be edited in place.
+Website display semantics are defined in
+[catalogue compatibility v1](catalogue-compatibility-v1.md). These declarations
+do not opt a package into new runtime admission behavior or assert live provider
+verification. Runtime policy remains operational v1. Released manifests must
+not be edited in place; separate editorial annotations are version-bound.

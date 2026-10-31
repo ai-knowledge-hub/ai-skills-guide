@@ -9,9 +9,9 @@
 | Status | Normative |
 | Effective date | 2026-09-13 |
 
-> Successor: [contract v2](operational-readiness-v2.md) defines compatibility
-> through versions and changes. Existing v1 consumers retain this contract until
-> the explicit v2 migration gates are implemented.
+> Website compatibility notes follow the separate
+> [catalogue contract](catalogue-compatibility-v1.md). This contract continues
+> to govern operational runtime behavior; the former v2 design was withdrawn.
 
 ## 1. Purpose and scope
 

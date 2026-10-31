@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { findCatalogueCompatibility, type CatalogueCompatibility } from "./catalogueCompatibility";
 
 export type ModuleKey = "skills" | "agents" | "tools" | "plugins";
 
@@ -43,6 +44,7 @@ export type CompatibilityRequirement = {
 };
 
 export type RegistryEntry = {
+  catalogueCompatibility?: CatalogueCompatibility;
  compatibility?: CompatibilityRequirement[];
   schema_version?: "1.1" | "2.0" | "2.1" | "2.2";
   id: string;
@@ -188,7 +190,14 @@ export async function loadRegistry(module: ModuleKey = "skills"): Promise<Regist
   if (parsed.registry_version !== "1.1" && parsed.registry_version !== "1.2" && parsed.registry_version !== "1.3") {
     throw new Error(`Unsupported registry_version ${String(parsed.registry_version)}; upgrade this consumer or use a compatible registry snapshot.`);
   }
-  return parsed as RegistryIndex;
+  const index = parsed as RegistryIndex;
+  return {
+    ...index,
+    skills: index.skills.map((entry) => ({
+      ...entry,
+      catalogueCompatibility: findCatalogueCompatibility(module, entry.id, entry.latest)
+    }))
+  };
 }
 
 export async function loadSkillsRegistry() {

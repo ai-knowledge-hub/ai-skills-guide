@@ -46,7 +46,7 @@ export default async function SkillDetailPage({ params }: { params: { id: string
       </article>
 
       <section className="detail-grid">
-        <UsabilityPanel compatibility={skill.compatibility} usability={skill.usability} />
+        <UsabilityPanel catalogueCompatibility={skill.catalogueCompatibility} compatibility={skill.compatibility} usability={skill.usability} />
         <article className="card detail-panel">
           <h2>Operational Summary</h2>
           <p><span className="meta">Use when:</span> {skill.operational?.use_when ?? "Not documented"}</p>

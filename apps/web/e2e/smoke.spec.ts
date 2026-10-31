@@ -322,9 +322,21 @@ test("desktop catalogue rail stays at the page edge and stops before the footer"
 });
 
 test("legacy details report unknown compatibility without inferring support", async ({ page }) => {
-  for (const route of [sampleSkillPath, sampleAgentPath, samplePluginPath, sampleToolPath]) {
+  for (const route of [sampleSkillPath, sampleAgentPath, samplePluginPath]) {
     await page.goto(route);
     await expect(page.getByRole("heading", { name: "Declared compatibility", exact: true })).toBeVisible();
     await expect(page.getByText("Compatibility unknown: versions and capabilities have not been declared.", { exact: true })).toBeVisible();
   }
+});
+
+test("maintainer compatibility is bound to the exact package and version", async ({ page }) => {
+  const { findCatalogueCompatibility } = await import("../lib/catalogueCompatibility");
+  expect(findCatalogueCompatibility("tools", "analytics/ga4-mcp-connector", "0.2.0")?.details).toContain("Google Analytics Data API: v1beta");
+  expect(findCatalogueCompatibility("tools", "analytics/ga4-mcp-connector", "0.3.0")).toBeUndefined();
+  expect(findCatalogueCompatibility("skills", "analytics/ga4-mcp-connector", "0.2.0")).toBeUndefined();
+  await page.goto(sampleToolPath);
+  await expect(page.getByText("Google Analytics Data API: v1beta", { exact: true })).toBeVisible();
+  await expect(page.getByText(/Maintainer-reviewed information for version 0\.2\.0/)).toBeVisible();
+  await expect(page.getByText(/This is not a live provider check/)).toBeVisible();
+  await expect(page.getByRole("link", { name: "Packaged connector manifest" })).toBeVisible();
 });

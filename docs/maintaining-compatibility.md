@@ -10,6 +10,13 @@ up the package. Include the reviewed date, a source link to the exact packaged
 release or authoritative documentation, and important limitations. A date
 records an editorial review; it is not an automatic expiry or a live check.
 
+The [implemented-tool review inventory](tool-version-review.md) records the
+current coverage and the release files behind the notes. Use the retained
+archive to check what users actually download. A source-code link should pin
+an immutable commit whose relevant files match that archive. Describe an API
+version found there as a packaged target; inspecting code alone does not
+establish that the provider still supports it.
+
 When a package publishes a different version, the old annotation does not carry
 forward automatically. Review its implementation and dependencies before adding
 an annotation for the new version. Missing annotations remain unknown. Skills

@@ -54,7 +54,7 @@ one automatically. Historical notes may remain when a new release appears.
 | Provider identity and effect scope cannot be rewritten together | `TestAdvertisingLabPreservesRequiredProviderAndEffectBoundary` requires the OpenAI Ads client on both include and required/read-only authority paths and explicit unavailable writes. Six coordinated/unilateral mutations are rejected. Existing admission authority checks remain. |
 | Schemas validate behavior, and declarations cannot self-issue proof | `TestManifestSchemasRejectExecutableHelpersForV20` runs the real validator across four modules and three schema versions, with a valid control in every case. Existing canonical-definition drift checks remain. `compatibility_test.go` uses literal expected declarations, missing-metadata checks, old-reader rejection and invalid range/kind/self-issued-status fixtures. |
 | Editorial content binds to retained releases and preserves declarations | `catalogue-contract.spec.ts` checks unique retained subjects, required reviewed identities, source/date shape and exact tuple matching. Registry decoration is compared with raw committed indexes, preserving usability, authentication and every other field. |
-| Display remains truthful and dates do not promote readiness | The real shared panel is rendered for unknown, native declared and editorial reviewed states. The reviewed fixture is dated 2000-01-01; it remains visible with limits/source and the no-live-check label. Every state retains Not verified. Existing real-page smoke tests check all reviewed tool pages. |
+| Display remains truthful and dates do not promote readiness | The real shared panel is rendered for unknown, native declared and editorial reviewed states. The reviewed fixture is dated 2000-01-01; it remains visible with limits/source and the no-live-check label. Every state retains Not verified. Real-page smoke assertions cover only notes matching each tool's latest release. Historical notes remain covered by the retained-content inventory and a simulated release transition through the site's registry decorator and shared panel. |
 
 This ledger defines eight scoped invariants. Membership and dependency checks
 share identity authority; those interactions are tested with addition, deletion,
@@ -78,6 +78,9 @@ live network faults are outside this static failure model.
   matrix expands with new data; no fixed catalogue size is asserted.
 - Display: 3/3 metadata states, including an old editorial review and precedence
   of a matching annotation over a native declaration.
+- Release transitions: 4/4 page-scope cases cover current/historical notes,
+  a new matching note and a wrong-module note. A newer unreviewed GA4 fixture
+  separately shows unknown compatibility without losing its retained 0.2.0 note.
 - Producer mutation check: 6/6 selected harmful code mutations detected; no
   survivors in this selected set. Mutations substitute BigQuery's identity,
   hide the reporting helper, promote the reconciler, or ignore module, ID or

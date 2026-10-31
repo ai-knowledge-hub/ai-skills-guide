@@ -5,7 +5,8 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { expect, test } from "@playwright/test";
 import UsabilityPanel from "../components/UsabilityPanel";
 import { catalogueCompatibility, findCatalogueCompatibility, type CatalogueCompatibility } from "../lib/catalogueCompatibility";
-import { loadRegistry, type ModuleKey, type RegistryIndex } from "../lib/registry";
+import { loadRegistry, withCatalogueCompatibility, type ModuleKey, type RegistryEntry, type RegistryIndex } from "../lib/registry";
+import { latestToolPageNotes } from "./catalogue-page-notes";
 
 // Independent review inventory: docs/tool-version-review.md and its retained
 // releases. Additional entries/releases need not acquire a note automatically.
@@ -79,6 +80,59 @@ test("registry decoration preserves every package declaration and selects only i
     });
     expect({ ...decorated, skills: declarations }).toEqual(original);
   }
+});
+
+test("tool page assertions select only the latest review while retaining historical notes", () => {
+  const oldNote = findCatalogueCompatibility("tools", "analytics/ga4-mcp-connector", "0.2.0")!;
+  const newNote = { ...oldNote, version: "0.3.0" };
+  const otherModuleNote = { ...newNote, module: "skills" as const };
+  for (const scenario of [
+    { latest: "0.2.0", notes: [oldNote], expected: [oldNote] },
+    { latest: "0.3.0", notes: [oldNote], expected: [] },
+    { latest: "0.3.0", notes: [oldNote, newNote], expected: [newNote] },
+    { latest: "0.3.0", notes: [oldNote, otherModuleNote], expected: [] }
+  ]) {
+    const retained = structuredClone(scenario.notes);
+    expect(latestToolPageNotes([{ id: oldNote.id, latest: scenario.latest }], scenario.notes)).toEqual(scenario.expected);
+    expect(scenario.notes).toEqual(retained);
+    expect(scenario.notes).toContain(oldNote);
+  }
+});
+
+test("a newer unreviewed release shows unknown compatibility while its old note stays retained", async ({ page }) => {
+  const id = "analytics/ga4-mcp-connector";
+  const historical = findCatalogueCompatibility("tools", id, "0.2.0")!;
+  const retained = JSON.parse(await fs.readFile(path.resolve("../../releases/tools-mcp", id, "0.2.0/registry-entry.json"), "utf8")) as RegistryEntry;
+  // Simulate 0.3.0 today. If that release later acquires a note, pick the next
+  // unreviewed minor without forcing real releases or annotations to change.
+  const reviewedVersions = new Set(catalogueCompatibility.filter(note => note.module === "tools" && note.id === id).map(note => note.version));
+  let minor = 3;
+  while (reviewedVersions.has(`0.${minor}.0`)) minor++;
+  const latest = `0.${minor}.0`;
+  const fixture: RegistryIndex = {
+    registry_version: "1.3", generated_at: "2026-10-31T00:00:00Z",
+    skills: [{
+      ...retained, latest, catalogueCompatibility: historical,
+      versions: ["0.2.0", latest].map(version => ({
+        version, released_at: "2026-10-31T00:00:00Z",
+        manifest_url: `https://example.com/fixtures/ga4/${version}.yaml`,
+        artifact_url: `https://example.com/fixtures/ga4/${version}.tar.gz`, sha256: "0".repeat(64)
+      }))
+    }]
+  };
+  const entry = withCatalogueCompatibility(fixture, "tools").skills[0];
+  expect(entry.catalogueCompatibility).toBeUndefined();
+  expect(latestToolPageNotes([entry], catalogueCompatibility)).toEqual([]);
+  expect(fixture.skills[0].catalogueCompatibility).toBe(historical);
+  expect(findCatalogueCompatibility("tools", id, "0.2.0")).toBe(historical);
+
+  await page.setContent(renderToStaticMarkup(React.createElement(UsabilityPanel, {
+    usability: entry.usability, compatibility: entry.compatibility, catalogueCompatibility: entry.catalogueCompatibility
+  })));
+  const panel = page.locator("#usability");
+  await expect(panel.getByText("Compatibility unknown: versions and capabilities have not been declared.", { exact: true })).toBeVisible();
+  await expect(panel.getByText(/Maintainer-reviewed information/)).toHaveCount(0);
+  await expect(panel.getByRole("link", { name: historical.source.label, exact: true })).toHaveCount(0);
 });
 
 test("compatibility display distinguishes unknown, declared and reviewed information", async ({ page }) => {

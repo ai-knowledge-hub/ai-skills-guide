@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { catalogueCompatibility } from "../lib/catalogueCompatibility";
+import { loadRegistry } from "../lib/registry";
+import { latestToolPageNotes } from "./catalogue-page-notes";
 
 const sampleSkillPath = "/skills/marketing/meta-google-weekly-performance-review";
 const sampleAgentPath = "/agents/marketing/weekly-performance-supervisor";
@@ -331,7 +333,8 @@ test("legacy details report unknown compatibility without inferring support", as
 });
 
 test("reviewed tool pages disclose notes, limits and provenance without promoting readiness", async ({ page }) => {
-  for (const note of catalogueCompatibility) {
+  const tools = await loadRegistry("tools");
+  for (const note of latestToolPageNotes(tools.skills, catalogueCompatibility)) {
     await page.goto(`/tools-mcp/${note.id}`);
     const panel = page.locator("#usability");
     await expect(panel.getByText(`Maintainer-reviewed information for version ${note.version} · Reviewed ${note.reviewed}. This is not a live provider check.`, { exact: true })).toBeVisible();

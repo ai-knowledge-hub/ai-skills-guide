@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { findCatalogueCompatibility } from "../lib/catalogueCompatibility";
 
 const sampleSkillPath = "/skills/marketing/meta-google-weekly-performance-review";
 const sampleAgentPath = "/agents/marketing/weekly-performance-supervisor";
@@ -330,7 +331,6 @@ test("legacy details report unknown compatibility without inferring support", as
 });
 
 test("maintainer compatibility is bound to the exact package and version", async ({ page }) => {
-  const { findCatalogueCompatibility } = await import("../lib/catalogueCompatibility");
   expect(findCatalogueCompatibility("tools", "analytics/ga4-mcp-connector", "0.2.0")?.details).toContain("Google Analytics Data API: v1beta");
   expect(findCatalogueCompatibility("tools", "analytics/ga4-mcp-connector", "0.3.0")).toBeUndefined();
   expect(findCatalogueCompatibility("skills", "analytics/ga4-mcp-connector", "0.2.0")).toBeUndefined();

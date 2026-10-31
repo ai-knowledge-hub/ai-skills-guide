@@ -1,7 +1,7 @@
 import type { RegistryEntry } from "@/lib/registry";
 import UsabilityBadge from "@/components/UsabilityBadge";
 
-export default function UsabilityPanel({ usability }: { usability: RegistryEntry["usability"] }) {
+export default function UsabilityPanel({ usability, compatibility }: { usability: RegistryEntry["usability"]; compatibility?: RegistryEntry["compatibility"] }) {
   return (
     <article id="usability" className="card detail-panel" aria-labelledby="usability-heading">
       <h2 id="usability-heading">How You Can Use This</h2>
@@ -26,6 +26,18 @@ export default function UsabilityPanel({ usability }: { usability: RegistryEntry
           ))}
         </>
       ) : null}
+      <h3>Declared compatibility</h3>
+      {compatibility?.length ? (
+        <><p className="meta">Maintainer support declarations. Test coverage and live authentication are evaluated separately.</p>
+          <ul>{compatibility.map((requirement, index) => (
+            <li key={`${requirement.kind}:${requirement.name}:${index}`}>
+              <strong>{requirement.name}</strong> ({requirement.kind})
+              {requirement.versions?.length ? ` · versions: ${requirement.versions.join(", ")}` : ""}
+              {requirement.capabilities?.length ? ` · capabilities: ${requirement.capabilities.join(", ")}` : ""}
+              {requirement.notes ? <p>{requirement.notes}</p> : null}
+            </li>
+          ))}</ul></>
+      ) : <p>Compatibility unknown: versions and capabilities have not been declared.</p>}
       <p className="meta">Classification: {usability.source}</p>
     </article>
   );

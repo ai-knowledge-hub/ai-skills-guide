@@ -320,3 +320,11 @@ test("desktop catalogue rail stays at the page edge and stops before the footer"
     expect(await page.locator(".catalogue-heading").evaluate(el => getComputedStyle(el, "::before").content)).not.toBe("none");
   }
 });
+
+test("legacy details report unknown compatibility without inferring support", async ({ page }) => {
+  for (const route of [sampleSkillPath, sampleAgentPath, samplePluginPath, sampleToolPath]) {
+    await page.goto(route);
+    await expect(page.getByRole("heading", { name: "Declared compatibility", exact: true })).toBeVisible();
+    await expect(page.getByText("Compatibility unknown: versions and capabilities have not been declared.", { exact: true })).toBeVisible();
+  }
+});

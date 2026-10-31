@@ -1,7 +1,7 @@
 # Manifest Contract v2
 
 - Status: normative
-- Schema versions: `2.0`, `2.1`
+- Schema versions: `2.0`, `2.1`, `2.2`
 - Schema definitions:
   [`manifest-contract-v2.schema.json`](../schemas/manifest-contract-v2.schema.json)
 
@@ -26,7 +26,7 @@ artifact, target, and current evidence.
   manifests use `schema_version: "1.1"` to declare mandatory usability metadata
   explicitly.
 - A manifest that declares any v2 contract field must set
-  `schema_version: "2.0"` or `"2.1"` and provide `execution`, `artifact`,
+  `schema_version: "2.0"`, `"2.1"` or `"2.2"` and provide `execution`, `artifact`,
   `authentication`, plus verification `evidence` and `last_verified_at`.
 - Schema `2.1` adds the `not-verified` availability value and executable-helper
   disclosures. Schema `2.0` does not accept `not-verified`, preventing older
@@ -205,3 +205,19 @@ The golden fixtures under `shared/schemas/fixtures/manifest-v2/` cover every
 execution kind and authentication method, all four module schemas, explicit
 artifact absence, required binding enforcement, executable smoke-test
 enforcement, and rejection of embedded secret-shaped fields.
+
+## Schema 2.2 compatibility declarations
+
+Schema 2.2 adds optional `compatibility` requirements. Each item names its kind
+(`api`, `sdk`, `protocol`, `runtime`, `platform`), target name and exact version
+identifiers and/or required capabilities. Optional notes explain constraints.
+Version ranges and wildcard inference are not supported in this first slice.
+These are maintainer declarations, not test results or live readiness evidence.
+Absent metadata means unknown. Schema 2.1 and earlier reject the new field;
+older consumers reject 2.2 rather than silently claiming support.
+
+The semantics and staged migration are defined in
+[operational readiness v2](operational-readiness-v2.md). Adding declarations does
+not opt a package into new runtime admission behavior. Actual test observations,
+composition evaluation and replacement of v1 age gates require the migration
+steps specified there. Released manifests must not be edited in place.

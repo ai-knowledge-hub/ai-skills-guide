@@ -106,6 +106,11 @@ func ParseManifest(path string) (Manifest, error) {
 		}
 	}
 
+	if _, declared := raw["compatibility"]; declared {
+		if err := validateManifestSchema(path); err != nil {
+			return Manifest{}, err
+		}
+	}
 	if err := validateManifestFields(out, path); err != nil {
 		return Manifest{}, err
 	}
@@ -113,7 +118,7 @@ func ParseManifest(path string) (Manifest, error) {
 }
 
 func firstV2ContractField(raw map[string]any) (string, bool) {
-	for _, field := range []string{"execution", "artifact", "authentication", "provider_dependencies", "capability_readiness"} {
+	for _, field := range []string{"execution", "artifact", "authentication", "provider_dependencies", "capability_readiness", "compatibility"} {
 		if _, found := raw[field]; found {
 			return "$." + field, true
 		}
@@ -213,8 +218,11 @@ func validateManifestFields(m Manifest, path string) error {
 	if m.Deprecated && m.ReplacedBy == "" {
 		return fmt.Errorf("manifest %s deprecated but missing replaced_by", path)
 	}
+	if len(m.Compatibility) > 0 && m.SchemaVersion != "2.2" {
+		return fmt.Errorf("manifest %s compatibility requires schema_version 2.2", path)
+	}
 	if m.SchemaVersion != "" {
-		if m.SchemaVersion != "1.1" && m.SchemaVersion != "2.0" && m.SchemaVersion != "2.1" {
+		if m.SchemaVersion != "1.1" && m.SchemaVersion != "2.0" && m.SchemaVersion != "2.1" && m.SchemaVersion != "2.2" {
 			return fmt.Errorf("manifest %s has unsupported schema_version %q", path, m.SchemaVersion)
 		}
 		if m.SchemaVersion == "2.0" && m.Usability.Availability == "not-verified" {

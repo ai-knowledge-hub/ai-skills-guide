@@ -20,6 +20,74 @@
     }
   },
   "$defs": {
+    "compatibility": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 30,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "name"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "api",
+              "sdk",
+              "protocol",
+              "runtime",
+              "platform"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "versions": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 30,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._+:/-]*$",
+              "maxLength": 120
+            }
+          },
+          "capabilities": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 30,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            }
+          },
+          "notes": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500
+          }
+        },
+        "anyOf": [
+          {
+            "required": [
+              "versions"
+            ]
+          },
+          {
+            "required": [
+              "capabilities"
+            ]
+          }
+        ]
+      }
+    },
     "execution": {
       "type": "object",
       "additionalProperties": false,

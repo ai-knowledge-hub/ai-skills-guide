@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
 )
@@ -29,9 +30,20 @@ func InstallPluginDependencies(
 	registryPaths map[string]string,
 	force bool,
 ) (DependencyInstallResult, error) {
+	return EvaluationAt(time.Time{}).InstallPluginDependencies(entry, runtimeName, pluginTargetRoot, moduleRoots, registryPaths, force)
+}
+
+func (evaluation Evaluation) InstallPluginDependencies(
+	entry registry.SkillEntry,
+	runtimeName string,
+	pluginTargetRoot string,
+	moduleRoots map[string]string,
+	registryPaths map[string]string,
+	force bool,
+) (DependencyInstallResult, error) {
 	result := DependencyInstallResult{}
 	pluginSourceDir := filepath.Join(pluginTargetRoot, filepath.FromSlash(entry.ID))
-	if err := PreflightPluginDependencies(entry, runtimeName, pluginTargetRoot, pluginSourceDir, moduleRoots, registryPaths); err != nil {
+	if err := evaluation.PreflightPluginDependencies(entry, runtimeName, pluginTargetRoot, pluginSourceDir, moduleRoots, registryPaths); err != nil {
 		return result, err
 	}
 
@@ -40,7 +52,7 @@ func InstallPluginDependencies(
 	}
 
 	if len(entry.Includes.Skills) > 0 {
-		installed, skipped, members, err := installDependencySet(
+		installed, skipped, members, err := evaluation.installDependencySet(
 			entry.Includes.Skills,
 			runtimeName,
 			pluginTargetRoot,
@@ -58,7 +70,7 @@ func InstallPluginDependencies(
 	}
 
 	if len(entry.Includes.Agents) > 0 {
-		installed, skipped, members, err := installDependencySet(
+		installed, skipped, members, err := evaluation.installDependencySet(
 			entry.Includes.Agents,
 			runtimeName,
 			pluginTargetRoot,
@@ -76,7 +88,7 @@ func InstallPluginDependencies(
 	}
 
 	if len(entry.Includes.Tools) > 0 {
-		installed, skipped, members, err := installDependencySet(
+		installed, skipped, members, err := evaluation.installDependencySet(
 			entry.Includes.Tools,
 			runtimeName,
 			pluginTargetRoot,
@@ -114,6 +126,17 @@ func PreflightPluginDependencies(
 	moduleRoots map[string]string,
 	registryPaths map[string]string,
 ) error {
+	return EvaluationAt(time.Time{}).PreflightPluginDependencies(entry, runtimeName, pluginTargetRoot, pluginSourceDir, moduleRoots, registryPaths)
+}
+
+func (evaluation Evaluation) PreflightPluginDependencies(
+	entry registry.SkillEntry,
+	runtimeName string,
+	pluginTargetRoot string,
+	pluginSourceDir string,
+	moduleRoots map[string]string,
+	registryPaths map[string]string,
+) error {
 	if err := ValidateOperationalInstall(entry); err != nil {
 		return err
 	}
@@ -133,7 +156,7 @@ func PreflightPluginDependencies(
 		if len(set.ids) == 0 {
 			continue
 		}
-		if err := preflightDependencySet(
+		if err := evaluation.preflightDependencySet(
 			set.ids,
 			runtimeName,
 			pluginTargetRoot,
@@ -153,7 +176,7 @@ func PreflightPluginDependencies(
 	return nil
 }
 
-func preflightDependencySet(
+func (evaluation Evaluation) preflightDependencySet(
 	ids []string,
 	runtimeName string,
 	pluginTargetRoot string,
@@ -193,7 +216,7 @@ func preflightDependencySet(
 		}
 		manifestPath := filepath.Join(sourceDir, manifestName)
 		if _, statErr := os.Stat(manifestPath); statErr == nil {
-			manifest, manifestErr := registry.ValidatePackageManifest(manifestPath)
+			manifest, manifestErr := evaluation.ValidatePackageManifest(manifestPath)
 			if manifestErr != nil {
 				return fmt.Errorf("validate local %s dependency %s: %w", moduleName, id, manifestErr)
 			}
@@ -209,7 +232,7 @@ func preflightDependencySet(
 	return nil
 }
 
-func installDependencySet(
+func (evaluation Evaluation) installDependencySet(
 	ids []string,
 	runtimeName string,
 	pluginTargetRoot string,
@@ -245,7 +268,7 @@ func installDependencySet(
 			if nameErr != nil {
 				return nil, nil, nil, nameErr
 			}
-			manifest, manifestErr := registry.ValidatePackageManifest(filepath.Join(sourceDir, manifestName))
+			manifest, manifestErr := evaluation.ValidatePackageManifest(filepath.Join(sourceDir, manifestName))
 			if manifestErr == nil {
 				entry = registry.ProjectManifest(manifest)
 				selectedVersion = manifest.Version

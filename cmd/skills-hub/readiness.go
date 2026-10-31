@@ -60,6 +60,12 @@ func runAuth(args []string) error {
 }
 
 func runAuthConfigure(args []string) error {
+	return runAuthConfigureWithAdmissionTime(args, time.Now().UTC())
+}
+
+// admissionTime scopes installed-package admission only. Authentication
+// configuration and provider commands keep their own clock behavior.
+func runAuthConfigureWithAdmissionTime(args []string, admissionTime time.Time) error {
 	entrySpec, parsed := positionalEntry(args)
 	fs := flag.NewFlagSet("auth configure", flag.ContinueOnError)
 	module := fs.String("module", "skills", "module: skills|agents|tools|plugins")
@@ -92,7 +98,7 @@ func runAuthConfigure(args []string) error {
 		if installErr != nil {
 			return installErr
 		}
-		target, err = bindReadinessEntryToInstalledVersion(target, installed)
+		target, err = bindReadinessEntryToInstalledVersionAt(target, installed, admissionTime)
 		if err != nil {
 			return err
 		}
@@ -380,6 +386,10 @@ func loadReadinessEntry(moduleRaw, registryPath, spec string) (readinessEntry, e
 }
 
 func bindReadinessEntryToInstalledVersion(target readinessEntry, installed installer.RuntimeTarget) (readinessEntry, error) {
+	return bindReadinessEntryToInstalledVersionAt(target, installed, time.Now().UTC())
+}
+
+func bindReadinessEntryToInstalledVersionAt(target readinessEntry, installed installer.RuntimeTarget, now time.Time) (readinessEntry, error) {
 	manifestNames := map[string]string{
 		"skills": "skill.yaml", "agents": "agent.yaml", "tools": "tool.yaml", "plugins": "plugin.yaml",
 	}
@@ -396,7 +406,7 @@ func bindReadinessEntryToInstalledVersion(target readinessEntry, installed insta
 	if manifest.ID != target.Entry.ID || manifest.Version != target.Version {
 		return readinessEntry{}, errors.New("installed package manifest does not match the selected release")
 	}
-	currentManifest, err := registry.ValidatePackageManifest(manifestPath)
+	currentManifest, err := registry.ValidatePackageManifestAt(manifestPath, now)
 	if err != nil {
 		return readinessEntry{}, fmt.Errorf("installed %s@%s is not currently admissible: %w", target.Entry.ID, target.Version, err)
 	}

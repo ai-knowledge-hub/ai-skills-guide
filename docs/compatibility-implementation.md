@@ -46,14 +46,14 @@ readiness rollout, and existing v1 evidence gates remain active.
 1. Inventory actual API/SDK versions from connector code, dependency locks and
    provider contracts. Publish new releases with truthful declarations; preserve
    retained archives and manifest identities.
-2. Define independent test observation records scoped to artifact, operation,
-   runtime, provider and dependency versions. Implement exact combination
-   matching, unknown/incompatible results and change-based invalidation.
-3. Derive composed compatibility from each actual required/optional dependency;
-   expose tested versus declared coverage in the CLI and catalogue.
+2. Integrate independently produced observations with producer verification and
+   trust distribution. The scoped observation schema and exact-combination
+   evaluator are implemented; production authority is still a separate step.
+3. Integrate child coverage with actual locked dependencies and root workflow
+   evaluation; expose tested versus declared coverage in the CLI and catalogue.
 4. Migrate runtime/release gates together under the v2 policy. Replace the
-blanket
-   manifest-age gate only after compatibility evaluation and current credential,
+   blanket manifest-age gate only after compatibility evaluation and current
+   credential,
    target and effect-authority checks are integrated and tested.
 5. Exercise older/newer producer-consumer and rollback combinations, provider
    capability changes and genuine credential expiry/revocation. Reconcile #52's
@@ -70,3 +70,11 @@ blanket
   compatibility across all four detail families. Chrome is the established local
   fallback; CI retains its managed browser.
 - `git diff --check` and release-history checks: passed.
+
+## Scoped evaluator implementation — 31 October 2026
+
+The next step implements observation schema validation, independent trust/target
+matching, four-state compatibility assessment, and dependency coverage binding.
+An offline diagnostic exercises supplied records without granting operational
+readiness. See [the evaluator guide](compatibility-evaluation.md) for authority,
+selection rules, examples, tests and the remaining production integration work.

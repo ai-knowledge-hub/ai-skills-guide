@@ -18,8 +18,13 @@ func TestCompatibilityDeclarationsAreVersionedAndNotEvidence(t *testing.T) {
 			}
 			base := strings.Replace(string(data), `schema_version: "2.0"`, `schema_version: "2.2"`, 1)
 			base = strings.Replace(base, `schema_version: "2.1"`, `schema_version: "2.2"`, 1)
-			declaration := "\ncompatibility:\n  - kind: api\n    name: Example Data API\n    versions: [v1beta]\n  - kind: protocol\n    name: Rolling service\n    capabilities: [bounded-query]\n"
 			path := filepath.Join(t.TempDir(), module+".yaml")
+			writeTestFile(t, path, base, 0o644)
+			legacy, err := ParseManifest(path)
+			if err != nil || len(ProjectManifest(legacy).Compatibility) != 0 {
+				t.Fatalf("missing declarations must stay unknown: %v", err)
+			}
+			declaration := "\ncompatibility:\n  - kind: api\n    name: Example Data API\n    versions: [v1beta]\n  - kind: protocol\n    name: Rolling service\n    capabilities: [bounded-query]\n"
 			writeTestFile(t, path, base+declaration, 0o644)
 			if err := validateManifestSchema(path); err != nil {
 				t.Fatal(err)
@@ -29,8 +34,12 @@ func TestCompatibilityDeclarationsAreVersionedAndNotEvidence(t *testing.T) {
 				t.Fatal(err)
 			}
 			entry := ProjectManifest(manifest)
-			if len(entry.Compatibility) != 2 || !reflect.DeepEqual(entry.Compatibility, manifest.Compatibility) {
-				t.Fatal("declarations lost during projection")
+			want := []CompatibilityRequirement{
+				{Kind: "api", Name: "Example Data API", Versions: []string{"v1beta"}},
+				{Kind: "protocol", Name: "Rolling service", Capabilities: []string{"bounded-query"}},
+			}
+			if !reflect.DeepEqual(manifest.Compatibility, want) || !reflect.DeepEqual(entry.Compatibility, want) {
+				t.Fatalf("declarations differ from independent fixture expectation: %#v", entry.Compatibility)
 			}
 			payload, err := json.Marshal(Index{RegistryVersion: "1.3", Skills: []SkillEntry{entry}})
 			if err != nil {

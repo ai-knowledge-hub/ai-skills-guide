@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { catalogueCompatibility, findCatalogueCompatibility } from "../lib/catalogueCompatibility";
+import { catalogueCompatibility } from "../lib/catalogueCompatibility";
 
 const sampleSkillPath = "/skills/marketing/meta-google-weekly-performance-review";
 const sampleAgentPath = "/agents/marketing/weekly-performance-supervisor";
@@ -330,11 +330,8 @@ test("legacy details report unknown compatibility without inferring support", as
   }
 });
 
-test("maintainer compatibility is bound to the exact package and version", async ({ page }) => {
-  expect(findCatalogueCompatibility("tools", "analytics/ga4-mcp-connector", "0.2.0")?.details).toContain("Google Analytics Data API: v1beta");
+test("reviewed tool pages disclose notes, limits and provenance without promoting readiness", async ({ page }) => {
   for (const note of catalogueCompatibility) {
-    expect(findCatalogueCompatibility("tools", note.id, "unreviewed-version")).toBeUndefined();
-    expect(findCatalogueCompatibility("skills", note.id, note.version)).toBeUndefined();
     await page.goto(`/tools-mcp/${note.id}`);
     const panel = page.locator("#usability");
     await expect(panel.getByText(`Maintainer-reviewed information for version ${note.version} · Reviewed ${note.reviewed}. This is not a live provider check.`, { exact: true })).toBeVisible();

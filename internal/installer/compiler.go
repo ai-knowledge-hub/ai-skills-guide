@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
 )
@@ -109,6 +110,11 @@ type portableMCPStdioServer struct {
 // the authority for component identity and order; generic plugin.json metadata
 // is never treated as proof of a complete runtime package.
 func CompilePluginRuntimePackage(packageDir, runtimeName string) ([]string, error) {
+	return EvaluationAt(time.Time{}).CompilePluginRuntimePackage(packageDir, runtimeName)
+}
+
+func (evaluation Evaluation) CompilePluginRuntimePackage(packageDir, runtimeName string) ([]string, error) {
+	evaluation = evaluation.normalized()
 	runtimeName = strings.ToLower(strings.TrimSpace(runtimeName))
 	if runtimeName != "codex" && runtimeName != "claude" && runtimeName != "generic" {
 		return nil, fmt.Errorf("unsupported runtime compiler %q", runtimeName)
@@ -135,7 +141,7 @@ func CompilePluginRuntimePackage(packageDir, runtimeName string) ([]string, erro
 	if err := validateCleanRuntimeDiscoveryInputs(packageDir, manifest); err != nil {
 		return nil, err
 	}
-	manifest, err = registry.ValidatePackageManifest(manifestPath)
+	manifest, err = evaluation.ValidatePackageManifest(manifestPath)
 	if err != nil {
 		return nil, fmt.Errorf("validate compiler source manifest: %w", err)
 	}
@@ -168,7 +174,7 @@ func CompilePluginRuntimePackage(packageDir, runtimeName string) ([]string, erro
 			}
 			nativeNames[key] = component.ID
 		}
-		registration, err := materializeRuntimeComponent(packageDir, runtimeName, component)
+		registration, err := evaluation.materializeRuntimeComponent(packageDir, runtimeName, component)
 		if err != nil {
 			return nil, err
 		}
@@ -599,7 +605,7 @@ func loadRuntimeDependencyLock(lockPath string, manifest registry.Manifest) (run
 	return lock, nil
 }
 
-func materializeRuntimeComponent(packageDir, runtimeName string, component runtimeDependencyLockComponent) (compiledRuntimeRegistration, error) {
+func (evaluation Evaluation) materializeRuntimeComponent(packageDir, runtimeName string, component runtimeDependencyLockComponent) (compiledRuntimeRegistration, error) {
 	sourceRoot := filepath.Dir(filepath.Join(packageDir, filepath.FromSlash(component.ManifestPath)))
 	slug := filepath.Base(filepath.FromSlash(component.ID))
 	registration := compiledRuntimeRegistration{ID: component.ID, Version: component.Version}
@@ -613,7 +619,7 @@ func materializeRuntimeComponent(packageDir, runtimeName string, component runti
 		registration.Path = "./skills/" + slug
 		registration.Enforcement = "native"
 	case "agents":
-		componentManifest, err := registry.ValidatePackageManifest(filepath.Join(packageDir, filepath.FromSlash(component.ManifestPath)))
+		componentManifest, err := evaluation.ValidatePackageManifest(filepath.Join(packageDir, filepath.FromSlash(component.ManifestPath)))
 		if err != nil {
 			return registration, fmt.Errorf("validate agent %s: %w", component.ID, err)
 		}

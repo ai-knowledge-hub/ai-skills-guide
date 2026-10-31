@@ -12,8 +12,6 @@ import (
 	"sort"
 	"strings"
 	"time"
-
-	"github.com/ai-knowledge-hub/ai-skills-guide/internal/evidenceclock"
 )
 
 const (
@@ -100,7 +98,7 @@ func ValidateRepository(root string) (int, error) {
 // ValidatePackageManifest applies schema, package-layout, and current-evidence
 // admission checks to one extracted package before operational use.
 func ValidatePackageManifest(manifestPath string) (Manifest, error) {
-	return ValidatePackageManifestAt(manifestPath, evidenceclock.Now())
+	return ValidatePackageManifestAt(manifestPath, time.Now())
 }
 
 // ValidatePackageManifestAt applies the same operational admission checks at
@@ -108,7 +106,7 @@ func ValidatePackageManifest(manifestPath string) (Manifest, error) {
 // mixing their supplied clock with the wall clock during nested validation.
 func ValidatePackageManifestAt(manifestPath string, now time.Time) (Manifest, error) {
 	if now.IsZero() {
-		now = evidenceclock.Now()
+		now = time.Now()
 	}
 	return validatePackageManifest(manifestPath, now.UTC(), true)
 }

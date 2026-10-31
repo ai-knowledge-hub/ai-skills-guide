@@ -88,6 +88,11 @@ var closureInstallTransactionFault func(string, int) error
 // InstallRemoteRelease resolves, verifies, validates, and atomically commits a
 // released package. Runtime state is untouched until every remote input passes.
 func InstallRemoteRelease(ctx context.Context, options RemoteInstallOptions) (RemoteInstallResult, error) {
+	return EvaluationAt(time.Time{}).InstallRemoteRelease(ctx, options)
+}
+
+func (evaluation Evaluation) InstallRemoteRelease(ctx context.Context, options RemoteInstallOptions) (RemoteInstallResult, error) {
+	evaluation = evaluation.normalized()
 	if strings.TrimSpace(options.RegistryURL) == "" {
 		return RemoteInstallResult{}, errors.New("registry resolution failed: --registry-url is required; retry with an HTTPS registry URL")
 	}
@@ -183,7 +188,7 @@ func InstallRemoteRelease(ctx context.Context, options RemoteInstallOptions) (Re
 	if err := verifyFileSHA256(manifestPath, strings.ToLower(version.ManifestSHA256)); err != nil {
 		return RemoteInstallResult{}, fmt.Errorf("manifest validation failed: archive manifest does not match the selected version's registry digest; the release was not installed")
 	}
-	manifest, err := registry.ValidatePackageManifest(manifestPath)
+	manifest, err := evaluation.ValidatePackageManifest(manifestPath)
 	if err != nil {
 		return RemoteInstallResult{}, fmt.Errorf("package validation failed: %w; the release was not installed", err)
 	}
@@ -210,19 +215,19 @@ func InstallRemoteRelease(ctx context.Context, options RemoteInstallOptions) (Re
 	}
 	var installPlans []installTreePlan
 	if strings.EqualFold(options.Module, "plugins") {
-		if _, err := PreparePluginRuntimeArtifacts(extractRoot, options.Runtime); err != nil {
+		if _, err := evaluation.PreparePluginRuntimeArtifacts(extractRoot, options.Runtime); err != nil {
 			return RemoteInstallResult{}, fmt.Errorf("runtime package validation failed: %w; the release was not installed", err)
 		}
-		installPlans, err = remotePluginInstallPlans(extractRoot, options.TargetRoot, options.Runtime, options.ExecutionRuntimes, manifest)
+		installPlans, err = evaluation.remotePluginInstallPlans(extractRoot, options.TargetRoot, options.Runtime, options.ExecutionRuntimes, manifest)
 		if err != nil {
 			return RemoteInstallResult{}, fmt.Errorf("plugin dependency admission failed: %w; the release was not installed", err)
 		}
 	} else if strings.EqualFold(options.Module, "agents") && manifest.Orchestration != nil {
-		installPlans, err = remoteAgentInstallPlans(extractRoot, options.TargetRoot, options.Runtime, options.ExecutionRuntimes, manifest)
+		installPlans, err = evaluation.remoteAgentInstallPlans(extractRoot, options.TargetRoot, options.Runtime, options.ExecutionRuntimes, manifest)
 		if err != nil {
 			return RemoteInstallResult{}, fmt.Errorf("agent dependency admission failed: %w; the release was not installed", err)
 		}
-		if _, err := compileAgentRuntimePackage(extractRoot, options.Runtime, options.TargetRoot, extractRoot); err != nil {
+		if _, err := evaluation.compileAgentRuntimePackage(extractRoot, options.Runtime, options.TargetRoot, extractRoot); err != nil {
 			return RemoteInstallResult{}, fmt.Errorf("agent runtime compilation failed: %w; the release was not installed", err)
 		}
 	}
@@ -717,7 +722,7 @@ func cacheKey(value string) string {
 	return hex.EncodeToString(sum[:])
 }
 
-func remotePluginInstallPlans(extractRoot, pluginTargetRoot, runtimeName string, executionRuntimes []string, manifest registry.Manifest) ([]installTreePlan, error) {
+func (evaluation Evaluation) remotePluginInstallPlans(extractRoot, pluginTargetRoot, runtimeName string, executionRuntimes []string, manifest registry.Manifest) ([]installTreePlan, error) {
 	plans := make([]installTreePlan, 0, 1+len(manifest.Includes.Skills)+len(manifest.Includes.Agents)+len(manifest.Includes.Tools))
 	// The plugin is transaction operation zero. Upgrades deactivate that path
 	// before changing dependencies, and recovery restores it only after every
@@ -749,7 +754,7 @@ func remotePluginInstallPlans(extractRoot, pluginTargetRoot, runtimeName string,
 				return nil, fmt.Errorf("%s dependency: %w", set.moduleName, err)
 			}
 			sourceDir := filepath.Join(extractRoot, "bundled", set.moduleDir, filepath.FromSlash(id))
-			dependency, err := registry.ValidatePackageManifest(filepath.Join(sourceDir, set.manifest))
+			dependency, err := evaluation.ValidatePackageManifest(filepath.Join(sourceDir, set.manifest))
 			if err != nil {
 				return nil, fmt.Errorf("validate %s dependency %s: %w", set.moduleName, id, err)
 			}
@@ -771,8 +776,8 @@ func remotePluginInstallPlans(extractRoot, pluginTargetRoot, runtimeName string,
 	return plans, nil
 }
 
-func remoteAgentInstallPlans(extractRoot, agentTargetRoot, runtimeName string, executionRuntimes []string, manifest registry.Manifest) ([]installTreePlan, error) {
-	plans, err := remotePluginInstallPlans(extractRoot, agentTargetRoot, runtimeName, executionRuntimes, manifest)
+func (evaluation Evaluation) remoteAgentInstallPlans(extractRoot, agentTargetRoot, runtimeName string, executionRuntimes []string, manifest registry.Manifest) ([]installTreePlan, error) {
+	plans, err := evaluation.remotePluginInstallPlans(extractRoot, agentTargetRoot, runtimeName, executionRuntimes, manifest)
 	if err != nil {
 		return nil, err
 	}

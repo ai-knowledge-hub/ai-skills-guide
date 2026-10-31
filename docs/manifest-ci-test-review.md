@@ -6,6 +6,11 @@ Scope: manifest admission, canonical indexes, retained releases, installation,
 and readiness tests affected by evidence age. This is a focused review, not a
 claim that every application test or live provider integration was audited.
 
+The process-wide test clock described below was an interim #82 repair. The
+later [#86 implementation](evaluation-clocks.md) replaces it with isolated
+operation values and explicit admission parameters while preserving runtime
+policy. The original investigation is retained here as history.
+
 ## Findings and authority
 
 **Confirmed:** the 30-day value is repository policy, not a JSON Schema rule or

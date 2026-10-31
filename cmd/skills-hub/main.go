@@ -306,6 +306,7 @@ func runValidate(args []string) error {
 }
 
 func runInstall(args []string) error {
+	evaluation := installer.EvaluationAt(time.Time{})
 	positionalSpec := ""
 	parsedArgs := args
 	if len(args) > 0 && !strings.HasPrefix(args[0], "-") {
@@ -365,7 +366,7 @@ func runInstall(args []string) error {
 		}
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 		defer cancel()
-		result, err := installer.InstallRemoteRelease(ctx, installer.RemoteInstallOptions{
+		result, err := evaluation.InstallRemoteRelease(ctx, installer.RemoteInstallOptions{
 			RegistryURL:       strings.TrimSpace(*registryURL),
 			AllowedOrigins:    []string(allowedOrigins),
 			CacheDir:          *cacheDir,
@@ -434,7 +435,7 @@ func runInstall(args []string) error {
 		"tools":  resolveRegistryPath("", "tools"),
 	}
 	if moduleName == "plugins" {
-		if err := installer.PreflightPluginDependencies(
+		if err := evaluation.PreflightPluginDependencies(
 			skill,
 			rt.Runtime,
 			rt.TargetPath,
@@ -445,12 +446,12 @@ func runInstall(args []string) error {
 			return err
 		}
 	} else if moduleName == "agents" && skill.Orchestration != nil {
-		if _, err := installer.PreflightAgentDependencies(skill, rt.Runtime, rt.TargetPath, dependencyModuleRoots, dependencyRegistryPaths); err != nil {
+		if _, err := evaluation.PreflightAgentDependencies(skill, rt.Runtime, rt.TargetPath, dependencyModuleRoots, dependencyRegistryPaths); err != nil {
 			return err
 		}
 	}
 	manifestNames := map[string]string{"skills": "skill.yaml", "agents": "agent.yaml", "tools": "tool.yaml", "plugins": "plugin.yaml"}
-	validatedManifest, err := registry.ValidatePackageManifest(filepath.Join(sourceDir, manifestNames[moduleName]))
+	validatedManifest, err := evaluation.ValidatePackageManifest(filepath.Join(sourceDir, manifestNames[moduleName]))
 	if err != nil {
 		return fmt.Errorf("local package admission failed: %w", err)
 	}
@@ -464,11 +465,11 @@ func runInstall(args []string) error {
 	var runtimeArtifacts []string
 	var dependencyResult installer.DependencyInstallResult
 	if moduleName == "plugins" {
-		runtimeArtifacts, err = installer.PreparePluginRuntimeArtifacts(destination, rt.Runtime)
+		runtimeArtifacts, err = evaluation.PreparePluginRuntimeArtifacts(destination, rt.Runtime)
 		if err != nil {
 			return err
 		}
-		dependencyResult, err = installer.InstallPluginDependencies(
+		dependencyResult, err = evaluation.InstallPluginDependencies(
 			skill,
 			rt.Runtime,
 			rt.TargetPath,
@@ -480,13 +481,13 @@ func runInstall(args []string) error {
 			return err
 		}
 	} else if moduleName == "agents" && skill.Orchestration != nil {
-		dependencyResult, err = installer.InstallAgentDependencies(
+		dependencyResult, err = evaluation.InstallAgentDependencies(
 			skill, rt.Runtime, rt.TargetPath, dependencyModuleRoots, dependencyRegistryPaths, *force,
 		)
 		if err != nil {
 			return err
 		}
-		runtimeContract, compileErr := installer.CompileAgentRuntimePackage(destination, rt.Runtime, rt.TargetPath)
+		runtimeContract, compileErr := evaluation.CompileAgentRuntimePackage(destination, rt.Runtime, rt.TargetPath)
 		if compileErr != nil {
 			return compileErr
 		}

@@ -21,7 +21,8 @@ manifest-declared compatibility is still displayed when no editorial annotation
 exists. No provider API calls, signing keys, background checks, or new servers
 are needed to display catalogue information.
 
-The offline evaluator from #88 remains in the repository for now. It is not a
-prerequisite for maintaining or publishing these annotations. A separate audit
-should identify its consumers before any removal. The operational readiness
-policy and runtime gates are tracked separately in #83.
+The offline evaluator from #88 was removed after a consumer audit found no
+site, registry, installer or runtime integration. Its history remains in Git.
+The active [catalogue contract](../shared/contracts/catalogue-compatibility-v1.md)
+defines these editorial rules. Operational readiness and existing runtime age
+gates remain tracked separately in #83.

@@ -1,80 +1,38 @@
-# Compatibility policy implementation
+# Catalogue compatibility implementation
 
-The target policy is
-[operational readiness v2](../shared/contracts/operational-readiness-v2.md).
-Tracking: #83 policy; #84 compatibility implementation; #85 tests; #86 clocks.
+The website uses maintainer-updated content under
+[catalogue compatibility v1](../shared/contracts/catalogue-compatibility-v1.md).
+See [the maintainer guide](maintaining-compatibility.md) for the update process.
 
-## Implemented foundation
+## Current implementation
 
-- Manifest schema 2.2 permits optional compatibility declarations for API, SDK,
-  protocol, runtime and platform requirements. Earlier schemas reject the field.
-- Each requirement names exact versions and/or capabilities. Ranges are deferred
-  until a comparison scheme and support authority are defined. Provider date
-  versions and opaque identifiers are preserved rather than treated as semver.
-- Parser, canonical registry projection and runtime contract digests preserve
-  and bind the declarations. Older manifests remain unchanged.
-- CLI info labels declarations explicitly. Historical selections do not inherit
-  the latest entry's declarations. All four web detail families show declared
-  requirements or explain that compatibility is unknown.
-- Declarations cannot supply a tested-compatible status or evidence result.
-  Compatibility metadata does not alter authentication or admission behavior.
+- Editorial notes live in `apps/web/lib/catalogueCompatibility.ts` and match the
+  exact module, package ID and release version. They include a source, review
+  date, relevant versions and limitations.
+- All four detail families display a matching note. Where no note exists, they
+  retain the package's own manifest declarations or report unknown information.
+- Schema 2.2's optional manifest declarations remain supported. They describe
+  maintainer requirements and do not prove independent compatibility testing.
+- Static builds publish these notes without provider credentials, live calls,
+  signing keys, a verification service or an evaluator dependency.
 
-Example for a future release (illustrative requirements, not a test result):
+## Removed prototype and historical work
 
-```yaml
-schema_version: "2.2"
-compatibility:
-  - kind: api
-    name: Example Data API
-    versions: [v1beta]
-  - kind: sdk
-    name: example-client
-    versions: ["3.2.1"]
-  - kind: protocol
-    name: Rolling API
-    capabilities: [bounded-query]
-```
+PR #88's standalone evaluator, its internal package, synthetic example and
+observation schema were removed after a repository consumer audit. Only that
+command and its tests depended on the package; no site, registry or installer
+code called it. The former design is recoverable in Git history. Its historical
+[guide](compatibility-evaluation.md) records the retirement.
 
-Quote numeric-looking version identifiers in YAML to keep strings.
-No existing package has been relabelled or released with these example values.
-Registry 1.3 remains the transport for additive declarations; older manifest
-consumers reject schema 2.2 on operational admission. This is not a v2 runtime
-readiness rollout, and existing v1 evidence gates remain active.
+PR #89's signed GA4 fixture producer was closed without merging. The staged
+operational v2 design was withdrawn in favour of the separate catalogue policy.
+The useful schema, typed declaration support, CLI declaration display and static
+website presentation from #87 remain.
 
-## Remaining work under #84
+## Separate runtime work
 
-1. Inventory actual API/SDK versions from connector code, dependency locks and
-   provider contracts. Publish new releases with truthful declarations; preserve
-   retained archives and manifest identities.
-2. Integrate independently produced observations with producer verification and
-   trust distribution. The scoped observation schema and exact-combination
-   evaluator are implemented; production authority is still a separate step.
-3. Integrate child coverage with actual locked dependencies and root workflow
-   evaluation; expose tested versus declared coverage in the CLI and catalogue.
-4. Migrate runtime/release gates together under the v2 policy. Replace the
-   blanket manifest-age gate only after compatibility evaluation and current
-   credential,
-   target and effect-authority checks are integrated and tested.
-5. Exercise older/newer producer-consumer and rollback combinations, provider
-   capability changes and genuine credential expiry/revocation. Reconcile #52's
-   release criteria before declaring the migration complete.
-
-## Validation of this foundation
-
-- `make cli-test`: passed, including schema/version rejection, declaration
-  preservation, historical CLI selection and runtime-contract binding tests.
-- `make registry` and `bash scripts/validate-manifests.sh`: passed; canonical
-  indexes and retained release files have no diff.
-- `pnpm build`: passed, including lint/type checks and 76 static pages.
-- `PLAYWRIGHT_BROWSER_CHANNEL=chrome pnpm test:e2e`: 16 passed, including unknown
-  compatibility across all four detail families. Chrome is the established local
-  fallback; CI retains its managed browser.
-- `git diff --check` and release-history checks: passed.
-
-## Scoped evaluator implementation — 31 October 2026
-
-The next step implements observation schema validation, independent trust/target
-matching, four-state compatibility assessment, and dependency coverage binding.
-An offline diagnostic exercises supplied records without granting operational
-readiness. See [the evaluator guide](compatibility-evaluation.md) for authority,
-selection rules, examples, tests and the remaining production integration work.
+Operational v1 admission, artifact checks, credential expiry, target identity,
+revocation and existing age gates remain unchanged. The 30-day runtime gate is
+still tracked under #83. Removing an unused diagnostic must not be presented as
+having changed that behavior. Further runtime changes require a focused consumer
+and authority review independent of catalogue editorial content.

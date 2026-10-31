@@ -69,7 +69,7 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
       </article>
 
       <section className="detail-grid">
-        <UsabilityPanel compatibility={entry.compatibility} usability={entry.usability} />
+        <UsabilityPanel catalogueCompatibility={entry.catalogueCompatibility} compatibility={entry.compatibility} usability={entry.usability} />
         {entry.capability_readiness?.length ? (
           <article className="card detail-panel">
             <h2>Capability readiness</h2>

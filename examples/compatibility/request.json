@@ -1,0 +1,41 @@
+{
+  "subject": {
+    "entry_id": "example/client",
+    "entry_version": "1.0.0",
+    "artifact_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "dependency_lock_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "configuration_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "runtime": "generic",
+    "platform": "linux",
+    "operation": "bounded-query",
+    "provider_target": "synthetic-sandbox",
+    "dimensions": [
+      {
+        "kind": "api",
+        "name": "Example API",
+        "version": "v1beta"
+      },
+      {
+        "kind": "sdk",
+        "name": "Example SDK",
+        "version": "3.2.1"
+      }
+    ]
+  },
+  "requirements": [
+    {
+      "kind": "api",
+      "name": "Example API",
+      "versions": [
+        "v1beta"
+      ]
+    },
+    {
+      "kind": "sdk",
+      "name": "Example SDK",
+      "versions": [
+        "3.2.1"
+      ]
+    }
+  ]
+}

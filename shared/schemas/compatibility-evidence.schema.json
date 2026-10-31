@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skills.ai-knowledge-hub.org/schemas/compatibility-evidence.schema.json",
+  "title": "Scoped compatibility evidence (not live readiness)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_version",
+    "subject",
+    "requirements_sha256",
+    "producer",
+    "test_id",
+    "test_version",
+    "observed_at",
+    "result",
+    "reason"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "skills-hub.compatibility-evidence/v1"
+    },
+    "contract_version": {
+      "const": "2.0.0"
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "entry_id",
+        "entry_version",
+        "runtime",
+        "platform",
+        "operation",
+        "provider_target",
+        "artifact_sha256",
+        "dependency_lock_sha256",
+        "configuration_sha256",
+        "dimensions"
+      ],
+      "properties": {
+        "entry_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "entry_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "runtime": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "platform": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "operation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "provider_target": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "artifact_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "dependency_lock_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "configuration_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "dimensions": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 30,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "name"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "api",
+                  "sdk",
+                  "protocol",
+                  "runtime",
+                  "platform"
+                ]
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._+:/-]*$",
+                "maxLength": 120
+              },
+              "capabilities": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 30,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                }
+              }
+            },
+            "anyOf": [
+              {
+                "required": [
+                  "version"
+                ]
+              },
+              {
+                "required": [
+                  "capabilities"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    "requirements_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "producer": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "test_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "test_version": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "result": {
+      "enum": [
+        "passed",
+        "incompatible",
+        "inconclusive"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    }
+  }
+}

@@ -1,3 +1,4 @@
+/** @jsxImportSource react */
 import type { RegistryEntry } from "@/lib/registry";
 import UsabilityBadge from "@/components/UsabilityBadge";
 

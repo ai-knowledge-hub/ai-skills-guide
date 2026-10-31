@@ -190,7 +190,12 @@ export async function loadRegistry(module: ModuleKey = "skills"): Promise<Regist
   if (parsed.registry_version !== "1.1" && parsed.registry_version !== "1.2" && parsed.registry_version !== "1.3") {
     throw new Error(`Unsupported registry_version ${String(parsed.registry_version)}; upgrade this consumer or use a compatible registry snapshot.`);
   }
-  const index = parsed as RegistryIndex;
+  return withCatalogueCompatibility(parsed as RegistryIndex, module);
+}
+
+// Keep release selection pure so old/new registry fixtures need no filesystem
+// changes or process-wide mocks to exercise the same path as the site loader.
+export function withCatalogueCompatibility(index: RegistryIndex, module: ModuleKey): RegistryIndex {
   return {
     ...index,
     skills: index.skills.map((entry) => ({

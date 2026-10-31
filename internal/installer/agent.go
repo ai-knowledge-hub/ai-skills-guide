@@ -48,7 +48,6 @@ func InstallAgentDependencies(entry registry.SkillEntry, runtimeName, agentTarge
 }
 
 func (evaluation Evaluation) InstallAgentDependencies(entry registry.SkillEntry, runtimeName, agentTargetRoot string, moduleRoots, registryPaths map[string]string, force bool) (DependencyInstallResult, error) {
-	evaluation = evaluation.normalized()
 	result := DependencyInstallResult{}
 	bindings, err := evaluation.PreflightAgentDependencies(entry, runtimeName, agentTargetRoot, moduleRoots, registryPaths)
 	if err != nil {
@@ -88,7 +87,6 @@ func PreflightAgentDependencies(entry registry.SkillEntry, runtimeName, agentTar
 }
 
 func (evaluation Evaluation) PreflightAgentDependencies(entry registry.SkillEntry, runtimeName, agentTargetRoot string, moduleRoots, registryPaths map[string]string) ([]registry.OrchestrationBinding, error) {
-	evaluation = evaluation.normalized()
 	if entry.Orchestration == nil {
 		return nil, fmt.Errorf("agent %s has no orchestration binding contract", entry.ID)
 	}
@@ -184,7 +182,6 @@ func CompileAgentRuntimePackage(agentDir, runtimeName, agentTargetRoot string) (
 }
 
 func (evaluation Evaluation) CompileAgentRuntimePackage(agentDir, runtimeName, agentTargetRoot string) (string, error) {
-	evaluation = evaluation.normalized()
 	return evaluation.compileAgentRuntimePackage(agentDir, runtimeName, agentTargetRoot, "")
 }
 

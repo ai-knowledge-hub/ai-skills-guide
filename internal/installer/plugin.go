@@ -41,7 +41,6 @@ func (evaluation Evaluation) InstallPluginDependencies(
 	registryPaths map[string]string,
 	force bool,
 ) (DependencyInstallResult, error) {
-	evaluation = evaluation.normalized()
 	result := DependencyInstallResult{}
 	pluginSourceDir := filepath.Join(pluginTargetRoot, filepath.FromSlash(entry.ID))
 	if err := evaluation.PreflightPluginDependencies(entry, runtimeName, pluginTargetRoot, pluginSourceDir, moduleRoots, registryPaths); err != nil {
@@ -138,7 +137,6 @@ func (evaluation Evaluation) PreflightPluginDependencies(
 	moduleRoots map[string]string,
 	registryPaths map[string]string,
 ) error {
-	evaluation = evaluation.normalized()
 	if err := ValidateOperationalInstall(entry); err != nil {
 		return err
 	}

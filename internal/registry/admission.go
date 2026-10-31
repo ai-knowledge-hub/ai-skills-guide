@@ -206,8 +206,8 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time, requ
 		if authenticationIsRequired(manifest) && manifest.Authentication.Status == "none" {
 			return fmt.Errorf("manifest %s requires authentication but declares authentication.status none", manifestPath)
 		}
-		if requireCurrentEvidence && (manifest.Usability.Availability == "usable-now" || manifest.Authentication.Status != "none") {
-			if err := validateFreshEvidence(manifestPath, manifest, now); err != nil {
+		if requireCurrentEvidence {
+			if err := ValidateManifestEvidenceAt(manifestPath, manifest, now); err != nil {
 				return err
 			}
 		}
@@ -1106,6 +1106,19 @@ func isExecutableKind(kind string) bool {
 	default:
 		return false
 	}
+}
+
+// ValidateManifestEvidenceAt rechecks time-bound evidence on an already
+// admitted manifest, without rerunning artifact checks after runtime compilation.
+// This is not a substitute for schema, layout, identity or integrity admission.
+func ValidateManifestEvidenceAt(manifestPath string, manifest Manifest, now time.Time) error {
+	if !strings.HasPrefix(manifest.SchemaVersion, "2.") || (manifest.Usability.Availability != "usable-now" && manifest.Authentication.Status == "none") {
+		return nil
+	}
+	if now.IsZero() {
+		now = time.Now()
+	}
+	return validateFreshEvidence(manifestPath, manifest, now.UTC())
 }
 
 func validateFreshEvidence(manifestPath string, manifest Manifest, now time.Time) error {

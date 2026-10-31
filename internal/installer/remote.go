@@ -68,6 +68,7 @@ type installTreePlan struct {
 	Module     string
 	Version    string
 	Entry      registry.SkillEntry
+	Manifest   registry.Manifest
 }
 
 type closureInstallOperation struct {
@@ -92,7 +93,6 @@ func InstallRemoteRelease(ctx context.Context, options RemoteInstallOptions) (Re
 }
 
 func (evaluation Evaluation) InstallRemoteRelease(ctx context.Context, options RemoteInstallOptions) (RemoteInstallResult, error) {
-	evaluation = evaluation.normalized()
 	if strings.TrimSpace(options.RegistryURL) == "" {
 		return RemoteInstallResult{}, errors.New("registry resolution failed: --registry-url is required; retry with an HTTPS registry URL")
 	}
@@ -273,10 +273,30 @@ func (evaluation Evaluation) InstallRemoteRelease(ctx context.Context, options R
 	}
 
 	var destination string
+	// Use already admitted manifest values: compilation legitimately rewrites
+	// runtime artifacts, but cannot renew their evidence or its deadline.
+	checkFreshness := func() error {
+		now := evaluation.instant()
+		if err := registry.ValidateManifestEvidenceAt(manifest.ID, manifest, now); err != nil {
+			return err
+		}
+		for _, plan := range installPlans {
+			if plan.SourceDir == extractRoot {
+				continue
+			}
+			if err := registry.ValidateManifestEvidenceAt(plan.ID, plan.Manifest, now); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	if err := checkFreshness(); err != nil {
+		return RemoteInstallResult{}, fmt.Errorf("pre-commit evidence validation failed: %w; the release was not installed", err)
+	}
 	if len(installPlans) > 0 {
-		destination, err = atomicInstallClosure(installPlans, options.TargetRoot, entry.ID, options.Force)
+		destination, err = atomicInstallClosureChecked(installPlans, options.TargetRoot, entry.ID, options.Force, checkFreshness)
 	} else {
-		destination, err = atomicInstallTree(extractRoot, options.TargetRoot, entry.ID, options.Force)
+		destination, err = atomicInstallTreeChecked(extractRoot, options.TargetRoot, entry.ID, options.Force, checkFreshness)
 	}
 	if err != nil {
 		return RemoteInstallResult{}, fmt.Errorf("install commit failed: %w; existing installation was preserved or left in a recoverable backup", err)
@@ -727,7 +747,7 @@ func (evaluation Evaluation) remotePluginInstallPlans(extractRoot, pluginTargetR
 	// The plugin is transaction operation zero. Upgrades deactivate that path
 	// before changing dependencies, and recovery restores it only after every
 	// dependency has returned to its previous version.
-	plans = append(plans, installTreePlan{SourceDir: extractRoot, TargetRoot: pluginTargetRoot, ID: manifest.ID, Module: "plugins", Version: manifest.Version, Entry: registry.ProjectManifest(manifest)})
+	plans = append(plans, installTreePlan{SourceDir: extractRoot, TargetRoot: pluginTargetRoot, ID: manifest.ID, Module: "plugins", Version: manifest.Version, Entry: registry.ProjectManifest(manifest), Manifest: manifest})
 	sets := []struct {
 		moduleDir  string
 		moduleName string
@@ -770,7 +790,7 @@ func (evaluation Evaluation) remotePluginInstallPlans(extractRoot, pluginTargetR
 			if err := ValidateOperationalInstall(registry.ProjectManifest(dependency)); err != nil {
 				return nil, fmt.Errorf("%s dependency %s: %w", set.moduleName, id, err)
 			}
-			plans = append(plans, installTreePlan{SourceDir: sourceDir, TargetRoot: target.TargetPath, ID: id, Module: set.moduleName, Version: dependency.Version, Entry: registry.ProjectManifest(dependency)})
+			plans = append(plans, installTreePlan{SourceDir: sourceDir, TargetRoot: target.TargetPath, ID: id, Module: set.moduleName, Version: dependency.Version, Entry: registry.ProjectManifest(dependency), Manifest: dependency})
 		}
 	}
 	return plans, nil
@@ -913,6 +933,10 @@ func normalizedUnique(values []string) []string {
 }
 
 func atomicInstallClosure(plans []installTreePlan, pluginTargetRoot, pluginID string, force bool) (string, error) {
+	return atomicInstallClosureChecked(plans, pluginTargetRoot, pluginID, force, nil)
+}
+
+func atomicInstallClosureChecked(plans []installTreePlan, pluginTargetRoot, pluginID string, force bool, checkAdmission func() error) (string, error) {
 	if len(plans) == 0 {
 		return "", errors.New("empty plugin install closure")
 	}
@@ -1018,6 +1042,11 @@ func atomicInstallClosure(plans []installTreePlan, pluginTargetRoot, pluginID st
 		}
 		transaction.Operations = append(transaction.Operations, operation)
 	}
+	if checkAdmission != nil {
+		if err := checkAdmission(); err != nil {
+			return "", err
+		}
+	}
 	if err := writeClosureInstallTransaction(markerPath, transaction); err != nil {
 		return "", fmt.Errorf("persist plugin closure transaction: %w", err)
 	}
@@ -1062,6 +1091,11 @@ func atomicInstallClosure(plans []installTreePlan, pluginTargetRoot, pluginID st
 				return rollback(err)
 			}
 		}
+		if checkAdmission != nil {
+			if err := checkAdmission(); err != nil {
+				return rollback(err)
+			}
+		}
 		if err := os.Rename(operation.Stage, operation.Destination); err != nil {
 			return rollback(fmt.Errorf("activate closure member %s: %w", operation.Destination, err))
 		}
@@ -1072,6 +1106,11 @@ func atomicInstallClosure(plans []installTreePlan, pluginTargetRoot, pluginID st
 			if err := closureInstallTransactionFault("after-activation", index); err != nil {
 				return rollback(err)
 			}
+		}
+	}
+	if checkAdmission != nil {
+		if err := checkAdmission(); err != nil {
+			return rollback(err)
 		}
 	}
 	transaction.Phase = "committed"
@@ -1286,6 +1325,10 @@ func recoverInterruptedClosureInstalls(runtimeRoot string) error {
 }
 
 func atomicInstallTree(sourceDir, targetRoot, id string, force bool) (string, error) {
+	return atomicInstallTreeChecked(sourceDir, targetRoot, id, force, nil)
+}
+
+func atomicInstallTreeChecked(sourceDir, targetRoot, id string, force bool, checkAdmission func() error) (string, error) {
 	destination := filepath.Join(targetRoot, filepath.FromSlash(id))
 	parent := filepath.Dir(destination)
 	if err := os.MkdirAll(parent, 0o755); err != nil {
@@ -1317,8 +1360,18 @@ func atomicInstallTree(sourceDir, targetRoot, id string, force bool) (string, er
 	if err := copyTree(sourceDir, stage); err != nil {
 		return "", fmt.Errorf("stage verified package: %w", err)
 	}
+	if checkAdmission != nil {
+		if err := checkAdmission(); err != nil {
+			return "", err
+		}
+	}
 
 	if _, err := os.Stat(destination); os.IsNotExist(err) {
+		if checkAdmission != nil {
+			if err := checkAdmission(); err != nil {
+				return "", err
+			}
+		}
 		if err := os.Rename(stage, destination); err != nil {
 			return "", fmt.Errorf("activate staged package: %w", err)
 		}
@@ -1344,6 +1397,16 @@ func atomicInstallTree(sourceDir, targetRoot, id string, force bool) (string, er
 	}
 	if installTransactionFault != nil {
 		if err := installTransactionFault("after-backup-rename"); err != nil {
+			return "", err
+		}
+	}
+	if checkAdmission != nil {
+		if err := checkAdmission(); err != nil {
+			if rollbackErr := os.Rename(backup, destination); rollbackErr != nil {
+				return "", fmt.Errorf("%w; rollback failed: %v; recover %s", err, rollbackErr, backup)
+			}
+			_ = os.Remove(markerPath)
+			_ = syncDirectory(parent)
 			return "", err
 		}
 	}

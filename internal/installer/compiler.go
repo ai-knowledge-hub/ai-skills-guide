@@ -114,7 +114,6 @@ func CompilePluginRuntimePackage(packageDir, runtimeName string) ([]string, erro
 }
 
 func (evaluation Evaluation) CompilePluginRuntimePackage(packageDir, runtimeName string) ([]string, error) {
-	evaluation = evaluation.normalized()
 	runtimeName = strings.ToLower(strings.TrimSpace(runtimeName))
 	if runtimeName != "codex" && runtimeName != "claude" && runtimeName != "generic" {
 		return nil, fmt.Errorf("unsupported runtime compiler %q", runtimeName)

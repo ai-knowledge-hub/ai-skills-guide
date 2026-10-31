@@ -6,31 +6,37 @@ import (
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
 )
 
-// Evaluation carries one immutable instant through package admission, closure
-// planning and compilation. It does not control receipt or provider clocks.
-// The zero value captures real time when an operation starts.
+// Evaluation isolates a clock source for package admission and commit checks.
+// Zero uses live time; an explicit instant supports fixed historical tests.
+// It does not control receipt or provider clocks.
 type Evaluation struct {
-	at time.Time
+	at  time.Time
+	now func() time.Time
 }
 
-// EvaluationAt creates an isolated operation context. Zero selects real time.
+// EvaluationAt creates an isolated operation context. Zero selects live time.
 // Explicit instants are for trusted internal callers and historical tests;
 // they are never populated from CLI flags or environment variables.
 func EvaluationAt(at time.Time) Evaluation {
-	if at.IsZero() {
-		at = time.Now()
-	}
-	return Evaluation{at: at.UTC()}
+	return evaluationWithClock(at, time.Now)
 }
 
-func (evaluation Evaluation) normalized() Evaluation {
-	if evaluation.at.IsZero() {
-		return EvaluationAt(time.Time{})
+// Tests can supply an advancing clock local to one operation. Production uses
+// the same constructor with time.Now; neither source is process-global state.
+func evaluationWithClock(at time.Time, now func() time.Time) Evaluation {
+	return Evaluation{at: at.UTC(), now: now}
+}
+
+func (evaluation Evaluation) instant() time.Time {
+	if !evaluation.at.IsZero() {
+		return evaluation.at
 	}
-	return evaluation
+	if evaluation.now != nil {
+		return evaluation.now().UTC()
+	}
+	return time.Now().UTC()
 }
 
 func (evaluation Evaluation) ValidatePackageManifest(path string) (registry.Manifest, error) {
-	evaluation = evaluation.normalized()
-	return registry.ValidatePackageManifestAt(path, evaluation.at)
+	return registry.ValidatePackageManifestAt(path, evaluation.instant())
 }

@@ -40,7 +40,6 @@ func PreparePluginRuntimeArtifacts(destinationDir, runtime string) ([]string, er
 }
 
 func (evaluation Evaluation) PreparePluginRuntimeArtifacts(destinationDir, runtime string) ([]string, error) {
-	evaluation = evaluation.normalized()
 	return evaluation.CompilePluginRuntimePackage(destinationDir, runtime)
 }
 

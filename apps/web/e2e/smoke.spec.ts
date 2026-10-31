@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { findCatalogueCompatibility } from "../lib/catalogueCompatibility";
+import { catalogueCompatibility, findCatalogueCompatibility } from "../lib/catalogueCompatibility";
 
 const sampleSkillPath = "/skills/marketing/meta-google-weekly-performance-review";
 const sampleAgentPath = "/agents/marketing/weekly-performance-supervisor";
@@ -323,7 +323,7 @@ test("desktop catalogue rail stays at the page edge and stops before the footer"
 });
 
 test("legacy details report unknown compatibility without inferring support", async ({ page }) => {
-  for (const route of [sampleSkillPath, sampleAgentPath, samplePluginPath]) {
+  for (const route of [sampleSkillPath, sampleAgentPath, samplePluginPath, "/tools-mcp/adtech/openai-ads-adapter-template"]) {
     await page.goto(route);
     await expect(page.getByRole("heading", { name: "Declared compatibility", exact: true })).toBeVisible();
     await expect(page.getByText("Compatibility unknown: versions and capabilities have not been declared.", { exact: true })).toBeVisible();
@@ -332,11 +332,18 @@ test("legacy details report unknown compatibility without inferring support", as
 
 test("maintainer compatibility is bound to the exact package and version", async ({ page }) => {
   expect(findCatalogueCompatibility("tools", "analytics/ga4-mcp-connector", "0.2.0")?.details).toContain("Google Analytics Data API: v1beta");
-  expect(findCatalogueCompatibility("tools", "analytics/ga4-mcp-connector", "0.3.0")).toBeUndefined();
-  expect(findCatalogueCompatibility("skills", "analytics/ga4-mcp-connector", "0.2.0")).toBeUndefined();
-  await page.goto(sampleToolPath);
-  await expect(page.getByText("Google Analytics Data API: v1beta", { exact: true })).toBeVisible();
-  await expect(page.getByText(/Maintainer-reviewed information for version 0\.2\.0/)).toBeVisible();
-  await expect(page.getByText(/This is not a live provider check/)).toBeVisible();
-  await expect(page.getByRole("link", { name: "Packaged connector manifest" })).toBeVisible();
+  for (const note of catalogueCompatibility) {
+    expect(findCatalogueCompatibility("tools", note.id, "unreviewed-version")).toBeUndefined();
+    expect(findCatalogueCompatibility("skills", note.id, note.version)).toBeUndefined();
+    await page.goto(`/tools-mcp/${note.id}`);
+    const panel = page.locator("#usability");
+    await expect(panel.getByText(`Maintainer-reviewed information for version ${note.version} · Reviewed ${note.reviewed}. This is not a live provider check.`, { exact: true })).toBeVisible();
+    for (const detail of [...note.details, ...note.limitations]) {
+      await expect(panel.getByText(detail, { exact: true })).toBeVisible();
+    }
+    await expect(panel.getByRole("link", { name: note.source.label, exact: true })).toHaveAttribute("href", note.source.url);
+    await expect(panel.getByText("Compatibility unknown:", { exact: false })).toHaveCount(0);
+  }
+  await page.goto("/tools-mcp/adtech/conversion-event-reconciler");
+  await expect(page.locator("#usability").getByText("Not verified", { exact: true })).toBeVisible();
 });

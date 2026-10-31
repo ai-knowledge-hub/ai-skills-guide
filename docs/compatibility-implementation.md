@@ -15,6 +15,9 @@ See [the maintainer guide](maintaining-compatibility.md) for the update process.
   maintainer requirements and do not prove independent compatibility testing.
 - Static builds publish these notes without provider credentials, live calls,
   signing keys, a verification service or an evaluator dependency.
+- Notes cover all seven implemented tools, including GA4, BigQuery and Meta
+  Ads. The [release review inventory](tool-version-review.md) records their
+  sources and the template-only exclusion.
 
 ## Removed prototype and historical work
 

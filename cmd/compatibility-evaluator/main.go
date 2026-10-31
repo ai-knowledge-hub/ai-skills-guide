@@ -22,15 +22,16 @@ type request struct {
 	Requirements  []registry.CompatibilityRequirement `json:"requirements"`
 }
 
-func read(path string) ([]byte, error) {
+func read(path string) ([]byte, error) { return readBounded(path, 1024*1024) }
+func readBounded(path string, limit int64) ([]byte, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 	defer f.Close()
-	data, err := io.ReadAll(io.LimitReader(f, 1024*1024+1))
-	if len(data) > 1024*1024 {
-		return nil, fmt.Errorf("input exceeds 1 MiB")
+	data, err := io.ReadAll(io.LimitReader(f, limit+1))
+	if int64(len(data)) > limit {
+		return nil, fmt.Errorf("input exceeds size limit")
 	}
 	return data, err
 }
@@ -52,6 +53,9 @@ func run(args []string, stdout io.Writer, now time.Time) error {
 	fs := flag.NewFlagSet("compatibility-evaluator", flag.ContinueOnError)
 	reqPath := fs.String("request", "", "JSON subject and current requirements from selected target")
 	trustPath := fs.String("trust-store", "", "operator-owned JSON mapping approved raw evidence SHA256 to producer (separate from records)")
+	policyPath := fs.String("producer-policy", "", "independent producer key/scope policy JSON")
+	var signedPaths []string
+	fs.Func("signed-evidence", "signed observation envelope; repeat for multiple observations", func(value string) error { signedPaths = append(signedPaths, value); return nil })
 	var paths []string
 	fs.Func("evidence", "JSON record path; repeat for multiple observations", func(value string) error { paths = append(paths, value); return nil })
 	if err := fs.Parse(args); err != nil {
@@ -59,6 +63,12 @@ func run(args []string, stdout io.Writer, now time.Time) error {
 	}
 	if *reqPath == "" || fs.NArg() != 0 {
 		return fmt.Errorf("--request is required; see docs/compatibility-evaluation.md")
+	}
+	if len(signedPaths) > 0 && (*policyPath == "" || *trustPath != "" || len(paths) > 0) {
+		return fmt.Errorf("signed evidence requires --producer-policy and cannot mix raw approval inputs")
+	}
+	if len(signedPaths) == 0 && *policyPath != "" {
+		return fmt.Errorf("producer policy requires signed evidence")
 	}
 	var req request
 	if err := decode(*reqPath, &req); err != nil {
@@ -83,6 +93,25 @@ func run(args []string, stdout io.Writer, now time.Time) error {
 			return err
 		}
 		payloads = append(payloads, data)
+	}
+	if len(signedPaths) > 0 {
+		var keys map[string]compatibility.ProducerKey
+		if err := decode(*policyPath, &keys); err != nil {
+			return err
+		}
+		var envelopes [][]byte
+		for _, path := range signedPaths {
+			data, err := readBounded(path, 2*1024*1024)
+			if err != nil {
+				return err
+			}
+			envelopes = append(envelopes, data)
+		}
+		var err error
+		payloads, trusted, err = compatibility.ApproveSignedEvidence(envelopes, keys)
+		if err != nil {
+			return err
+		}
 	}
 	assessment, err := compatibility.Evaluate(compatibility.Context{Subject: req.Subject, Requirements: req.Requirements, TrustedEvidence: trusted, Now: now, InvalidatedAt: req.InvalidatedAt}, payloads)
 	if err != nil {

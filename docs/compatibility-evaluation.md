@@ -23,9 +23,11 @@ The separate trust store maps SHA256 of the exact raw observation bytes to an
 approved producer. Matching a producer name inside the observation is not
 sufficient. Formatting or content changes require approval of the new bytes.
 The current caller supplies this trust policy; the evaluator does not create
-producer approval, verify signatures or contact a provider. A production
-producer/verifier integration must establish this authority independently before
-these records can be used for release or runtime decisions.
+producer approval or contact a provider. The CLI now also supports a scoped
+Ed25519 verifier adapter with independent operator key policy. The
+[GA4 producer guide](ga4-compatibility-producer.md) describes that fixture-scoped
+integration. Production trust distribution and actual target discovery still
+need integration before release or runtime decisions use these observations.
 
 The standalone command is an offline diagnostic: an operator can supply their
 own data and trust policy, but its output is not ingested as authoritative
@@ -131,7 +133,7 @@ compatibility never grants operational readiness.
 
 This is bounded evaluation coverage, not proof that external providers remain
 compatible. Real connector version inventory, separately produced test records,
-producer verification/trust distribution, current target discovery, live/runtime
+production trust distribution, current target discovery, live/runtime
 integration and CLI/catalogue coverage display remain under #84/#52. Existing
 v1 age gates are still active until that coordinated migration is ready.
 

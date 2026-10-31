@@ -46,9 +46,9 @@ readiness rollout, and existing v1 evidence gates remain active.
 1. Inventory actual API/SDK versions from connector code, dependency locks and
    provider contracts. Publish new releases with truthful declarations; preserve
    retained archives and manifest identities.
-2. Integrate independently produced observations with producer verification and
-   trust distribution. The scoped observation schema and exact-combination
-   evaluator are implemented; production authority is still a separate step.
+2. Integrate production observations and trust distribution. A real GA4 retained
+   fixture producer and scoped Ed25519 verification are implemented; production
+   key policy, live observations and current-target discovery remain separate.
 3. Integrate child coverage with actual locked dependencies and root workflow
    evaluation; expose tested versus declared coverage in the CLI and catalogue.
 4. Migrate runtime/release gates together under the v2 policy. Replace the
@@ -78,3 +78,12 @@ matching, four-state compatibility assessment, and dependency coverage binding.
 An offline diagnostic exercises supplied records without granting operational
 readiness. See [the evaluator guide](compatibility-evaluation.md) for authority,
 selection rules, examples, tests and the remaining production integration work.
+
+## Real connector fixture producer — 31 October 2026
+
+The reviewed GA4 0.2.0 archive now runs through a host-owned API/MCP fixture
+oracle. Its observation records the actual archive and Node version, and can be
+signed and verified against a separate producer/artifact/test/scope key policy.
+See [the GA4 producer guide](ga4-compatibility-producer.md) for the inventory,
+commands, test boundary and remaining live/runtime integration. Existing package
+manifests and archives have not been relabelled or reissued.

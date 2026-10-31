@@ -625,6 +625,20 @@ func extractVerifiedTarGz(archivePath, destination string) error {
 // package-admission checks to an immutable publisher release without committing
 // it into a runtime directory.
 func ValidateRetainedRelease(archivePath, storedManifestPath, module, expectedID, expectedVersion string) (registry.Manifest, error) {
+	return inspectRetainedRelease(archivePath, storedManifestPath, module, expectedID, expectedVersion, nil)
+}
+
+// InspectRetainedRelease exposes a validated temporary extraction to a trusted
+// host-owned check. The directory is removed when the callback returns. This
+// checks historical integrity, not operational installation or freshness.
+func InspectRetainedRelease(archivePath, storedManifestPath, module, expectedID, expectedVersion string, inspect func(string, registry.Manifest) error) (registry.Manifest, error) {
+	if inspect == nil {
+		return registry.Manifest{}, errors.New("release inspector is required")
+	}
+	return inspectRetainedRelease(archivePath, storedManifestPath, module, expectedID, expectedVersion, inspect)
+}
+
+func inspectRetainedRelease(archivePath, storedManifestPath, module, expectedID, expectedVersion string, inspect func(string, registry.Manifest) error) (registry.Manifest, error) {
 	archiveInfo, err := os.Lstat(archivePath)
 	if err != nil || !archiveInfo.Mode().IsRegular() {
 		return registry.Manifest{}, fmt.Errorf("release archive must be a regular file: %s", archivePath)
@@ -666,6 +680,11 @@ func ValidateRetainedRelease(archivePath, storedManifestPath, module, expectedID
 	}
 	if manifest.ID != expectedID || manifest.Version != expectedVersion {
 		return registry.Manifest{}, fmt.Errorf("retained package declares %s@%s, expected %s@%s", manifest.ID, manifest.Version, expectedID, expectedVersion)
+	}
+	if inspect != nil {
+		if err := inspect(extractRoot, manifest); err != nil {
+			return registry.Manifest{}, err
+		}
 	}
 	return manifest, nil
 }

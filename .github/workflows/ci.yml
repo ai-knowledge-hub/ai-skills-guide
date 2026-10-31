@@ -28,6 +28,9 @@ jobs:
         with:
           go-version-file: go.mod
           cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
       - name: Install check-jsonschema
         run: python3 -m pip install --upgrade pip "check-jsonschema==0.37.0"
       - name: Test structural contracts and runtime freshness enforcement

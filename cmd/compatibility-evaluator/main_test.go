@@ -2,7 +2,10 @@ package main
 
 import (
 	"bytes"
+	"crypto/ed25519"
+	"crypto/rand"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"os"
@@ -72,5 +75,59 @@ func TestOfflineEvaluationDistinguishesTrustWithoutGrantingReadiness(t *testing.
 	var out bytes.Buffer
 	if err := run([]string{"--request", bad}, &out, now); err == nil || out.Len() != 0 {
 		t.Fatal("request self-promotion was accepted")
+	}
+}
+
+func TestSignedObservationModeRequiresSeparatePolicy(t *testing.T) {
+	now := time.Date(2026, 10, 31, 12, 0, 0, 0, time.UTC)
+	req := request{Subject: compatibility.Subject{EntryID: "example/client", EntryVersion: "1.0.0", ArtifactSHA256: strings.Repeat("a", 64), DependencyLockSHA256: strings.Repeat("b", 64), ConfigurationSHA256: strings.Repeat("c", 64), Runtime: "generic", Platform: "linux", Operation: "fixture-contract", ProviderTarget: "local-fixture", Dimensions: []compatibility.Dimension{{Kind: "api", Name: "Example", Version: "v1"}}}, Requirements: []registry.CompatibilityRequirement{{Kind: "api", Name: "Example", Versions: []string{"v1"}}}}
+	binding, _ := compatibility.RequirementsDigest(req.Requirements)
+	evidence := compatibility.Evidence{SchemaVersion: compatibility.EvidenceVersion, ContractVersion: "2.0.0", Subject: req.Subject, RequirementsSHA256: binding, Producer: "fixture-ci", TestID: "fixture-test", TestVersion: "1", ObservedAt: now.Add(-time.Minute), Result: "passed", Reason: "local fixture only"}
+	payload, _ := json.Marshal(evidence)
+	public, private, err := ed25519.GenerateKey(rand.Reader)
+	if err != nil {
+		t.Fatal(err)
+	}
+	signed, err := compatibility.SignEvidence(payload, "producer-key", private)
+	if err != nil {
+		t.Fatal(err)
+	}
+	root := t.TempDir()
+	write := func(name string, data []byte) string {
+		t.Helper()
+		path := filepath.Join(root, name)
+		if err := os.WriteFile(path, data, 0o600); err != nil {
+			t.Fatal(err)
+		}
+		return path
+	}
+	reqData, _ := json.Marshal(req)
+	reqPath := write("request", reqData)
+	signedPath := write("signed", signed)
+	policy := map[string]compatibility.ProducerKey{"producer-key": {PublicKey: base64.StdEncoding.EncodeToString(public), Producer: "fixture-ci", TestID: "fixture-test", TestVersion: "1", EntryID: req.Subject.EntryID, ArtifactSHA256: req.Subject.ArtifactSHA256, Operation: req.Subject.Operation, ProviderTarget: req.Subject.ProviderTarget}}
+	policyData, _ := json.Marshal(policy)
+	policyPath := write("policy", policyData)
+	var out bytes.Buffer
+	args := []string{"--request", reqPath, "--signed-evidence", signedPath, "--producer-policy", policyPath}
+	if err := run(args, &out, now); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(out.String(), `"status":"tested-compatible"`) || !strings.Contains(out.String(), `"operational_readiness":"not_evaluated"`) {
+		t.Fatalf("signed mode misrepresented result: %s", out.String())
+	}
+	for _, extra := range [][]string{
+		{"--signed-evidence", signedPath},
+		{"--signed-evidence", signedPath, "--producer-policy", policyPath, "--evidence", signedPath},
+		{"--producer-policy", policyPath},
+	} {
+		out.Reset()
+		if err := run(append([]string{"--request", reqPath}, extra...), &out, now); err == nil || out.Len() != 0 {
+			t.Fatal("ambiguous or policy-free signed input accepted")
+		}
+	}
+	revoked := write("revoked-policy", []byte(`{}`))
+	out.Reset()
+	if err := run([]string{"--request", reqPath, "--signed-evidence", signedPath, "--producer-policy", revoked}, &out, now); err == nil || out.Len() != 0 {
+		t.Fatal("revoked key produced an assessment")
 	}
 }

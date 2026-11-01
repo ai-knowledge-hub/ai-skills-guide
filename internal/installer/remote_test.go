@@ -23,7 +23,6 @@ import (
 	"time"
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
-	"github.com/ai-knowledge-hub/ai-skills-guide/internal/testutil"
 	"github.com/gofrs/flock"
 )
 
@@ -1099,7 +1098,7 @@ func TestInstallRemoteReleaseAcceptsPublishedArchive(t *testing.T) {
 
 func TestInstallPublishedContentRepurposingPluginWithoutSourceSiblings(t *testing.T) {
 	// Exercise this retained release at a known admissible instant.
-	testutil.PackageEvidenceAt(t, time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
+	evaluation := EvaluationAt(time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
 	workingDirectory, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("get working directory: %v", err)
@@ -1157,7 +1156,7 @@ func TestInstallPublishedContentRepurposingPluginWithoutSourceSiblings(t *testin
 	for _, runtimeName := range []string{"codex", "claude", "generic"} {
 		t.Run(runtimeName, func(t *testing.T) {
 			runtimeRoot := t.TempDir()
-			result, err := InstallRemoteRelease(context.Background(), RemoteInstallOptions{
+			result, err := evaluation.InstallRemoteRelease(context.Background(), RemoteInstallOptions{
 				RegistryURL:       server.URL + "/registry.json",
 				CacheDir:          filepath.Join(t.TempDir(), "cache"),
 				Module:            "plugins",
@@ -1192,7 +1191,7 @@ func TestInstallPublishedContentRepurposingPluginWithoutSourceSiblings(t *testin
 
 func TestInstallPublishedLocalPluginWaveWithoutSourceSiblings(t *testing.T) {
 	// Exercise this retained release at a known admissible instant.
-	testutil.PackageEvidenceAt(t, time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
+	evaluation := EvaluationAt(time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
 	workingDirectory, err := os.Getwd()
 	if err != nil {
 		t.Fatalf("get working directory: %v", err)
@@ -1291,11 +1290,11 @@ func TestInstallPublishedLocalPluginWaveWithoutSourceSiblings(t *testing.T) {
 						CacheDir:    filepath.Join(t.TempDir(), "cache"), Module: "plugins", Runtime: runtimeName,
 						ID: testCase.id, Version: release.Version, TargetRoot: filepath.Join(runtimeRoot, "plugins"), HTTPClient: server.Client(),
 					}
-					if _, deniedErr := InstallRemoteRelease(context.Background(), options); deniedErr == nil || !strings.Contains(deniedErr.Error(), "--execution-runtime") {
+					if _, deniedErr := evaluation.InstallRemoteRelease(context.Background(), options); deniedErr == nil || !strings.Contains(deniedErr.Error(), "--execution-runtime") {
 						t.Fatalf("install without declared Node capability was not rejected: %v", deniedErr)
 					}
 					options.ExecutionRuntimes = []string{executionRuntime}
-					result, installErr := InstallRemoteRelease(context.Background(), options)
+					result, installErr := evaluation.InstallRemoteRelease(context.Background(), options)
 					if installErr != nil {
 						t.Fatalf("install standalone published plugin: %v", installErr)
 					}

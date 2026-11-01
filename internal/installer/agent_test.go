@@ -9,15 +9,14 @@ import (
 	"time"
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
-	"github.com/ai-knowledge-hub/ai-skills-guide/internal/testutil"
 )
 
 func TestAgentInstallCompilesPinnedBindingsWithoutManualFile(t *testing.T) {
 	// Exercise this retained release at a known admissible instant.
-	testutil.PackageEvidenceAt(t, time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
+	evaluation := EvaluationAt(time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
 	repositoryRoot := filepath.Clean(filepath.Join("..", ".."))
 	indexes := writeAgentTestIndexes(t, repositoryRoot)
-	agentManifest, err := registry.ValidatePackageManifest(filepath.Join(repositoryRoot, "agents", "adtech", "bi-insights-orchestrator", "agent.yaml"))
+	agentManifest, err := evaluation.ValidatePackageManifest(filepath.Join(repositoryRoot, "agents", "adtech", "bi-insights-orchestrator", "agent.yaml"))
 	if err != nil {
 		t.Fatalf("validate agent: %v", err)
 	}
@@ -30,7 +29,7 @@ func TestAgentInstallCompilesPinnedBindingsWithoutManualFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("install agent: %v", err)
 	}
-	result, err := InstallAgentDependencies(entry, "codex", targetRoot, map[string]string{
+	result, err := evaluation.InstallAgentDependencies(entry, "codex", targetRoot, map[string]string{
 		"skills": filepath.Join(repositoryRoot, "skills"), "agents": filepath.Join(repositoryRoot, "agents"), "tools": filepath.Join(repositoryRoot, "tools-mcp"),
 	}, indexes, false)
 	if err != nil {
@@ -39,7 +38,7 @@ func TestAgentInstallCompilesPinnedBindingsWithoutManualFile(t *testing.T) {
 	if len(result.InstalledSkills) != 3 || len(result.InstalledTools) != 2 {
 		t.Fatalf("unexpected closure: %#v", result)
 	}
-	contractPath, err := CompileAgentRuntimePackage(destination, "codex", targetRoot)
+	contractPath, err := evaluation.CompileAgentRuntimePackage(destination, "codex", targetRoot)
 	if err != nil {
 		t.Fatalf("compile agent: %v", err)
 	}
@@ -113,10 +112,10 @@ func TestAgentInstallCompilesPinnedBindingsWithoutManualFile(t *testing.T) {
 
 func TestAgentCompileBlocksUnavailableRequiredCapability(t *testing.T) {
 	// Exercise this retained release at a known admissible instant.
-	testutil.PackageEvidenceAt(t, time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
+	evaluation := EvaluationAt(time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
 	repositoryRoot := filepath.Clean(filepath.Join("..", ".."))
 	indexes := writeAgentTestIndexes(t, repositoryRoot)
-	manifest, err := registry.ValidatePackageManifest(filepath.Join(repositoryRoot, "agents", "marketing", "campaign-qa-supervisor", "agent.yaml"))
+	manifest, err := evaluation.ValidatePackageManifest(filepath.Join(repositoryRoot, "agents", "marketing", "campaign-qa-supervisor", "agent.yaml"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -129,13 +128,13 @@ func TestAgentCompileBlocksUnavailableRequiredCapability(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = InstallAgentDependencies(entry, "generic", targetRoot, map[string]string{
+	_, err = evaluation.InstallAgentDependencies(entry, "generic", targetRoot, map[string]string{
 		"skills": filepath.Join(repositoryRoot, "skills"), "agents": filepath.Join(repositoryRoot, "agents"), "tools": filepath.Join(repositoryRoot, "tools-mcp"),
 	}, indexes, false)
 	if err != nil {
 		t.Fatal(err)
 	}
-	contractPath, err := CompileAgentRuntimePackage(destination, "generic", targetRoot)
+	contractPath, err := evaluation.CompileAgentRuntimePackage(destination, "generic", targetRoot)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -147,27 +146,27 @@ func TestAgentCompileBlocksUnavailableRequiredCapability(t *testing.T) {
 
 func TestReleasedAgentArchiveInstallsSelfContainedClosure(t *testing.T) {
 	// Exercise this retained release at a known admissible instant.
-	testutil.PackageEvidenceAt(t, time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
+	evaluation := EvaluationAt(time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
 	repositoryRoot := filepath.Clean(filepath.Join("..", ".."))
 	archive := filepath.Join(repositoryRoot, "releases", "agents", "adtech", "bi-insights-orchestrator", "0.2.0", "package.tar.gz")
 	extractRoot := t.TempDir()
 	if err := extractVerifiedTarGz(archive, extractRoot); err != nil {
 		t.Fatalf("extract release: %v", err)
 	}
-	manifest, err := registry.ValidatePackageManifest(filepath.Join(extractRoot, "agent.yaml"))
+	manifest, err := evaluation.ValidatePackageManifest(filepath.Join(extractRoot, "agent.yaml"))
 	if err != nil {
 		t.Fatalf("validate released agent: %v", err)
 	}
 	runtimeRoot := t.TempDir()
 	agentTarget := filepath.Join(runtimeRoot, "agents")
-	plans, err := remoteAgentInstallPlans(extractRoot, agentTarget, "generic", []string{"node22"}, manifest)
+	plans, err := evaluation.remoteAgentInstallPlans(extractRoot, agentTarget, "generic", []string{"node22"}, manifest)
 	if err != nil {
 		t.Fatalf("plan closure: %v", err)
 	}
 	if len(plans) != 6 {
 		t.Fatalf("closure plans=%d want=6", len(plans))
 	}
-	if _, err := compileAgentRuntimePackage(extractRoot, "generic", agentTarget, extractRoot); err != nil {
+	if _, err := evaluation.compileAgentRuntimePackage(extractRoot, "generic", agentTarget, extractRoot); err != nil {
 		t.Fatalf("compile release: %v", err)
 	}
 	destination, err := atomicInstallClosure(plans, agentTarget, manifest.ID, false)

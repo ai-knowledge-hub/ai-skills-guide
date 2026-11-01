@@ -18,7 +18,6 @@ import (
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/installer"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
-	"github.com/ai-knowledge-hub/ai-skills-guide/internal/testutil"
 )
 
 func TestPrintPluginSummary(t *testing.T) {
@@ -236,7 +235,7 @@ func TestShellQuoteCommandPreservesArgumentBoundaries(t *testing.T) {
 
 func TestBindReadinessEntryUsesReceiptVerifiedSelectedVersionManifest(t *testing.T) {
 	// Exercise this retained release at a known admissible instant.
-	testutil.PackageEvidenceAt(t, time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
+	now := time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC)
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
 		t.Fatal("resolve test source path")
@@ -267,9 +266,9 @@ func TestBindReadinessEntryUsesReceiptVerifiedSelectedVersionManifest(t *testing
 	latestProjection.Authentication = &registry.AuthenticationMetadata{
 		Status: "required", Methods: []string{"api-key"}, CredentialBindings: []string{"OTHER_KEY"}, Scopes: []string{"other"},
 	}
-	bound, err := bindReadinessEntryToInstalledVersion(
+	bound, err := bindReadinessEntryToInstalledVersionAt(
 		readinessEntry{Module: "tools", Entry: latestProjection, Version: manifest.Version},
-		installer.RuntimeTarget{Runtime: "generic", TargetPath: targetRoot},
+		installer.RuntimeTarget{Runtime: "generic", TargetPath: targetRoot}, now,
 	)
 	if err != nil {
 		t.Fatal(err)
@@ -281,7 +280,7 @@ func TestBindReadinessEntryUsesReceiptVerifiedSelectedVersionManifest(t *testing
 
 func TestRunAuthConfigureBindsHistoricalInstalledContract(t *testing.T) {
 	// Exercise this retained release at a known admissible instant.
-	testutil.PackageEvidenceAt(t, time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
+	now := time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC)
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
 		t.Fatal("resolve test source path")
@@ -301,7 +300,7 @@ func TestRunAuthConfigureBindsHistoricalInstalledContract(t *testing.T) {
 	if err := os.WriteFile(manifestPath, []byte(updated), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	manifest, err := registry.ValidatePackageManifest(manifestPath)
+	manifest, err := registry.ValidatePackageManifestAt(manifestPath, now)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -330,14 +329,14 @@ func TestRunAuthConfigureBindsHistoricalInstalledContract(t *testing.T) {
 	t.Setenv("PRIVATE_PROVIDER_KEY", "runtime-owned-test-value")
 	t.Setenv("PRIVATE_PROVIDER_KEY_GENERATION", "generation-1")
 	stateDir := filepath.Join(root, "state")
-	if err := runAuth([]string{
-		"configure", manifest.ID + "@" + manifest.Version,
+	if err := runAuthConfigureWithAdmissionTime([]string{
+		manifest.ID + "@" + manifest.Version,
 		"--module", "tools", "--registry", registryPath, "--runtime", "generic", "--target", targetRoot,
 		"--state-dir", stateDir, "--method", "api-key",
 		"--binding", "PROVIDER_API_KEY=env:PRIVATE_PROVIDER_KEY",
 		"--generation", "PROVIDER_API_KEY=env:PRIVATE_PROVIDER_KEY_GENERATION",
 		"--validator-command", os.Args[0],
-	}); err != nil {
+	}, now); err != nil {
 		t.Fatal(err)
 	}
 	profiles, err := filepath.Glob(filepath.Join(stateDir, "auth", "tools", "analytics", "*.json"))

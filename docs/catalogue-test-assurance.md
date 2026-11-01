@@ -121,7 +121,8 @@ no exhaustive per-SDK matrix, provider calls or sleeps were added.
 Residual gaps: these tests cannot prove the semantic correctness of every new
 package's prose, every provider contract, or every unanchored package's product
 role. New material requirements need independent anchors. HTTPS/source shape
-does not prove provenance content is authoritative. The existing mutable
-package-evidence test clock and remaining calendar-based operational fixtures
-are #86; the justification/migration of the 30-day runtime gate remains #83.
-Neither was changed by this test refactor.
+does not prove provenance content is authoritative. The later
+[clock-isolation work](evaluation-clocks.md) under #86 removes the mutable
+package-evidence test clock and documents separate time domains. The
+justification/migration of the 30-day runtime gate remains #83; this catalogue
+test refactor did not change it.

@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
 )
@@ -35,7 +36,11 @@ func InstallSkill(sourceDir, targetRoot, skillID string, force bool) (string, er
 }
 
 func PreparePluginRuntimeArtifacts(destinationDir, runtime string) ([]string, error) {
-	return CompilePluginRuntimePackage(destinationDir, runtime)
+	return EvaluationAt(time.Time{}).PreparePluginRuntimeArtifacts(destinationDir, runtime)
+}
+
+func (evaluation Evaluation) PreparePluginRuntimeArtifacts(destinationDir, runtime string) ([]string, error) {
+	return evaluation.CompilePluginRuntimePackage(destinationDir, runtime)
 }
 
 func copyTree(src, dst string) error {

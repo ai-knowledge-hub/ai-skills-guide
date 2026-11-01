@@ -16,7 +16,6 @@ import (
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/installer"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
-	"github.com/ai-knowledge-hub/ai-skills-guide/internal/testutil"
 )
 
 func TestValidateCompiledAgentContractFailsClosed(t *testing.T) {
@@ -68,9 +67,9 @@ func TestLoadCompiledAgentContractRejectsUnknownFields(t *testing.T) {
 
 func TestRunPreflightVerifiesInstalledAgentClosureEndToEnd(t *testing.T) {
 	// Exercise this retained release at a known admissible instant.
-	testutil.PackageEvidenceAt(t, time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
+	evaluation := installer.EvaluationAt(time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC))
 	repositoryRoot := filepath.Clean(filepath.Join("..", ".."))
-	manifest, err := registry.ValidatePackageManifest(filepath.Join(repositoryRoot, "agents", "adtech", "bi-insights-orchestrator", "agent.yaml"))
+	manifest, err := evaluation.ValidatePackageManifest(filepath.Join(repositoryRoot, "agents", "adtech", "bi-insights-orchestrator", "agent.yaml"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -85,7 +84,7 @@ func TestRunPreflightVerifiesInstalledAgentClosureEndToEnd(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	dependencyResult, err := installer.InstallAgentDependencies(entry, "generic", agentsRoot, map[string]string{
+	dependencyResult, err := evaluation.InstallAgentDependencies(entry, "generic", agentsRoot, map[string]string{
 		"skills": filepath.Join(repositoryRoot, "skills"), "agents": filepath.Join(repositoryRoot, "agents"), "tools": filepath.Join(repositoryRoot, "tools-mcp"),
 	}, indexes, false)
 	if err != nil {
@@ -96,7 +95,7 @@ func TestRunPreflightVerifiesInstalledAgentClosureEndToEnd(t *testing.T) {
 		t.Fatal(err)
 	}
 	useTestRuntimeTrustRoot(t, "generic", publicKey)
-	compiledPath, err := installer.CompileAgentRuntimePackage(destination, "generic", agentsRoot)
+	compiledPath, err := evaluation.CompileAgentRuntimePackage(destination, "generic", agentsRoot)
 	if err != nil {
 		t.Fatal(err)
 	}

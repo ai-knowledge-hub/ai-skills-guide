@@ -314,6 +314,44 @@ func TestStatusDistinguishesAuthenticationStates(t *testing.T) {
 	}
 }
 
+func TestAuthenticationDeadlineBoundariesUseSuppliedTime(t *testing.T) {
+	deadline := time.Date(2026, 9, 23, 12, 0, 0, 0, time.UTC)
+	// These are provider/credential expiries, independent of manifest age caps.
+	for _, scope := range []string{"credential", "attestation"} {
+		for _, delta := range []time.Duration{-time.Nanosecond, 0, time.Nanosecond} {
+			t.Run(scope+"/"+delta.String(), func(t *testing.T) {
+				root, entry := t.TempDir(), authenticatedEntry()
+				payload := observation(true, false, "acct-1", []string{"read", "profile"}, deadline.Add(time.Hour))
+				if scope == "credential" {
+					payload["expires_at"] = deadline
+				} else {
+					payload["attestation_expires_at"] = deadline
+				}
+				encoded, err := json.Marshal(payload)
+				if err != nil {
+					t.Fatal(err)
+				}
+				configureProfile(t, root, entry, "acct-1", string(encoded), false)
+				t.Setenv("PRIVATE_PROVIDER_KEY", testSecret)
+				t.Setenv("PRIVATE_PROVIDER_KEY_GENERATION", "generation-1")
+				report, err := Status(context.Background(), InspectOptions{
+					StateDir: root, Module: "tools", Entry: entry, Version: "1.0.0", Now: deadline.Add(delta),
+				})
+				if err != nil {
+					t.Fatal(err)
+				}
+				want := "expired"
+				if delta < 0 {
+					want = "ready"
+				}
+				if report.State != want || report.Authenticated != (delta < 0) {
+					t.Fatalf("%s at %+v: %#v", scope, delta, report)
+				}
+			})
+		}
+	}
+}
+
 func TestStatusDistinguishesMissingAndUnverified(t *testing.T) {
 	entry := authenticatedEntry()
 	report, err := Status(context.Background(), InspectOptions{StateDir: t.TempDir(), Module: "tools", Entry: entry, Version: "1.0.0"})

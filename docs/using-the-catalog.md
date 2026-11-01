@@ -3,7 +3,7 @@
 The catalog separates **what a package is** from **how ready it is to use**.
 The normative definitions, evidence rules, target scoping, and expiry semantics
 are in the
-[Operational Readiness and Promotion Contract](../shared/contracts/operational-readiness-v1.md).
+[Operational Readiness and Promotion Contract](../shared/contracts/operational-readiness-v3.md).
 
 ## Catalog projections
 

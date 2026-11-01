@@ -8,8 +8,8 @@ so its status is explicit; it is not an active normative contract.
 Current website policy is
 [catalogue compatibility v1](catalogue-compatibility-v1.md).
 Runtime admission and credential rules remain governed by
-[operational readiness v1](operational-readiness-v1.md), including the existing
-age gates pending a separate targeted decision under #83.
+[operational readiness v3](operational-readiness-v3.md), with historical package
+dates separated from actual authentication expiry.
 
 The offline evaluator prototype from PR #88 has been removed after a consumer
 audit found no site, registry, installer or runtime dependency. The signed GA4

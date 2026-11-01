@@ -22,18 +22,18 @@ func TestEvaluationsAdmitSameRetainedPackageConcurrentlyAtDifferentInstants(t *t
 	if err != nil {
 		t.Fatal(err)
 	}
-	// GA4 0.2.0 records 2026-09-17. Operational v1 gives authenticated
-	// manifest evidence 30 days, valid strictly before its deadline.
-	expires := time.Date(2026, 10, 17, 0, 0, 0, 0, time.UTC)
+	// Historical age does not expire metadata; future observations retain the
+	// five-minute sanity bound and expose independent operation clocks.
+	sanityBoundary := time.Date(2026, 9, 16, 23, 55, 0, 0, time.UTC)
 	t.Run("isolated", func(t *testing.T) {
 		for _, test := range []struct {
 			name    string
 			instant time.Time
 			valid   bool
 		}{
-			{"before", expires.Add(-time.Nanosecond), true},
-			{"at", expires, false},
-			{"after", expires.Add(time.Nanosecond), false},
+			{"before", sanityBoundary.Add(-time.Nanosecond), false},
+			{"at", sanityBoundary, true},
+			{"after", sanityBoundary.Add(time.Nanosecond), true},
 		} {
 			t.Run(test.name, func(t *testing.T) {
 				t.Parallel()
@@ -43,7 +43,7 @@ func TestEvaluationsAdmitSameRetainedPackageConcurrentlyAtDifferentInstants(t *t
 					if (err == nil) != test.valid {
 						t.Fatalf("admissible=%v at %s: %v", test.valid, test.instant, err)
 					}
-					if !test.valid && !strings.Contains(err.Error(), "evidence older than") {
+					if !test.valid && !strings.Contains(err.Error(), "future verification timestamp") {
 						t.Fatalf("unrelated rejection: %v", err)
 					}
 				}
@@ -68,20 +68,20 @@ func TestEvaluationDefaultsUseRealTimeWithoutChangingExplicitContexts(t *testing
 	if err != nil {
 		t.Fatal(err)
 	}
-	payload = bytes.Replace(payload, []byte(`last_verified_at: "2026-09-17T00:00:00Z"`), []byte(`last_verified_at: "2000-01-01T00:00:00Z"`), 1)
+	payload = bytes.Replace(payload, []byte(`last_verified_at: "2026-09-17T00:00:00Z"`), []byte(`last_verified_at: "9999-01-01T00:00:00Z"`), 1)
 	if err := os.WriteFile(manifestPath, payload, 0o644); err != nil {
 		t.Fatal(err)
 	}
-	explicit := EvaluationAt(time.Date(2000, 1, 2, 0, 0, 0, 0, time.UTC))
+	explicit := EvaluationAt(time.Date(9999, 1, 2, 0, 0, 0, 0, time.UTC))
 	if _, err := explicit.ValidatePackageManifest(manifestPath); err != nil {
 		t.Fatalf("explicit control: %v", err)
 	}
 	for name, evaluation := range map[string]Evaluation{"zero value": {}, "zero instant": EvaluationAt(time.Time{})} {
-		if _, err := evaluation.ValidatePackageManifest(manifestPath); err == nil || !strings.Contains(err.Error(), "evidence older than") {
+		if _, err := evaluation.ValidatePackageManifest(manifestPath); err == nil || !strings.Contains(err.Error(), "future verification timestamp") {
 			t.Fatalf("%s did not use real time: %v", name, err)
 		}
 	}
-	if _, err := registry.ValidatePackageManifest(manifestPath); err == nil || !strings.Contains(err.Error(), "evidence older than") {
+	if _, err := registry.ValidatePackageManifest(manifestPath); err == nil || !strings.Contains(err.Error(), "future verification timestamp") {
 		t.Fatalf("default registry admission did not use real time: %v", err)
 	}
 	if _, err := explicit.ValidatePackageManifest(manifestPath); err != nil {

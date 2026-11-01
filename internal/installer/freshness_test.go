@@ -28,13 +28,13 @@ func timedSkillFiles(observed time.Time) map[string]string {
 
 func TestRemoteAdmissionSamplesTimeAfterDownloads(t *testing.T) {
 	observed := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
-	deadline := observed.Add(90 * 24 * time.Hour) // Operational v1 executable scope.
+	sanityBoundary := observed.Add(-5 * time.Minute) // Future-observation sanity bound.
 	archive := makeArchive(t, timedSkillFiles(observed))
 	for _, download := range []string{"/registry.json", "/artifacts/1.0.0.tar.gz"} {
 		for _, delta := range []time.Duration{-time.Nanosecond, 0, time.Nanosecond} {
 			t.Run(download+"/"+delta.String(), func(t *testing.T) {
 				var clock operationClock
-				clock.set(deadline.Add(-time.Hour))
+				clock.set(observed)
 				evaluation := evaluationWithClock(time.Time{}, clock.now)
 				var artifactSeen atomic.Bool
 				server := newReleaseServerWithWrapper(t, archive, "1.0.0", nil, func(next http.Handler) http.Handler {
@@ -43,7 +43,7 @@ func TestRemoteAdmissionSamplesTimeAfterDownloads(t *testing.T) {
 							artifactSeen.Store(true)
 						}
 						if r.URL.Path == download {
-							clock.set(deadline.Add(delta))
+							clock.set(sanityBoundary.Add(delta))
 						}
 						next.ServeHTTP(w, r)
 					})
@@ -55,16 +55,16 @@ func TestRemoteAdmissionSamplesTimeAfterDownloads(t *testing.T) {
 				if !artifactSeen.Load() {
 					t.Fatal("fixture did not exercise both registry and artifact downloads")
 				}
-				if delta < 0 {
+				if delta >= 0 {
 					if err != nil {
-						t.Fatalf("unexpired control rejected: %v", err)
+						t.Fatalf("valid observation control rejected: %v", err)
 					}
 					if _, err := registry.ValidatePackageManifestAt(filepath.Join(result.Destination, "skill.yaml"), clock.now()); err != nil {
 						t.Fatalf("installed control is not admissible: %v", err)
 					}
 				} else {
-					if err == nil || !strings.Contains(err.Error(), "evidence older than") {
-						t.Fatalf("download extended evidence validity: %v", err)
+					if err == nil || !strings.Contains(err.Error(), "future verification timestamp") {
+						t.Fatalf("download lost current observation check: %v", err)
 					}
 					assertPathAbsent(t, options.TargetRoot)
 				}
@@ -73,14 +73,14 @@ func TestRemoteAdmissionSamplesTimeAfterDownloads(t *testing.T) {
 	}
 }
 
-func TestFixedHistoricalEvaluationSurvivesAdvancingTransportClock(t *testing.T) {
+func TestFixedHistoricalEvaluationSurvivesTransportClockShift(t *testing.T) {
 	observed := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
 	var clock operationClock
 	clock.set(observed.Add(time.Hour))
 	evaluation := evaluationWithClock(observed.Add(time.Hour), clock.now)
 	server := newReleaseServerWithWrapper(t, makeArchive(t, timedSkillFiles(observed)), "1.0.0", nil, func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			clock.set(observed.AddDate(100, 0, 0))
+			clock.set(observed.Add(-6 * time.Minute))
 			next.ServeHTTP(w, r)
 		})
 	})
@@ -92,11 +92,11 @@ func TestFixedHistoricalEvaluationSurvivesAdvancingTransportClock(t *testing.T) 
 	}
 }
 
-func TestRemoteCommitRechecksFreshnessAndRestoresPreviousInstallation(t *testing.T) {
+func TestRemoteCommitRechecksObservationAndRestoresPreviousInstallation(t *testing.T) {
 	observed := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
-	deadline := observed.Add(90 * 24 * time.Hour)
+	sanityBoundary := observed.Add(-5 * time.Minute)
 	var clock operationClock
-	clock.set(deadline.Add(-time.Hour))
+	clock.set(observed)
 	server := newReleaseServer(t, makeArchive(t, timedSkillFiles(observed)), "1.0.0", nil)
 	defer server.Close()
 	options := remoteOptions(server, filepath.Join(t.TempDir(), "cache"), filepath.Join(t.TempDir(), "runtime", "skills"), "1.0.0")
@@ -114,23 +114,23 @@ func TestRemoteCommitRechecksFreshnessAndRestoresPreviousInstallation(t *testing
 	installTransactionFault = func(point string) error {
 		if point == "after-backup-rename" {
 			advanced = true
-			clock.set(deadline)
+			clock.set(sanityBoundary.Add(-time.Nanosecond))
 		}
 		return nil
 	}
 	_, err := evaluationWithClock(time.Time{}, clock.now).InstallRemoteRelease(context.Background(), options)
-	if !advanced || err == nil || !strings.Contains(err.Error(), "evidence older than") {
-		t.Fatalf("commit extended evidence lifetime: advanced=%v, err=%v", advanced, err)
+	if !advanced || err == nil || !strings.Contains(err.Error(), "future verification timestamp") {
+		t.Fatalf("commit lost current observation check: advanced=%v, err=%v", advanced, err)
 	}
 	assertFileContains(t, filepath.Join(destination, "previous.txt"), "original")
 	assertPathAbsent(t, filepath.Join(destination, "SKILL.md"))
 	assertPathAbsent(t, filepath.Join(filepath.Dir(destination), ".remote-fixture.skills-hub-transaction.json"))
 }
 
-func TestRemoteClosureExpiryRollsBackActivatedDependencies(t *testing.T) {
+func TestRemoteClosureObservationFailureRollsBackActivatedDependencies(t *testing.T) {
 	childObserved := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
-	deadline := childObserved.Add(90 * 24 * time.Hour)
-	rootManifest := remotePluginManifest("1.0.0", childObserved.Add(24*time.Hour))
+	sanityBoundary := childObserved.Add(-5 * time.Minute)
+	rootManifest := remotePluginManifest("1.0.0", childObserved.Add(-24*time.Hour))
 	files := map[string]string{"plugin.yaml": rootManifest, "plugin.json": "{}\n"}
 	for name, content := range timedSkillFiles(childObserved) {
 		files["bundled/skills/engineering/closure-skill/"+name] = strings.ReplaceAll(content, "engineering/remote-fixture", "engineering/closure-skill")
@@ -139,7 +139,7 @@ func TestRemoteClosureExpiryRollsBackActivatedDependencies(t *testing.T) {
 	for _, point := range []string{"before-activation", "after-activation"} {
 		t.Run(point, func(t *testing.T) {
 			var clock operationClock
-			clock.set(deadline.Add(-time.Hour))
+			clock.set(childObserved)
 			server := newPluginReleaseServer(t, archive, rootManifest)
 			defer server.Close()
 			runtimeRoot := t.TempDir()
@@ -156,7 +156,7 @@ func TestRemoteClosureExpiryRollsBackActivatedDependencies(t *testing.T) {
 			closureInstallTransactionFault = func(phase string, index int) error {
 				if phase == point && index == 0 {
 					advanced = true
-					clock.set(deadline)
+					clock.set(sanityBoundary.Add(-time.Nanosecond))
 				}
 				return nil
 			}
@@ -165,13 +165,33 @@ func TestRemoteClosureExpiryRollsBackActivatedDependencies(t *testing.T) {
 				ID: "engineering/closure-plugin", Version: "1.0.0", TargetRoot: filepath.Join(runtimeRoot, "plugins"), HTTPClient: server.Client(),
 				ExecutionRuntimes: []string{"generic", "native"}, Force: true,
 			})
-			if !advanced || err == nil || !strings.Contains(err.Error(), "engineering/closure-skill") || !strings.Contains(err.Error(), "evidence older than") {
-				t.Fatalf("child evidence outlived its deadline: advanced=%v, err=%v", advanced, err)
+			if !advanced || err == nil || !strings.Contains(err.Error(), "engineering/closure-skill") || !strings.Contains(err.Error(), "future verification timestamp") {
+				t.Fatalf("child observation check was skipped: advanced=%v, err=%v", advanced, err)
 			}
 			assertPathAbsent(t, filepath.Join(runtimeRoot, "plugins", "engineering", "closure-plugin"))
 			assertFileContains(t, filepath.Join(dependency, "previous.txt"), "original dependency")
 			assertPathAbsent(t, filepath.Join(dependency, "SKILL.md"))
 			assertPathAbsent(t, closureTransactionMarker(runtimeRoot, "engineering/closure-plugin"))
 		})
+	}
+}
+
+func TestLiveRemoteDownloadDoesNotExpirePackageByElapsedAge(t *testing.T) {
+	observed := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	var clock operationClock
+	clock.set(observed)
+	server := newReleaseServerWithWrapper(t, makeArchive(t, timedSkillFiles(observed)), "1.0.0", nil, func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if strings.HasPrefix(r.URL.Path, "/artifacts/") {
+				clock.set(observed.AddDate(100, 0, 0))
+			}
+			next.ServeHTTP(w, r)
+		})
+	})
+	defer server.Close()
+	options := remoteOptions(server, filepath.Join(t.TempDir(), "cache"), filepath.Join(t.TempDir(), "skills"), "1.0.0")
+	options.ExecutionRuntimes = []string{"native"}
+	if _, err := evaluationWithClock(time.Time{}, clock.now).InstallRemoteRelease(context.Background(), options); err != nil {
+		t.Fatalf("elapsed age blocked an otherwise admissible package: %v", err)
 	}
 }

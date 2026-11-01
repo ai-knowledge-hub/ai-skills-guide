@@ -14,14 +14,6 @@ import (
 	"time"
 )
 
-const (
-	// Legacy manifest evidence caps from operational-readiness-v1 section 9.
-	// These govern readiness at use time, not immutable package integrity.
-	instructionEvidenceLifetime = 180 * 24 * time.Hour
-	executableEvidenceLifetime  = 90 * 24 * time.Hour
-	authEvidenceLifetime        = 30 * 24 * time.Hour
-)
-
 var semverPattern = regexp.MustCompile(`^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$`)
 var packageIDPattern = regexp.MustCompile(`^[a-z0-9-]+/[a-z0-9-]+$`)
 
@@ -70,7 +62,7 @@ type manifestRecord struct {
 // context. Schema validation remains a separate CI gate; this function proves
 // package-local paths and the internal dependency graph. Elapsed evidence age
 // does not corrupt source or retained releases; operational admission below
-// still checks freshness at use time.
+// still checks observation sanity at use time.
 func ValidateRepository(root string) (int, error) {
 	records := make([]manifestRecord, 0)
 	for _, definition := range moduleDefinitions {
@@ -95,7 +87,7 @@ func ValidateRepository(root string) (int, error) {
 	return len(records), nil
 }
 
-// ValidatePackageManifest applies schema, package-layout, and current-evidence
+// ValidatePackageManifest applies schema, package-layout, and evidence-observation
 // admission checks to one extracted package before operational use.
 func ValidatePackageManifest(manifestPath string) (Manifest, error) {
 	return ValidatePackageManifestAt(manifestPath, time.Now())
@@ -114,7 +106,7 @@ func ValidatePackageManifestAt(manifestPath string, now time.Time) (Manifest, er
 // ValidateHistoricalPackageManifest verifies immutable package history against
 // its canonical schema and package layout without treating elapsed wall-clock
 // time as corruption. Consumers must still use ValidatePackageManifest when a
-// selected release is installed so readiness evidence is current at use time.
+// selected release is installed; its observation date does not derive readiness.
 func ValidateHistoricalPackageManifest(manifestPath string) (Manifest, error) {
 	return validatePackageManifest(manifestPath, time.Time{}, false)
 }
@@ -1108,7 +1100,7 @@ func isExecutableKind(kind string) bool {
 	}
 }
 
-// ValidateManifestEvidenceAt rechecks time-bound evidence on an already
+// ValidateManifestEvidenceAt rechecks observation sanity on an already
 // admitted manifest, without rerunning artifact checks after runtime compilation.
 // This is not a substitute for schema, layout, identity or integrity admission.
 func ValidateManifestEvidenceAt(manifestPath string, manifest Manifest, now time.Time) error {
@@ -1118,11 +1110,11 @@ func ValidateManifestEvidenceAt(manifestPath string, manifest Manifest, now time
 	if now.IsZero() {
 		now = time.Now()
 	}
-	return validateFreshEvidence(manifestPath, manifest, now.UTC())
+	return validateEvidenceObservation(manifestPath, manifest, now.UTC())
 }
 
-func validateFreshEvidence(manifestPath string, manifest Manifest, now time.Time) error {
-	claim := "requires current runtime evidence"
+func validateEvidenceObservation(manifestPath string, manifest Manifest, now time.Time) error {
+	claim := "requires runtime evidence references"
 	if manifest.Usability.Availability == "usable-now" {
 		claim = "claims usable-now"
 	}
@@ -1135,16 +1127,6 @@ func validateFreshEvidence(manifestPath string, manifest Manifest, now time.Time
 	}
 	if observedAt.After(now.Add(5 * time.Minute)) {
 		return fmt.Errorf("manifest %s %s with a future verification timestamp", manifestPath, claim)
-	}
-	lifetime := instructionEvidenceLifetime
-	if isExecutableKind(manifest.Execution.Kind) {
-		lifetime = executableEvidenceLifetime
-	}
-	if manifest.Authentication.Status != "none" {
-		lifetime = authEvidenceLifetime
-	}
-	if !now.Before(observedAt.Add(lifetime)) {
-		return fmt.Errorf("manifest %s %s with evidence older than %s", manifestPath, claim, lifetime)
 	}
 	return nil
 }

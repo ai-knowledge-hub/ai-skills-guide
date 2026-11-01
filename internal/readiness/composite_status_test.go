@@ -30,7 +30,7 @@ func TestCompositeStatusUsesSuppliedEvaluationTime(t *testing.T) {
 	}{
 		{"ready", now, "ready"},
 		{"credential deadline", now.Add(time.Hour), "expired"},
-		{"package deadline", time.Date(2026, 10, 17, 0, 0, 0, 0, time.UTC), "unavailable"},
+		{"future package observation", time.Date(2026, 9, 16, 23, 54, 0, 0, time.UTC), "unavailable"},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
@@ -130,14 +130,21 @@ func TestCompositeStatusRejectsInstalledProviderAuthorityMismatch(t *testing.T) 
 	}
 }
 
-func TestCompositeStatusRejectsExpiredInstalledProviderEvidence(t *testing.T) {
+func TestCompositeStatusDoesNotTreatPackageAgeAsAuthentication(t *testing.T) {
 	fixture := installCompositeStatusFixtureWithVerification(t, "read-only", "2020-01-01T00:00:00Z")
 	report, err := CompositeStatus(context.Background(), fixture.options(time.Date(2026, 9, 23, 12, 0, 0, 0, time.UTC)))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if report.Ready || report.CoverageState != "unavailable" || !strings.Contains(report.Providers[0].Reason, "expired") {
-		t.Fatalf("expired provider evidence status = %#v", report)
+	if report.Ready || report.CoverageState != "unavailable" || report.Providers[0].Authentication.State != "missing" {
+		t.Fatalf("old package metadata bypassed current authentication: %#v", report)
+	}
+	for _, entry := range fixture.toolEntries {
+		configureCompositeProvider(t, fixture.stateDir, entry, time.Date(2026, 9, 23, 12, 0, 0, 0, time.UTC))
+	}
+	report, err = CompositeStatus(context.Background(), fixture.options(time.Date(2026, 9, 23, 12, 0, 0, 0, time.UTC)))
+	if err != nil || !report.Ready {
+		t.Fatalf("valid current authentication rejected because of package age: %#v, %v", report, err)
 	}
 }
 

@@ -16,7 +16,7 @@ import (
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
 )
 
-func TestBuiltBinaryRejectsExpiredPackageUsingRealTime(t *testing.T) {
+func TestBuiltBinaryRejectsFuturePackageObservationUsingRealTime(t *testing.T) {
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
 		t.Fatal("resolve repository root")
@@ -38,11 +38,11 @@ func TestBuiltBinaryRejectsExpiredPackageUsingRealTime(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	payload = bytes.Replace(payload, []byte(`last_verified_at: "2026-09-17T00:00:00Z"`), []byte(`last_verified_at: "2000-01-01T00:00:00Z"`), 1)
+	payload = bytes.Replace(payload, []byte(`last_verified_at: "2026-09-17T00:00:00Z"`), []byte(`last_verified_at: "9999-01-01T00:00:00Z"`), 1)
 	if err := os.WriteFile(manifestPath, payload, 0o644); err != nil {
 		t.Fatal(err)
 	}
-	manifest, err := registry.ValidatePackageManifestAt(manifestPath, time.Date(2000, 1, 2, 0, 0, 0, 0, time.UTC))
+	manifest, err := registry.ValidatePackageManifestAt(manifestPath, time.Date(9999, 1, 2, 0, 0, 0, 0, time.UTC))
 	if err != nil {
 		t.Fatalf("historical control must be otherwise admissible: %v", err)
 	}
@@ -55,7 +55,7 @@ func TestBuiltBinaryRejectsExpiredPackageUsingRealTime(t *testing.T) {
 	target := filepath.Join(root, "runtime", "tools-mcp")
 	command := exec.Command(binary, "install", "--module", "tools", "--entry", id, "--registry", indexPath, "--root", moduleRoot, "--runtime", "generic", "--target", target)
 	output, err := command.CombinedOutput()
-	if err == nil || !strings.Contains(string(output), "evidence older than") {
+	if err == nil || !strings.Contains(string(output), "future verification timestamp") {
 		t.Fatalf("real CLI did not enforce current admission: %v\n%s", err, output)
 	}
 	if _, err := os.Stat(filepath.Join(target, filepath.FromSlash(id))); !os.IsNotExist(err) {

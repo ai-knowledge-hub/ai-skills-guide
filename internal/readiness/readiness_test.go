@@ -438,7 +438,7 @@ func TestSmokeUsesVerifiedCredentialSnapshotAndPersistsRedactedEvidence(t *testi
 		t.Fatal(err)
 	}
 	now := time.Date(2026, 9, 17, 10, 0, 0, 0, time.UTC)
-	payload, _ := json.Marshal(observation(true, false, "acct-1", []string{"read", "profile"}, now.Add(time.Hour)))
+	payload, _ := json.Marshal(observation(true, false, "acct-1", []string{"read", "profile"}, now.AddDate(0, 0, 120)))
 	configureProfile(t, root, entry, "acct-1", string(payload), false)
 	t.Setenv("PRIVATE_PROVIDER_KEY", testSecret)
 	t.Setenv("PRIVATE_PROVIDER_KEY_GENERATION", "generation-1")
@@ -453,6 +453,9 @@ func TestSmokeUsesVerifiedCredentialSnapshotAndPersistsRedactedEvidence(t *testi
 	if evidence.Result != "passed" || evidencePath == "" {
 		t.Fatalf("evidence = %#v path=%q", evidence, evidencePath)
 	}
+	if evidence.ContractVersion != "3.0.0" || !evidence.ExpiresAt.Equal(now.Add(90*24*time.Hour)) {
+		t.Fatalf("local smoke recheck deadline must remain distinct from long-lived authentication: %#v", evidence)
+	}
 	stored, err := os.ReadFile(evidencePath)
 	if err != nil {
 		t.Fatal(err)
@@ -466,6 +469,37 @@ func TestSmokeUsesVerifiedCredentialSnapshotAndPersistsRedactedEvidence(t *testi
 	})
 	if err != nil || derived.Availability != "usable-now" || derived.EvidencePath != evidencePath {
 		t.Fatalf("derived catalog status = %#v, %v", derived, err)
+	}
+	// A consumer upgrade must not extend a legacy receipt's explicit deadline.
+	for _, version := range []string{"1.0.3", "3.0.0"} {
+		t.Run("stored-deadline/"+version, func(t *testing.T) {
+			retained := evidence
+			retained.ContractVersion = version
+			retained.ExpiresAt = now.Add(time.Hour)
+			encoded, err := json.Marshal(retained)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(evidencePath, encoded, 0o600); err != nil {
+				t.Fatal(err)
+			}
+			for _, boundary := range []struct {
+				delta time.Duration
+				want  string
+			}{
+				{-time.Nanosecond, "usable-now"}, {0, "not-verified"}, {time.Nanosecond, "not-verified"},
+			} {
+				status, err := DeriveCatalogStatus(context.Background(), InspectOptions{
+					StateDir: root, Module: "tools", Entry: entry, Version: "1.0.0", PackageDir: packageDir, Runtime: "generic", Now: retained.ExpiresAt.Add(boundary.delta),
+				})
+				if err != nil || status.Availability != boundary.want {
+					t.Fatalf("stored expiry changed at %+v: %#v, %v", boundary.delta, status, err)
+				}
+			}
+		})
+	}
+	if err := os.WriteFile(evidencePath, stored, 0o600); err != nil {
+		t.Fatal(err)
 	}
 	executablePath := filepath.Join(packageDir, filepath.FromSlash(entry.Execution.SmokeTest[0]))
 	executableBytes, err := os.ReadFile(executablePath)
@@ -647,6 +681,9 @@ func TestDoctorReportsScopedSetupEvidence(t *testing.T) {
 	}
 	if !report.Ready || report.SetupRequired || !report.Authentication.Authenticated || report.EvidenceScope != "setup" || report.EnvironmentID == "" {
 		t.Fatalf("doctor report = %#v", report)
+	}
+	if report.ContractVersion != "3.0.0" || !report.ExpiresAt.Equal(report.ObservedAt) {
+		t.Fatalf("doctor snapshot must not grant a 30-day setup lease: %#v", report)
 	}
 	entries, err := os.ReadDir(filepath.Join(root, "doctor-evidence"))
 	if err != nil || len(entries) != 1 {

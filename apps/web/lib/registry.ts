@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { projectCurrentCatalogEntry } from "./currentCatalogueProjection.mjs";
 import { findCatalogueCompatibility, type CatalogueCompatibility } from "./catalogueCompatibility";
 
 export type ModuleKey = "skills" | "agents" | "tools" | "plugins";
@@ -190,7 +191,13 @@ export async function loadRegistry(module: ModuleKey = "skills"): Promise<Regist
   if (parsed.registry_version !== "1.1" && parsed.registry_version !== "1.2" && parsed.registry_version !== "1.3") {
     throw new Error(`Unsupported registry_version ${String(parsed.registry_version)}; upgrade this consumer or use a compatible registry snapshot.`);
   }
-  return withCatalogueCompatibility(parsed as RegistryIndex, module);
+  // Canonical indexes preserve immutable declarations. Render their current
+  // static projection, just as publication does, before decorating version notes.
+  const index = parsed as RegistryIndex;
+  return withCatalogueCompatibility({
+    ...index,
+    skills: index.skills.map(projectCurrentCatalogEntry)
+  }, module);
 }
 
 // Keep release selection pure so old/new registry fixtures need no filesystem

@@ -10,45 +10,25 @@ import (
 	"time"
 )
 
-// The independent oracle is operational-readiness-v1 section 9: evidence is
-// valid strictly before expiry. Literal limits deliberately do not reuse the
-// production constants, so changing a cap requires a contract decision.
-func TestEvidenceFreshnessContractBoundaries(t *testing.T) {
+// Policy 3.0 separates historical package observations from live authority.
+// Elapsed age alone must not reject any package evidence scope.
+func TestEvidenceObservationDoesNotExpireByPackageAge(t *testing.T) {
 	observed := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
-	for _, scope := range []struct {
-		name, kind, authentication string
-		days                       int
-	}{
-		{"instructions", "instructions", "none", 180},
-		{"executable", "cli", "none", 90},
-		{"bundle", "bundle", "none", 90},
-		{"authenticated", "mcp-server", "required", 30},
+	for _, scope := range []struct{ name, kind, authentication string }{
+		{"instructions", "instructions", "none"}, {"executable", "cli", "none"},
+		{"bundle", "bundle", "none"}, {"authenticated", "mcp-server", "required"},
 	} {
 		t.Run(scope.name, func(t *testing.T) {
-			manifest := Manifest{
+			manifest := Manifest{SchemaVersion: "2.1",
 				Usability:      UsabilityMetadata{Availability: "usable-now"},
 				Execution:      ExecutionMetadata{Kind: scope.kind},
 				Authentication: AuthenticationMetadata{Status: scope.authentication},
-				Verification: VerificationMetadata{
-					Evidence: []string{"evidence://tests/boundaries"}, LastVerifiedAt: observed.Format(time.RFC3339),
-				},
+				Verification:   VerificationMetadata{Evidence: []string{"evidence://tests/history"}, LastVerifiedAt: observed.Format(time.RFC3339)},
 			}
-			expires := observed.Add(time.Duration(scope.days) * 24 * time.Hour)
-			for _, boundary := range []struct {
-				name  string
-				delta time.Duration
-				valid bool
-			}{
-				{"before", -time.Nanosecond, true},
-				{"at", 0, false},
-				{"after", time.Nanosecond, false},
-			} {
-				t.Run(boundary.name, func(t *testing.T) {
-					err := validateFreshEvidence("fixture", manifest, expires.Add(boundary.delta))
-					if (err == nil) != boundary.valid {
-						t.Fatalf("valid=%v at expiry %+v: %v", boundary.valid, boundary.delta, err)
-					}
-				})
+			for _, days := range []int{29, 30, 31, 89, 90, 91, 179, 180, 181, 36500} {
+				if err := ValidateManifestEvidenceAt("fixture", manifest, observed.AddDate(0, 0, days)); err != nil {
+					t.Fatalf("age %d changed admissibility: %v", days, err)
+				}
 			}
 		})
 	}
@@ -80,8 +60,8 @@ func TestStructuralValidationIsIndependentOfEvidenceAge(t *testing.T) {
 				t.Fatalf("structural validation count=%d: %v", count, err)
 			}
 			_, err = ValidatePackageManifestAt(manifestPath, instant)
-			if (err == nil) != (i == 0) {
-				t.Fatalf("runtime admission must distinguish fresh from stale evidence: %v", err)
+			if err != nil {
+				t.Fatalf("runtime admission must not expire historical metadata: %v", err)
 			}
 		})
 	}
@@ -102,14 +82,13 @@ func TestFreshnessRejectsInvalidEvidenceAndNormalizesUTC(t *testing.T) {
 		{"missing-reference", nil, observed.Format(time.RFC3339), observed},
 		{"malformed-time", []string{"evidence://tests/invalid"}, "invalid", observed},
 		{"future-observation", []string{"evidence://tests/future"}, observed.Add(6 * time.Minute).Format(time.RFC3339), observed},
-		{"offset-at-expiry", []string{"evidence://tests/offset"}, observed.In(time.FixedZone("fixture", 2*60*60)).Format(time.RFC3339), observed.Add(90 * 24 * time.Hour)},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			manifest := Manifest{
 				Execution: ExecutionMetadata{Kind: "cli"}, Authentication: AuthenticationMetadata{Status: "none"},
 				Verification: VerificationMetadata{Evidence: test.evidence, LastVerifiedAt: test.timestamp},
 			}
-			if err := validateFreshEvidence("fixture", manifest, test.now); err == nil {
+			if err := validateEvidenceObservation("fixture", manifest, test.now); err == nil {
 				t.Fatal("invalid or expired evidence was admitted")
 			}
 		})
@@ -131,7 +110,7 @@ func TestEvidenceFutureClockToleranceBoundaries(t *testing.T) {
 		{-time.Nanosecond, false}, {0, true}, {time.Nanosecond, true},
 	} {
 		now := observed.Add(-5 * time.Minute).Add(test.delta)
-		if err := validateFreshEvidence("clock-skew", manifest, now); (err == nil) != test.valid {
+		if err := validateEvidenceObservation("clock-skew", manifest, now); (err == nil) != test.valid {
 			t.Fatalf("valid=%v at tolerance %+v: %v", test.valid, test.delta, err)
 		}
 	}
@@ -396,14 +375,14 @@ func TestBuildIndexRejectsUnlaunchableV2Executable(t *testing.T) {
 	assertAdmissionError(t, err, `execution.command: declared path "bin/tool" does not exist`)
 }
 
-func TestRuntimeAdmissionRejectsStaleEvidenceForDeclaredUsableNow(t *testing.T) {
+func TestRuntimeAdmissionAllowsHistoricalPackageObservation(t *testing.T) {
 	now := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
 	root := t.TempDir()
 	entryDir := filepath.Join(root, "tools-mcp", "shared", "stale-tool")
 	if err := os.MkdirAll(filepath.Join(entryDir, "bin"), 0o755); err != nil {
 		t.Fatalf("mkdir: %v", err)
 	}
-	manifest := v2ExecutableManifest("shared/stale-tool", now.Add(-executableEvidenceLifetime-time.Hour))
+	manifest := v2ExecutableManifest("shared/stale-tool", now.AddDate(-10, 0, 0))
 	writeTestFile(t, filepath.Join(entryDir, "tool.yaml"), manifest, 0o644)
 	for _, file := range []string{"TOOL.md", "checksums.txt", "sbom.cdx.json", "bin/tool"} {
 		writeTestFile(t, filepath.Join(entryDir, filepath.FromSlash(file)), "fixture\n", 0o755)
@@ -416,17 +395,19 @@ func TestRuntimeAdmissionRejectsStaleEvidenceForDeclaredUsableNow(t *testing.T) 
 		t.Fatalf("historical evidence must not prevent repository validation: %v", err)
 	}
 	_, err := ValidatePackageManifestAt(filepath.Join(entryDir, "tool.yaml"), now)
-	assertAdmissionError(t, err, "claims usable-now with evidence older than")
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
-func TestRuntimeAdmissionRejectsStaleEvidenceBeforeAuthenticatedSetupExecution(t *testing.T) {
+func TestAuthenticatedSetupDoesNotExpireWithPackageObservation(t *testing.T) {
 	now := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
 	root := t.TempDir()
 	entryDir := filepath.Join(root, "tools-mcp", "shared", "stale-auth-tool")
 	if err := os.MkdirAll(filepath.Join(entryDir, "bin"), 0o755); err != nil {
 		t.Fatalf("mkdir: %v", err)
 	}
-	manifest := v2ExecutableManifest("shared/stale-auth-tool", now.Add(-authEvidenceLifetime-time.Hour))
+	manifest := v2ExecutableManifest("shared/stale-auth-tool", now.AddDate(-10, 0, 0))
 	manifest = strings.Replace(manifest, "availability: usable-now", "availability: setup-required", 1)
 	manifest = strings.Replace(manifest, `authentication:
   status: none
@@ -449,25 +430,8 @@ func TestRuntimeAdmissionRejectsStaleEvidenceBeforeAuthenticatedSetupExecution(t
 		t.Fatalf("historical evidence must not prevent repository validation: %v", err)
 	}
 	_, err := ValidatePackageManifestAt(filepath.Join(entryDir, "tool.yaml"), now)
-	assertAdmissionError(t, err, "requires current runtime evidence with evidence older than 720h0m0s")
-}
-
-func TestRunnableBundleUsesExecutableEvidenceLifetime(t *testing.T) {
-	now := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
-	manifest := Manifest{
-		Execution:      ExecutionMetadata{Kind: "bundle"},
-		Authentication: AuthenticationMetadata{Status: "none"},
-		Verification: VerificationMetadata{
-			Evidence:       []string{"evidence://tests/plugin/clean-client"},
-			LastVerifiedAt: now.Add(-executableEvidenceLifetime - time.Hour).Format(time.RFC3339),
-		},
-	}
-	if err := validateFreshEvidence("runnable-bundle", manifest, now); err == nil || !strings.Contains(err.Error(), "evidence older than") {
-		t.Fatalf("expected runnable bundle evidence to expire after %s, got %v", executableEvidenceLifetime, err)
-	}
-	manifest.Verification.LastVerifiedAt = now.Add(-executableEvidenceLifetime + time.Hour).Format(time.RFC3339)
-	if err := validateFreshEvidence("runnable-bundle", manifest, now); err != nil {
-		t.Fatalf("fresh runnable bundle evidence was rejected: %v", err)
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 
@@ -638,7 +602,7 @@ deprecated: false
 	assertAdmissionError(t, err, "must declare dependency_lock, checksums, sbom, and provenance")
 }
 
-func TestProjectManifestForCurrentCatalogDemotesExpiredReadiness(t *testing.T) {
+func TestProjectManifestForCurrentCatalogDoesNotPromoteHistoricalClaims(t *testing.T) {
 	verifiedAt := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
 	manifestPath := filepath.Join(t.TempDir(), "tool.yaml")
 	writeTestFile(t, manifestPath, v2ExecutableManifest("shared/stale-projection", verifiedAt), 0o644)
@@ -647,7 +611,7 @@ func TestProjectManifestForCurrentCatalogDemotesExpiredReadiness(t *testing.T) {
 		t.Fatalf("parse historical manifest: %v", err)
 	}
 
-	entry := ProjectManifestForCurrentCatalog(manifest, verifiedAt.Add(executableEvidenceLifetime+time.Second))
+	entry := ProjectManifestForCurrentCatalog(manifest, verifiedAt.AddDate(10, 0, 0))
 	if entry.Usability.Availability != "not-verified" || entry.Usability.Source != "inferred" {
 		t.Fatalf("expired readiness was still advertised: %#v", entry.Usability)
 	}
@@ -893,5 +857,22 @@ func assertAdmissionError(t *testing.T, err error, want string) {
 	t.Helper()
 	if err == nil || !strings.Contains(err.Error(), want) {
 		t.Fatalf("expected error containing %q, got %v", want, err)
+	}
+}
+
+func TestObservationOffsetsDoNotCreateExpiryOrLiveCatalogueAuthority(t *testing.T) {
+	observed := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	manifest := Manifest{SchemaVersion: "2.1", Usability: UsabilityMetadata{Availability: "usable-now"},
+		Execution: ExecutionMetadata{Kind: "cli"}, Authentication: AuthenticationMetadata{Status: "none"},
+		Verification: VerificationMetadata{Evidence: []string{"evidence://tests/offset"}, LastVerifiedAt: observed.In(time.FixedZone("fixture", 7200)).Format(time.RFC3339)},
+	}
+	for _, instant := range []time.Time{observed, observed.AddDate(10, 0, 0)} {
+		if err := ValidateManifestEvidenceAt("fixture", manifest, instant); err != nil {
+			t.Fatal(err)
+		}
+		entry := ProjectManifestForCurrentCatalog(manifest, instant)
+		if entry.Usability.Availability != "not-verified" || entry.Verification.LastVerifiedAt != manifest.Verification.LastVerifiedAt {
+			t.Fatalf("static projection inferred live authority or changed history: %#v", entry)
+		}
 	}
 }

@@ -83,6 +83,11 @@ Authentication status distinguishes missing bindings, unavailable validation,
 expiry, revocation, wrong account, missing scopes, invalid identity, and ready
 state. An environment variable's presence proves configuration only. A current
 non-destructive provider observation is required for `authenticated: true`.
+Under [runtime policy v3](../shared/contracts/operational-readiness-v3.md), the
+authentication deadline is the earlier of the actual credential expiry, when
+present, and the mandatory provider-attestation expiry. There is no additional
+30-day cap derived from the package's age. A missing attestation deadline does
+not grant indefinite validity.
 
 Authenticated plugins declare their provider tools as an exact authority
 contract. After installation, inspect the plugin rather than inventing a shared
@@ -106,7 +111,9 @@ or flattened behind the plugin. A configured profile for the wrong account or
 tenant fails through the provider's normal authoritative status check.
 
 `doctor` additionally verifies the installation receipt, installed tree,
-runtime, and platform. It does not repair state or run the package operation.
+runtime, and platform. Each report is a point-in-time snapshot, with expiry equal
+to observation, and is recomputed rather than reused as a setup lease. It does
+not repair state or run the package operation.
 
 ## Run a smoke check
 

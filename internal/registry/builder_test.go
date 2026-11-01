@@ -1,11 +1,13 @@
 package registry
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -588,7 +590,7 @@ func TestExpiredEvidenceDemotesEveryPositiveCapability(t *testing.T) {
 			{ID: "live-write", Availability: "not-verified"},
 		},
 	}
-	entry := ProjectManifestForCurrentCatalog(manifest, verifiedAt.Add(executableEvidenceLifetime+time.Second))
+	entry := ProjectManifestForCurrentCatalog(manifest, verifiedAt.AddDate(10, 0, 0))
 	for _, capability := range entry.CapabilityReadiness {
 		if capability.Availability != "not-verified" {
 			t.Fatalf("expired capability %s retained availability %s", capability.ID, capability.Availability)
@@ -596,7 +598,7 @@ func TestExpiredEvidenceDemotesEveryPositiveCapability(t *testing.T) {
 	}
 }
 
-func TestExpiredCapabilityEvidenceIsIndependentOfAggregateUsability(t *testing.T) {
+func TestUnresolvedCapabilityEvidenceIsIndependentOfAggregateUsability(t *testing.T) {
 	verifiedAt := time.Date(2026, 9, 23, 0, 0, 0, 0, time.UTC)
 	manifest := Manifest{
 		SchemaVersion: "2.1", ID: "marketing/experiment-plugin",
@@ -610,7 +612,7 @@ func TestExpiredCapabilityEvidenceIsIndependentOfAggregateUsability(t *testing.T
 			{ID: "live-write", Availability: "not-verified"},
 		},
 	}
-	entry := ProjectManifestForCurrentCatalog(manifest, verifiedAt.Add(executableEvidenceLifetime+time.Second))
+	entry := ProjectManifestForCurrentCatalog(manifest, verifiedAt.AddDate(10, 0, 0))
 	if entry.Usability.Availability != "setup-required" {
 		t.Fatalf("aggregate setup state changed to %s", entry.Usability.Availability)
 	}
@@ -753,6 +755,56 @@ func writeV2ArtifactFiles(t *testing.T, entryDir, executable string) {
 		}
 		if err := os.WriteFile(path, []byte("fixture\n"), 0o755); err != nil {
 			t.Fatalf("write artifact path: %v", err)
+		}
+	}
+}
+
+// Independent literal oracle: instruction delivery never verifies a helper's
+// executable outcome. Absence of aggregate/capability claims must not bypass it.
+func TestCurrentCatalogDemotesInstructionHelpersIndependently(t *testing.T) {
+	for _, deprecated := range []bool{false, true} {
+		for _, availability := range []string{"absent", "usable-now", "setup-required", "not-verified"} {
+			t.Run(availability+"/deprecated="+strconv.FormatBool(deprecated), func(t *testing.T) {
+				manifest := Manifest{SchemaVersion: "2.1", ID: "shared/instruction-helper", Deprecated: deprecated,
+					Usability: UsabilityMetadata{Availability: "documentation-only", Execution: "instructions"},
+					Execution: ExecutionMetadata{Kind: "instructions"},
+				}
+				if availability != "absent" {
+					manifest.Usability.ExecutableHelpers = []ExecutableHelperMetadata{{Entrypoint: "scripts/check.py", Availability: availability, Execution: "local-tool", Quickstart: "python scripts/check.py", Limitations: []string{"No target-scoped executable evidence."}}}
+				}
+				before, err := json.Marshal(manifest)
+				if err != nil {
+					t.Fatal(err)
+				}
+				current := ProjectManifestForCurrentCatalog(manifest, time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC))
+				if current.Usability.Availability != "documentation-only" || current.Usability.Execution != "instructions" {
+					t.Fatalf("helper changed parent delivery: %#v", current.Usability)
+				}
+				source := "declared"
+				if availability == "usable-now" || availability == "setup-required" {
+					source = "inferred"
+				}
+				if current.Usability.Source != source {
+					t.Fatalf("source=%s, want %s", current.Usability.Source, source)
+				}
+				if deprecated && current.Readiness != "deprecated" {
+					t.Fatal("helper projection erased deprecation")
+				}
+				if availability == "absent" {
+					if len(current.Usability.ExecutableHelpers) != 0 {
+						t.Fatal("projection invented a helper")
+					}
+				} else {
+					helper := current.Usability.ExecutableHelpers[0]
+					if helper.Availability != "not-verified" || helper.Entrypoint != "scripts/check.py" || helper.Quickstart != "python scripts/check.py" || helper.Limitations[0] != "No target-scoped executable evidence." {
+						t.Fatalf("helper disclosure changed or gained readiness: %#v", helper)
+					}
+				}
+				after, err := json.Marshal(manifest)
+				if err != nil || !bytes.Equal(before, after) {
+					t.Fatalf("projection changed original manifest: %v", err)
+				}
+			})
 		}
 	}
 }

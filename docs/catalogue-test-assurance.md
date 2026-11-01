@@ -124,5 +124,5 @@ role. New material requirements need independent anchors. HTTPS/source shape
 does not prove provenance content is authoritative. The later
 [clock-isolation work](evaluation-clocks.md) under #86 removes the mutable
 package-evidence test clock and documents separate time domains. The
-justification/migration of the 30-day runtime gate remains #83; this catalogue
-test refactor did not change it.
+[#83 runtime policy migration](runtime-evidence-policy.md) removes package-age
+gates separately; this catalogue test refactor did not change them.

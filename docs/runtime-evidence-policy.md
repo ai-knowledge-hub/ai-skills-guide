@@ -34,9 +34,12 @@ provider attestation without an expiry is rejected. If the credential has no
 expiry, the mandatory attestation still bounds authentication. Each status call
 rechecks the provider; a stored successful report is not reused as authority.
 
-**Confirmed static path:** canonical immutable declarations -> current catalogue
-projection -> website. Opaque evidence references and dates cannot prove current
-target readiness; unresolved positive claims are demoted irrespective of age.
+**Confirmed static paths:** the website loader applies
+`apps/web/lib/currentCatalogueProjection.mjs` to canonical declarations before
+adding compatibility notes. The no-Go Vercel publisher uses the same projection;
+the normal publisher uses the Go projection. Canonical indexes and immutable
+release sidecars remain declarations, not current-readiness output. Opaque
+evidence references and dates cannot prove current target readiness; unresolved positive claims are demoted irrespective of age.
 Exact-release compatibility annotations remain a separate editorial display.
 
 **Unknown:** this work does not establish real vendor compatibility, guarantee
@@ -101,5 +104,26 @@ Local verification passed: full Go suite; race checks across installer, registry
 readiness, agents and CLI; final historical-clock controls; CLI build; canonical
 registry and schema gates; and a Node 20 production site build (76 pages, lint
 and types). Registry indexes and immutable source/release bytes remain unchanged.
-No provider calls or credentials were used. Browser smoke is left to PR CI;
-there is no UI code change.
+No provider calls or credentials were used. The consumer follow-up also passed
+all 25 Node 20 browser tests, including real catalogue and capability displays.
+
+## Static consumer review follow-up
+
+Two regressions now cover the consumers as well as the Go producer: the loader
+cannot return raw positive declarations, and the Vercel fallback cannot promote
+recent opaque evidence. Forty fixtures compare the fallback export with the Go
+projection across five aggregate states, four observation forms (recent, old,
+future and missing), and active/deprecated lifecycle. Literal v3 checks anchor
+the Go aggregate/capability oracle. Each JavaScript result also preserves its
+input and is idempotent.
+
+The real no-Go publishing path rejects unresolved positive aggregate/capability
+claims. Browser checks exercise plugin list/detail badges and each advertising
+experiment capability; loader tests also preserve release hashes, versions,
+verification history and compatibility declarations. Pure annotation decoration
+is tested separately from readiness projection.
+
+Both selected consumer regressions were reproduced by bounded mutations after
+passing controls: bypassing the loader projection and restoring the old
+age-based fallback. Each produced its intended assertion failure (2/2), and
+sources were restored before the final browser/build checks.

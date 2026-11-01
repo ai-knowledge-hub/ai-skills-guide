@@ -1535,6 +1535,16 @@ func TestPublisherVercelBuildWithoutGoUsesCommittedReleaseProjections(t *testing
 	if !found || len(entry.Versions) != 1 || entry.Versions[0].Version != "0.3.0" {
 		t.Fatalf("Vercel fallback omitted the committed plugin release: %#v", entry)
 	}
+	for _, entry := range index.Skills {
+		if entry.Usability.Availability == "usable-now" {
+			t.Fatalf("fallback published unresolved positive readiness: %s", entry.ID)
+		}
+		for _, capability := range entry.CapabilityReadiness {
+			if capability.Availability == "usable-now" || capability.Availability == "setup-required" {
+				t.Fatalf("fallback published unresolved capability: %s/%s", entry.ID, capability.ID)
+			}
+		}
+	}
 }
 
 func TestPublisherRejectsUnsafeRetainedArchive(t *testing.T) {

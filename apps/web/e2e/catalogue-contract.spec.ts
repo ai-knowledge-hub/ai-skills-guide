@@ -73,7 +73,7 @@ test("registry decoration preserves every package declaration and selects only i
   for (const module of modules) {
     const registryPath = path.resolve(`../../registry/${module}-index.json`);
     const original = JSON.parse(await fs.readFile(registryPath, "utf8")) as RegistryIndex;
-    const decorated = await loadRegistry(module);
+    const decorated = withCatalogueCompatibility(original, module);
     const declarations = decorated.skills.map(({ catalogueCompatibility: note, ...entry }) => {
       expect(note, `${module}/${entry.id}@${entry.latest}`).toEqual(notes.get(subjectKey(module, entry.id, entry.latest)));
       return entry;
@@ -165,5 +165,33 @@ test("compatibility display distinguishes unknown, declared and reviewed informa
       await expect(panel.getByRole("link", { name: "Fixture review source" })).toHaveAttribute("href", note.source.url);
       await expect(panel.getByText("Fixture Warehouse API", { exact: true })).toHaveCount(0);
     }
+  }
+});
+
+
+test("site loader projects all unresolved claims without changing canonical metadata", async () => {
+  for (const module of modules) {
+    const registryPath = path.resolve(`../../registry/${module}-index.json`);
+    const bytes = await fs.readFile(registryPath, "utf8");
+    const original = JSON.parse(bytes) as RegistryIndex;
+    const current = await loadRegistry(module);
+    expect(current.skills.map(entry => entry.id)).toEqual(original.skills.map(entry => entry.id));
+    for (const [i, raw] of original.skills.entries()) {
+      const projected = current.skills[i];
+      if (raw.usability.availability === "usable-now") {
+        expect(projected.usability.availability, raw.id).toBe("not-verified");
+        expect(projected.usability.source, raw.id).toBe("inferred");
+      }
+      for (const capability of raw.capability_readiness ?? []) {
+        if (capability.availability === "usable-now" || capability.availability === "setup-required") {
+          expect(projected.capability_readiness?.find(value => value.id === capability.id)?.availability, `${raw.id}/${capability.id}`).toBe("not-verified");
+        }
+      }
+      expect(projected.verification).toEqual(raw.verification);
+      expect(projected.versions).toEqual(raw.versions);
+      expect(projected.compatibility).toEqual(raw.compatibility);
+      expect(projected.latest).toBe(raw.latest);
+    }
+    expect(await fs.readFile(registryPath, "utf8")).toBe(bytes);
   }
 });

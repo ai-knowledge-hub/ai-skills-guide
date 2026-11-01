@@ -20,7 +20,7 @@ test("home route smoke", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Tools & MCP", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Explore skills" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Know what you are installing" })).toBeVisible();
-  await expect(page.getByText("Not verified", { exact: true })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Know what you are installing" }).getByText("Not verified", { exact: true })).toBeVisible();
 });
 
 test("skills route filter interaction smoke", async ({ page }) => {
@@ -135,9 +135,13 @@ test("effectful plugin capabilities remain independently projected", async ({ pa
   await expect(readiness.getByRole("heading", { name: "Mock lab" })).toBeVisible();
   await expect(readiness.getByRole("heading", { name: "Live read" })).toBeVisible();
   await expect(readiness.getByRole("heading", { name: "Live write" })).toBeVisible();
-  await expect(readiness.getByText("usable-now", { exact: false })).toBeVisible();
-  await expect(readiness.getByText("setup-required", { exact: false })).toBeVisible();
-  await expect(readiness.getByText("not-verified", { exact: false })).toBeVisible();
+  for (const name of ["Mock lab", "Live read", "Live write"]) {
+    const capability = readiness.locator("section").filter({ has: page.getByRole("heading", { name, exact: true }) });
+    await expect(capability.getByText("Status: not-verified", { exact: false })).toBeVisible();
+  }
+  await expect(readiness.getByText("Status: usable-now", { exact: false })).toHaveCount(0);
+  await expect(readiness.getByText("Status: setup-required", { exact: false })).toHaveCount(0);
+  await expect(page.locator("#usability .usability-badge").first()).toHaveText("Not verified");
   await expect(readiness.getByText("No supported OpenAI Ads mutation adapter", { exact: false })).toBeVisible();
 });
 
@@ -346,4 +350,13 @@ test("reviewed tool pages disclose notes, limits and provenance without promotin
   }
   await page.goto("/tools-mcp/adtech/conversion-event-reconciler");
   await expect(page.locator("#usability").getByText("Not verified", { exact: true })).toBeVisible();
+});
+
+
+test("plugin listing and detail render current readiness rather than retained declarations", async ({ page }) => {
+  await page.goto("/plugins");
+  const plugin = page.locator(".catalog-card").filter({ has: page.getByRole("heading", { name: "Code Maintenance Plugin", exact: true }) });
+  await expect(plugin.locator(".usability-badge")).toHaveText("Not verified");
+  await plugin.getByRole("link", { name: /Code Maintenance Plugin/ }).click();
+  await expect(page.locator("#usability .usability-badge").first()).toHaveText("Not verified");
 });

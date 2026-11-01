@@ -220,6 +220,52 @@ test("theme preference survives navigation and reload", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 });
 
+for (const saved of ["dark", "light"] as const) {
+  test(`theme choice survives navigation when saved ${saved} storage is readable but writes fail`, async ({ page }) => {
+    const selected = saved === "dark" ? "light" : "dark";
+    await page.addInitScript(saved => localStorage.setItem("skills-hub-theme", saved), saved);
+    await page.goto("/");
+    await expect(page.getByRole("button", { name: `Switch to ${selected} mode` })).toBeVisible();
+    await page.evaluate(() => {
+      Storage.prototype.setItem = () => { throw new DOMException("Storage full", "QuotaExceededError"); };
+    });
+    await page.getByRole("button", { name: `Switch to ${selected} mode` }).click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", selected);
+    const documentOrigin = await page.evaluate(() => performance.timeOrigin);
+    await page.getByRole("navigation", { name: "Main navigation", exact: true }).getByRole("link", { name: "Skills", exact: true }).click();
+    await expect(page).toHaveURL(/\/skills$/);
+    expect(await page.evaluate(() => performance.timeOrigin)).toBe(documentOrigin);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", selected);
+    await page.locator(".catalog-card").first().getByRole("link").first().click();
+    await expect(page.locator("pre.install").first()).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", selected);
+    await page.goBack();
+    await expect(page).toHaveURL(/\/skills$/);
+    await expect(page.getByRole("button", { name: `Switch to ${saved} mode` })).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", selected);
+    expect(await page.evaluate(() => localStorage.getItem("skills-hub-theme"))).toBe(saved);
+    // A new document can only restore the persisted value; the failed write
+    // promises session continuity, not persistence across reloads.
+    await page.reload();
+    await expect(page.getByRole("button", { name: `Switch to ${selected} mode` })).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", saved);
+  });
+}
+
+test("theme changes from another tab survive subsequent navigation", async ({ page, context }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Switch to light mode" }).click();
+  const otherTab = await context.newPage();
+  await otherTab.goto("/");
+  await otherTab.getByRole("button", { name: "Switch to dark mode" }).click();
+  await expect(page.getByRole("button", { name: "Switch to light mode" })).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.getByRole("navigation", { name: "Main navigation", exact: true }).getByRole("link", { name: "Skills", exact: true }).click();
+  await expect(page).toHaveURL(/\/skills$/);
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await otherTab.close();
+});
+
 test("storage and clipboard failures leave a usable page with truthful feedback", async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(window, "localStorage", { get: () => { throw new Error("Storage blocked"); } });
@@ -359,4 +405,36 @@ test("plugin listing and detail render current readiness rather than retained de
   await expect(plugin.locator(".usability-badge")).toHaveText("Not verified");
   await plugin.getByRole("link", { name: /Code Maintenance Plugin/ }).click();
   await expect(page.locator("#usability .usability-badge").first()).toHaveText("Not verified");
+});
+
+for (const theme of ["light", "dark"] as const) {
+  test(`saved ${theme} theme survives missing-entry pages and recovery`, async ({ page }) => {
+    await page.addInitScript(theme => localStorage.setItem("skills-hub-theme", theme), theme);
+    for (const route of ["/skills/qa81-missing", "/agents/qa81-missing", "/plugins/qa81-missing", "/tools-mcp/qa81-missing", "/qa81-missing"]) {
+      const response = await page.goto(route);
+      expect(response?.status(), route).toBe(404);
+      await expect(page.getByRole("heading", { name: "Item not found" })).toBeVisible();
+      // The control must reflect the restored preference after hydration;
+      // observing the bootstrap script's transient attribute is insufficient.
+      await expect(page.getByRole("button", { name: `Switch to ${theme === "light" ? "dark" : "light"} mode` })).toBeVisible();
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+      await page.getByRole("link", { name: "Home", exact: true }).click();
+      await expect(page).toHaveURL(/\/$/);
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    }
+  });
+}
+
+test("catalogue downloads only the artwork used by its active layout", async ({ page }) => {
+  for (const width of [1440, 390]) {
+    await page.goto("about:blank");
+    await page.setViewportSize({ width, height: 1000 });
+    for (const route of ["/skills", "/agents", "/plugins", "/tools-mcp"]) {
+      await page.goto(route, { waitUntil: "networkidle" });
+      const artwork = await page.evaluate(() => performance.getEntriesByType("resource")
+        .map(resource => new URL(resource.name).pathname)
+        .filter(path => /^\/brand\/community-.*\.webp$/.test(path)));
+      expect(artwork, `${route} at ${width}px`).toEqual([width === 1440 ? "/brand/community-1600.webp" : "/brand/community-1200.webp"]);
+    }
+  }
 });

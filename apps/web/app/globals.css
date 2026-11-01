@@ -117,7 +117,7 @@ a.catalog-card:hover { text-decoration: none; }
   .catalogue-artwork { display: block; position: absolute; inset: 0 auto 0 0; width: var(--catalogue-rail-width); z-index: -1; pointer-events: none; }
   .catalogue-artwork-panel { position: sticky; top: var(--catalogue-sticky-top); height: calc(100svh - var(--catalogue-sticky-top)); max-height: 100%; background: #fff url('/brand/community-1600.webp') 40% 0 / auto 100% no-repeat; }
   .catalogue-main .catalogue-heading { max-width: none; }
-  .catalogue-heading::before { content: none; }
+  .catalogue-heading::before { content: none; background-image: none; }
   .catalogue-heading h1 { margin-left: calc(var(--catalogue-rail-width) - 48px); max-width: calc(100% - var(--catalogue-rail-width) + 48px - var(--gutter)); }
   .catalogue-heading > p { margin-left: var(--catalogue-rail-width); max-width: calc(56ch + var(--catalogue-rail-gap) + var(--gutter)); padding-inline: var(--catalogue-rail-gap) var(--gutter); }
   .catalogue-main .catalogue-content { margin-left: var(--catalogue-rail-width); margin-right: 0; max-width: none; padding-inline: var(--catalogue-rail-gap) var(--gutter); }

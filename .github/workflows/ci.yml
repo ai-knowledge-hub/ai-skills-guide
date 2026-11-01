@@ -19,7 +19,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Run deterministic skill script checks
         run: bash scripts/test-skill-scripts.sh
-      - name: Test published-install evidence checks without network access
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Test published-install evidence checks with local fixtures
         run: python3 -m unittest discover -s scripts/tests -p 'test_published_install.py'
 
   manifest-schemas:

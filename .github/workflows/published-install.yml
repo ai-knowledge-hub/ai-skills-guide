@@ -37,10 +37,11 @@ jobs:
         with:
           python-version: '3.12'
       - uses: actions/setup-go@v5
-        if: inputs.client_source == 'candidate'
         with:
           go-version-file: go.mod
           cache: true
+      - name: Build read-only manifest and receipt verifier
+        run: go build -o bin/published-install-verifier ./cmd/published-install-verifier
       - name: Build explicitly test-only candidate
         if: inputs.client_source == 'candidate'
         run: make cli-build-test

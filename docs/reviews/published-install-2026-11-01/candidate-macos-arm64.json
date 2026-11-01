@@ -1,6 +1,6 @@
 {
   "schema_version": "published-install-check/v1",
-  "checked_at": "2026-11-01T17:25:59.760653+00:00",
+  "checked_at": "2026-11-01T17:50:49.533285+00:00",
   "status": "passed",
   "client_kind": "candidate",
   "host": {
@@ -13,6 +13,7 @@
     {
       "runtime": "codex",
       "payload_sha256": "7e65be96fd5a03612e4ff681f08c3eb7d3b55e29bee7693716e6df32ebe7ccec",
+      "receipt_verified": true,
       "cold_install": "passed",
       "duplicate_rejected_without_mutation": "passed",
       "offline_reinstall_restored_release_bytes": "passed"
@@ -20,6 +21,7 @@
     {
       "runtime": "claude",
       "payload_sha256": "7e65be96fd5a03612e4ff681f08c3eb7d3b55e29bee7693716e6df32ebe7ccec",
+      "receipt_verified": true,
       "cold_install": "passed",
       "duplicate_rejected_without_mutation": "passed",
       "offline_reinstall_restored_release_bytes": "passed"
@@ -27,12 +29,13 @@
     {
       "runtime": "generic",
       "payload_sha256": "7e65be96fd5a03612e4ff681f08c3eb7d3b55e29bee7693716e6df32ebe7ccec",
+      "receipt_verified": true,
       "cold_install": "passed",
       "duplicate_rejected_without_mutation": "passed",
       "offline_reinstall_restored_release_bytes": "passed"
     }
   ],
-  "cli_sha256": "3d9bb222a9afaaa747e686ea1fda951195f819f871116dc315697a84955fa832",
+  "cli_sha256": "391aeacc1e7190f96424bf82c4f3441f6a36f93e21ef5ed4778a60f79844ec01",
   "registry_sha256": "31b3310d93073e9f89d674bc604d75fbf40f188bab94442add2ba23ffa9279ec",
   "selected_release": {
     "version": "0.1.0",
@@ -41,6 +44,17 @@
     "manifest_sha256": "79bbfdb791b739c6fa8396ba27fb3de48354707f00932221f0e4b1f55e2ab199",
     "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/implementation-strategy/0.1.0.tar.gz",
     "sha256": "6e0946ab1e76fc8769171fa874f8cd4373e47655559a26c90cca4914efe5ab72"
+  },
+  "verifier_sha256": "7f165c0a6edf9bed83a31cc5f1d73d2138256a33d318c15adcc490cf2d04f530",
+  "pinned_manifest": {
+    "id": "engineering/implementation-strategy",
+    "version": "0.1.0",
+    "runtimes": [
+      "codex",
+      "claude",
+      "generic"
+    ],
+    "runtime_contract_sha256": "695b5bccd308e33ab968c5673c3fc37b84ad7d18af13a85e141e3dc627cda6b0"
   },
   "published_files": {
     "README.md": "4589fc48729e8e42cd55cd7d626577973515e7ef351d425274cde2c01c39d0de",

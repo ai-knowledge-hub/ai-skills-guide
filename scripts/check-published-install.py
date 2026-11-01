@@ -12,6 +12,7 @@ import platform
 import re
 import shutil
 import socket
+import stat
 import subprocess
 import tarfile
 import tempfile
@@ -25,6 +26,7 @@ VERSION = "0.1.0"
 REGISTRY = "https://skills.ai-knowledge-hub.org/registry/skills-index.json"
 RECEIPT = ".skills-hub-install.json"
 MAX_DOWNLOAD = 32 * 1024 * 1024
+DEFAULT_VERIFIER = Path(__file__).resolve().parents[1] / "bin" / "published-install-verifier"
 
 
 def require(condition, message):
@@ -104,15 +106,12 @@ def selected_release(index):
     entries = [entry for entry in index.get("skills", []) if entry.get("id") == PACKAGE]
     require(len(entries) == 1, "pinned instruction package must occur exactly once")
     entry = entries[0]
-    require(entry.get("usability", {}).get("execution") == "instructions"
-            and entry.get("usability", {}).get("availability") == "documentation-only"
-            and not entry.get("usability", {}).get("executable_helpers"), "sample must remain an instruction-only package without executable helpers")
     versions = [item for item in entry.get("versions", []) if item.get("version") == VERSION]
     require(len(versions) == 1, "pinned package release must occur exactly once")
     version = versions[0]
     for key in ["sha256", "manifest_sha256"]:
         require(re.fullmatch(r"[a-f0-9]{64}", version.get(key, "")), f"invalid {key} in published release")
-    return entry, version
+    return version
 
 
 def archive_files(data):
@@ -138,7 +137,46 @@ def archive_files(data):
     return files
 
 
-def verify_installed(package_dir, expected_files, runtime, artifact_sha):
+def inspect_pinned(verifier, manifest_path, manifest_sha, package_dir=None, runtime=None, artifact_sha=None):
+    args = [str(verifier), "--manifest", str(manifest_path), "--manifest-sha256", manifest_sha,
+            "--id", PACKAGE, "--version", VERSION]
+    if package_dir is not None:
+        args += ["--package-dir", str(package_dir), "--runtime", runtime, "--artifact-sha256", artifact_sha]
+    result = subprocess.run(args, env={"PATH": os.defpath}, capture_output=True, timeout=30)
+    require(result.returncode == 0, "pinned manifest/receipt verification failed: " + result.stderr.decode(errors="replace")[-2000:])
+    document = json.loads(result.stdout)
+    require(document.get("id") == PACKAGE and document.get("version") == VERSION, "verifier returned another pinned subject")
+    if package_dir is not None:
+        require(document.get("receipt_verified") is True, "runtime receipt verification did not pass")
+    return document
+
+
+def filesystem_snapshot(root):
+    """Use lstat: never follow a changed link while comparing duplicate effects."""
+    require(root.exists() and not root.is_symlink(), "installed root was removed or replaced by a link")
+    snapshot = {}
+
+    def visit(path):
+        metadata = path.lstat()
+        mode = metadata.st_mode
+        name = "." if path == root else path.relative_to(root).as_posix()
+        # Access time is omitted because reading the payload can update it.
+        value = [stat.S_IFMT(mode), stat.S_IMODE(mode), metadata.st_uid, metadata.st_gid,
+                 metadata.st_ino, metadata.st_nlink, metadata.st_mtime_ns, metadata.st_ctime_ns]
+        if stat.S_ISREG(mode):
+            value.append(path.read_bytes())
+        elif stat.S_ISLNK(mode):
+            value.append(os.readlink(path))
+        snapshot[name] = value
+        if stat.S_ISDIR(mode):
+            for child in path.iterdir():
+                visit(child)
+
+    visit(root)
+    return snapshot
+
+
+def verify_installed(package_dir, expected_files, runtime, artifact_sha, verifier, manifest_path, manifest_sha):
     require(package_dir.is_dir() and not package_dir.is_symlink(), "CLI reported success without an installed package")
     actual = {}
     for path in package_dir.rglob("*"):
@@ -152,10 +190,11 @@ def verify_installed(package_dir, expected_files, runtime, artifact_sha):
                        "id": PACKAGE, "version": VERSION, "runtime": runtime, "artifact_sha256": artifact_sha}.items():
         require(receipt.get(key) == value, f"installed receipt has incorrect {key}")
     require(actual == expected_files, "installed file inventory/bytes differ from the downloaded release")
+    inspect_pinned(verifier, manifest_path, manifest_sha, package_dir, runtime, artifact_sha)
     return sha256(json.dumps({name: sha256(data) for name, data in sorted(actual.items())}).encode())
 
 
-def verify_runtime(binary, registry_url, runtime, directory, files, artifact_sha, result):
+def verify_runtime(binary, registry_url, runtime, directory, files, artifact_sha, result, verifier, manifest_path, manifest_sha):
     work = directory / runtime
     work.mkdir()
     target = work / "runtime" / "skills"
@@ -168,11 +207,12 @@ def verify_runtime(binary, registry_url, runtime, directory, files, artifact_sha
     environment = {"PATH": os.defpath}
     completed = subprocess.run(args, cwd=work, env=environment, capture_output=True, timeout=150)
     require(completed.returncode == 0, "cold remote install failed: " + completed.stderr.decode(errors="replace")[-2000:])
-    result["payload_sha256"] = verify_installed(package_dir, files, runtime, artifact_sha)
+    result["payload_sha256"] = verify_installed(package_dir, files, runtime, artifact_sha, verifier, manifest_path, manifest_sha)
+    result["receipt_verified"] = True
     result["cold_install"] = "passed"
-    before = {path.relative_to(package_dir).as_posix(): path.read_bytes() for path in package_dir.rglob("*") if path.is_file()}
+    before = filesystem_snapshot(package_dir)
     duplicate = subprocess.run(args, cwd=work, env=environment, capture_output=True, timeout=150)
-    after = {path.relative_to(package_dir).as_posix(): path.read_bytes() for path in package_dir.rglob("*") if path.is_file()}
+    after = filesystem_snapshot(package_dir)
     require(duplicate.returncode != 0 and before == after, "duplicate install did not reject safely without --force")
     result["duplicate_rejected_without_mutation"] = "passed"
     (package_dir / "SKILL.md").write_text("deliberately damaged disposable installation\n")
@@ -185,7 +225,7 @@ def verify_runtime(binary, registry_url, runtime, directory, files, artifact_sha
         offline_env = {**environment, "HTTP_PROXY": proxy, "HTTPS_PROXY": proxy, "NO_PROXY": ""}
         offline = subprocess.run(args + ["--offline", "--force"], cwd=work, env=offline_env, capture_output=True, timeout=150)
     require(offline.returncode == 0, "offline forced reinstall failed: " + offline.stderr.decode(errors="replace")[-2000:])
-    verify_installed(package_dir, files, runtime, artifact_sha)
+    verify_installed(package_dir, files, runtime, artifact_sha, verifier, manifest_path, manifest_sha)
     result["offline_reinstall_restored_release_bytes"] = "passed"
 
 
@@ -195,6 +235,7 @@ def main():
     client.add_argument("--cli", type=Path, help="explicit candidate binary; never recorded as a released client")
     client.add_argument("--cli-release", help="exact GitHub release tag; requires binaries, checksums, provenance and gh")
     parser.add_argument("--registry-url", default=REGISTRY)
+    parser.add_argument("--verifier", type=Path, default=DEFAULT_VERIFIER, help="read-only runtime manifest/receipt verifier")
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--runtimes", nargs="+", choices=["codex", "claude", "generic"], default=["codex", "claude", "generic"])
     args = parser.parse_args()
@@ -220,7 +261,7 @@ def main():
             stage = "published-release"
             origin = https_origin(args.registry_url)
             registry_bytes = download(args.registry_url, origin)
-            entry, version = selected_release(json.loads(registry_bytes))
+            version = selected_release(json.loads(registry_bytes))
             report["registry_sha256"] = sha256(registry_bytes)
             report["selected_release"] = version
             archive = download(version["artifact_url"], origin)
@@ -229,13 +270,28 @@ def main():
             require(sha256(manifest) == version["manifest_sha256"], "published manifest checksum mismatch")
             files = archive_files(archive)
             require(files["skill.yaml"] == manifest, "served manifest differs from the archive manifest")
+            pinned_dir = clean / "pinned-release"
+            pinned_dir.mkdir()
+            for name, data in files.items():
+                path = pinned_dir / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(data)
+            require(args.verifier.is_file(), "build bin/published-install-verifier before running this check")
+            verifier = bin_dir / "published-install-verifier"
+            shutil.copyfile(args.verifier.resolve(), verifier)
+            verifier.chmod(0o755)
+            report["verifier_sha256"] = sha256(verifier.read_bytes())
+            manifest_path = pinned_dir / "skill.yaml"
+            pinned = inspect_pinned(verifier, manifest_path, version["manifest_sha256"])
+            report["pinned_manifest"] = pinned
             report["published_files"] = {name: sha256(data) for name, data in sorted(files.items())}
             for runtime in args.runtimes:
                 stage = f"install-{runtime}"
-                require(runtime in entry.get("runtimes", []), f"sample does not declare {runtime}")
+                require(runtime in pinned.get("runtimes", []), f"pinned sample does not declare {runtime}")
                 result = {"runtime": runtime}
                 report["runtimes"].append(result)
-                verify_runtime(binary, args.registry_url, runtime, clean, files, version["sha256"], result)
+                verify_runtime(binary, args.registry_url, runtime, clean, files, version["sha256"], result,
+                               verifier, manifest_path, version["manifest_sha256"])
         report["status"] = "passed"
     except (OSError, ValueError, KeyError, TypeError, AttributeError, tarfile.TarError, subprocess.SubprocessError) as error:
         report["failure_stage"] = stage

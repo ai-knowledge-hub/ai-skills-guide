@@ -2,9 +2,9 @@
   "brandVersion": "0.1.0",
   "importedOn": "2026-10-29",
   "technique": "Exact compressed raster delivery copies of the selected publication artwork; not editable vectors.",
-  "usage": "Static catalogue application: entrance on homepage; community artwork at compact headers and in the desktop rail. No module-to-motif taxonomy.",
+  "usage": "Static catalogue application: entrance on homepage; community artwork at compact headers and in the desktop rail. No module-to-motif taxonomy. The existing publication favicon is reused unchanged.",
   "originals": "Preserved in the publication. No source artwork was edited or replaced.",
-  "generation": "AI-assisted originals; complete original model/prompt and rights records are not asserted by this delivery manifest.",
+  "generation": "Raster artwork uses AI-assisted originals; complete original model/prompt and rights records are not asserted. The favicon is an unchanged existing SVG; its generation method is not asserted.",
   "assets": [
     {
       "file": "entrance-480.webp",
@@ -37,6 +37,14 @@
       "bytes": 196936,
       "importedOn": "2026-10-30",
       "usage": "Desktop viewport-height catalogue rail; approved publication delivery copy."
+    },
+    {
+      "file": "favicon.svg",
+      "source": "independent-ai-publication/public/favicon.svg",
+      "sha256": "a22d5e6690522712aafb88162ea9662c09490fc3b10123e96d92a0328c1d2121",
+      "bytes": 216,
+      "importedOn": "2026-11-01",
+      "usage": "Existing publication AI favicon, reused unchanged for the catalogue; no new mark."
     }
   ]
 }

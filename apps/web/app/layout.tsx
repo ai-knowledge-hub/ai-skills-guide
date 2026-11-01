@@ -8,7 +8,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: { default: `${brand.name} | Skills, agents & tools`, template: `%s | ${brand.name}` },
-  description: brand.description
+  description: brand.description,
+  icons: { icon: { url: "/brand/favicon.svg", type: "image/svg+xml" } }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

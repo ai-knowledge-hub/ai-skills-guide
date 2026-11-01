@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { brand, moduleNavigation } from "@/lib/brand";
 
 export default function SiteHeader() {
@@ -10,8 +10,19 @@ export default function SiteHeader() {
   const menu = useRef<HTMLDetailsElement>(null);
   const [theme, setTheme] = useState("dark");
 
+  useLayoutEffect(() => {
+    // Error-route hydration can restore the server's default html attribute.
+    // Reapply the saved preference before paint whenever the route changes.
+    let next = document.documentElement.dataset.theme === "light" ? "light" : "dark";
+    try {
+      const saved = localStorage.getItem(brand.themeKey);
+      if (saved === "light" || saved === "dark") next = saved;
+    } catch { /* Storage is optional. */ }
+    document.documentElement.dataset.theme = next;
+    setTheme(next);
+  }, [pathname]);
+
   useEffect(() => {
-    setTheme(document.documentElement.dataset.theme === "light" ? "light" : "dark");
     function syncTheme(event: StorageEvent) {
       if (event.key !== brand.themeKey && event.key !== null) return;
       const next = event.newValue === "light" ? "light" : "dark";

@@ -1,0 +1,207 @@
+{
+  "date": "2026-11-01",
+  "baseline": "d096399",
+  "productionBuild": true,
+  "browser": "Chrome 156",
+  "node": "20.19.4",
+  "routes": [
+    "/",
+    "/skills",
+    "/agents",
+    "/plugins",
+    "/tools-mcp",
+    "/skills/marketing/meta-google-weekly-performance-review",
+    "/agents/adtech/ad-platform-control-plane-supervisor",
+    "/plugins/marketing/chatgpt-advertising-experiment-plugin",
+    "/tools-mcp/warehouse/bigquery-mcp-query-runner",
+    "/skills?q=qa81-no-matching-package",
+    "/skills/qa81-not-a-real-entry"
+  ],
+  "widths": [
+    320,
+    390,
+    768,
+    1280,
+    1440,
+    1920
+  ],
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "views": 132,
+  "overflowFailures": 0,
+  "headingFailures": 0,
+  "themeFailures": 0,
+  "unnamedControlFailures": 0,
+  "maxObservedCLS": 0,
+  "maxActiveAnimations": 0,
+  "browserRegressionSuite": {
+    "passed": 29,
+    "durationSeconds": 26,
+    "server": "next start",
+    "activeArtworkCases": 8,
+    "unusedDesktopArtworkBytesAvoided": 150080
+  },
+  "edgeChecks": [
+    {
+      "check": "failed-artwork",
+      "route": "/",
+      "theme": "dark",
+      "state": {
+        "theme": "dark",
+        "overflow": false,
+        "heading": "AI KNOWLEDGEHUB",
+        "imageWidth": 0
+      },
+      "failed": [
+        "/brand/entrance-480.webp",
+        "/_vercel/insights/script.js",
+        "/brand/community-1200.webp"
+      ]
+    },
+    {
+      "check": "failed-artwork",
+      "route": "/skills",
+      "theme": "dark",
+      "state": {
+        "theme": "dark",
+        "overflow": false,
+        "heading": "Skills"
+      },
+      "failed": [
+        "/brand/community-1200.webp",
+        "/_vercel/insights/script.js"
+      ]
+    },
+    {
+      "check": "failed-artwork",
+      "route": "/",
+      "theme": "light",
+      "state": {
+        "theme": "light",
+        "overflow": false,
+        "heading": "AI KNOWLEDGEHUB",
+        "imageWidth": 0
+      },
+      "failed": [
+        "/brand/entrance-480.webp",
+        "/_vercel/insights/script.js",
+        "/brand/community-1200.webp"
+      ]
+    },
+    {
+      "check": "failed-artwork",
+      "route": "/skills",
+      "theme": "light",
+      "state": {
+        "theme": "light",
+        "overflow": false,
+        "heading": "Skills"
+      },
+      "failed": [
+        "/brand/community-1200.webp",
+        "/_vercel/insights/script.js"
+      ]
+    },
+    {
+      "check": "reduced-motion",
+      "route": "/",
+      "state": {
+        "reduced": true,
+        "animations": 0,
+        "transition": "0s"
+      }
+    },
+    {
+      "check": "reduced-motion",
+      "route": "/skills",
+      "state": {
+        "reduced": true,
+        "animations": 0,
+        "transition": "0s"
+      }
+    },
+    {
+      "check": "no-javascript-navigation",
+      "url": "http://127.0.0.1:3000/skills/adtech/advertising-signal-ownership-auditor",
+      "commands": 3
+    },
+    {
+      "check": "keyboard-search-filter",
+      "url": "http://127.0.0.1:3000/skills?category=adtech&q=weekly#main",
+      "focus": {
+        "label": "Domain",
+        "outline": "2px",
+        "visible": true
+      }
+    },
+    {
+      "check": "keyboard-copy",
+      "exactMatch": true
+    },
+    {
+      "check": "keyboard-mobile-navigation",
+      "url": "http://127.0.0.1:3000/skills"
+    },
+    {
+      "check": "brand-delivery",
+      "assets": 6
+    }
+  ],
+  "nativeZoom": {
+    "method": "Chrome Guest native Cmd+= and Cmd+0 via computer-use controls",
+    "levelsObserved": [
+      200,
+      400
+    ],
+    "keyboardAt400": [
+      "Skip to content",
+      "Search the catalogue",
+      "Domain",
+      "Adtech selection",
+      "Escape returned focus to Domain"
+    ],
+    "selectionURL": "/skills?category=adtech#main",
+    "resetTo100": true,
+    "guestWindowClosed": true
+  },
+  "assets": [
+    {
+      "file": "entrance-480.webp",
+      "bytes": 35548,
+      "sha256": "b9dc20b145af5b243574b4044880cec51122e43bc3b751b6187fc6496040359b",
+      "sourceBytesMatch": true
+    },
+    {
+      "file": "entrance-800.webp",
+      "bytes": 69632,
+      "sha256": "34e6bff73cf66c0955610f3e9fae7a6ea4ef83aa5e3940bb389775e20a5812f0",
+      "sourceBytesMatch": true
+    },
+    {
+      "file": "entrance-1600.webp",
+      "bytes": 165094,
+      "sha256": "4b57ebd2f619e74b2d56697e6e1705fe9191c54e752b9ab2459a6a1aea5910fd",
+      "sourceBytesMatch": true
+    },
+    {
+      "file": "community-1200.webp",
+      "bytes": 150080,
+      "sha256": "3f3e6b6c1ad386093af321a827843a12cf350c6d27c4b1d7d34bf2a3b60551dc",
+      "sourceBytesMatch": true
+    },
+    {
+      "file": "community-1600.webp",
+      "bytes": 196936,
+      "sha256": "55ba5d82612c41f94f87eaec7ebd6ca63003aeaf35e8cd1a416d9bfa6515f475",
+      "sourceBytesMatch": true
+    },
+    {
+      "file": "favicon.svg",
+      "bytes": 216,
+      "sha256": "a22d5e6690522712aafb88162ea9662c09490fc3b10123e96d92a0328c1d2121",
+      "sourceBytesMatch": true
+    }
+  ]
+}

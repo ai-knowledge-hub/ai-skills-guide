@@ -1,5 +1,9 @@
 # Catalogue rebranding · 29 October 2026
 
+Current review evidence: [final verification, 1 November 2026](rebrand-verification-2026-11-01.md).
+The dated implementation entries below are historical checkpoints; their
+local-only and pending-rollout statements do not describe the later merged state.
+
 Tracking: epic
 [#75](https://github.com/ai-knowledge-hub/ai-skills-guide/issues/75),
 foundations #76, shell #77, Skills slice #78, homepage #79, rollout #80 and

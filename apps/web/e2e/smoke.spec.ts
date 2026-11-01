@@ -360,3 +360,35 @@ test("plugin listing and detail render current readiness rather than retained de
   await plugin.getByRole("link", { name: /Code Maintenance Plugin/ }).click();
   await expect(page.locator("#usability .usability-badge").first()).toHaveText("Not verified");
 });
+
+for (const theme of ["light", "dark"] as const) {
+  test(`saved ${theme} theme survives missing-entry pages and recovery`, async ({ page }) => {
+    await page.addInitScript(theme => localStorage.setItem("skills-hub-theme", theme), theme);
+    for (const route of ["/skills/qa81-missing", "/agents/qa81-missing", "/plugins/qa81-missing", "/tools-mcp/qa81-missing", "/qa81-missing"]) {
+      const response = await page.goto(route);
+      expect(response?.status(), route).toBe(404);
+      await expect(page.getByRole("heading", { name: "Item not found" })).toBeVisible();
+      // The control must reflect the restored preference after hydration;
+      // observing the bootstrap script's transient attribute is insufficient.
+      await expect(page.getByRole("button", { name: `Switch to ${theme === "light" ? "dark" : "light"} mode` })).toBeVisible();
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+      await page.getByRole("link", { name: "Home", exact: true }).click();
+      await expect(page).toHaveURL(/\/$/);
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    }
+  });
+}
+
+test("catalogue downloads only the artwork used by its active layout", async ({ page }) => {
+  for (const width of [1440, 390]) {
+    await page.goto("about:blank");
+    await page.setViewportSize({ width, height: 1000 });
+    for (const route of ["/skills", "/agents", "/plugins", "/tools-mcp"]) {
+      await page.goto(route, { waitUntil: "networkidle" });
+      const artwork = await page.evaluate(() => performance.getEntriesByType("resource")
+        .map(resource => new URL(resource.name).pathname)
+        .filter(path => /^\/brand\/community-.*\.webp$/.test(path)));
+      expect(artwork, `${route} at ${width}px`).toEqual([width === 1440 ? "/brand/community-1600.webp" : "/brand/community-1200.webp"]);
+    }
+  }
+});

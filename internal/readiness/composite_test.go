@@ -16,7 +16,10 @@ func TestValidateCompositeReadinessEvidenceAcceptsCompleteAndPartialCoverage(t *
 	expectations := compositeExpectations(now)
 
 	complete := compositeEvidenceFixture(now)
-	validateCompositeFixture(t, complete, installation, dependencies, expectations, now)
+	for _, version := range []string{"1.0.3", "3.0.0"} {
+		complete.ContractVersion = version
+		validateCompositeFixture(t, complete, installation, dependencies, expectations, now)
+	}
 
 	partial := compositeEvidenceFixture(now)
 	partial.ProviderObservations[2] = CompositeProviderObservation{

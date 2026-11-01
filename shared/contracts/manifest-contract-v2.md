@@ -152,7 +152,9 @@ that any binding currently exists.
 `verification.evidence` contains opaque references to evidence records.
 `verification.last_verified_at` records the latest verification observation
 represented by those references. Neither field may be self-issued as an
-operational claim.
+operational claim. Under [runtime policy v3](operational-readiness-v3.md), the
+observation date remains historical information and does not impose a package
+age limit or establish compatibility, current authentication or live readiness.
 
 Consumers must resolve evidence through its authoritative store and check its
 producer, scope, target key, artifact digest, contract version, observations,

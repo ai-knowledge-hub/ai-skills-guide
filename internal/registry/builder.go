@@ -266,22 +266,19 @@ func hasPositiveCapabilityReadiness(values []CapabilityReadinessMetadata) bool {
 	return false
 }
 
-// ProjectManifestForCurrentCatalog derives the operator-visible projection at
-// publication time without changing the immutable manifest or release
-// sidecar. An expired usable-now claim is retained for audit in Verification,
-// but it cannot remain advertised as current readiness.
-func ProjectManifestForCurrentCatalog(m Manifest, now time.Time) SkillEntry {
+// ProjectManifestForCurrentCatalog preserves historical metadata without treating
+// opaque evidence references or their age as proof of current target readiness.
+// A static publication has no selected runtime target or authoritative live check.
+func ProjectManifestForCurrentCatalog(m Manifest, _ time.Time) SkillEntry {
 	entry := ProjectManifest(m)
 	if m.Usability.Availability == "usable-now" || hasPositiveCapabilityReadiness(m.CapabilityReadiness) {
-		if err := validateFreshEvidence(m.ID, m, now.UTC()); err != nil {
-			if entry.Usability.Availability == "usable-now" {
-				entry.Usability.Availability = "not-verified"
-			}
-			entry.Usability.Source = "inferred"
-			for index := range entry.CapabilityReadiness {
-				if isPositiveUsability(entry.CapabilityReadiness[index].Availability) {
-					entry.CapabilityReadiness[index].Availability = "not-verified"
-				}
+		if entry.Usability.Availability == "usable-now" {
+			entry.Usability.Availability = "not-verified"
+		}
+		entry.Usability.Source = "inferred"
+		for index := range entry.CapabilityReadiness {
+			if isPositiveUsability(entry.CapabilityReadiness[index].Availability) {
+				entry.CapabilityReadiness[index].Availability = "not-verified"
 			}
 		}
 	}

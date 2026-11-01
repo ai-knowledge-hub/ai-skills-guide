@@ -9,7 +9,9 @@ claim that every application test or live provider integration was audited.
 The process-wide test clock described below was an interim #82 repair. The
 later [#86 implementation](evaluation-clocks.md) replaces it with isolated
 operation values and explicit admission parameters while preserving runtime
-policy. The original investigation is retained here as history.
+policy. The original investigation is retained here as history. The subsequent
+[#83 policy migration](runtime-evidence-policy.md) replaces the package-age gates
+while preserving actual credential and attestation deadlines.
 
 ## Findings and authority
 

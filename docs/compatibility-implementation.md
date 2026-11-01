@@ -34,8 +34,9 @@ website presentation from #87 remain.
 
 ## Separate runtime work
 
-Operational v1 admission, artifact checks, credential expiry, target identity,
-revocation and existing age gates remain unchanged. The 30-day runtime gate is
-still tracked under #83. Removing an unused diagnostic must not be presented as
-having changed that behavior. Further runtime changes require a focused consumer
-and authority review independent of catalogue editorial content.
+Runtime admission follows [operational readiness v3](../shared/contracts/operational-readiness-v3.md).
+Package observation dates do not expire installation or API/SDK version notes.
+Current provider checks, actual credential/attestation deadlines, target identity,
+revocation and credential generation remain authoritative. The local smoke
+result's explicit execution recheck window and security assurance deadlines are
+separate from package compatibility. See [the policy migration](runtime-evidence-policy.md).

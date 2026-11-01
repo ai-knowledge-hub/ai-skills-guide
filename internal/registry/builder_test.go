@@ -588,7 +588,7 @@ func TestExpiredEvidenceDemotesEveryPositiveCapability(t *testing.T) {
 			{ID: "live-write", Availability: "not-verified"},
 		},
 	}
-	entry := ProjectManifestForCurrentCatalog(manifest, verifiedAt.Add(executableEvidenceLifetime+time.Second))
+	entry := ProjectManifestForCurrentCatalog(manifest, verifiedAt.AddDate(10, 0, 0))
 	for _, capability := range entry.CapabilityReadiness {
 		if capability.Availability != "not-verified" {
 			t.Fatalf("expired capability %s retained availability %s", capability.ID, capability.Availability)
@@ -596,7 +596,7 @@ func TestExpiredEvidenceDemotesEveryPositiveCapability(t *testing.T) {
 	}
 }
 
-func TestExpiredCapabilityEvidenceIsIndependentOfAggregateUsability(t *testing.T) {
+func TestUnresolvedCapabilityEvidenceIsIndependentOfAggregateUsability(t *testing.T) {
 	verifiedAt := time.Date(2026, 9, 23, 0, 0, 0, 0, time.UTC)
 	manifest := Manifest{
 		SchemaVersion: "2.1", ID: "marketing/experiment-plugin",
@@ -610,7 +610,7 @@ func TestExpiredCapabilityEvidenceIsIndependentOfAggregateUsability(t *testing.T
 			{ID: "live-write", Availability: "not-verified"},
 		},
 	}
-	entry := ProjectManifestForCurrentCatalog(manifest, verifiedAt.Add(executableEvidenceLifetime+time.Second))
+	entry := ProjectManifestForCurrentCatalog(manifest, verifiedAt.AddDate(10, 0, 0))
 	if entry.Usability.Availability != "setup-required" {
 		t.Fatalf("aggregate setup state changed to %s", entry.Usability.Availability)
 	}

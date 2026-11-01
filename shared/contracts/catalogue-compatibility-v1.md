@@ -12,7 +12,7 @@
 The content-only catalogue presents maintainer-provided version information.
 This contract governs that content, not operational installation, authentication
 or execution. Runtime policy remains in
-[operational readiness v1](operational-readiness-v1.md).
+[operational readiness v3](operational-readiness-v3.md).
 
 ## Content and release identity
 

@@ -620,7 +620,7 @@ func TestInstallRemoteReleaseRejectsManifestSchemaViolations(t *testing.T) {
 	}
 }
 
-func TestRetainedReleaseAllowsExpiredEvidenceButCurrentAdmissionRejectsIt(t *testing.T) {
+func TestRetainedReleaseAndCurrentAdmissionPreserveHistoricalObservations(t *testing.T) {
 	manifest := remoteUsableNowManifest("1.0.0", time.Now().UTC().Add(-365*24*time.Hour))
 	files := map[string]string{
 		"skill.yaml":    manifest,
@@ -655,8 +655,8 @@ func TestRetainedReleaseAllowsExpiredEvidenceButCurrentAdmissionRejectsIt(t *tes
 			t.Fatalf("write current package: %v", err)
 		}
 	}
-	if _, err := registry.ValidatePackageManifest(filepath.Join(currentPackage, "skill.yaml")); err == nil || !strings.Contains(err.Error(), "evidence older than") {
-		t.Fatalf("current install admission accepted expired evidence: %v", err)
+	if _, err := registry.ValidatePackageManifest(filepath.Join(currentPackage, "skill.yaml")); err != nil {
+		t.Fatalf("package age blocked installation: %v", err)
 	}
 }
 

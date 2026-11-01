@@ -12,18 +12,19 @@ export function projectCurrentCatalogEntry(storedEntry) {
       if (isPositiveAvailability(capability.availability)) capability.availability = "not-verified";
     }
   }
+  // An instruction-only parent does not establish its helpers' readiness.
+  for (const helper of entry.usability?.executable_helpers ?? []) {
+    if (isPositiveAvailability(helper.availability)) {
+      helper.availability = "not-verified";
+      entry.usability.source = "inferred";
+    }
+  }
   if (entry.deprecated) {
     entry.readiness = "deprecated";
     let demoted = false;
     if (isPositiveAvailability(entry.usability?.availability)) {
       entry.usability.availability = "not-verified";
       demoted = true;
-    }
-    for (const helper of entry.usability?.executable_helpers ?? []) {
-      if (isPositiveAvailability(helper.availability)) {
-        helper.availability = "not-verified";
-        demoted = true;
-      }
     }
     for (const capability of entry.capability_readiness ?? []) {
       if (isPositiveAvailability(capability.availability)) {

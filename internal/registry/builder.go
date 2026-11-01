@@ -282,6 +282,14 @@ func ProjectManifestForCurrentCatalog(m Manifest, _ time.Time) SkillEntry {
 			}
 		}
 	}
+	// Helper readiness is an independent executable claim, even when its
+	// parent only delivers instructions and has no capability declarations.
+	for index := range entry.Usability.ExecutableHelpers {
+		if isPositiveUsability(entry.Usability.ExecutableHelpers[index].Availability) {
+			entry.Usability.ExecutableHelpers[index].Availability = "not-verified"
+			entry.Usability.Source = "inferred"
+		}
+	}
 	return ApplyLifecycleProjection(entry)
 }
 

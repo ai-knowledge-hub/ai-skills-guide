@@ -127,3 +127,24 @@ Both selected consumer regressions were reproduced by bounded mutations after
 passing controls: bypassing the loader projection and restoring the old
 age-based fallback. Each produced its intended assertion failure (2/2), and
 sources were restored before the final browser/build checks.
+
+## Executable-helper review follow-up
+
+Executable helpers are independent readiness scopes. Both projections demote
+`usable-now` and `setup-required` helpers to `not-verified`, including on active
+instruction-primary packages with no aggregate or capability claim. The parent
+keeps its instruction delivery classification; helper paths, commands and
+limitations remain visible, and demotion marks the projection inferred.
+
+Eight literal Go cases cover active/deprecated lifecycle against absent, usable,
+setup-required and unverified helpers. The 40 parity fixtures now include all
+three helper states and assert their expected result explicitly. Three rendered
+panel cases independently require a Documentation parent and Not verified helper,
+preserve the disclosure and check original input immutability. This closes the
+shared-oracle gap: parity agreement alone is not treated as policy proof.
+
+A coordinated removal of helper demotion from both projections was rejected by
+both the independent Go assertions and the rendered-panel assertions after
+passing controls. Original sources were restored before verification. The full
+Go suite, all 26 Node 20 browser tests and the production build (lint, types,
+76 generated pages) passed. Canonical indexes and immutable releases are unchanged.

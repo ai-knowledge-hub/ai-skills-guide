@@ -28,7 +28,11 @@ func TestWebFallbackProjectionMatchesRuntimePolicy(t *testing.T) {
 				manifest := registry.Manifest{
 					SchemaVersion: "2.1", ID: "shared/projection-fixture", Version: "1.0.0", Deprecated: deprecated,
 					Usability: registry.UsabilityMetadata{Availability: availability, Execution: "bundle", Source: "declared",
-						ExecutableHelpers: []registry.ExecutableHelperMetadata{{Entrypoint: "bin/helper", Availability: "setup-required", Execution: "local-tool"}},
+						ExecutableHelpers: []registry.ExecutableHelperMetadata{
+							{Entrypoint: "bin/ready", Availability: "usable-now", Execution: "local-tool"},
+							{Entrypoint: "bin/setup", Availability: "setup-required", Execution: "local-tool"},
+							{Entrypoint: "bin/unknown", Availability: "not-verified", Execution: "local-tool"},
+						},
 					},
 					Execution: registry.ExecutionMetadata{Kind: "bundle"}, Authentication: registry.AuthenticationMetadata{Status: "required"},
 					Verification: registry.VerificationMetadata{Evidence: []string{"evidence://tests/opaque"}, LastVerifiedAt: date},
@@ -51,6 +55,11 @@ func TestWebFallbackProjectionMatchesRuntimePolicy(t *testing.T) {
 				for i, expected := range []string{"not-verified", "not-verified", "not-verified", "template-only"} {
 					if want.CapabilityReadiness[i].Availability != expected {
 						t.Fatalf("Go oracle violates v3 capability rule: %#v", want)
+					}
+				}
+				for _, helper := range want.Usability.ExecutableHelpers {
+					if helper.Availability != "not-verified" {
+						t.Fatalf("Go oracle violates independent v3 helper rule: %#v", helper)
 					}
 				}
 				fixtures = append(fixtures, fixture{Name: fmt.Sprintf("%s/%s/deprecated=%v", date, availability, deprecated), Entry: entry, Want: want})

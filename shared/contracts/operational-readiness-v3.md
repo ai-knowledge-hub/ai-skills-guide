@@ -89,7 +89,11 @@ A static registry projection MUST NOT promote opaque manifest evidence
 references, positive capability declarations or a recent timestamp into live
 `usable-now` or target-ready `setup-required` capability claims. Preserve those
 original declarations in immutable release history, but project unresolved
-positive capability claims as `not-verified`. An aggregate `setup-required`
+positive capability and executable-helper claims as `not-verified`, including
+helpers declared by active instruction-primary packages. Instruction delivery
+does not establish a helper's executable readiness. Preserve helper paths,
+setup instructions and limitations; mark the projected classification inferred
+when a helper is demoted. An aggregate `setup-required`
 classification may still explain required setup without asserting target success.
 Lifecycle demotion still takes precedence. Current local readiness continues to
 require actual installation, provider and execution checks; version notes are

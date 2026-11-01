@@ -6,6 +6,7 @@ import { expect, test } from "@playwright/test";
 import UsabilityPanel from "../components/UsabilityPanel";
 import { catalogueCompatibility, findCatalogueCompatibility, type CatalogueCompatibility } from "../lib/catalogueCompatibility";
 import { loadRegistry, withCatalogueCompatibility, type ModuleKey, type RegistryEntry, type RegistryIndex } from "../lib/registry";
+import { projectCurrentCatalogEntry } from "../lib/currentCatalogueProjection.mjs";
 import { latestToolPageNotes } from "./catalogue-page-notes";
 
 // Independent review inventory: docs/tool-version-review.md and its retained
@@ -193,5 +194,33 @@ test("site loader projects all unresolved claims without changing canonical meta
       expect(projected.latest).toBe(raw.latest);
     }
     expect(await fs.readFile(registryPath, "utf8")).toBe(bytes);
+  }
+});
+
+
+test("active instruction helpers render unverified without inheriting parent delivery", async ({ page }) => {
+  const retained = JSON.parse(await fs.readFile(path.resolve("../../registry/skills-index.json"), "utf8")) as RegistryIndex;
+  const instruction = retained.skills.find(entry => entry.usability.availability === "documentation-only" && entry.usability.execution === "instructions")!;
+  expect(instruction).toBeDefined();
+  for (const availability of ["usable-now", "setup-required", "not-verified"] as const) {
+    const raw: RegistryEntry = {
+      ...instruction, deprecated: false, capability_readiness: undefined,
+      usability: { availability: "documentation-only", execution: "instructions", source: "declared",
+        executable_helpers: [{ entrypoint: "scripts/helper.py", availability, execution: "local-tool",
+          quickstart: "python scripts/helper.py", limitations: ["Executable outcome has no current target evidence."] }]
+      }
+    };
+    const original = structuredClone(raw);
+    const current = projectCurrentCatalogEntry(raw);
+    expect(current.usability.availability).toBe("documentation-only");
+    expect(current.usability.executable_helpers?.[0].availability).toBe("not-verified");
+    expect(current.usability.source).toBe(availability === "not-verified" ? "declared" : "inferred");
+    expect(raw).toEqual(original);
+    await page.setContent(renderToStaticMarkup(React.createElement(UsabilityPanel, { usability: current.usability })));
+    await expect(page.locator("#usability > p .usability-badge")).toHaveText("Documentation");
+    const helper = page.locator("#usability section").filter({ has: page.locator("code", { hasText: "scripts/helper.py" }) });
+    await expect(helper.locator(".usability-badge")).toHaveText("Not verified");
+    await expect(helper.getByText("Executable outcome has no current target evidence.", { exact: true })).toBeVisible();
+    await expect(helper.getByText("python scripts/helper.py", { exact: true })).toBeVisible();
   }
 });

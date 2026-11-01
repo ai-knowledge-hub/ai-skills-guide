@@ -1,0 +1,69 @@
+name: Published registry installation
+
+on:
+  workflow_dispatch:
+    inputs:
+      client_source:
+        description: Released client or explicitly labelled candidate build
+        required: true
+        type: choice
+        default: release
+        options: [release, candidate]
+      cli_release:
+        description: Exact CLI tag for release mode (must have binaries, checksums and provenance)
+        type: string
+        required: false
+      registry_url:
+        description: Public HTTPS registry to verify
+        type: string
+        default: https://skills.ai-knowledge-hub.org/registry/skills-index.json
+        required: true
+
+permissions:
+  contents: read
+  attestations: read
+
+jobs:
+  install:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-go@v5
+        if: inputs.client_source == 'candidate'
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Build explicitly test-only candidate
+        if: inputs.client_source == 'candidate'
+        run: make cli-build-test
+      - name: Check published installation from a source-free temporary directory
+        env:
+          CLIENT_SOURCE: ${{ inputs.client_source }}
+          CLI_RELEASE: ${{ inputs.cli_release }}
+          REGISTRY_URL: ${{ inputs.registry_url }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ "$CLIENT_SOURCE" == "release" ]]; then
+            python3 scripts/check-published-install.py \
+              --cli-release "$CLI_RELEASE" --registry-url "$REGISTRY_URL" \
+              --report output/published-install/report.json
+          else
+            python3 scripts/check-published-install.py \
+              --cli bin/skills-hub-test --registry-url "$REGISTRY_URL" \
+              --report output/published-install/report.json
+          fi
+      - name: Retain bounded success or failure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: published-install-${{ matrix.os }}-${{ inputs.client_source }}
+          path: output/published-install/report.json
+          if-no-files-found: warn

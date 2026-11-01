@@ -1,5 +1,8 @@
 # Remote package installation
 
+For the bounded clean-client check against an actual published HTTPS registry,
+see [published installation verification](published-install-verification.md).
+
 `skills-hub install` has two intentionally separate source modes.
 
 - `--source local` is the default development path. It reads registry metadata

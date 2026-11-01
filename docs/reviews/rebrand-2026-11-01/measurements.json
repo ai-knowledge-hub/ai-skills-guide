@@ -43,6 +43,17 @@
     "activeArtworkCases": 8,
     "unusedDesktopArtworkBytesAvoided": 150080
   },
+  "storageReviewFollowup": {
+    "reviewedHead": "5e6de0c",
+    "productionBuild": true,
+    "browserTestsPassed": 32,
+    "durationSeconds": 21,
+    "failedWriteDirectionsCovered": 2,
+    "failedWriteDirectionsModeled": 2,
+    "crossTabCases": 1,
+    "missingRouteThemeCasesRetained": 10,
+    "screenshotsRecaptured": false
+  },
   "edgeChecks": [
     {
       "check": "failed-artwork",

@@ -8,16 +8,22 @@ import { brand, moduleNavigation } from "@/lib/brand";
 export default function SiteHeader() {
   const pathname = usePathname();
   const menu = useRef<HTMLDetailsElement>(null);
+  const sessionTheme = useRef<string | null>(null);
   const [theme, setTheme] = useState("dark");
 
   useLayoutEffect(() => {
     // Error-route hydration can restore the server's default html attribute.
-    // Reapply the saved preference before paint whenever the route changes.
-    let next = document.documentElement.dataset.theme === "light" ? "light" : "dark";
-    try {
-      const saved = localStorage.getItem(brand.themeKey);
-      if (saved === "light" || saved === "dark") next = saved;
-    } catch { /* Storage is optional. */ }
+    // Initialize from storage once; later routes must preserve choices even
+    // when storage writes fail and the persisted preference is stale.
+    let next = sessionTheme.current;
+    if (next === null) {
+      next = document.documentElement.dataset.theme === "light" ? "light" : "dark";
+      try {
+        const saved = localStorage.getItem(brand.themeKey);
+        if (saved === "light" || saved === "dark") next = saved;
+      } catch { /* Storage is optional. */ }
+    }
+    sessionTheme.current = next;
     document.documentElement.dataset.theme = next;
     setTheme(next);
   }, [pathname]);
@@ -26,6 +32,7 @@ export default function SiteHeader() {
     function syncTheme(event: StorageEvent) {
       if (event.key !== brand.themeKey && event.key !== null) return;
       const next = event.newValue === "light" ? "light" : "dark";
+      sessionTheme.current = next;
       document.documentElement.dataset.theme = next;
       setTheme(next);
     }
@@ -45,6 +52,7 @@ export default function SiteHeader() {
 
   function toggleTheme() {
     const next = theme === "dark" ? "light" : "dark";
+    sessionTheme.current = next;
     document.documentElement.dataset.theme = next;
     setTheme(next);
     try { localStorage.setItem(brand.themeKey, next); } catch { /* Storage is optional. */ }

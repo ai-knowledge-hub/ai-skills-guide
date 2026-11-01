@@ -1,10 +1,10 @@
 {
   "brandVersion": "0.1.0",
   "importedOn": "2026-10-29",
-  "technique": "Exact compressed raster delivery copies of the selected publication artwork; not editable vectors.",
-  "usage": "Static catalogue application: entrance on homepage; community artwork at compact headers and in the desktop rail. No module-to-motif taxonomy. The existing publication favicon is reused unchanged.",
-  "originals": "Preserved in the publication. No source artwork was edited or replaced.",
-  "generation": "Raster artwork uses AI-assisted originals; complete original model/prompt and rights records are not asserted. The favicon is an unchanged existing SVG; its generation method is not asserted.",
+  "technique": "Static raster delivery copies and one unchanged publication SVG. Selected source artwork is preserved; display crops are CSS only.",
+  "usage": "The owner-selected folded field supplies the narrower catalogue/home rail and compact artwork headers. Earlier publication entrance/community assets are retained as historical imports and are no longer active.",
+  "originals": "Earlier originals remain in the publication. The newly selected attachment is preserved at apps/web/brand/artwork/folded-field-original.png with its source and exact prompt record.",
+  "generation": "Raster sources are AI-assisted. The folded-field source record includes its known prompt and tool; the model is not exposed. Earlier originals do not assert complete prompt/model records. The favicon is unchanged and its generation method is not asserted.",
   "assets": [
     {
       "file": "entrance-480.webp",
@@ -45,6 +45,26 @@
       "bytes": 216,
       "importedOn": "2026-11-01",
       "usage": "Existing publication AI favicon, reused unchanged for the catalogue; no new mark."
+    },
+    {
+      "file": "folded-field-960.webp",
+      "source": "apps/web/brand/artwork/folded-field-original.png",
+      "sourceRecord": "apps/web/brand/artwork/folded-field-source.json",
+      "sha256": "9470acd0e50c9a9182b73b4c301400195d4ee4d72b9339ce746fd6987c7cd0e5",
+      "bytes": 113958,
+      "importedOn": "2026-11-01",
+      "usage": "Active compact artwork header",
+      "technique": "Full-frame proportional resize and WebP encoding; no authored geometry edited."
+    },
+    {
+      "file": "folded-field-1600.webp",
+      "source": "apps/web/brand/artwork/folded-field-original.png",
+      "sourceRecord": "apps/web/brand/artwork/folded-field-source.json",
+      "sha256": "cbeb96f61492f471e062b8a4b8ea2ec60642a2672a5f3c072ab9af96523d6acb",
+      "bytes": 197244,
+      "importedOn": "2026-11-01",
+      "usage": "Active narrow desktop rail",
+      "technique": "Full-frame proportional resize and WebP encoding; no authored geometry edited."
     }
   ]
 }

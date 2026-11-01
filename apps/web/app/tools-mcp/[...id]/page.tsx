@@ -5,6 +5,8 @@ import InstallCommands from "@/components/InstallCommands";
 import { buildModuleInstallSnippet, getEntryById, loadToolsRegistry } from "@/lib/registry";
 import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
 import UsabilityPanel from "@/components/UsabilityPanel";
+import RelatedReading from "@/components/RelatedReading";
+import { relatedPublicationGuides } from "@/lib/publicationLinks";
 
 export async function generateMetadata({ params }: { params: { id: string[] } }): Promise<Metadata> {
   const entry = await getEntryById("tools", params.id.join("/"));
@@ -23,6 +25,7 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
     notFound();
   }
   const latestVersion = entry.versions.find((v) => v.version === entry.latest) ?? entry.versions[0];
+  const relatedGuides = relatedPublicationGuides("tools", entry.id);
 
   return (
     <main id="main" tabIndex={-1} className="detail-page">
@@ -33,7 +36,7 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
         <h1>{entry.name}</h1>
         <p>{entry.description}</p>
         <p className="meta">{entry.tags.join(", ")}</p>
-        <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{entry.usability.execution}</span><a href="#usability" className="text-link">Requirements &amp; limits</a></div>
+        <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{entry.usability.execution}</span><a href="#usability" className="text-link">Requirements &amp; limits</a>{relatedGuides.length ? <a href="#related-reading" className="text-link">Related reading</a> : null}</div>
         <div className="detail-install-lead">
           <h2 className="meta">{entry.usability.availability === "template-only" ? "Reference template" : "Install this connector"}</h2>
           <InstallCommands
@@ -48,6 +51,7 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
 
       <section className="detail-grid">
         <UsabilityPanel catalogueCompatibility={entry.catalogueCompatibility} compatibility={entry.compatibility} usability={entry.usability} />
+        <RelatedReading guides={relatedGuides} module="tools" id={entry.id} />
         <article className="card detail-panel">
           <h2>Operational Summary</h2>
           <p><span className="meta">Connected system:</span> {entry.operational?.connected_system ?? "Not documented"}</p>

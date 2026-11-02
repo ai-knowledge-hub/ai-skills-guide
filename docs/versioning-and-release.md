@@ -130,6 +130,10 @@ match the exact tag, and whose tagged commit is integrated into `origin/main`.
 Branch dispatches and unmerged feature tags are rejected. The existing governed
 builder requires all three runtime public roots before producing six platform
 binaries and `SHA256SUMS`; the workflow adds a signed provenance bundle.
+Publication also refuses any existing release assets for the tag, including
+draft/partial uploads. It checks before building and immediately before upload,
+fails closed on lookup errors, and disables same-name overwrites. Corrected
+artifacts require a new version; retries are allowed only while no assets exist.
 
 Tags containing `-alpha`, `-beta`, or `-rc` are marked as prerelease.
 

@@ -1,16 +1,99 @@
 """Release authority comes from an exact tag on main, never branch names alone."""
 
+import contextlib
+import importlib.util
+import io
+import json
 import os
 from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[2]
 VERIFY = ROOT / "scripts/verify-cli-release-source.sh"
 DISPATCH = ROOT / "scripts/dispatch-cli-release.sh"
 TAG = "v0.4.0-alpha.1"
+spec = importlib.util.spec_from_file_location("release_assets", ROOT / "scripts/check-cli-release-assets.py")
+assets = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(assets)
+
+
+class CLIReleaseAssetTests(unittest.TestCase):
+    def query(self, pages):
+        response = subprocess.CompletedProcess([], 0, json.dumps(pages), "")
+        with patch.dict(os.environ, {"GH_TOKEN": "fixture-not-a-credential"}), \
+                patch.object(assets.subprocess, "run", return_value=response) as run:
+            assets.check_release_assets("ai-knowledge-hub/ai-skills-guide", TAG)
+        return run
+
+    def test_new_tag_and_empty_release_allow_publication(self):
+        for pages in [[[]], [[{"tag_name": TAG, "assets": []}]],
+                      [[{"tag_name": "v0.3.0", "assets": [{"name": "old-binary"}]}]]]:
+            with self.subTest(pages=pages):
+                run = self.query(pages)
+                args = run.call_args.args[0]
+                self.assertIn("--paginate", args)
+                self.assertIn("--slurp", args)
+                self.assertIn("repos/ai-knowledge-hub/ai-skills-guide/releases?per_page=100", args)
+                self.assertTrue(run.call_args.kwargs["check"])
+
+    def test_any_existing_asset_blocks_including_drafts_partial_uploads_and_later_pages(self):
+        for draft in [False, True]:
+            for name in ["binary", "SHA256SUMS", "provenance.json", "unrelated-asset"]:
+                for pages in [1, 2]:
+                    with self.subTest(draft=draft, name=name, pages=pages):
+                        release = {"tag_name": TAG, "draft": draft, "assets": [{"name": name}]}
+                        inventory = [[release]] if pages == 1 else [[{"tag_name": "v9.0.0"}], [release]]
+                        with self.assertRaisesRegex(ValueError, "already has release assets"):
+                            self.query(inventory)
+
+    def test_new_assets_between_checks_block_the_final_check(self):
+        self.query([[{"tag_name": TAG, "assets": []}]])
+        with self.assertRaisesRegex(ValueError, "already has release assets"):
+            self.query([[{"tag_name": TAG, "assets": [{"name": "binary"}]}]])
+
+    def test_uncertain_inventory_never_authorizes_publication(self):
+        cases = [[], {}, [None], [[None]], [[{}]], [[{"tag_name": TAG}]],
+                 [[{"tag_name": TAG, "assets": None}]], [[{"tag_name": TAG, "assets": {}}]],
+                 [[{"tag_name": TAG, "assets": []}], [{"tag_name": TAG, "assets": []}]]]
+        for pages in cases:
+            with self.subTest(pages=pages), self.assertRaises(ValueError):
+                self.query(pages)
+
+    def test_api_auth_rate_limit_not_found_timeout_and_malformed_responses_fail_closed(self):
+        for status in [401, 403, 404, 429, 500]:
+            with self.subTest(status=status), patch.dict(os.environ, {"GH_TOKEN": "fixture-not-a-credential"}), \
+                    patch.object(assets.subprocess, "run", side_effect=subprocess.CalledProcessError(
+                        1, ["gh", "api"], stderr=f"HTTP {status}")), self.assertRaises(subprocess.SubprocessError):
+                assets.check_release_assets("ai-knowledge-hub/ai-skills-guide", TAG)
+        for result in [subprocess.TimeoutExpired(["gh"], 60), FileNotFoundError("gh missing")]:
+            with self.subTest(result=result), patch.dict(os.environ, {"GH_TOKEN": "fixture-not-a-credential"}), \
+                    patch.object(assets.subprocess, "run", side_effect=result), \
+                    self.assertRaises((OSError, subprocess.SubprocessError)):
+                assets.check_release_assets("ai-knowledge-hub/ai-skills-guide", TAG)
+        with patch.dict(os.environ, {"GH_TOKEN": "fixture-not-a-credential"}), \
+                patch.object(assets.subprocess, "run", return_value=subprocess.CompletedProcess([], 0, "bad JSON", "")), \
+                self.assertRaises(ValueError):
+            assets.check_release_assets("ai-knowledge-hub/ai-skills-guide", TAG)
+
+    def test_missing_token_or_invalid_identity_stops_before_network(self):
+        for repository, tag, token in [("", TAG, "fixture"), ("owner/repo/other", TAG, "fixture"),
+                                       ("owner/repo", "main", "fixture"), ("owner/repo", TAG, "")]:
+            with self.subTest(repository=repository, tag=tag), patch.dict(os.environ, {"GH_TOKEN": token}), \
+                    patch.object(assets.subprocess, "run") as run, self.assertRaises(ValueError):
+                assets.check_release_assets(repository, tag)
+            run.assert_not_called()
+
+    def test_lookup_error_returns_nonzero_without_echoing_cli_stderr(self):
+        with patch("sys.argv", ["check", TAG]), \
+                patch.object(assets, "check_release_assets", side_effect=subprocess.CalledProcessError(
+                    1, ["gh"], stderr="private account details")), contextlib.redirect_stderr(io.StringIO()) as stderr:
+            self.assertEqual(assets.main(), 1)
+        self.assertIn("Refusing CLI publication", stderr.getvalue())
+        self.assertNotIn("private account details", stderr.getvalue())
 
 
 class CLIReleaseTests(unittest.TestCase):

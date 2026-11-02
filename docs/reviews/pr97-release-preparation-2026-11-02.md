@@ -65,9 +65,31 @@ authority, dirty trees, exact dispatch arguments and failed-dispatch propagation
   variable names only. No keys or secrets were read or created.
 - Actual tag push/dispatch/OIDC publication, six governed cross-compiles, and
   Linux/macOS released-client proof have not been run. No new release was cut.
-- Public release reruns can overwrite assets under the existing uploader; the
-  preparation checklist requires inspecting partial publication and explicit
-  recovery rather than silently replacing distributed binaries.
+- At the initial preparation head, public release reruns could overwrite assets
+  under the uploader default. The review follow-up below adds enforcement.
 
 The [release checklist and draft notes](../cli-release-preparation.md) describe
 the remaining merge, configuration, publication and acceptance sequence.
+
+## Review follow-up: refuse existing assets
+
+The P2 finding against `55b4ca4` correctly identified that concurrency only
+serialized runs, while the uploader still allowed replacement. The publication
+workflow now runs an authenticated, fully paginated release inventory check
+before any build and immediately before upload. Any asset on the exact tag,
+including draft or partial uploads, rejects publication. Empty releases and new
+tags can proceed; API errors, authentication failures, timeouts, malformed or
+ambiguous metadata, and missing asset inventories fail closed. The uploader also
+sets `overwrite_files: false` to prevent replacement if a conflicting asset
+appears after the final check. The guards and concurrency govern this workflow;
+they do not revoke a repository administrator's independent API write access.
+
+Seven added tests cover new/empty releases, all asset kinds in published/draft
+releases and later pages (16 combinations), assets appearing between checks,
+invalid inventories, HTTP 401/403/404/429/500, timeout/missing CLI, missing token
+or invalid identity, and nonzero error reporting without CLI stderr disclosure.
+All 14 release-boundary tests pass under Python 3.12 and 3.14. Workflow lint
+passes with actionlint v1.7.12 (shellcheck/pyflakes integrations disabled), whose
+action metadata recognizes the supported `overwrite_files` input; Markdown lint
+and diff checks also pass. These are
+deterministic fixtures, with no live release or attestation operations.

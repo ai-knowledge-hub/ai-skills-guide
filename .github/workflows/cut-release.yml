@@ -23,10 +23,12 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   cut-release:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
@@ -156,9 +158,18 @@ jobs:
 
       - name: Push release tag
         if: ${{ !inputs.dry_run }}
+        env:
+          RELEASE_TAG: ${{ steps.version.outputs.next_tag }}
         run: |
-          git tag "${{ steps.version.outputs.next_tag }}"
-          git push origin "${{ steps.version.outputs.next_tag }}"
+          git tag "$RELEASE_TAG"
+          git push origin "refs/tags/$RELEASE_TAG"
+
+      - name: Dispatch publication at the exact tag
+        if: ${{ !inputs.dry_run }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.version.outputs.next_tag }}
+        run: bash scripts/dispatch-cli-release.sh "$RELEASE_TAG"
 
       - name: Dry-run summary
         if: ${{ inputs.dry_run }}

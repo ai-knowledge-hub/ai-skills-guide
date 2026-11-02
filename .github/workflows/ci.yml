@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Test CLI release source and dispatch boundaries
+        run: python3 -m unittest discover -s scripts/tests -p 'test_cli_release.py'
       - name: Run deterministic skill script checks
         run: bash scripts/test-skill-scripts.sh
 

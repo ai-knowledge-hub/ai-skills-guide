@@ -93,3 +93,29 @@ passes with actionlint v1.7.12 (shellcheck/pyflakes integrations disabled), whos
 action metadata recognizes the supported `overwrite_files` input; Markdown lint
 and diff checks also pass. These are
 deterministic fixtures, with no live release or attestation operations.
+
+## Review follow-up: external writer race
+
+The P2 finding against `9dcc439` correctly identified that the upload action
+could skip a colliding name and continue after the last check. The workflow now
+uses a repository-owned publisher with create-only API uploads. It creates a new
+draft, never adopts an existing release, and binds every upload to that draft's
+release ID. A collision's HTTP 422 fails immediately, leaving external bytes
+unchanged and preventing the publish step. There is no overwrite, deletion or
+automatic retry path. The preflight also rejects empty release records now.
+
+All eight successful upload responses must match local names, sizes and digests,
+with unique server asset IDs. The complete server inventory is checked against
+those identities before publication, and the publish response is validated before
+reporting success. Failures retain the draft. An uncertain final publish write
+requires inspection; separate API calls are not a transaction against arbitrary
+administrator mutations.
+
+All 25 release-boundary tests pass under Python 3.12 and 3.14. The independent API
+model injects an external same-name upload at each of eight upload positions:
+8/8 cases fail with no later upload, publish or delete; external bytes survive.
+It also covers release-creation conflict, changed/extra/missing/replaced assets,
+altered draft identity/state, invalid local files/checksums, HTTP 422 propagation
+without retry, raw upload bytes and required HTTP 201, credential-origin checks,
+and ambiguous publish responses. These are local deterministic fixtures; actual
+GitHub draft creation, upload, attestation and publication remain unexecuted.

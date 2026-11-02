@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only publication guard: never reuse a tag that already has release assets."""
+"""Read-only publication guard: require a tag with no existing release record."""
 
 import argparse
 import json
@@ -40,6 +40,7 @@ def check_release_assets(repository, tag):
             raise ValueError("release API did not supply an asset inventory")
         if assets:
             raise ValueError(f"{tag} already has release assets; use a new version instead of republishing")
+        raise ValueError(f"{tag} already has a release record; publication requires a new version")
 
 
 def main():
@@ -53,7 +54,7 @@ def main():
         message = str(error) if isinstance(error, ValueError) else "release API lookup failed"
         print(f"Refusing CLI publication: {message}", file=sys.stderr)
         return 1
-    print(f"No existing release assets for {args.tag}; publication may proceed")
+    print(f"No existing release record for {args.tag}; draft creation may proceed")
     return 0
 
 

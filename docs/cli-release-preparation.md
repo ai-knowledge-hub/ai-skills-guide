@@ -67,12 +67,19 @@ describes the exception for explicit dispatches. `Cut Release` now has the
 Wait for **Release On Tag** itself to succeed; an accepted dispatch is not
 publication success. It rejects a branch ref, malformed/missing tag, mismatched
 source or checkout, unmerged tagged source, or dirty checkout. An authenticated,
-paginated release lookup rejects any existing assets for the tag, including
-draft or partial uploads. Lookup failures stop publication. The guard runs before
-building and again immediately before upload; the uploader also disables
-overwriting same-name assets. It runs the Go
-suite, builds governed binaries, attests their digests, and uploads the assets.
+paginated release lookup rejects any existing release record for the tag,
+including an empty draft or partial upload. Lookup failures stop publication.
+The guard runs before building and again immediately before draft creation.
+The workflow runs the Go suite, builds governed binaries, attests their digests,
+then creates a fresh draft and uploads to its specific release ID.
 Per-tag concurrency serializes publication runs.
+
+The publisher uses create-only upload API calls. A conflicting asset produces
+HTTP 422 and fails the run; it is never skipped, replaced or deleted. All eight
+uploads must return matching names, byte counts, digests and unique IDs. The
+draft's complete asset inventory must match before publication, and the final
+publish response is checked before reporting success. Existing releases are
+never adopted. See [GitHub's upload API contract](https://docs.github.com/en/rest/releases/assets#upload-a-release-asset).
 
 For `v0.4.0-alpha.1`, expect these eight release assets:
 
@@ -125,14 +132,18 @@ gh workflow run release-on-tag.yml \
 
 The tag must still point to the reviewed commit integrated into `main`. Do not
 move a public tag, use a branch ref, or rebuild an old tag from newer source.
-Before retrying publication, inspect existing assets: the workflow can
-only proceed if the tag has no release assets. The workflow refuses any existing
-asset, including a partial draft, and disables same-name overwrites. An empty
-release or a tag with no release record can be retried; API/authentication errors
-cannot be treated as an empty release. If a release is partial or incorrect,
-use a new version for corrected artifacts; do not delete assets to bypass the
-guard or silently replace distributed binaries. Correct code/workflow changes
-require a new tag.
+Retry the same tag only if no release record was created. The workflow refuses
+existing records, including empty or partial drafts. A release created by another
+writer is never reused. An upload conflict stops the run and leaves the draft
+unpublished, without skipping files, replacing assets or deleting another
+writer's data. Inspect the retained draft and use a new version after a partial
+write; do not delete assets to bypass the guard.
+
+There are no automatic write retries or cleanup. A failed/timed-out final publish
+request can have an ambiguous outcome: inspect GitHub before taking further
+action. The guards do not remove administrators' independent release-write
+authority or turn the multi-request API into a transaction. Correct code/workflow
+changes require a new tag.
 
 If published-install verification fails after publication, retain its report,
 keep #52 open, and investigate the failed stage before making installability

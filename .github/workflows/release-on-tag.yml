@@ -37,7 +37,7 @@ jobs:
         run: |
           test "$GITHUB_REF" = "refs/tags/$RELEASE_TAG"
           bash scripts/verify-cli-release-source.sh "$RELEASE_TAG" "$RELEASE_COMMIT"
-      - name: Refuse existing release assets before building
+      - name: Refuse existing release records before building
         env:
           GH_TOKEN: ${{ github.token }}
         run: python3 scripts/check-cli-release-assets.py "$RELEASE_TAG"
@@ -58,17 +58,11 @@ jobs:
         env:
           PROVENANCE_BUNDLE: ${{ steps.attest.outputs.bundle-path }}
         run: cp "$PROVENANCE_BUNDLE" "dist/skills-hub_${RELEASE_TAG}_provenance.json"
-      - name: Recheck release assets immediately before upload
+      - name: Recheck release records immediately before draft creation
         env:
           GH_TOKEN: ${{ github.token }}
         run: python3 scripts/check-cli-release-assets.py "$RELEASE_TAG"
       - name: Publish GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          target_commitish: ${{ github.sha }}
-          generate_release_notes: true
-          prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
-          fail_on_unmatched_files: true
-          overwrite_files: false
-          files: dist/*
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/publish-cli-release.py "$RELEASE_TAG" "$RELEASE_COMMIT" dist

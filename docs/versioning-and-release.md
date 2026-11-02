@@ -49,7 +49,13 @@ Recommended flow:
 
 The workflow runs validation, rebuilds the registry, checks generated files,
 installs the web app, lints it, builds it, and then pushes the computed tag.
-The tag push triggers `.github/workflows/release-on-tag.yml`.
+It then explicitly dispatches `.github/workflows/release-on-tag.yml` **at that
+tag**. A push made with the workflow's `GITHUB_TOKEN` does not trigger another
+push workflow. The explicit dispatch needs `actions: write`; it keeps the
+publication and its provenance on `refs/tags/<version>`.
+
+See the [CLI release preparation checklist](cli-release-preparation.md) for
+governed public-key inputs, expected assets, recovery and published-install proof.
 
 ## Release type definitions
 
@@ -115,7 +121,15 @@ to include local Playwright smoke tests before tagging.
 
 When a `v*` tag is pushed, GitHub Actions workflow
 `.github/workflows/release-on-tag.yml` automatically publishes a release
-entry with generated notes.
+entry with generated notes when that push can trigger Actions. `Cut Release`
+uses an explicit dispatch instead, as described above. A maintainer can also
+dispatch `Release On Tag` at an existing prepared tag for recovery.
+
+Publication requires a clean checkout whose HEAD and expected source commit
+match the exact tag, and whose tagged commit is integrated into `origin/main`.
+Branch dispatches and unmerged feature tags are rejected. The existing governed
+builder requires all three runtime public roots before producing six platform
+binaries and `SHA256SUMS`; the workflow adds a signed provenance bundle.
 
 Tags containing `-alpha`, `-beta`, or `-rc` are marked as prerelease.
 

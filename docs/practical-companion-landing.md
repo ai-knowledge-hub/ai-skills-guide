@@ -149,3 +149,42 @@ sizes: 1000×768, 1024×768, 1440×900, 1600×900, 1920×1080, 390×844, 768×10
 central half. No page exceptions were observed.
 
 [Home, light](reviews/oval-artwork-2026-11-02/home-1440-light.jpg) · [Skills, dark](reviews/oval-artwork-2026-11-02/skills-1440-dark.jpg)
+
+## Shared Library frame — 2 November 2026
+
+The owner approved aligning the companion's frame with the publication Library.
+The masthead now spans the viewport, with a 27px desktop wordmark and the four
+catalogue navigation links. “The open-source catalogue” moves into Home's
+introduction. Home retains its smaller “Put the ideas to work” heading.
+
+Catalogue pages use a larger white title plate, overlapping the desktop rail by
+48px. Introductions, filters, result counts, entries and the footer share the
+reading edge. The footer border spans the viewport; its content follows the
+rail on catalogue routes and retains the normal page gutter on detail pages.
+Compact and portrait catalogues use a full-width artwork band with a 32px title
+overlap and a solid reading surface below it. The band is 180px tall on phones
+and 240px on larger compact layouts; Home retains its shallow existing band.
+
+The selected desktop oval crop (`81% center`), 24vw rail (380px maximum), artwork
+bytes, module navigation, filters, install commands, article relationships and
+readiness information remain in place. This changes layout and introductory
+placement; it adds no runtime request, dependency or theme-state writer.
+
+Verification against the local Node 20 production build:
+
+- Build, lint/types and Markdown/diff checks pass.
+- All 33 existing browser tests pass, including keyboard navigation, readable
+  but write-blocked theme storage, filters, copy feedback and article links.
+  The rail/footer regression also passes after the final compact-footer fix.
+- 80 artwork/reflow views cover Home and the four catalogues in both themes;
+  the selected oval remains inside the rail's central half in all 50 rail views.
+- 144 additional views cover Home, the four catalogues and BigQuery details at
+  12 viewport sizes, from 320px through 1920px, including wide portrait screens.
+  No sampled horizontal overflow or clipped heading text; catalogue
+  introductions, filters, entries and footer retain their shared reading edge.
+- The original artwork and both WebP hashes are unchanged. React review retains
+  server-rendered content, the existing theme/menu logic and semantic links.
+
+Chrome verification is bounded; this is not a cross-browser accessibility audit.
+
+[Home, light](reviews/oval-artwork-2026-11-02/home-1440-light.jpg) · [Skills, dark](reviews/oval-artwork-2026-11-02/skills-1440-dark.jpg) · [Phone catalogue](reviews/oval-artwork-2026-11-02/tools-390-light.jpg) · [Footer](reviews/oval-artwork-2026-11-02/footer-1440-light.jpg)

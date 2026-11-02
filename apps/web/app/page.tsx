@@ -33,7 +33,7 @@ export default async function HomePage() {
       <CatalogueArtwork />
       <div className="companion-content">
         <header className="companion-intro">
-          <p className="eyebrow">AI Knowledge Hub · Practical resources</p>
+          <p className="eyebrow">The open-source catalogue</p>
           <h1>Put the ideas<br />to work.</h1>
           <p>Skills, tools and templates to accompany the publication. Explore the source and adapt the work to your own context.</p>
           <div className="actions">

@@ -1,6 +1,17 @@
 package registry
 
+// CompatibilityRequirement is a maintainer declaration, never test evidence.
+// Version identifiers are exact; ranges and wildcard inference are unsupported.
+type CompatibilityRequirement struct {
+	Kind         string   `json:"kind"`
+	Name         string   `json:"name"`
+	Versions     []string `json:"versions,omitempty"`
+	Capabilities []string `json:"capabilities,omitempty"`
+	Notes        string   `json:"notes,omitempty"`
+}
+
 type Manifest struct {
+	Compatibility        []CompatibilityRequirement    `json:"compatibility,omitempty"`
 	SchemaVersion        string                        `json:"schema_version"`
 	ID                   string                        `json:"id"`
 	Name                 string                        `json:"name"`
@@ -182,6 +193,7 @@ type Index struct {
 }
 
 type SkillEntry struct {
+	Compatibility        []CompatibilityRequirement    `json:"compatibility,omitempty"`
 	SchemaVersion        string                        `json:"schema_version,omitempty"`
 	ID                   string                        `json:"id"`
 	Name                 string                        `json:"name"`

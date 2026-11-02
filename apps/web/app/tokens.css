@@ -1,36 +1,27 @@
+/* Shared brand 0.1.0, captured 24 October 2026. See docs/rebranding.md. */
 :root {
-  --font-ui: "Avenir Next", "Segoe UI", "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
-  --font-code: "SFMono-Regular", "IBM Plex Mono", "Menlo", "Monaco",
-    "Liberation Mono", monospace;
+  color-scheme: dark;
+  --font-ui: Arial, Helvetica, sans-serif;
+  --font-code: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --paper: #000000;
+  --ink: #f4f3ed;
+  --ink-soft: #b5b4b0;
+  --line: #272727;
+  --paper-muted: #111111;
+  --code-bg: #111111;
+  --code-ink: #f4f3ed;
+  --gutter: clamp(20px, 4vw, 64px);
+  --header-height: 82px;
+  --content-width: 1440px;
 }
-
-.theme-brand {
-  --bg: #f3f2ec;
-  --paper: #fffefb;
-  --paper-muted: #f0eee5;
-  --ink: #20242a;
-  --ink-soft: #606974;
-  --line: #d6d1c6;
-  --brand-primary: #0f7b6c;
-  --brand-primary-soft: #d7eee8;
-  --hub-accent: #33d76f;
-  --hub-accent-soft: rgba(51, 215, 111, 0.14);
-  --code-bg: #161a20;
-  --code-ink: #eff4f9;
+:root[data-theme="light"] {
+  color-scheme: light;
+  --paper: #faf9f6;
+  --ink: #171717;
+  --ink-soft: #626262;
+  --line: #deddd9;
+  --paper-muted: #efeeeb;
+  --code-bg: #efeeeb;
+  --code-ink: #171717;
 }
-
-.theme-hybrid {
-  --bg: #060709;
-  --paper: #0c0f14;
-  --paper-muted: #11151d;
-  --ink: #eef1f4;
-  --ink-soft: #9ca6b3;
-  --line: #1f2733;
-  --brand-primary: #12ad98;
-  --brand-primary-soft: #113d38;
-  --hub-accent: #33d76f;
-  --hub-accent-soft: rgba(51, 215, 111, 0.14);
-  --code-bg: #10141c;
-  --code-ink: #f3f7fb;
-}
+@media (max-width: 760px) { :root { --header-height: 72px; } }

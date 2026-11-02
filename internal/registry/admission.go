@@ -14,12 +14,6 @@ import (
 	"time"
 )
 
-const (
-	instructionEvidenceLifetime = 180 * 24 * time.Hour
-	executableEvidenceLifetime  = 90 * 24 * time.Hour
-	authEvidenceLifetime        = 30 * 24 * time.Hour
-)
-
 var semverPattern = regexp.MustCompile(`^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$`)
 var packageIDPattern = regexp.MustCompile(`^[a-z0-9-]+/[a-z0-9-]+$`)
 
@@ -66,10 +60,11 @@ type manifestRecord struct {
 
 // ValidateRepository performs registry-admission checks that need repository
 // context. Schema validation remains a separate CI gate; this function proves
-// package-local paths and the internal dependency graph.
+// package-local paths and the internal dependency graph. Elapsed evidence age
+// does not corrupt source or retained releases; operational admission below
+// still checks observation sanity at use time.
 func ValidateRepository(root string) (int, error) {
 	records := make([]manifestRecord, 0)
-	now := time.Now().UTC()
 	for _, definition := range moduleDefinitions {
 		paths, err := findManifests(filepath.Join(root, definition.directory), definition.manifest)
 		if err != nil {
@@ -80,7 +75,7 @@ func ValidateRepository(root string) (int, error) {
 			if err != nil {
 				return 0, err
 			}
-			if err := validatePackage(path, manifest, now, true, false); err != nil {
+			if err := validatePackage(path, manifest, time.Time{}, false, false); err != nil {
 				return 0, err
 			}
 			records = append(records, manifestRecord{kind: definition.kind, path: path, manifest: manifest})
@@ -92,16 +87,26 @@ func ValidateRepository(root string) (int, error) {
 	return len(records), nil
 }
 
-// ValidatePackageManifest applies the semantic and package-layout admission
-// checks used by registry generation to one extracted package.
+// ValidatePackageManifest applies schema, package-layout, and evidence-observation
+// admission checks to one extracted package before operational use.
 func ValidatePackageManifest(manifestPath string) (Manifest, error) {
-	return validatePackageManifest(manifestPath, time.Now().UTC(), true)
+	return ValidatePackageManifestAt(manifestPath, time.Now())
+}
+
+// ValidatePackageManifestAt applies the same operational admission checks at
+// one explicit evaluation instant. Composite evaluations use this to avoid
+// mixing their supplied clock with the wall clock during nested validation.
+func ValidatePackageManifestAt(manifestPath string, now time.Time) (Manifest, error) {
+	if now.IsZero() {
+		now = time.Now()
+	}
+	return validatePackageManifest(manifestPath, now.UTC(), true)
 }
 
 // ValidateHistoricalPackageManifest verifies immutable package history against
 // its canonical schema and package layout without treating elapsed wall-clock
 // time as corruption. Consumers must still use ValidatePackageManifest when a
-// selected release is installed so readiness evidence is current at use time.
+// selected release is installed; its observation date does not derive readiness.
 func ValidateHistoricalPackageManifest(manifestPath string) (Manifest, error) {
 	return validatePackageManifest(manifestPath, time.Time{}, false)
 }
@@ -151,6 +156,9 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time, requ
 	}
 
 	if strings.HasPrefix(manifest.SchemaVersion, "2.") {
+		if _, err := time.Parse(time.RFC3339, manifest.Verification.LastVerifiedAt); err != nil {
+			return fmt.Errorf("manifest %s has invalid verification timestamp: %w", manifestPath, err)
+		}
 		if err := validateProviderDependencyDeclarations(manifestPath, manifest); err != nil {
 			return err
 		}
@@ -190,8 +198,8 @@ func validatePackage(manifestPath string, manifest Manifest, now time.Time, requ
 		if authenticationIsRequired(manifest) && manifest.Authentication.Status == "none" {
 			return fmt.Errorf("manifest %s requires authentication but declares authentication.status none", manifestPath)
 		}
-		if requireCurrentEvidence && (manifest.Usability.Availability == "usable-now" || manifest.Authentication.Status != "none") {
-			if err := validateFreshEvidence(manifestPath, manifest, now); err != nil {
+		if requireCurrentEvidence {
+			if err := ValidateManifestEvidenceAt(manifestPath, manifest, now); err != nil {
 				return err
 			}
 		}
@@ -460,7 +468,7 @@ func validatePluginArchiveClosure(packageDir, manifestPath string, manifest Mani
 			return fmt.Errorf("manifest %s self-contained closure is missing hook %s", manifestPath, hook)
 		}
 	}
-	if manifest.SchemaVersion == "2.1" || manifest.Artifact.DependencyLock != nil || manifest.Artifact.Checksums != nil || manifest.Artifact.SBOM != nil || manifest.Artifact.Provenance != nil {
+	if manifest.SchemaVersion == "2.1" || manifest.SchemaVersion == "2.2" || manifest.Artifact.DependencyLock != nil || manifest.Artifact.Checksums != nil || manifest.Artifact.SBOM != nil || manifest.Artifact.Provenance != nil {
 		if err := validateArtifactMetadata(packageDir, manifestPath, manifest, now, requireCurrentEvidence); err != nil {
 			return err
 		}
@@ -1092,8 +1100,21 @@ func isExecutableKind(kind string) bool {
 	}
 }
 
-func validateFreshEvidence(manifestPath string, manifest Manifest, now time.Time) error {
-	claim := "requires current runtime evidence"
+// ValidateManifestEvidenceAt rechecks observation sanity on an already
+// admitted manifest, without rerunning artifact checks after runtime compilation.
+// This is not a substitute for schema, layout, identity or integrity admission.
+func ValidateManifestEvidenceAt(manifestPath string, manifest Manifest, now time.Time) error {
+	if !strings.HasPrefix(manifest.SchemaVersion, "2.") || (manifest.Usability.Availability != "usable-now" && manifest.Authentication.Status == "none") {
+		return nil
+	}
+	if now.IsZero() {
+		now = time.Now()
+	}
+	return validateEvidenceObservation(manifestPath, manifest, now.UTC())
+}
+
+func validateEvidenceObservation(manifestPath string, manifest Manifest, now time.Time) error {
+	claim := "requires runtime evidence references"
 	if manifest.Usability.Availability == "usable-now" {
 		claim = "claims usable-now"
 	}
@@ -1106,16 +1127,6 @@ func validateFreshEvidence(manifestPath string, manifest Manifest, now time.Time
 	}
 	if observedAt.After(now.Add(5 * time.Minute)) {
 		return fmt.Errorf("manifest %s %s with a future verification timestamp", manifestPath, claim)
-	}
-	lifetime := instructionEvidenceLifetime
-	if isExecutableKind(manifest.Execution.Kind) {
-		lifetime = executableEvidenceLifetime
-	}
-	if manifest.Authentication.Status != "none" {
-		lifetime = authEvidenceLifetime
-	}
-	if now.Sub(observedAt) > lifetime {
-		return fmt.Errorf("manifest %s %s with evidence older than %s", manifestPath, claim, lifetime)
 	}
 	return nil
 }

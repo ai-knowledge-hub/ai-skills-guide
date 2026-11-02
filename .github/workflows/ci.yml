@@ -17,8 +17,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Test CLI release source and dispatch boundaries
+        run: python3 -m unittest discover -s scripts/tests -p 'test_cli_release.py'
       - name: Run deterministic skill script checks
         run: bash scripts/test-skill-scripts.sh
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Test published-install evidence checks with local fixtures
+        run: python3 -m unittest discover -s scripts/tests -p 'test_published_install.py'
 
   manifest-schemas:
     runs-on: ubuntu-latest
@@ -30,11 +38,11 @@ jobs:
           cache: true
       - name: Install check-jsonschema
         run: python3 -m pip install --upgrade pip "check-jsonschema==0.37.0"
-      - name: Run manifest and registry contract tests
+      - name: Test structural contracts and runtime freshness enforcement
         run: make cli-test
       - name: Build CLI with an explicit test-only runtime trust root
         run: make cli-build-test
-      - name: Generate registry index
+      - name: Generate canonical registry indexes
         run: make registry
       - name: Validate manifests and registry schemas
         run: bash scripts/validate-manifests.sh

@@ -1,4 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { catalogueCompatibility } from "../lib/catalogueCompatibility";
+import { loadRegistry } from "../lib/registry";
+import { latestToolPageNotes } from "./catalogue-page-notes";
 
 const sampleSkillPath = "/skills/marketing/meta-google-weekly-performance-review";
 const sampleAgentPath = "/agents/marketing/weekly-performance-supervisor";
@@ -14,10 +17,10 @@ test("home route smoke", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Skills", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Agents", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Plugins", exact: true })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Tools & MCP" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Tools & MCP", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Explore skills" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Know what you are installing" })).toBeVisible();
-  await expect(page.getByText("Not verified", { exact: true })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Know what you are installing" }).getByText("Not verified", { exact: true })).toBeVisible();
 });
 
 test("skills route filter interaction smoke", async ({ page }) => {
@@ -31,7 +34,7 @@ test("skill detail copy-button smoke", async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "clipboard", {
       configurable: true,
-      value: { writeText: async () => {} }
+      value: { writeText: async (value: string) => { (window as Window & { __copiedCommand?: string }).__copiedCommand = value; } }
     });
   });
 
@@ -40,7 +43,7 @@ test("skill detail copy-button smoke", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "How You Can Use This" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Outputs" })).toBeVisible();
   await expect(page.getByText("may-run-local-verification")).toBeVisible();
-  await expect(page.getByText("Documentation", { exact: true })).toBeVisible();
+  await expect(page.locator("#usability").getByText("Documentation", { exact: true })).toBeVisible();
   await expect(page.getByText("Instruction package only", { exact: false })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Packaged executable helpers" })).toBeVisible();
   await expect(page.getByText("scripts/compute_metrics.py", { exact: true })).toBeVisible();
@@ -49,6 +52,10 @@ test("skill detail copy-button smoke", async ({ page }) => {
 
   await expect(copyButtons).toHaveCount(3);
   await expect(copyButtons.first()).toHaveText("Copy");
+  const command = await page.locator("pre.install").first().textContent();
+  await copyButtons.first().click();
+  await expect(copyButtons.first()).toHaveText("Copied");
+  await expect.poll(() => page.evaluate(() => (window as Window & { __copiedCommand?: string }).__copiedCommand)).toBe(command);
 });
 
 test("agents route and detail smoke", async ({ page }) => {
@@ -128,9 +135,13 @@ test("effectful plugin capabilities remain independently projected", async ({ pa
   await expect(readiness.getByRole("heading", { name: "Mock lab" })).toBeVisible();
   await expect(readiness.getByRole("heading", { name: "Live read" })).toBeVisible();
   await expect(readiness.getByRole("heading", { name: "Live write" })).toBeVisible();
-  await expect(readiness.getByText("usable-now", { exact: false })).toBeVisible();
-  await expect(readiness.getByText("setup-required", { exact: false })).toBeVisible();
-  await expect(readiness.getByText("not-verified", { exact: false })).toBeVisible();
+  for (const name of ["Mock lab", "Live read", "Live write"]) {
+    const capability = readiness.locator("section").filter({ has: page.getByRole("heading", { name, exact: true }) });
+    await expect(capability.getByText("Status: not-verified", { exact: false })).toBeVisible();
+  }
+  await expect(readiness.getByText("Status: usable-now", { exact: false })).toHaveCount(0);
+  await expect(readiness.getByText("Status: setup-required", { exact: false })).toHaveCount(0);
+  await expect(page.locator("#usability .usability-badge").first()).toHaveText("Not verified");
   await expect(readiness.getByText("No supported OpenAI Ads mutation adapter", { exact: false })).toBeVisible();
 });
 
@@ -151,4 +162,307 @@ test("tools route and detail smoke", async ({ page }) => {
   await expect(ga4Usability.getByText("GA4_CREDENTIAL runtime binding", { exact: false })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Install (Codex)" })).toBeVisible();
   await expect(page.locator(".copy-button")).toHaveCount(3);
+});
+
+test("catalogue filters survive reload and detail navigation, then recover from no results", async ({ page }) => {
+  await page.goto("/skills");
+  const total = await page.locator(".results-count").textContent();
+  await page.getByRole("searchbox", { name: "Search the catalogue" }).fill("weekly");
+  await expect(page).toHaveURL(/q=weekly/);
+  await page.getByRole("button", { name: "Runtime", exact: true }).click();
+  await page.getByRole("checkbox", { name: "codex", exact: true }).check();
+  await page.getByRole("checkbox", { name: "claude", exact: true }).check();
+  await expect.poll(() => new URL(page.url()).searchParams.getAll("runtime")).toEqual(["codex", "claude"]);
+  await page.getByRole("checkbox", { name: "claude", exact: true }).press("Escape");
+  await expect(page.getByRole("button", { name: "Runtime", exact: true })).toBeFocused();
+  await page.getByRole("button", { name: "Remove runtime codex", exact: true }).click();
+  await page.reload();
+  await expect(page.getByRole("searchbox")).toHaveValue("weekly");
+  await expect(page.getByRole("button", { name: "Remove runtime claude", exact: true })).toBeVisible();
+  await page.getByRole("link", { name: /Meta \+ Google Weekly Performance Review/ }).click();
+  await expect(page).toHaveURL(new RegExp(sampleSkillPath));
+  await expect(page.getByRole("heading", { name: "Meta + Google Weekly Performance Review", exact: true })).toBeVisible();
+  await page.goBack();
+  await expect(page).toHaveURL(/q=weekly/);
+  await expect(page.getByRole("searchbox")).toHaveValue("weekly");
+  await expect(page.getByRole("button", { name: "Remove runtime claude", exact: true })).toBeVisible();
+  await page.getByRole("searchbox").fill("no-matching-package-987654");
+  await expect(page.getByRole("heading", { name: "No matching entries" })).toBeVisible();
+  await page.getByRole("button", { name: "Clear search and filters" }).click();
+  await expect(page.getByRole("searchbox")).toHaveValue("");
+  await expect(page.locator(".results-count")).toHaveText(total!);
+  await expect(page).toHaveURL(/\/skills$/);
+});
+
+test("deep links retain combined domain, tag and runtime selections", async ({ page }) => {
+  await page.goto("/skills?q=weekly&category=marketing-tools&tag=paid-media&runtime=claude");
+  await expect(page.getByRole("link", { name: /Meta \+ Google Weekly Performance Review/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Remove category marketing-tools" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Remove tag paid-media" })).toBeVisible();
+  await page.getByRole("button", { name: "Domain", exact: true }).click();
+  await expect(page.getByRole("checkbox", { name: "Marketing Tools", exact: true })).toBeChecked();
+  await page.getByRole("button", { name: "Clear domain" }).click();
+  await expect.poll(() => new URL(page.url()).searchParams.has("category")).toBe(false);
+  await expect.poll(() => new URL(page.url()).searchParams.get("tag")).toBe("paid-media");
+  await page.getByRole("button", { name: "Done", exact: true }).click();
+  await page.getByRole("button", { name: "Reset Filters" }).click();
+  await expect(page).toHaveURL(/\/skills$/);
+});
+
+test("theme preference survives navigation and reload", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Switch to light mode" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.getByRole("link", { name: "Explore skills", exact: true }).click();
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await page.getByRole("button", { name: "Switch to dark mode" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+});
+
+for (const saved of ["dark", "light"] as const) {
+  test(`theme choice survives navigation when saved ${saved} storage is readable but writes fail`, async ({ page }) => {
+    const selected = saved === "dark" ? "light" : "dark";
+    await page.addInitScript(saved => localStorage.setItem("skills-hub-theme", saved), saved);
+    await page.goto("/");
+    await expect(page.getByRole("button", { name: `Switch to ${selected} mode` })).toBeVisible();
+    await page.evaluate(() => {
+      Storage.prototype.setItem = () => { throw new DOMException("Storage full", "QuotaExceededError"); };
+    });
+    await page.getByRole("button", { name: `Switch to ${selected} mode` }).click();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", selected);
+    const documentOrigin = await page.evaluate(() => performance.timeOrigin);
+    await page.getByRole("navigation", { name: "Main navigation", exact: true }).getByRole("link", { name: "Skills", exact: true }).click();
+    await expect(page).toHaveURL(/\/skills$/);
+    expect(await page.evaluate(() => performance.timeOrigin)).toBe(documentOrigin);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", selected);
+    await page.locator(".catalog-card").first().getByRole("link").first().click();
+    await expect(page.locator("pre.install").first()).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", selected);
+    await page.goBack();
+    await expect(page).toHaveURL(/\/skills$/);
+    await expect(page.getByRole("button", { name: `Switch to ${saved} mode` })).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", selected);
+    expect(await page.evaluate(() => localStorage.getItem("skills-hub-theme"))).toBe(saved);
+    // A new document can only restore the persisted value; the failed write
+    // promises session continuity, not persistence across reloads.
+    await page.reload();
+    await expect(page.getByRole("button", { name: `Switch to ${selected} mode` })).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute("data-theme", saved);
+  });
+}
+
+test("theme changes from another tab survive subsequent navigation", async ({ page, context }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Switch to light mode" }).click();
+  const otherTab = await context.newPage();
+  await otherTab.goto("/");
+  await otherTab.getByRole("button", { name: "Switch to dark mode" }).click();
+  await expect(page.getByRole("button", { name: "Switch to light mode" })).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.getByRole("navigation", { name: "Main navigation", exact: true }).getByRole("link", { name: "Skills", exact: true }).click();
+  await expect(page).toHaveURL(/\/skills$/);
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await otherTab.close();
+});
+
+test("storage and clipboard failures leave a usable page with truthful feedback", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(window, "localStorage", { get: () => { throw new Error("Storage blocked"); } });
+    Object.defineProperty(navigator, "clipboard", { configurable: true, value: { writeText: async () => { throw new Error("Clipboard blocked"); } } });
+  });
+  await page.goto(sampleSkillPath);
+  await page.getByRole("button", { name: "Switch to light mode" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  const copy = page.getByRole("button", { name: "Copy codex installation command" });
+  await copy.click();
+  await expect(page.getByText("Clipboard unavailable. Select and copy the command above.")).toBeVisible();
+  await expect(copy).toHaveText("Copy");
+  await expect(page.locator("pre.install").first()).toContainText("skills-hub install");
+});
+
+test("phone navigation works by keyboard and representative pages reflow at 320px", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 780 });
+  await page.goto("/");
+  const menu = page.locator(".mobile-menu summary");
+  await menu.focus();
+  await menu.press("Enter");
+  await expect(page.locator(".mobile-menu")).toHaveAttribute("open", "");
+  await menu.press("Escape");
+  await expect(page.locator(".mobile-menu")).not.toHaveAttribute("open", "");
+  await expect(menu).toBeFocused();
+  for (const route of ["/", "/skills", sampleSkillPath, "/plugins", sampleToolPath]) {
+    await page.goto(route);
+    await expect(page.locator("main h1")).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  }
+});
+
+test("open filter menus stay within the viewport across catalogue breakpoints", async ({ page }) => {
+  const menu = page.locator(".filter-menu");
+  async function expectMenuToFit(context: string) {
+    await expect(menu).toBeVisible();
+    await expect.poll(() => menu.evaluate(el => {
+      const bounds = el.getBoundingClientRect();
+      const viewport = document.documentElement.clientWidth;
+      return bounds.left >= 0 && bounds.right <= viewport
+        && document.documentElement.scrollWidth <= viewport
+        && el.scrollWidth <= el.clientWidth;
+    }), { message: `${context} must not create horizontal overflow` }).toBe(true);
+  }
+  for (const route of ["/skills", "/agents", "/plugins", "/tools-mcp"]) {
+    await page.goto(route);
+    const widths = route === "/skills" ? [320, 390, 760, 761, 768, 1024, 1150, 1151, 1280] : [320, 768];
+    for (const width of widths) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const filter of ["Domain", "Tag", "Runtime"]) {
+        const trigger = page.getByRole("button", { name: filter, exact: true });
+        await trigger.click();
+        await expectMenuToFit(`${route}: ${filter} at ${width}px`);
+        await menu.getByRole("button", { name: "Done", exact: true }).click();
+        await expect(trigger).toBeFocused();
+      }
+    }
+  }
+  // Reposition an already-open menu when the grid crosses its breakpoints.
+  for (const filter of ["Domain", "Tag", "Runtime"]) {
+    await page.getByRole("button", { name: filter, exact: true }).click();
+    for (const width of [1280, 320, 768]) {
+      await page.setViewportSize({ width, height: 900 });
+      await expectMenuToFit(`Resizing open ${filter} to ${width}px`);
+    }
+    await menu.getByRole("button", { name: "Done", exact: true }).click();
+  }
+});
+
+test("desktop catalogue rail stays at the page edge and stops before the footer", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const route of ["/", "/skills", "/agents", "/plugins", "/tools-mcp"]) {
+    await page.goto(route);
+    const rail = page.locator(".catalogue-artwork-panel");
+    await expect(rail).toBeVisible();
+    await expect.poll(() => page.evaluate(() => {
+      const rail = document.querySelector(".catalogue-artwork-panel")!.getBoundingClientRect();
+      const header = document.querySelector(".site-header")!.getBoundingClientRect();
+      const reading = document.querySelector(".catalogue-content, .companion-content")!.getBoundingClientRect();
+      return Math.abs(rail.left) < 1 && Math.abs(rail.top - header.bottom) < 1
+        && Math.abs(rail.bottom - window.innerHeight) < 1 && Math.abs(reading.left - rail.right) < 1;
+    })).toBe(true);
+    await page.evaluate(() => window.scrollTo(0, 500));
+    await expect.poll(() => page.evaluate(() => {
+      const rail = document.querySelector(".catalogue-artwork-panel")!.getBoundingClientRect();
+      const header = document.querySelector(".site-header")!.getBoundingClientRect();
+      return Math.abs(rail.top - header.bottom) < 1;
+    })).toBe(true);
+    await page.locator(".site-footer").scrollIntoViewIfNeeded();
+    await expect.poll(() => page.evaluate(() => {
+      const rail = document.querySelector(".catalogue-artwork-panel")!.getBoundingClientRect();
+      const footer = document.querySelector(".site-footer")!.getBoundingClientRect();
+      return rail.bottom <= footer.top + 1;
+    })).toBe(true);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  }
+  // Short filtered lists also contain the rail before the footer.
+  await page.goto("/skills?q=no-matching-package-987654");
+  await expect(page.getByRole("heading", { name: "No matching entries" })).toBeVisible();
+  await page.locator(".site-footer").scrollIntoViewIfNeeded();
+  expect(await page.evaluate(() => document.querySelector(".catalogue-artwork-panel")!.getBoundingClientRect().bottom <= document.querySelector(".site-footer")!.getBoundingClientRect().top + 1)).toBe(true);
+  for (const size of [{ width: 390, height: 844 }, { width: 1100, height: 1450 }]) {
+    await page.setViewportSize(size);
+    await expect(page.locator(".catalogue-artwork")).toBeHidden();
+    expect(await page.locator(".catalogue-heading").evaluate(el => getComputedStyle(el, "::before").content)).not.toBe("none");
+  }
+});
+
+test("legacy details report unknown compatibility without inferring support", async ({ page }) => {
+  for (const route of [sampleSkillPath, sampleAgentPath, samplePluginPath, "/tools-mcp/adtech/openai-ads-adapter-template"]) {
+    await page.goto(route);
+    await expect(page.getByRole("heading", { name: "Declared compatibility", exact: true })).toBeVisible();
+    await expect(page.getByText("Compatibility unknown: versions and capabilities have not been declared.", { exact: true })).toBeVisible();
+  }
+});
+
+test("reviewed tool pages disclose notes, limits and provenance without promoting readiness", async ({ page }) => {
+  const tools = await loadRegistry("tools");
+  for (const note of latestToolPageNotes(tools.skills, catalogueCompatibility)) {
+    await page.goto(`/tools-mcp/${note.id}`);
+    const panel = page.locator("#usability");
+    await expect(panel.getByText(`Maintainer-reviewed information for version ${note.version} · Reviewed ${note.reviewed}. This is not a live provider check.`, { exact: true })).toBeVisible();
+    for (const detail of [...note.details, ...note.limitations]) {
+      await expect(panel.getByText(detail, { exact: true })).toBeVisible();
+    }
+    await expect(panel.getByRole("link", { name: note.source.label, exact: true })).toHaveAttribute("href", note.source.url);
+    await expect(panel.getByText("Compatibility unknown:", { exact: false })).toHaveCount(0);
+  }
+  await page.goto("/tools-mcp/adtech/conversion-event-reconciler");
+  await expect(page.locator("#usability").getByText("Not verified", { exact: true })).toBeVisible();
+});
+
+
+test("plugin listing and detail render current readiness rather than retained declarations", async ({ page }) => {
+  await page.goto("/plugins");
+  const plugin = page.locator(".catalog-card").filter({ has: page.getByRole("heading", { name: "Code Maintenance Plugin", exact: true }) });
+  await expect(plugin.locator(".usability-badge")).toHaveText("Not verified");
+  await plugin.getByRole("link", { name: /Code Maintenance Plugin/ }).click();
+  await expect(page.locator("#usability .usability-badge").first()).toHaveText("Not verified");
+});
+
+for (const theme of ["light", "dark"] as const) {
+  test(`saved ${theme} theme survives missing-entry pages and recovery`, async ({ page }) => {
+    await page.addInitScript(theme => localStorage.setItem("skills-hub-theme", theme), theme);
+    for (const route of ["/skills/qa81-missing", "/agents/qa81-missing", "/plugins/qa81-missing", "/tools-mcp/qa81-missing", "/qa81-missing"]) {
+      const response = await page.goto(route);
+      expect(response?.status(), route).toBe(404);
+      await expect(page.getByRole("heading", { name: "Item not found" })).toBeVisible();
+      // The control must reflect the restored preference after hydration;
+      // observing the bootstrap script's transient attribute is insufficient.
+      await expect(page.getByRole("button", { name: `Switch to ${theme === "light" ? "dark" : "light"} mode` })).toBeVisible();
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+      await page.getByRole("link", { name: "Home", exact: true }).click();
+      await expect(page).toHaveURL(/\/$/);
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    }
+  });
+}
+
+test("catalogue downloads only the artwork used by its active layout", async ({ page }) => {
+  for (const width of [1440, 390]) {
+    await page.goto("about:blank");
+    await page.setViewportSize({ width, height: 1000 });
+    for (const route of ["/", "/skills", "/agents", "/plugins", "/tools-mcp"]) {
+      await page.goto(route, { waitUntil: "networkidle" });
+      const artwork = await page.evaluate(() => performance.getEntriesByType("resource")
+        .map(resource => new URL(resource.name).pathname)
+        .filter(path => /^\/brand\/(community|entrance|folded-field)-.*\.webp$/.test(path)));
+      expect(artwork, `${route} at ${width}px`).toEqual([width === 1440 ? "/brand/folded-field-1600.webp" : "/brand/folded-field-960.webp"]);
+    }
+  }
+});
+
+test("publication paths lead to related resources and back to the reviewed article without changing readiness", async ({ page }) => {
+  // Reviewed against the three published guides; this inventory does not use
+  // the production mapping to calculate its own expected destinations.
+  const pairs = [
+    ["/skills/marketing/meta-google-weekly-performance-review", "agent-architect-playbook-building-ai-skills-marketing-adtech"],
+    ["/skills/marketing/ai-output-eval-scorecard", "agent-architect-playbook-building-ai-skills-marketing-adtech"],
+    ["/tools-mcp/analytics/ga4-mcp-connector", "muscles-of-the-machine-tools-mcp-cli-first-principles-marketing"],
+    ["/tools-mcp/warehouse/bigquery-mcp-query-runner", "muscles-of-the-machine-tools-mcp-cli-first-principles-marketing"],
+    ["/skills/security/ad-platform-agent-auth-review", "building-secure-marketing-agents-ad-platform-authentication-architecture"],
+    ["/skills/agentops/ad-platform-policy-gate-designer", "building-secure-marketing-agents-ad-platform-authentication-architecture"],
+    ["/tools-mcp/adtech/ad-platform-executor-template", "building-secure-marketing-agents-ad-platform-authentication-architecture"]
+  ];
+  for (const [resource, article] of pairs) {
+    await page.goto("/");
+    const paths = page.getByRole("region", { name: "From reading to practice" });
+    const articleURL = `https://ai-knowledge-hub.org/library/${article}/`;
+    await expect(paths.locator(`a[href="${articleURL}"]`)).toBeVisible();
+    await paths.locator(`a[href="${resource}"]`).click();
+    await expect(page).toHaveURL(new RegExp(`${resource}$`));
+    await page.getByRole("link", { name: "Related reading", exact: true }).click();
+    await expect(page.locator("#related-reading")).toBeVisible();
+    await expect(page.locator(`#related-reading a[href="${articleURL}"]`)).toBeVisible();
+    await expect(page.locator("#usability .usability-badge").first()).toHaveText(resource.startsWith("/skills/") ? "Documentation" : "Setup required");
+  }
+  await page.goto("/skills/engineering/implementation-strategy");
+  await expect(page.getByRole("heading", { name: "Related reading", exact: true })).toHaveCount(0);
 });

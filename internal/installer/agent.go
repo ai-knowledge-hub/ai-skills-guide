@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
 )
@@ -43,8 +44,12 @@ type compiledAgentBinding struct {
 // The manifest contract remains authoritative; registry latest pointers may not
 // silently move an agent to a different dependency version.
 func InstallAgentDependencies(entry registry.SkillEntry, runtimeName, agentTargetRoot string, moduleRoots, registryPaths map[string]string, force bool) (DependencyInstallResult, error) {
+	return EvaluationAt(time.Time{}).InstallAgentDependencies(entry, runtimeName, agentTargetRoot, moduleRoots, registryPaths, force)
+}
+
+func (evaluation Evaluation) InstallAgentDependencies(entry registry.SkillEntry, runtimeName, agentTargetRoot string, moduleRoots, registryPaths map[string]string, force bool) (DependencyInstallResult, error) {
 	result := DependencyInstallResult{}
-	bindings, err := PreflightAgentDependencies(entry, runtimeName, agentTargetRoot, moduleRoots, registryPaths)
+	bindings, err := evaluation.PreflightAgentDependencies(entry, runtimeName, agentTargetRoot, moduleRoots, registryPaths)
 	if err != nil {
 		return result, err
 	}
@@ -60,7 +65,7 @@ func InstallAgentDependencies(entry registry.SkillEntry, runtimeName, agentTarge
 		if len(set.ids) == 0 {
 			continue
 		}
-		installed, skipped, members, err := installDependencySet(set.ids, runtimeName, agentTargetRoot, set.module, moduleRoots[set.module], registryPaths[set.module], force)
+		installed, skipped, members, err := evaluation.installDependencySet(set.ids, runtimeName, agentTargetRoot, set.module, moduleRoots[set.module], registryPaths[set.module], force)
 		if err != nil {
 			return result, err
 		}
@@ -78,6 +83,10 @@ func InstallAgentDependencies(entry registry.SkillEntry, runtimeName, agentTarge
 }
 
 func PreflightAgentDependencies(entry registry.SkillEntry, runtimeName, agentTargetRoot string, moduleRoots, registryPaths map[string]string) ([]registry.OrchestrationBinding, error) {
+	return EvaluationAt(time.Time{}).PreflightAgentDependencies(entry, runtimeName, agentTargetRoot, moduleRoots, registryPaths)
+}
+
+func (evaluation Evaluation) PreflightAgentDependencies(entry registry.SkillEntry, runtimeName, agentTargetRoot string, moduleRoots, registryPaths map[string]string) ([]registry.OrchestrationBinding, error) {
 	if entry.Orchestration == nil {
 		return nil, fmt.Errorf("agent %s has no orchestration binding contract", entry.ID)
 	}
@@ -98,7 +107,7 @@ func PreflightAgentDependencies(entry registry.SkillEntry, runtimeName, agentTar
 		if len(set.ids) == 0 {
 			continue
 		}
-		if err := preflightDependencySet(set.ids, runtimeName, agentTargetRoot, set.module, moduleRoots[set.module], registryPaths[set.module]); err != nil {
+		if err := evaluation.preflightDependencySet(set.ids, runtimeName, agentTargetRoot, set.module, moduleRoots[set.module], registryPaths[set.module]); err != nil {
 			return nil, err
 		}
 		if err := verifyPinnedRegistryVersions(bindings, set.kind, registryPaths[set.module]); err != nil {
@@ -169,11 +178,15 @@ func verifyPinnedRegistryVersions(bindings []registry.OrchestrationBinding, kind
 }
 
 func CompileAgentRuntimePackage(agentDir, runtimeName, agentTargetRoot string) (string, error) {
-	return compileAgentRuntimePackage(agentDir, runtimeName, agentTargetRoot, "")
+	return EvaluationAt(time.Time{}).CompileAgentRuntimePackage(agentDir, runtimeName, agentTargetRoot)
 }
 
-func compileAgentRuntimePackage(agentDir, runtimeName, agentTargetRoot, bundledRoot string) (string, error) {
-	manifest, err := registry.ValidatePackageManifest(filepath.Join(agentDir, "agent.yaml"))
+func (evaluation Evaluation) CompileAgentRuntimePackage(agentDir, runtimeName, agentTargetRoot string) (string, error) {
+	return evaluation.compileAgentRuntimePackage(agentDir, runtimeName, agentTargetRoot, "")
+}
+
+func (evaluation Evaluation) compileAgentRuntimePackage(agentDir, runtimeName, agentTargetRoot, bundledRoot string) (string, error) {
+	manifest, err := evaluation.ValidatePackageManifest(filepath.Join(agentDir, "agent.yaml"))
 	if err != nil {
 		return "", fmt.Errorf("validate agent compiler input: %w", err)
 	}

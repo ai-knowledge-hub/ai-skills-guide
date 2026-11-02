@@ -27,7 +27,7 @@
   "properties": {
     "schema_version": { "const": "skills-hub.composite-readiness-evidence/v1" },
     "contract_id": { "const": "operational-readiness" },
-    "contract_version": { "const": "1.0.3" },
+    "contract_version": { "enum": ["1.0.3", "3.0.0"] },
     "entry_id": { "type": "string", "pattern": "^[a-z0-9-]+/[a-z0-9-]+$" },
     "entry_version": { "type": "string", "minLength": 1 },
     "artifact_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },

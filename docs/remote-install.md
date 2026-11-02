@@ -1,5 +1,8 @@
 # Remote package installation
 
+For the bounded clean-client check against an actual published HTTPS registry,
+see [published installation verification](published-install-verification.md).
+
 `skills-hub install` has two intentionally separate source modes.
 
 - `--source local` is the default development path. It reads registry metadata
@@ -78,7 +81,7 @@ Remote installation completes these stages in order:
 6. Verify the archive manifest against the selected version's
    `manifest_sha256`, apply the embedded canonical module schema, then validate
    its admission metadata and on-disk layout, including the selected ID,
-   version, runtime, and current evidence freshness. Version-specific package
+   version, runtime, and evidence-observation sanity. Version-specific package
    metadata comes from that manifest, while entry-level deprecation and
    replacement policy remains authoritative from the current registry. A
    deprecated entry is warned consistently with local installation and cannot

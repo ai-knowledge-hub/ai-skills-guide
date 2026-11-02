@@ -1,0 +1,26 @@
+{
+  "selectedOn": "2026-11-01",
+  "sourceThread": "codex://threads/01a19680-c9e2-7fd0-9f37-2da6ce002e78",
+  "source": "Owner-selected first attachment, preserved unchanged as folded-field-original.png",
+  "sha256": "699561fd7d949d9c49b12bf8e1c83b9ae90b880bc28072ad6bbdb8b0b7d10ac2",
+  "width": 1672,
+  "height": 941,
+  "bytes": 1979031,
+  "generation": {
+    "tool": "built-in image_gen.imagegen",
+    "model": "not exposed",
+    "mode": "reference-based recomposition",
+    "prompt": "Using the supplied image as the essential style and integration reference, create a substantially NEW landscape 16:9 black-and-white Op Art + Keith Haring-inspired artwork. Preserve the reference's naive imperfect human line drawings and how they are absorbed into the patterned field. Recompose the optical field into broad wavy bands with two deep opposing folds: a sweeping concave oval at left and a rising convex bulge at right. The bands curve across the whole frame like a continuous twisted optical fabric, with compressed stripes at folds and broad white lanes in open areas. Full bleed; immersive dense pattern throughout, no blank margins or large empty white field.\nEmbed about 14 expressive human drawings throughout the curved optical lanes, across foreground-sized and smaller distant passages. They should feel drawn directly into the same surface as the stripes. White stripe areas open into bodies and close back into stripes; bold contours cross or merge with adjacent black band edges. Retain clearly legible people while making pattern and people interdependent. Rotate figures with the local optical flow, some sideways and upside-down. Avoid arranging them as a border or as people standing along a road.\nThe people must remain delightfully crude and freehand: wobbling thick black contours, unequal limb lengths, bent elbows and knees at odd angles, round heads with small contour gaps, wonky white torsos, rounded blunt hands without fingers, large awkward feet, little irregular movement rays, occasional crooked lightning marks in bodies. Preserve the raw drawing character of the reference. No smooth standardized icons, polished vector anatomy or detailed human hands. Vary the drawing of every figure.\nPure black and white with clean bold ink contrast; no gray shading, paper texture, color, lettering, logos, signatures, frames or watermark. No prop objects, construction narrative, distinct foreground characters, floating stickers or clean diagram layout. Generate only the finished artwork."
+  },
+  "sourceGeneratedSHA256": "6e17750a607dd2ad7b65ce8b5bf2561d17c2b3e86f2bce7b41734f4907183a73",
+  "attachmentPixelsMatchGeneratedSource": true,
+  "delivery": {
+    "tool": "sharp 0.35.5",
+    "method": "Full-frame width resize; WebP quality 84, effort 6. Display cropping is CSS only.",
+    "widths": [
+      960,
+      1600
+    ]
+  },
+  "treatment": "Static raster. Figures and optical bands are one authored image; no layers, redrawing, animation or runtime image service."
+}

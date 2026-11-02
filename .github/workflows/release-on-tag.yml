@@ -4,6 +4,13 @@ on:
   push:
     tags:
       - "v*"
+  # Cut Release uses GITHUB_TOKEN, whose tag push cannot trigger this workflow.
+  # Dispatch at the tag (not main) to preserve the provenance source ref.
+  workflow_dispatch:
+
+concurrency:
+  group: cli-release-${{ github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -13,6 +20,10 @@ permissions:
 jobs:
   publish-release:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      RELEASE_TAG: ${{ github.ref_name }}
+      RELEASE_COMMIT: ${{ github.sha }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -23,7 +34,13 @@ jobs:
           go-version-file: go.mod
           cache: true
       - name: Verify exact tagged source
-        run: test "$(git rev-list -n 1 '${{ github.ref_name }}')" = "${{ github.sha }}"
+        run: |
+          test "$GITHUB_REF" = "refs/tags/$RELEASE_TAG"
+          bash scripts/verify-cli-release-source.sh "$RELEASE_TAG" "$RELEASE_COMMIT"
+      - name: Refuse existing release records before building
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/check-cli-release-assets.py "$RELEASE_TAG"
       - name: Test governed CLI
         run: make cli-test
       - name: Build governed release binaries and checksums
@@ -31,20 +48,21 @@ jobs:
           CODEX_MODEL_ATTESTATION_PUBLIC_KEY: ${{ vars.CODEX_MODEL_ATTESTATION_PUBLIC_KEY }}
           CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY: ${{ vars.CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY }}
           GENERIC_MODEL_ATTESTATION_PUBLIC_KEY: ${{ vars.GENERIC_MODEL_ATTESTATION_PUBLIC_KEY }}
-        run: make release-cli-artifacts VERSION="${{ github.ref_name }}"
-      - name: Attest release binaries and checksums
+        run: make release-cli-artifacts VERSION="$RELEASE_TAG"
+      - name: Attest release binaries
         id: attest
         uses: actions/attest@v4
         with:
           subject-checksums: dist/SHA256SUMS
       - name: Include provenance bundle in release assets
-        run: cp "${{ steps.attest.outputs.bundle-path }}" "dist/skills-hub_${{ github.ref_name }}_provenance.json"
+        env:
+          PROVENANCE_BUNDLE: ${{ steps.attest.outputs.bundle-path }}
+        run: cp "$PROVENANCE_BUNDLE" "dist/skills-hub_${RELEASE_TAG}_provenance.json"
+      - name: Recheck release records immediately before draft creation
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/check-cli-release-assets.py "$RELEASE_TAG"
       - name: Publish GitHub release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          target_commitish: ${{ github.sha }}
-          generate_release_notes: true
-          prerelease: ${{ contains(github.ref_name, '-alpha') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-rc') }}
-          fail_on_unmatched_files: true
-          files: dist/*
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/publish-cli-release.py "$RELEASE_TAG" "$RELEASE_COMMIT" dist

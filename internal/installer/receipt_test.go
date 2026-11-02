@@ -170,3 +170,19 @@ func TestInstallReceiptSurvivesInstallerModeNormalization(t *testing.T) {
 		t.Fatalf("verify normalized install: %v", err)
 	}
 }
+
+func TestRuntimeContractBindsCompatibilityDeclarations(t *testing.T) {
+	entry := registry.SkillEntry{ID: "example/tool", Compatibility: []registry.CompatibilityRequirement{{Kind: "api", Name: "Example", Versions: []string{"v1"}}}}
+	before, err := RuntimeContractSHA256(entry, "1.0.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	entry.Compatibility[0].Versions[0] = "v2"
+	after, err := RuntimeContractSHA256(entry, "1.0.0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if before == after {
+		t.Fatal("substituted API support did not invalidate the runtime contract")
+	}
+}

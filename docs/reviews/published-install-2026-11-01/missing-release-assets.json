@@ -1,0 +1,20 @@
+{
+  "schema_version": "published-install-check/v1",
+  "checked_at": "2026-11-01T17:23:43.865791+00:00",
+  "status": "failed",
+  "client_kind": "release",
+  "host": {
+    "os": "Darwin",
+    "architecture": "arm64"
+  },
+  "registry_url": "https://skills.ai-knowledge-hub.org/registry/skills-index.json",
+  "package": "engineering/implementation-strategy@0.1.0",
+  "runtimes": [],
+  "release": {
+    "tag": "v0.3.0-alpha.1",
+    "url": "https://github.com/ai-knowledge-hub/ai-skills-guide/releases/tag/v0.3.0-alpha.1",
+    "assets": []
+  },
+  "failure_stage": "client",
+  "error": "published CLI assets missing: skills-hub_v0.3.0-alpha.1_darwin_arm64, SHA256SUMS, skills-hub_v0.3.0-alpha.1_provenance.json"
+}

@@ -14,6 +14,53 @@ import (
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
 )
 
+func TestCompositeStatusUsesSuppliedEvaluationTime(t *testing.T) {
+	// Nested package admission must use the operation's supplied instant.
+	now := time.Date(2026, 9, 23, 12, 0, 0, 0, time.UTC)
+	fixture := installCompositeStatusFixture(t, "read-only")
+	for _, entry := range fixture.toolEntries {
+		configureCompositeProvider(t, fixture.stateDir, entry, now)
+	}
+	// Environment and fixture setup finish before these concurrent readers.
+	// Evaluations share the same installed closure and immutable profiles.
+	for _, test := range []struct {
+		name    string
+		instant time.Time
+		state   string
+	}{
+		{"ready", now, "ready"},
+		{"credential deadline", now.Add(time.Hour), "expired"},
+		{"future package observation", time.Date(2026, 9, 16, 23, 54, 0, 0, time.UTC), "unavailable"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			report, err := CompositeStatus(context.Background(), fixture.options(test.instant))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if report.Ready != (test.state == "ready") {
+				t.Fatalf("nested time was not preserved: %#v", report)
+			}
+			for _, provider := range report.Providers {
+				wantState := "unavailable"
+				if test.state == "ready" {
+					wantState = "ready"
+				}
+				if provider.State != wantState {
+					t.Fatalf("provider time state = %s, want %s: %#v", provider.State, test.state, report)
+				}
+				if test.state == "unavailable" {
+					if !strings.Contains(provider.Reason, "installed provider contract") || provider.Authentication.State != "" {
+						t.Fatalf("unrelated package rejection: %#v", provider)
+					}
+				} else if provider.Authentication.State != test.state || !provider.Authentication.ObservedAt.Equal(test.instant) {
+					t.Fatalf("credential validation state or instant differs: %#v", provider.Authentication)
+				}
+			}
+		})
+	}
+}
+
 func TestCompositeStatusDerivesRequiredAndOptionalCoverage(t *testing.T) {
 	now := time.Date(2026, 9, 23, 12, 0, 0, 0, time.UTC)
 	fixture := installCompositeStatusFixture(t, "read-only")
@@ -83,14 +130,21 @@ func TestCompositeStatusRejectsInstalledProviderAuthorityMismatch(t *testing.T) 
 	}
 }
 
-func TestCompositeStatusRejectsExpiredInstalledProviderEvidence(t *testing.T) {
+func TestCompositeStatusDoesNotTreatPackageAgeAsAuthentication(t *testing.T) {
 	fixture := installCompositeStatusFixtureWithVerification(t, "read-only", "2020-01-01T00:00:00Z")
 	report, err := CompositeStatus(context.Background(), fixture.options(time.Date(2026, 9, 23, 12, 0, 0, 0, time.UTC)))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if report.Ready || report.CoverageState != "unavailable" || !strings.Contains(report.Providers[0].Reason, "expired") {
-		t.Fatalf("expired provider evidence status = %#v", report)
+	if report.Ready || report.CoverageState != "unavailable" || report.Providers[0].Authentication.State != "missing" {
+		t.Fatalf("old package metadata bypassed current authentication: %#v", report)
+	}
+	for _, entry := range fixture.toolEntries {
+		configureCompositeProvider(t, fixture.stateDir, entry, time.Date(2026, 9, 23, 12, 0, 0, 0, time.UTC))
+	}
+	report, err = CompositeStatus(context.Background(), fixture.options(time.Date(2026, 9, 23, 12, 0, 0, 0, time.UTC)))
+	if err != nil || !report.Ready {
+		t.Fatalf("valid current authentication rejected because of package age: %#v, %v", report, err)
 	}
 }
 

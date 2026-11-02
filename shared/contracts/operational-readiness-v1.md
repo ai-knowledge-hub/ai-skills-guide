@@ -6,8 +6,14 @@
 | --- | --- |
 | Contract ID | `operational-readiness` |
 | Contract version | `1.0.3` |
-| Status | Normative |
+| Status | Legacy policy; incorporated with overrides by v3 |
 | Effective date | 2026-09-13 |
+
+> Updated runtime consumers follow [operational readiness v3](operational-readiness-v3.md),
+> which supersedes section 9's package-age gates and authentication maximum.
+> This file preserves the original policy for legacy consumers and incorporates
+> the unchanged authority rules into v3. Website notes follow the separate
+> [catalogue contract](catalogue-compatibility-v1.md). The former v2 design is withdrawn.
 
 ## 1. Purpose and scope
 

@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"reflect"
 	"testing"
+
+	"gopkg.in/yaml.v3"
 )
 
 func TestManifestSchemasEmbedCanonicalV2Definitions(t *testing.T) {
@@ -48,38 +50,51 @@ func TestRegistrySchemaSharesAgentOrchestrationContract(t *testing.T) {
 }
 
 func TestManifestSchemasRejectExecutableHelpersForV20(t *testing.T) {
-	root := filepath.Join("..", "..")
-	for _, name := range []string{
-		"skill.schema.json",
-		"agent.schema.json",
-		"tool.schema.json",
-		"plugin.schema.json",
-	} {
-		t.Run(name, func(t *testing.T) {
-			schema := readSchema(t, filepath.Join(root, "shared", "schemas", name))
-			allOf, ok := schema["allOf"].([]any)
-			if !ok {
-				t.Fatal("schema is missing allOf")
-			}
-			for _, rawRule := range allOf {
-				rule, _ := rawRule.(map[string]any)
-				ifBlock, _ := rule["if"].(map[string]any)
-				ifProperties, _ := ifBlock["properties"].(map[string]any)
-				versionRule, _ := ifProperties["schema_version"].(map[string]any)
-				if versionRule["const"] != "2.0" {
-					continue
+	// Manifest contract v2: helpers are a 2.1+ extension. Exercise the real
+	// validator rather than requiring a particular allOf/if/then arrangement.
+	for _, module := range []string{"skill", "agent", "tool", "plugin"} {
+		for _, version := range []string{"2.0", "2.1", "2.2"} {
+			t.Run(module+"/"+version, func(t *testing.T) {
+				data, err := os.ReadFile(filepath.Join("..", "..", "shared", "schemas", "fixtures", "manifest-v2", module+".valid.yaml"))
+				if err != nil {
+					t.Fatal(err)
 				}
-				thenBlock, _ := rule["then"].(map[string]any)
-				thenProperties, _ := thenBlock["properties"].(map[string]any)
-				usability, _ := thenProperties["usability"].(map[string]any)
-				usabilityProperties, _ := usability["properties"].(map[string]any)
-				if forbidden, exists := usabilityProperties["executable_helpers"]; !exists || forbidden != false {
-					t.Fatal("schema 2.0 must reject usability.executable_helpers")
+				var document map[string]any
+				if err := yaml.Unmarshal(data, &document); err != nil {
+					t.Fatal(err)
 				}
-				return
-			}
-			t.Fatal("schema is missing its 2.0 compatibility gate")
-		})
+				document["schema_version"] = version
+				usability := document["usability"].(map[string]any)
+				// not-verified is also a 2.1 extension; keep the control
+				// classification valid on both sides of the helper boundary.
+				if usability["availability"] == "not-verified" {
+					usability["availability"] = "setup-required"
+					usability["requires_setup"] = []string{"Configure the test runtime."}
+				}
+				manifestPath := filepath.Join(t.TempDir(), module+".yaml")
+				writeDocument := func() {
+					payload, err := json.Marshal(document)
+					if err != nil {
+						t.Fatal(err)
+					}
+					writeTestFile(t, manifestPath, string(payload), 0o644)
+				}
+				// A valid control prevents malformed fixture data from making a
+				// rejection look like evidence for the version boundary.
+				writeDocument()
+				if err := validateManifestSchema(manifestPath); err != nil {
+					t.Fatalf("control: %v", err)
+				}
+				document["usability"].(map[string]any)["executable_helpers"] = []any{map[string]any{
+					"entrypoint": "scripts/check.py", "availability": "not-verified",
+					"execution": "local-tool", "limitations": []string{"No executable evidence recorded."},
+				}}
+				writeDocument()
+				if err := validateManifestSchema(manifestPath); (err == nil) != (version != "2.0") {
+					t.Fatalf("helpers admitted=%v, schema %s: %v", err == nil, version, err)
+				}
+			})
+		}
 	}
 }
 

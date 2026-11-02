@@ -4,10 +4,132 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
 )
+
+// Policy 3.0 separates historical package observations from live authority.
+// Elapsed age alone must not reject any package evidence scope.
+func TestEvidenceObservationDoesNotExpireByPackageAge(t *testing.T) {
+	observed := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	for _, scope := range []struct{ name, kind, authentication string }{
+		{"instructions", "instructions", "none"}, {"executable", "cli", "none"},
+		{"bundle", "bundle", "none"}, {"authenticated", "mcp-server", "required"},
+	} {
+		t.Run(scope.name, func(t *testing.T) {
+			manifest := Manifest{SchemaVersion: "2.1",
+				Usability:      UsabilityMetadata{Availability: "usable-now"},
+				Execution:      ExecutionMetadata{Kind: scope.kind},
+				Authentication: AuthenticationMetadata{Status: scope.authentication},
+				Verification:   VerificationMetadata{Evidence: []string{"evidence://tests/history"}, LastVerifiedAt: observed.Format(time.RFC3339)},
+			}
+			for _, days := range []int{29, 30, 31, 89, 90, 91, 179, 180, 181, 36500} {
+				if err := ValidateManifestEvidenceAt("fixture", manifest, observed.AddDate(0, 0, days)); err != nil {
+					t.Fatalf("age %d changed admissibility: %v", days, err)
+				}
+			}
+		})
+	}
+}
+
+func TestStructuralValidationIsIndependentOfEvidenceAge(t *testing.T) {
+	root := t.TempDir()
+	entryDir := filepath.Join(root, "tools-mcp", "shared", "historical-tool")
+	manifestPath := filepath.Join(entryDir, "tool.yaml")
+	verified := time.Date(2026, 9, 14, 0, 0, 0, 0, time.UTC)
+	manifest := v2ExecutableManifest("shared/historical-tool", verified)
+	writeTestFile(t, manifestPath, manifest, 0o644)
+	for _, name := range []string{"TOOL.md", "checksums.txt", "sbom.cdx.json", "bin/tool"} {
+		writeTestFile(t, filepath.Join(entryDir, name), "fixture\n", 0o755)
+	}
+	var first Index
+	for i, instant := range []time.Time{verified.Add(time.Hour), verified.AddDate(100, 0, 0)} {
+		t.Run(instant.Format("2006"), func(t *testing.T) {
+			index, err := BuildToolsIndex(root)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if i == 0 {
+				first = index
+			} else if !reflect.DeepEqual(first, index) {
+				t.Fatal("identical package bytes produced a different canonical index as time passed")
+			}
+			if count, err := ValidateRepository(root); err != nil || count != 1 {
+				t.Fatalf("structural validation count=%d: %v", count, err)
+			}
+			_, err = ValidatePackageManifestAt(manifestPath, instant)
+			if err != nil {
+				t.Fatalf("runtime admission must not expire historical metadata: %v", err)
+			}
+		})
+	}
+	stored, err := os.ReadFile(manifestPath)
+	if err != nil || string(stored) != manifest {
+		t.Fatalf("validation changed immutable evidence: %v", err)
+	}
+}
+
+func TestFreshnessRejectsInvalidEvidenceAndNormalizesUTC(t *testing.T) {
+	observed := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	for _, test := range []struct {
+		name      string
+		evidence  []string
+		timestamp string
+		now       time.Time
+	}{
+		{"missing-reference", nil, observed.Format(time.RFC3339), observed},
+		{"malformed-time", []string{"evidence://tests/invalid"}, "invalid", observed},
+		{"future-observation", []string{"evidence://tests/future"}, observed.Add(6 * time.Minute).Format(time.RFC3339), observed},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			manifest := Manifest{
+				Execution: ExecutionMetadata{Kind: "cli"}, Authentication: AuthenticationMetadata{Status: "none"},
+				Verification: VerificationMetadata{Evidence: test.evidence, LastVerifiedAt: test.timestamp},
+			}
+			if err := validateEvidenceObservation("fixture", manifest, test.now); err == nil {
+				t.Fatal("invalid or expired evidence was admitted")
+			}
+		})
+	}
+}
+
+func TestEvidenceFutureClockToleranceBoundaries(t *testing.T) {
+	observed := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	manifest := Manifest{
+		Execution: ExecutionMetadata{Kind: "cli"}, Authentication: AuthenticationMetadata{Status: "none"},
+		Verification: VerificationMetadata{Evidence: []string{"evidence://tests/clock-skew"}, LastVerifiedAt: observed.Format(time.RFC3339)},
+	}
+	// Preserve the legacy adapter's five-minute tolerance. This is operational
+	// policy, not an API/SDK compatibility or editorial age rule.
+	for _, test := range []struct {
+		delta time.Duration
+		valid bool
+	}{
+		{-time.Nanosecond, false}, {0, true}, {time.Nanosecond, true},
+	} {
+		now := observed.Add(-5 * time.Minute).Add(test.delta)
+		if err := validateEvidenceObservation("clock-skew", manifest, now); (err == nil) != test.valid {
+			t.Fatalf("valid=%v at tolerance %+v: %v", test.valid, test.delta, err)
+		}
+	}
+}
+
+func TestStructuralValidationStillRejectsMalformedVerification(t *testing.T) {
+	root := t.TempDir()
+	entryDir := filepath.Join(root, "tools-mcp", "shared", "malformed-evidence")
+	manifest := v2ExecutableManifest("shared/malformed-evidence", time.Date(2026, 9, 14, 0, 0, 0, 0, time.UTC))
+	manifest = strings.Replace(manifest, `last_verified_at: "2026-09-14T00:00:00Z"`, `last_verified_at: "not-a-timestamp"`, 1)
+	writeTestFile(t, filepath.Join(entryDir, "tool.yaml"), manifest, 0o644)
+	for _, name := range []string{"TOOL.md", "checksums.txt", "sbom.cdx.json", "bin/tool"} {
+		writeTestFile(t, filepath.Join(entryDir, name), "fixture\n", 0o755)
+	}
+	_, err := BuildToolsIndex(root)
+	assertAdmissionError(t, err, "invalid verification timestamp")
+	_, err = ValidateRepository(root)
+	assertAdmissionError(t, err, "invalid verification timestamp")
+}
 
 func TestValidateRepositoryAcceptsCompleteClosure(t *testing.T) {
 	root := t.TempDir()
@@ -253,29 +375,39 @@ func TestBuildIndexRejectsUnlaunchableV2Executable(t *testing.T) {
 	assertAdmissionError(t, err, `execution.command: declared path "bin/tool" does not exist`)
 }
 
-func TestBuildIndexRejectsStaleEvidenceForDeclaredUsableNow(t *testing.T) {
+func TestRuntimeAdmissionAllowsHistoricalPackageObservation(t *testing.T) {
+	now := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
 	root := t.TempDir()
 	entryDir := filepath.Join(root, "tools-mcp", "shared", "stale-tool")
 	if err := os.MkdirAll(filepath.Join(entryDir, "bin"), 0o755); err != nil {
 		t.Fatalf("mkdir: %v", err)
 	}
-	manifest := v2ExecutableManifest("shared/stale-tool", time.Now().UTC().Add(-executableEvidenceLifetime-time.Hour))
+	manifest := v2ExecutableManifest("shared/stale-tool", now.AddDate(-10, 0, 0))
 	writeTestFile(t, filepath.Join(entryDir, "tool.yaml"), manifest, 0o644)
 	for _, file := range []string{"TOOL.md", "checksums.txt", "sbom.cdx.json", "bin/tool"} {
 		writeTestFile(t, filepath.Join(entryDir, filepath.FromSlash(file)), "fixture\n", 0o755)
 	}
 
-	_, err := BuildToolsIndex(root)
-	assertAdmissionError(t, err, "claims usable-now with evidence older than")
+	if _, err := BuildToolsIndex(root); err != nil {
+		t.Fatalf("historical evidence must not prevent structural indexing: %v", err)
+	}
+	if _, err := ValidateRepository(root); err != nil {
+		t.Fatalf("historical evidence must not prevent repository validation: %v", err)
+	}
+	_, err := ValidatePackageManifestAt(filepath.Join(entryDir, "tool.yaml"), now)
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
-func TestBuildIndexRejectsStaleEvidenceBeforeAuthenticatedSetupExecution(t *testing.T) {
+func TestAuthenticatedSetupDoesNotExpireWithPackageObservation(t *testing.T) {
+	now := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
 	root := t.TempDir()
 	entryDir := filepath.Join(root, "tools-mcp", "shared", "stale-auth-tool")
 	if err := os.MkdirAll(filepath.Join(entryDir, "bin"), 0o755); err != nil {
 		t.Fatalf("mkdir: %v", err)
 	}
-	manifest := v2ExecutableManifest("shared/stale-auth-tool", time.Now().UTC().Add(-authEvidenceLifetime-time.Hour))
+	manifest := v2ExecutableManifest("shared/stale-auth-tool", now.AddDate(-10, 0, 0))
 	manifest = strings.Replace(manifest, "availability: usable-now", "availability: setup-required", 1)
 	manifest = strings.Replace(manifest, `authentication:
   status: none
@@ -291,26 +423,15 @@ func TestBuildIndexRejectsStaleEvidenceBeforeAuthenticatedSetupExecution(t *test
 		writeTestFile(t, filepath.Join(entryDir, filepath.FromSlash(file)), "fixture\n", 0o755)
 	}
 
-	_, err := BuildToolsIndex(root)
-	assertAdmissionError(t, err, "requires current runtime evidence with evidence older than 720h0m0s")
-}
-
-func TestRunnableBundleUsesExecutableEvidenceLifetime(t *testing.T) {
-	now := time.Now().UTC()
-	manifest := Manifest{
-		Execution:      ExecutionMetadata{Kind: "bundle"},
-		Authentication: AuthenticationMetadata{Status: "none"},
-		Verification: VerificationMetadata{
-			Evidence:       []string{"evidence://tests/plugin/clean-client"},
-			LastVerifiedAt: now.Add(-executableEvidenceLifetime - time.Hour).Format(time.RFC3339),
-		},
+	if _, err := BuildToolsIndex(root); err != nil {
+		t.Fatalf("historical evidence must not prevent structural indexing: %v", err)
 	}
-	if err := validateFreshEvidence("runnable-bundle", manifest, now); err == nil || !strings.Contains(err.Error(), "evidence older than") {
-		t.Fatalf("expected runnable bundle evidence to expire after %s, got %v", executableEvidenceLifetime, err)
+	if _, err := ValidateRepository(root); err != nil {
+		t.Fatalf("historical evidence must not prevent repository validation: %v", err)
 	}
-	manifest.Verification.LastVerifiedAt = now.Add(-executableEvidenceLifetime + time.Hour).Format(time.RFC3339)
-	if err := validateFreshEvidence("runnable-bundle", manifest, now); err != nil {
-		t.Fatalf("fresh runnable bundle evidence was rejected: %v", err)
+	_, err := ValidatePackageManifestAt(filepath.Join(entryDir, "tool.yaml"), now)
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 
@@ -481,7 +602,7 @@ deprecated: false
 	assertAdmissionError(t, err, "must declare dependency_lock, checksums, sbom, and provenance")
 }
 
-func TestProjectManifestForCurrentCatalogDemotesExpiredReadiness(t *testing.T) {
+func TestProjectManifestForCurrentCatalogDoesNotPromoteHistoricalClaims(t *testing.T) {
 	verifiedAt := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
 	manifestPath := filepath.Join(t.TempDir(), "tool.yaml")
 	writeTestFile(t, manifestPath, v2ExecutableManifest("shared/stale-projection", verifiedAt), 0o644)
@@ -490,7 +611,7 @@ func TestProjectManifestForCurrentCatalogDemotesExpiredReadiness(t *testing.T) {
 		t.Fatalf("parse historical manifest: %v", err)
 	}
 
-	entry := ProjectManifestForCurrentCatalog(manifest, verifiedAt.Add(executableEvidenceLifetime+time.Second))
+	entry := ProjectManifestForCurrentCatalog(manifest, verifiedAt.AddDate(10, 0, 0))
 	if entry.Usability.Availability != "not-verified" || entry.Usability.Source != "inferred" {
 		t.Fatalf("expired readiness was still advertised: %#v", entry.Usability)
 	}
@@ -736,5 +857,22 @@ func assertAdmissionError(t *testing.T, err error, want string) {
 	t.Helper()
 	if err == nil || !strings.Contains(err.Error(), want) {
 		t.Fatalf("expected error containing %q, got %v", want, err)
+	}
+}
+
+func TestObservationOffsetsDoNotCreateExpiryOrLiveCatalogueAuthority(t *testing.T) {
+	observed := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	manifest := Manifest{SchemaVersion: "2.1", Usability: UsabilityMetadata{Availability: "usable-now"},
+		Execution: ExecutionMetadata{Kind: "cli"}, Authentication: AuthenticationMetadata{Status: "none"},
+		Verification: VerificationMetadata{Evidence: []string{"evidence://tests/offset"}, LastVerifiedAt: observed.In(time.FixedZone("fixture", 7200)).Format(time.RFC3339)},
+	}
+	for _, instant := range []time.Time{observed, observed.AddDate(10, 0, 0)} {
+		if err := ValidateManifestEvidenceAt("fixture", manifest, instant); err != nil {
+			t.Fatal(err)
+		}
+		entry := ProjectManifestForCurrentCatalog(manifest, instant)
+		if entry.Usability.Availability != "not-verified" || entry.Verification.LastVerifiedAt != manifest.Verification.LastVerifiedAt {
+			t.Fatalf("static projection inferred live authority or changed history: %#v", entry)
+		}
 	}
 }

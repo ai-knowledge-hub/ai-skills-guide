@@ -33,3 +33,7 @@ apps/web/public/tools-mcp/
 
 # Logs
 *.log
+
+# Local visual review evidence
+/output/playwright/
+/output/published-install/

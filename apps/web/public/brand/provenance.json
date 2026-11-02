@@ -1,0 +1,70 @@
+{
+  "brandVersion": "0.1.0",
+  "importedOn": "2026-10-29",
+  "technique": "Static raster delivery copies and one unchanged publication SVG. Selected source artwork is preserved; display crops are CSS only.",
+  "usage": "The owner-selected folded field supplies the narrower catalogue/home rail and compact artwork headers. Earlier publication entrance/community assets are retained as historical imports and are no longer active.",
+  "originals": "Earlier originals remain in the publication. The newly selected attachment is preserved at apps/web/brand/artwork/folded-field-original.png with its source and exact prompt record.",
+  "generation": "Raster sources are AI-assisted. The folded-field source record includes its known prompt and tool; the model is not exposed. Earlier originals do not assert complete prompt/model records. The favicon is unchanged and its generation method is not asserted.",
+  "assets": [
+    {
+      "file": "entrance-480.webp",
+      "source": "independent-ai-publication/public/images/op-art/delivery/entrance-web-480-b9dc20b145af.webp",
+      "sha256": "b9dc20b145af5b243574b4044880cec51122e43bc3b751b6187fc6496040359b",
+      "bytes": 35548
+    },
+    {
+      "file": "entrance-800.webp",
+      "source": "independent-ai-publication/public/images/op-art/delivery/entrance-web-800-34e6bff73cf6.webp",
+      "sha256": "34e6bff73cf66c0955610f3e9fae7a6ea4ef83aa5e3940bb389775e20a5812f0",
+      "bytes": 69632
+    },
+    {
+      "file": "entrance-1600.webp",
+      "source": "independent-ai-publication/public/images/op-art/delivery/entrance-web-1600-4b57ebd2f619.webp",
+      "sha256": "4b57ebd2f619e74b2d56697e6e1705fe9191c54e752b9ab2459a6a1aea5910fd",
+      "bytes": 165094
+    },
+    {
+      "file": "community-1200.webp",
+      "source": "independent-ai-publication/public/images/op-art/delivery/community-web-1200-3f3e6b6c1ad3.webp",
+      "sha256": "3f3e6b6c1ad386093af321a827843a12cf350c6d27c4b1d7d34bf2a3b60551dc",
+      "bytes": 150080
+    },
+    {
+      "file": "community-1600.webp",
+      "source": "independent-ai-publication/public/images/op-art/delivery/community-web-1600-55ba5d82612c.webp",
+      "sha256": "55ba5d82612c41f94f87eaec7ebd6ca63003aeaf35e8cd1a416d9bfa6515f475",
+      "bytes": 196936,
+      "importedOn": "2026-10-30",
+      "usage": "Desktop viewport-height catalogue rail; approved publication delivery copy."
+    },
+    {
+      "file": "favicon.svg",
+      "source": "independent-ai-publication/public/favicon.svg",
+      "sha256": "a22d5e6690522712aafb88162ea9662c09490fc3b10123e96d92a0328c1d2121",
+      "bytes": 216,
+      "importedOn": "2026-11-01",
+      "usage": "Existing publication AI favicon, reused unchanged for the catalogue; no new mark."
+    },
+    {
+      "file": "folded-field-960.webp",
+      "source": "apps/web/brand/artwork/folded-field-original.png",
+      "sourceRecord": "apps/web/brand/artwork/folded-field-source.json",
+      "sha256": "9470acd0e50c9a9182b73b4c301400195d4ee4d72b9339ce746fd6987c7cd0e5",
+      "bytes": 113958,
+      "importedOn": "2026-11-01",
+      "usage": "Active compact artwork header",
+      "technique": "Full-frame proportional resize and WebP encoding; no authored geometry edited."
+    },
+    {
+      "file": "folded-field-1600.webp",
+      "source": "apps/web/brand/artwork/folded-field-original.png",
+      "sourceRecord": "apps/web/brand/artwork/folded-field-source.json",
+      "sha256": "cbeb96f61492f471e062b8a4b8ea2ec60642a2672a5f3c072ab9af96523d6acb",
+      "bytes": 197244,
+      "importedOn": "2026-11-01",
+      "usage": "Active narrow desktop rail",
+      "technique": "Full-frame proportional resize and WebP encoding; no authored geometry edited."
+    }
+  ]
+}

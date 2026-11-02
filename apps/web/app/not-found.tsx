@@ -1,9 +1,9 @@
 export default function NotFoundPage() {
   return (
-    <main>
+    <main id="main" tabIndex={-1} className="error-page">
       <h1>Item not found</h1>
       <p>We could not find that entry in the current registry snapshot.</p>
-      <div className="nav">
+      <div className="actions">
         <a href="/" className="button button--secondary">Home</a>
         <a href="/skills" className="button button--secondary">Skills</a>
         <a href="/agents" className="button button--secondary">Agents</a>

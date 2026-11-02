@@ -1,22 +1,48 @@
 package registry
 
 import (
+	"fmt"
 	"path/filepath"
+	"slices"
 	"testing"
 )
+
+// Named regression anchors come from the package roles documented in
+// docs/catalogue-test-assurance.md. They are a required subset, not a census.
+var skillHelpers = map[string]string{
+	"adtech/analyst-copilot-bigquery-redshift":        "scripts/query_safety_check.py",
+	"adtech/playwright-vscode-loop-codex":             "scripts/install-global-codex.sh",
+	"adtech/policy-brand-compliance-checker":          "scripts/utm_lint.py",
+	"marketing/creative-workshop-pmax-reels":          "scripts/validate_lengths.py",
+	"marketing/lifecycle-experiment-planner":          "scripts/sample_size.py",
+	"marketing/meta-google-weekly-performance-review": "scripts/compute_metrics.py",
+	"marketing/seo-paid-search-synergy":               "scripts/extract_seo_winners.py",
+}
 
 func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 	root := filepath.Clean(filepath.Join("..", ".."))
 	tests := []struct {
 		name         string
 		build        func(string) (Index, error)
-		wantCount    int
+		required     []string
 		availability string
 		execution    string
 	}{
-		{name: "skills", build: BuildSkillsIndex, wantCount: 42, availability: "documentation-only", execution: "instructions"},
-		{name: "agents", build: BuildAgentsIndex, wantCount: 7, availability: "setup-required", execution: "orchestrator"},
-		{name: "plugins", build: BuildPluginsIndex, wantCount: 11, availability: "template-only", execution: "bundle"},
+		{name: "skills", build: BuildSkillsIndex, required: helperSkillIDs(), availability: "documentation-only", execution: "instructions"},
+		{name: "agents", build: BuildAgentsIndex, required: []string{
+			"adtech/ad-platform-control-plane-supervisor", "adtech/bi-insights-orchestrator",
+			"adtech/chatgpt-ads-experiment-supervisor", "agentops/agent-control-plane-supervisor",
+			"marketing/campaign-qa-supervisor", "marketing/creative-operating-system-supervisor",
+			"marketing/weekly-performance-supervisor",
+		}, availability: "setup-required", execution: "orchestrator"},
+		{name: "plugins", build: BuildPluginsIndex, required: []string{
+			"agentops/harness-governance-plugin", "engineering/code-maintenance-plugin",
+			"marketing/ad-creative-plugin", "marketing/campaign-audit-plugin",
+			"marketing/chatgpt-advertising-experiment-plugin", "marketing/competitive-intelligence-plugin",
+			"marketing/content-repurposing-plugin", "marketing/creative-operating-system-plugin",
+			"marketing/page-speed-technical-seo-plugin", "marketing/performance-reporting-plugin",
+			"security/runtime-safety-plugin",
+		}, availability: "template-only", execution: "bundle"},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -24,18 +50,26 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 			if err != nil {
 				t.Fatalf("build index: %v", err)
 			}
-			if len(index.Skills) != test.wantCount {
-				t.Fatalf("got %d entries, want %d", len(index.Skills), test.wantCount)
+			if err := requireCatalogueIdentities(index, test.required); err != nil {
+				t.Fatal(err)
 			}
 			for _, entry := range index.Skills {
+				// Future packages can have different valid classifications. Every
+				// entry must still disclose its declared usability and limitations.
+				if entry.Usability.Source != "declared" || len(entry.Usability.Limitations) == 0 {
+					t.Errorf("%s must disclose declared usability and limitations", entry.ID)
+				}
+				if !slices.Contains(test.required, entry.ID) {
+					continue
+				}
 				if test.name == "plugins" && localPluginWave[entry.ID] {
-					if entry.SchemaVersion != "2.1" || entry.Usability.Availability != "usable-now" || entry.Usability.Execution != "bundle" || entry.Artifact == nil || !entry.Artifact.SelfContained {
+					if entry.Usability.Availability != "usable-now" || entry.Usability.Execution != "bundle" || entry.Artifact == nil || !entry.Artifact.SelfContained {
 						t.Errorf("local plugin wave classification = %#v", entry)
 					}
 					continue
 				}
 				if test.name == "agents" && entry.ID == "marketing/campaign-qa-supervisor" {
-					if entry.SchemaVersion != "1.1" || entry.Usability.Availability != "not-verified" || entry.Usability.Execution != "orchestrator" || entry.Orchestration == nil {
+					if entry.Usability.Availability != "not-verified" || entry.Usability.Execution != "orchestrator" || entry.Orchestration == nil {
 						t.Errorf("unavailable-provider agent classification = %#v", entry)
 					}
 					continue
@@ -49,30 +83,22 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 	if err != nil {
 		t.Fatalf("build skills index for helper audit: %v", err)
 	}
-	wantHelpers := map[string]string{
-		"adtech/analyst-copilot-bigquery-redshift":        "scripts/query_safety_check.py",
-		"adtech/playwright-vscode-loop-codex":             "scripts/install-global-codex.sh",
-		"adtech/policy-brand-compliance-checker":          "scripts/utm_lint.py",
-		"marketing/creative-workshop-pmax-reels":          "scripts/validate_lengths.py",
-		"marketing/lifecycle-experiment-planner":          "scripts/sample_size.py",
-		"marketing/meta-google-weekly-performance-review": "scripts/compute_metrics.py",
-		"marketing/seo-paid-search-synergy":               "scripts/extract_seo_winners.py",
-	}
 	for _, entry := range skills.Skills {
-		want, scriptBearing := wantHelpers[entry.ID]
+		want, scriptBearing := skillHelpers[entry.ID]
 		if !scriptBearing {
-			if len(entry.Usability.ExecutableHelpers) != 0 {
-				t.Errorf("%s unexpectedly declares executable helpers", entry.ID)
+			continue
+		}
+		found := false
+		for _, helper := range entry.Usability.ExecutableHelpers {
+			if helper.Entrypoint == want {
+				found = true
+				if helper.Availability != "not-verified" || helper.Execution != "local-tool" {
+					t.Errorf("%s helper = %#v, want %s not-verified/local-tool", entry.ID, helper, want)
+				}
 			}
-			continue
 		}
-		if len(entry.Usability.ExecutableHelpers) != 1 {
-			t.Errorf("%s helpers = %#v, want one", entry.ID, entry.Usability.ExecutableHelpers)
-			continue
-		}
-		helper := entry.Usability.ExecutableHelpers[0]
-		if helper.Entrypoint != want || helper.Availability != "not-verified" || helper.Execution != "local-tool" {
-			t.Errorf("%s helper = %#v, want %s not-verified/local-tool", entry.ID, helper, want)
+		if !found {
+			t.Errorf("%s is missing required helper %s", entry.ID, want)
 		}
 	}
 
@@ -90,13 +116,20 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 		"analytics/ga4-mcp-connector":          {"setup-required", "remote-integration"},
 		"warehouse/bigquery-mcp-query-runner":  {"setup-required", "remote-integration"},
 	}
-	if len(tools.Skills) != len(wantTools) {
-		t.Fatalf("got %d tools, want %d", len(tools.Skills), len(wantTools))
+	var requiredTools []string
+	for id := range wantTools {
+		requiredTools = append(requiredTools, id)
+	}
+	if err := requireCatalogueIdentities(tools, requiredTools); err != nil {
+		t.Fatal(err)
 	}
 	for _, entry := range tools.Skills {
+		if entry.Usability.Source != "declared" || len(entry.Usability.Limitations) == 0 {
+			t.Errorf("%s must disclose declared usability and limitations", entry.ID)
+		}
 		want, ok := wantTools[entry.ID]
 		if !ok {
-			t.Fatalf("unexpected tool %q", entry.ID)
+			continue // A valid additional tool does not change existing promises.
 		}
 		if entry.ID == "adtech/openai-ads-adapter-template" {
 			if !entry.Deprecated || entry.ReplacedBy != "adtech/openai-ads-api-client" || entry.Readiness != "deprecated" || entry.Usability.Source != "declared" || entry.Usability.Availability != "template-only" {
@@ -105,18 +138,70 @@ func TestCatalogClassificationsAreDeclaredAndTruthful(t *testing.T) {
 			continue
 		}
 		if entry.ID == "adtech/openai-ads-api-client" {
-			if entry.SchemaVersion != "2.1" || entry.Deprecated || entry.Usability.Source != "declared" || entry.Usability.Availability != "setup-required" || entry.Usability.Execution != "local-tool" || entry.Execution == nil || entry.Execution.Kind != "cli" || entry.Authentication == nil || entry.Authentication.Status != "optional" {
+			if entry.Deprecated || entry.Usability.Source != "declared" || entry.Usability.Availability != "setup-required" || entry.Usability.Execution != "local-tool" || entry.Execution == nil || entry.Execution.Kind != "cli" || entry.Authentication == nil || entry.Authentication.Status != "optional" {
 				t.Errorf("preferred OpenAI Ads client classification = %#v", entry)
 			}
 			continue
 		}
 		if entry.ID == "ads/meta-ads-mcp-connector" || entry.ID == "adtech/ad-platform-executor-template" || entry.ID == "analytics/ga4-mcp-connector" || entry.ID == "warehouse/bigquery-mcp-query-runner" || entry.ID == "agentops/agent-control-plane-server" {
-			if entry.SchemaVersion != "2.0" || entry.Usability.Source != "declared" || entry.Usability.Availability != "setup-required" || entry.Usability.Execution != want[1] || len(entry.Usability.Limitations) == 0 {
+			if entry.Usability.Source != "declared" || entry.Usability.Availability != "setup-required" || entry.Usability.Execution != want[1] || len(entry.Usability.Limitations) == 0 {
 				t.Errorf("executable integration classification = %#v", entry)
 			}
 			continue
 		}
 		assertClassification(t, entry, want[0], want[1])
+	}
+}
+
+func helperSkillIDs() []string {
+	var ids []string
+	for id := range skillHelpers {
+		ids = append(ids, id)
+	}
+	return ids
+}
+
+func requireCatalogueIdentities(index Index, required []string) error {
+	seen := make(map[string]bool)
+	for _, entry := range index.Skills {
+		if seen[entry.ID] {
+			return fmt.Errorf("duplicate catalogue identity %q", entry.ID)
+		}
+		seen[entry.ID] = true
+	}
+	for _, id := range required {
+		if !seen[id] {
+			return fmt.Errorf("missing required catalogue identity %q", id)
+		}
+	}
+	return nil
+}
+
+func TestCatalogueMembershipAllowsGrowthButRejectsIdentityLoss(t *testing.T) {
+	// Independent fixture requirement: the reporting workflow needs its named
+	// skill. A valid same-shape replacement cannot satisfy that promise.
+	required := []string{"marketing/required-report"}
+	for _, test := range []struct {
+		name  string
+		ids   []string
+		valid bool
+	}{
+		{"baseline", []string{"marketing/required-report"}, true},
+		{"addition", []string{"marketing/required-report", "engineering/new-skill"}, true},
+		{"reordering", []string{"engineering/new-skill", "marketing/required-report"}, true},
+		{"deletion", nil, false},
+		{"same-count substitution", []string{"marketing/other-valid-report"}, false},
+		{"duplicate", []string{"marketing/required-report", "marketing/required-report"}, false},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			var index Index
+			for _, id := range test.ids {
+				index.Skills = append(index.Skills, SkillEntry{ID: id})
+			}
+			if err := requireCatalogueIdentities(index, required); (err == nil) != test.valid {
+				t.Fatalf("valid=%v: %v", test.valid, err)
+			}
+		})
 	}
 }
 
@@ -132,9 +217,6 @@ var localPluginWave = map[string]bool{
 
 func assertClassification(t *testing.T, entry SkillEntry, availability, execution string) {
 	t.Helper()
-	if entry.SchemaVersion != "1.1" {
-		t.Errorf("%s schema_version = %q, want 1.1", entry.ID, entry.SchemaVersion)
-	}
 	if entry.Usability.Source != "declared" || entry.Usability.Availability != availability || entry.Usability.Execution != execution {
 		t.Errorf("%s usability = %#v, want declared %s/%s", entry.ID, entry.Usability, availability, execution)
 	}

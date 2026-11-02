@@ -30,6 +30,10 @@ import (
 const profileSchema = "skills-hub.auth-profile/v1"
 const evidenceSchema = "skills-hub.smoke-evidence/v1"
 
+// Bounded reuse of local execution results, not package/API compatibility.
+// Operational readiness v3 retains this independently of provider deadlines.
+const localSmokeEvidenceLifetime = 90 * 24 * time.Hour
+
 var supportedMethods = map[string]struct{}{
 	"api-key": {}, "bearer-token": {}, "oauth-authorization-code-pkce": {},
 	"oauth-device-flow": {}, "oauth-client-credentials": {}, "service-account": {},
@@ -441,11 +445,11 @@ func Doctor(ctx context.Context, opts InspectOptions) (DoctorReport, error) {
 		return DoctorReport{}, err
 	}
 	report := DoctorReport{
-		SchemaVersion: "skills-hub.doctor-evidence/v1", ContractID: "operational-readiness", ContractVersion: "1.0.3", EvidenceScope: "setup",
+		SchemaVersion: "skills-hub.doctor-evidence/v1", ContractID: "operational-readiness", ContractVersion: "3.0.0", EvidenceScope: "setup",
 		TestID: "skills-hub/doctor", TestVersion: "1", Producer: "skills-hub",
 		EntryID: opts.Entry.ID, EntryVersion: opts.Version, Module: opts.Module, Runtime: opts.Runtime, Platform: currentPlatform(), EnvironmentID: environment,
 		ArtifactSHA256: "", DependencyLockSHA256: "not-evaluated", InstallSource: "unknown",
-		ObservedAt: now.UTC(), ExpiresAt: now.Add(30 * 24 * time.Hour), Ready: true,
+		ObservedAt: now.UTC(), ExpiresAt: now.UTC(), Ready: true,
 	}
 	add := func(name, status, reason string) {
 		report.Checks = append(report.Checks, DoctorCheck{Name: name, Status: status, Reason: reason})
@@ -501,9 +505,6 @@ func Doctor(ctx context.Context, opts InspectOptions) (DoctorReport, error) {
 	auth := resolved.Report
 	report.Authentication = auth
 	report.CredentialKeys = resolved.Keys
-	if !auth.ExpiresAt.IsZero() && auth.ExpiresAt.Before(report.ExpiresAt) {
-		report.ExpiresAt = auth.ExpiresAt
-	}
 	if !auth.Required && !auth.Selected {
 		add("authentication", "pass", "not required")
 	} else if auth.Authenticated {
@@ -628,7 +629,7 @@ func DeriveCatalogStatus(ctx context.Context, opts InspectOptions) (CatalogStatu
 	if selected.Result != "passed" {
 		return CatalogStatus{Availability: "not-verified", EvidenceScope: "executable", EvidencePath: selectedPath, Reason: "latest applicable smoke evidence failed"}, nil
 	}
-	if !selected.PromotionEligible || !now.Before(selected.ExpiresAt) || !selected.ExpiresAt.After(selected.ObservedAt) || selected.ExpiresAt.After(selected.ObservedAt.Add(90*24*time.Hour)) || (resolved.Report.Selected && selected.ExpiresAt.After(resolved.Report.ExpiresAt)) {
+	if !selected.PromotionEligible || !now.Before(selected.ExpiresAt) || !selected.ExpiresAt.After(selected.ObservedAt) || selected.ExpiresAt.After(selected.StartedAt.Add(localSmokeEvidenceLifetime)) || (resolved.Report.Selected && selected.ExpiresAt.After(resolved.Report.ExpiresAt)) {
 		return CatalogStatus{Availability: "not-verified", EvidenceScope: "executable", EvidencePath: selectedPath, Reason: "latest applicable smoke evidence is ineligible or expired"}, nil
 	}
 	return CatalogStatus{Availability: "usable-now", EvidenceScope: "executable", EvidencePath: selectedPath, ExpiresAt: selected.ExpiresAt}, nil
@@ -693,7 +694,7 @@ func Smoke(ctx context.Context, opts InspectOptions) (SmokeEvidence, string, err
 	authOpts := opts
 	authOpts.Now = now
 	evidence := SmokeEvidence{
-		SchemaVersion: evidenceSchema, ContractID: "operational-readiness", ContractVersion: "1.0.3",
+		SchemaVersion: evidenceSchema, ContractID: "operational-readiness", ContractVersion: "3.0.0",
 		EvidenceScope: "executable", TestID: "skills-hub/declared-smoke", TestVersion: "1", Producer: "skills-hub",
 		EntryID: opts.Entry.ID, EntryVersion: opts.Version,
 		Module: opts.Module, Runtime: opts.Runtime, Platform: currentPlatform(), StartedAt: now.UTC(), Result: "failed",
@@ -788,10 +789,13 @@ func Smoke(ctx context.Context, opts InspectOptions) (SmokeEvidence, string, err
 	if resolved.Report.Selected {
 		evidence.ConfigurationClass = "authenticated:" + resolved.Report.Method
 		evidence.Coverage = append(evidence.Coverage, "authoritative-provider-identity")
-		evidence.ExpiresAt = resolved.Report.ExpiresAt
+		evidence.ExpiresAt = now.Add(localSmokeEvidenceLifetime)
+		if resolved.Report.ExpiresAt.Before(evidence.ExpiresAt) {
+			evidence.ExpiresAt = resolved.Report.ExpiresAt
+		}
 	} else {
 		evidence.ConfigurationClass = "no-authentication"
-		evidence.ExpiresAt = now.Add(90 * 24 * time.Hour)
+		evidence.ExpiresAt = now.Add(localSmokeEvidenceLifetime)
 	}
 	command := exec.CommandContext(ctx, executablePath, evidence.Command[1:]...)
 	command.Dir = opts.PackageDir
@@ -1039,12 +1043,10 @@ func resolveAuthentication(ctx context.Context, opts InspectOptions) (resolvedAu
 		return resolved, nil
 	}
 	resolved.Report.ProviderTargetFingerprint = fingerprint
-	expiresAt := now.Add(30 * 24 * time.Hour)
+	// A fresh provider check supplies the deadline; package age grants no authority.
+	expiresAt := observation.AttestationExpiresAt.UTC()
 	if observation.ExpiresAt != nil && observation.ExpiresAt.Before(expiresAt) {
 		expiresAt = observation.ExpiresAt.UTC()
-	}
-	if observation.AttestationExpiresAt.Before(expiresAt) {
-		expiresAt = observation.AttestationExpiresAt.UTC()
 	}
 	resolved.Report.ExpiresAt = expiresAt
 	resolved.Report.Authenticated, resolved.Report.State = true, "ready"

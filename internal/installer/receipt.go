@@ -305,12 +305,13 @@ func RuntimeContractSHA256(entry registry.SkillEntry, version string) (string, e
 		Includes             *registry.IncludeSet                   `json:"includes,omitempty"`
 		ProviderDependencies []registry.ProviderDependencyMetadata  `json:"provider_dependencies,omitempty"`
 		CapabilityReadiness  []registry.CapabilityReadinessMetadata `json:"capability_readiness,omitempty"`
+		Compatibility        []registry.CompatibilityRequirement    `json:"compatibility,omitempty"`
 		Orchestration        *registry.OrchestrationMetadata        `json:"orchestration,omitempty"`
 	}{
 		ID: entry.ID, Version: version, Runtimes: entry.Runtimes, Execution: entry.Execution,
 		Artifact: entry.Artifact, Authentication: entry.Authentication, Includes: entry.Includes,
 		ProviderDependencies: entry.ProviderDependencies, CapabilityReadiness: entry.CapabilityReadiness,
-		Orchestration: entry.Orchestration,
+		Orchestration: entry.Orchestration, Compatibility: entry.Compatibility,
 	}
 	payload, err := json.Marshal(contract)
 	if err != nil {

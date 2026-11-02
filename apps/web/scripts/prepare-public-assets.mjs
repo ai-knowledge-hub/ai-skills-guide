@@ -1,3 +1,5 @@
+import { projectCurrentCatalogEntry } from "../lib/currentCatalogueProjection.mjs";
+export { projectCurrentCatalogEntry } from "../lib/currentCatalogueProjection.mjs";
 import { createHash } from "node:crypto";
 import { execFile } from "node:child_process";
 import { promises as fs } from "node:fs";
@@ -372,56 +374,6 @@ function compareSemverIdentifiers(left, right, releaseOutranksPrerelease) {
   return 0;
 }
 
-export function projectCurrentCatalogEntry(storedEntry) {
-  const entry = structuredClone(storedEntry);
-  const hasPositiveCapability = (entry.capability_readiness ?? [])
-    .some((capability) => isPositiveAvailability(capability.availability));
-  if ((entry.usability?.availability === "usable-now" || hasPositiveCapability) && !hasFreshEvidence(entry)) {
-    if (entry.usability?.availability === "usable-now") entry.usability.availability = "not-verified";
-    entry.usability.source = "inferred";
-    for (const capability of entry.capability_readiness ?? []) {
-      if (isPositiveAvailability(capability.availability)) capability.availability = "not-verified";
-    }
-  }
-  if (entry.deprecated) {
-    entry.readiness = "deprecated";
-    let demoted = false;
-    if (isPositiveAvailability(entry.usability?.availability)) {
-      entry.usability.availability = "not-verified";
-      demoted = true;
-    }
-    for (const helper of entry.usability?.executable_helpers ?? []) {
-      if (isPositiveAvailability(helper.availability)) {
-        helper.availability = "not-verified";
-        demoted = true;
-      }
-    }
-    for (const capability of entry.capability_readiness ?? []) {
-      if (isPositiveAvailability(capability.availability)) {
-        capability.availability = "not-verified";
-        demoted = true;
-      }
-    }
-    if (demoted) entry.usability.source = "inferred";
-  }
-  return entry;
-}
-
-function hasFreshEvidence(entry) {
-  if (!entry.verification?.evidence?.length) return false;
-  const observedAt = Date.parse(entry.verification.last_verified_at);
-  if (!Number.isFinite(observedAt)) return false;
-  const now = Date.now();
-  if (observedAt > now + 5 * 60 * 1000) return false;
-  const executableKinds = new Set(["script", "cli", "mcp-server", "service", "orchestrator", "bundle"]);
-  let lifetimeDays = executableKinds.has(entry.execution?.kind) ? 90 : 180;
-  if (entry.authentication?.status && entry.authentication.status !== "none") lifetimeDays = 30;
-  return now - observedAt <= lifetimeDays * 24 * 60 * 60 * 1000;
-}
-
-function isPositiveAvailability(availability) {
-  return availability === "usable-now" || availability === "setup-required";
-}
 
 async function exists(filePath) {
   try {

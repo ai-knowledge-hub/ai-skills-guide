@@ -49,7 +49,9 @@ func buildIndexFor(root, moduleDir, manifestName string) (Index, error) {
 			return Index{}, err
 		}
 		skillDir := filepath.Dir(manifestPath)
-		if err := validatePackage(manifestPath, m, time.Now().UTC(), true, false); err != nil {
+		// A committed index records canonical declarations. Current catalog
+		// projections and operational admission evaluate freshness separately.
+		if err := validatePackage(manifestPath, m, time.Time{}, false, false); err != nil {
 			return Index{}, err
 		}
 		sha, err := digestPublishedArtifact(root, moduleDir, m, skillDir)
@@ -156,6 +158,7 @@ func cloneNonEmptyStrings(values []string) []string {
 func ProjectManifest(m Manifest) SkillEntry {
 	entry := SkillEntry{
 		SchemaVersion:    m.SchemaVersion,
+		Compatibility:    m.Compatibility,
 		ID:               m.ID,
 		Name:             m.Name,
 		Description:      m.Description,
@@ -263,23 +266,28 @@ func hasPositiveCapabilityReadiness(values []CapabilityReadinessMetadata) bool {
 	return false
 }
 
-// ProjectManifestForCurrentCatalog derives the operator-visible projection at
-// publication time without changing the immutable manifest or release
-// sidecar. An expired usable-now claim is retained for audit in Verification,
-// but it cannot remain advertised as current readiness.
-func ProjectManifestForCurrentCatalog(m Manifest, now time.Time) SkillEntry {
+// ProjectManifestForCurrentCatalog preserves historical metadata without treating
+// opaque evidence references or their age as proof of current target readiness.
+// A static publication has no selected runtime target or authoritative live check.
+func ProjectManifestForCurrentCatalog(m Manifest, _ time.Time) SkillEntry {
 	entry := ProjectManifest(m)
 	if m.Usability.Availability == "usable-now" || hasPositiveCapabilityReadiness(m.CapabilityReadiness) {
-		if err := validateFreshEvidence(m.ID, m, now.UTC()); err != nil {
-			if entry.Usability.Availability == "usable-now" {
-				entry.Usability.Availability = "not-verified"
+		if entry.Usability.Availability == "usable-now" {
+			entry.Usability.Availability = "not-verified"
+		}
+		entry.Usability.Source = "inferred"
+		for index := range entry.CapabilityReadiness {
+			if isPositiveUsability(entry.CapabilityReadiness[index].Availability) {
+				entry.CapabilityReadiness[index].Availability = "not-verified"
 			}
+		}
+	}
+	// Helper readiness is an independent executable claim, even when its
+	// parent only delivers instructions and has no capability declarations.
+	for index := range entry.Usability.ExecutableHelpers {
+		if isPositiveUsability(entry.Usability.ExecutableHelpers[index].Availability) {
+			entry.Usability.ExecutableHelpers[index].Availability = "not-verified"
 			entry.Usability.Source = "inferred"
-			for index := range entry.CapabilityReadiness {
-				if isPositiveUsability(entry.CapabilityReadiness[index].Availability) {
-					entry.CapabilityReadiness[index].Availability = "not-verified"
-				}
-			}
 		}
 	}
 	return ApplyLifecycleProjection(entry)

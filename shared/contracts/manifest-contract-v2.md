@@ -1,7 +1,7 @@
 # Manifest Contract v2
 
 - Status: normative
-- Schema versions: `2.0`, `2.1`
+- Schema versions: `2.0`, `2.1`, `2.2`
 - Schema definitions:
   [`manifest-contract-v2.schema.json`](../schemas/manifest-contract-v2.schema.json)
 
@@ -26,7 +26,7 @@ artifact, target, and current evidence.
   manifests use `schema_version: "1.1"` to declare mandatory usability metadata
   explicitly.
 - A manifest that declares any v2 contract field must set
-  `schema_version: "2.0"` or `"2.1"` and provide `execution`, `artifact`,
+  `schema_version: "2.0"`, `"2.1"` or `"2.2"` and provide `execution`, `artifact`,
   `authentication`, plus verification `evidence` and `last_verified_at`.
 - Schema `2.1` adds the `not-verified` availability value and executable-helper
   disclosures. Schema `2.0` does not accept `not-verified`, preventing older
@@ -152,7 +152,9 @@ that any binding currently exists.
 `verification.evidence` contains opaque references to evidence records.
 `verification.last_verified_at` records the latest verification observation
 represented by those references. Neither field may be self-issued as an
-operational claim.
+operational claim. Under [runtime policy v3](operational-readiness-v3.md), the
+observation date remains historical information and does not impose a package
+age limit or establish compatibility, current authentication or live readiness.
 
 Consumers must resolve evidence through its authoritative store and check its
 producer, scope, target key, artifact digest, contract version, observations,
@@ -184,9 +186,14 @@ Repository admission additionally verifies that declared entrypoint, artifact,
 and package-relative command paths exist and remain contained in the package.
 It resolves internal skill, agent, tool, and plugin-include references against
 the repository, rejects incompatible runtime closure and dependency cycles, and
-requires a current verification reference and timestamp for an explicit v2
-`usable-now` claim. These checks do not turn an opaque evidence reference into
-proof: release promotion must still resolve the authoritative evidence record
+requires verification references and a well-formed timestamp for v2 contracts.
+Repository validation and canonical index generation are independent of elapsed
+evidence age: they preserve declarations and immutable release identities.
+Operational package admission at install or use time still requires current
+evidence for an explicit v2 `usable-now` or authenticated contract. Current
+catalog projections suppress expired positive claims without rewriting retained
+manifests. These checks do not turn an opaque evidence reference into proof:
+release promotion must still resolve the authoritative evidence record
 and validate its target, artifact digest, observations, producer, disposition,
 and expiry under the operational readiness contract.
 
@@ -200,3 +207,19 @@ The golden fixtures under `shared/schemas/fixtures/manifest-v2/` cover every
 execution kind and authentication method, all four module schemas, explicit
 artifact absence, required binding enforcement, executable smoke-test
 enforcement, and rejection of embedded secret-shaped fields.
+
+## Schema 2.2 compatibility declarations
+
+Schema 2.2 adds optional `compatibility` requirements. Each item names its kind
+(`api`, `sdk`, `protocol`, `runtime`, `platform`), target name and exact version
+identifiers and/or required capabilities. Optional notes explain constraints.
+Version ranges and wildcard inference are not supported in this first slice.
+These are maintainer declarations, not test results or live readiness evidence.
+Absent metadata means unknown. Schema 2.1 and earlier reject the new field;
+older consumers reject 2.2 rather than silently claiming support.
+
+Website display semantics are defined in
+[catalogue compatibility v1](catalogue-compatibility-v1.md). These declarations
+do not opt a package into new runtime admission behavior or assert live provider
+verification. Runtime policy remains operational v1. Released manifests must
+not be edited in place; separate editorial annotations are version-bound.

@@ -1,7 +1,11 @@
+import CatalogueArtwork from "@/components/CatalogueArtwork";
+import type { Metadata } from "next";
 import { loadSkillsRegistry, uniqueValues } from "@/lib/registry";
 import CatalogClient from "@/components/CatalogClient";
 import { parseMultiValue, type SearchParamValue } from "@/lib/catalogFilters";
 import { getDomainKey } from "@/lib/categoryLabels";
+
+export const metadata: Metadata = { title: "Skills Catalog", description: "Filter instruction packages by intent, runtime, and category, then inspect any independently classified executable helpers." };
 
 type SearchParams = {
   q?: SearchParamValue;
@@ -21,17 +25,13 @@ export default async function SkillsPage({ searchParams = {} }: { searchParams?:
   const availableTags = uniqueValues(registry.skills.flatMap((s) => s.tags));
 
   return (
-    <main>
-      <div className="nav">
-        <a href="/" className="pill">Home</a>
-        <a href="/agents" className="pill">Agents</a>
-        <a href="/plugins" className="pill">Plugins</a>
-        <a href="/tools-mcp" className="pill">Tools &amp; MCP</a>
-        <span className="pill">Catalog</span>
-      </div>
-
-      <h1>Skills Catalog</h1>
-      <p>Filter instruction packages by intent, runtime, and category, then inspect any independently classified executable helpers.</p>
+    <main id="main" tabIndex={-1} className="catalogue-main">
+      <CatalogueArtwork />
+      <header className="catalogue-heading">
+        <h1 aria-label="Skills Catalog">Skills</h1>
+        <p>Filter instruction packages by intent, runtime, and category, then inspect any independently classified executable helpers.</p>
+      </header>
+      <div className="catalogue-content">
 
       <CatalogClient
         entries={registry.skills}
@@ -40,6 +40,7 @@ export default async function SkillsPage({ searchParams = {} }: { searchParams?:
         basePath="/skills"
         initial={{ q, tags, categories: categoriesSelected, runtimes }}
       />
+      </div>
     </main>
   );
 }

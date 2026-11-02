@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestResolveRuntimeTargetExplicitTargetWins(t *testing.T) {
@@ -521,7 +522,7 @@ func TestMaterializeRuntimeAgentUsesNativeClaudeLayout(t *testing.T) {
 		Module: "agents", ID: "marketing/weekly-performance-supervisor", Version: "0.1.0",
 		ManifestPath: "bundled/agents/marketing/weekly-performance-supervisor/agent.yaml",
 	}
-	registration, err := materializeRuntimeComponent(dir, "claude", component)
+	registration, err := EvaluationAt(time.Time{}).materializeRuntimeComponent(dir, "claude", component)
 	if err != nil {
 		t.Fatalf("compile Claude agent: %v", err)
 	}
@@ -539,7 +540,7 @@ func TestMaterializeRuntimeAgentMakesUnsupportedRuntimeVisible(t *testing.T) {
 	if err := copyTree(source, target); err != nil {
 		t.Fatalf("copy agent fixture: %v", err)
 	}
-	registration, err := materializeRuntimeComponent(dir, "codex", runtimeDependencyLockComponent{
+	registration, err := EvaluationAt(time.Time{}).materializeRuntimeComponent(dir, "codex", runtimeDependencyLockComponent{
 		Module: "agents", ID: "marketing/weekly-performance-supervisor", Version: "0.1.0",
 		ManifestPath: "bundled/agents/marketing/weekly-performance-supervisor/agent.yaml",
 	})
@@ -560,7 +561,7 @@ func TestMaterializeRuntimeToolRegistersPackagedMCPConfig(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(toolRoot, ".mcp.json"), []byte("{\"mcpServers\":{\"demo\":{\"command\":\"node\",\"args\":[\"server.js\"]}}}\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	registration, err := materializeRuntimeComponent(dir, "claude", runtimeDependencyLockComponent{
+	registration, err := EvaluationAt(time.Time{}).materializeRuntimeComponent(dir, "claude", runtimeDependencyLockComponent{
 		Module: "tools-mcp", ID: "engineering/demo-server", Version: "1.0.0",
 		ManifestPath: "bundled/tools-mcp/engineering/demo-server/tool.yaml",
 	})
@@ -581,7 +582,7 @@ func TestMaterializeRuntimeToolRejectsEmptyMCPConfig(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(toolRoot, ".mcp.json"), []byte("{\"mcpServers\":{}}\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	_, err := materializeRuntimeComponent(dir, "claude", runtimeDependencyLockComponent{
+	_, err := EvaluationAt(time.Time{}).materializeRuntimeComponent(dir, "claude", runtimeDependencyLockComponent{
 		Module: "tools-mcp", ID: "engineering/demo-server", Version: "1.0.0",
 		ManifestPath: "bundled/tools-mcp/engineering/demo-server/tool.yaml",
 	})
@@ -604,7 +605,7 @@ func TestCompileCodexMCPConfigProducesPortableRootDocument(t *testing.T) {
 		Module: "tools-mcp", ID: "engineering/demo-server", Version: "1.0.0",
 		ManifestPath: "bundled/tools-mcp/engineering/demo-server/tool.yaml",
 	}
-	registration, err := materializeRuntimeComponent(dir, "codex", component)
+	registration, err := EvaluationAt(time.Time{}).materializeRuntimeComponent(dir, "codex", component)
 	if err != nil {
 		t.Fatalf("classify Codex MCP component: %v", err)
 	}
@@ -643,7 +644,7 @@ func TestCompileCodexMCPConfigExecutesFromBundledComponentRoot(t *testing.T) {
 		Module: "tools-mcp", ID: "engineering/demo-server", Version: "1.0.0",
 		ManifestPath: "bundled/tools-mcp/engineering/demo-server/tool.yaml",
 	}
-	registration, err := materializeRuntimeComponent(dir, "codex", component)
+	registration, err := EvaluationAt(time.Time{}).materializeRuntimeComponent(dir, "codex", component)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -686,7 +687,7 @@ func TestCompileCodexMCPConfigRebasesExplicitComponentPaths(t *testing.T) {
 		Module: "tools-mcp", ID: "engineering/demo-server", Version: "1.0.0",
 		ManifestPath: "bundled/tools-mcp/engineering/demo-server/tool.yaml",
 	}
-	registration, err := materializeRuntimeComponent(dir, "codex", component)
+	registration, err := EvaluationAt(time.Time{}).materializeRuntimeComponent(dir, "codex", component)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -720,7 +721,7 @@ func TestMaterializeCodexMCPRequiresPortableTransportType(t *testing.T) {
 	if err := os.WriteFile(filepath.Join(toolRoot, ".mcp.json"), []byte(`{"mcpServers":{"demo":{"command":"node"}}}`+"\n"), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	_, err := materializeRuntimeComponent(dir, "codex", runtimeDependencyLockComponent{
+	_, err := EvaluationAt(time.Time{}).materializeRuntimeComponent(dir, "codex", runtimeDependencyLockComponent{
 		Module: "tools-mcp", ID: "engineering/demo-server", Version: "1.0.0",
 		ManifestPath: "bundled/tools-mcp/engineering/demo-server/tool.yaml",
 	})
@@ -786,7 +787,7 @@ func TestMaterializeCodexMCPRejectsInvalidRemoteEndpointBeforeNativeRegistration
 	if err := os.WriteFile(filepath.Join(toolRoot, ".mcp.json"), []byte(config), 0o644); err != nil {
 		t.Fatal(err)
 	}
-	_, err := materializeRuntimeComponent(dir, "codex", runtimeDependencyLockComponent{
+	_, err := EvaluationAt(time.Time{}).materializeRuntimeComponent(dir, "codex", runtimeDependencyLockComponent{
 		Module: "tools-mcp", ID: "engineering/demo-server", Version: "1.0.0",
 		ManifestPath: "bundled/tools-mcp/engineering/demo-server/tool.yaml",
 	})

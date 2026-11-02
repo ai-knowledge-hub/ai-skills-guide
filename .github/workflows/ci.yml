@@ -21,6 +21,12 @@ jobs:
         run: python3 -m unittest discover -s scripts/tests -p 'test_cli_release.py'
       - name: Run deterministic skill script checks
         run: bash scripts/test-skill-scripts.sh
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Test published-install evidence checks with local fixtures
+        run: python3 -m unittest discover -s scripts/tests -p 'test_published_install.py'
 
   manifest-schemas:
     runs-on: ubuntu-latest

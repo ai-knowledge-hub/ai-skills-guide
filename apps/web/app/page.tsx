@@ -1,99 +1,98 @@
-import Image from "next/image";
+import Link from "next/link";
+import CatalogueArtwork from "@/components/CatalogueArtwork";
 import { loadAgentsRegistry, loadPluginsRegistry, loadSkillsRegistry, loadToolsRegistry } from "@/lib/registry";
-import { FEATURED_PLUGIN_IDS, FEATURED_SKILL_IDS } from "@/lib/home";
-import { formatCategoryFamily } from "@/lib/categoryLabels";
 import { brand } from "@/lib/brand";
+import { publicationGuides, publicationGuideUrl, publicationResourceHref } from "@/lib/publicationLinks";
 import UsabilityBadge from "@/components/UsabilityBadge";
 
 export default async function HomePage() {
   const [skillsRegistry, agentsRegistry, toolsRegistry, pluginsRegistry] = await Promise.all([
     loadSkillsRegistry(), loadAgentsRegistry(), loadToolsRegistry(), loadPluginsRegistry()
   ]);
-  const skills = skillsRegistry.skills;
-  const plugins = pluginsRegistry.skills;
-  const featuredSkills = FEATURED_SKILL_IDS.map(id => skills.find(skill => skill.id === id))
-    .filter((skill): skill is (typeof skills)[number] => Boolean(skill));
-  const featuredPlugins = FEATURED_PLUGIN_IDS.map(id => plugins.find(plugin => plugin.id === id))
-    .filter((plugin): plugin is (typeof plugins)[number] => Boolean(plugin));
-  const newestSkills = [...skills].sort((a, b) => {
-    const date = (entry: typeof a) => new Date(entry.versions.find(v => v.version === entry.latest)?.released_at ?? 0).getTime();
-    return date(b) - date(a) || a.id.localeCompare(b.id);
-  }).slice(0, 3);
+  const entries = {
+    skills: new Map(skillsRegistry.skills.map(entry => [entry.id, entry])),
+    tools: new Map(toolsRegistry.skills.map(entry => [entry.id, entry]))
+  };
+  const guides = publicationGuides.map(guide => ({
+    ...guide,
+    resources: guide.resources.map(resource => {
+      const entry = entries[resource.module].get(resource.id);
+      if (!entry) throw new Error(`Publication relationship points to missing ${resource.module} entry: ${resource.id}`);
+      return { ...resource, entry };
+    })
+  }));
   const modules = [
-    { href: "/skills", name: "Skills", count: skills.length, description: "Task-level instructions and local tools for recurring work." },
-    { href: "/agents", name: "Agents", count: agentsRegistry.skills.length, description: "Orchestrated templates that connect roles, skills and tools." },
-    { href: "/plugins", name: "Plugins", count: plugins.length, description: "Composition templates for skills, tools and team workflows." },
-    { href: "/tools-mcp", name: "Tools & MCP", count: toolsRegistry.skills.length, description: "Integrations and adapters for connecting to other systems." }
+    { href: "/skills", name: "Skills", count: skillsRegistry.skills.length, description: "Reusable procedures for recurring work." },
+    { href: "/agents", name: "Agents", count: agentsRegistry.skills.length, description: "Templates for coordinating roles, skills and tools." },
+    { href: "/plugins", name: "Plugins", count: pluginsRegistry.skills.length, description: "Compositions to inspect and adapt to your workflow." },
+    { href: "/tools-mcp", name: "Tools & MCP", count: toolsRegistry.skills.length, description: "Integrations with explicit setup and access requirements." }
   ];
 
   return (
-    <main id="main" tabIndex={-1} className="home-main">
-      <section className="home-entrance" aria-labelledby="home-title">
-        <picture>
-          <source srcSet="/brand/entrance-480.webp 480w, /brand/entrance-800.webp 800w, /brand/entrance-1600.webp 1600w" sizes="100vw" />
-          <Image className="entrance-image" src="/brand/entrance-1600.webp" alt="" width={1600} height={903} unoptimized loading="eager" fetchPriority="high" />
-        </picture>
-        <div className="entrance-sign">
-          <p className="eyebrow">The open-source catalogue</p>
-          <h1 id="home-title">AI KNOWLEDGE<br />HUB</h1>
-          <p>{brand.descriptor}</p>
-          <a href="/skills" className="button">Explore skills</a>
-        </div>
-      </section>
-
-      <section className="home-section home-intro wrap" aria-labelledby="intro-title">
-        <span className="eyebrow">Inspect. Adapt. Build.</span>
-        <div><h2 id="intro-title">Find the right<br />building block.</h2>
-          <p>Reusable work for marketing, engineering, security and agent operations. Explore the source, check what each package needs, and choose how to use it.</p>
-        </div>
-      </section>
-      <nav className="module-paths wrap" aria-label="Browse the catalogue">
-        {modules.map((module, index) => (
-          <a className="module-path" href={module.href} key={module.href}>
-            <span className="eyebrow">0{index + 1}</span><h3>{module.name}</h3><p>{module.description}</p>
-            <span className="path-count">{module.count} entries</span>
-          </a>
-        ))}
-      </nav>
-
-      <section className="featured-section wrap" aria-labelledby="featured-skills">
-        <div className="section-head"><h2 id="featured-skills">Featured Skills</h2><a href="/skills" className="text-link">View all {skills.length} skills</a></div>
-        <div className="featured-grid">
-          {featuredSkills.map(skill => (
-            <a key={skill.id} href={`/skills/${skill.id}`} className="card catalog-card">
-              <div className="catalog-card-head"><span className="meta catalog-card-domain">{formatCategoryFamily(skill.category)}</span><UsabilityBadge availability={skill.usability.availability} /></div>
-              <h3>{skill.name}</h3><p>{skill.description}</p>
-            </a>
-          ))}
-        </div>
-      </section>
-      <section className="featured-section wrap" aria-labelledby="featured-plugins">
-        <div className="section-head"><h2 id="featured-plugins">Featured Plugins</h2><a href="/plugins" className="text-link">View all {plugins.length} plugins</a></div>
-        <div className="featured-grid">
-          {featuredPlugins.map(plugin => (
-            <a key={plugin.id} href={`/plugins/${plugin.id}`} className="card catalog-card">
-              <div className="catalog-card-head"><span className="meta catalog-card-domain">{formatCategoryFamily(plugin.category)}</span><UsabilityBadge availability={plugin.usability.availability} /></div>
-              <h3>{plugin.name}</h3><p>{plugin.description}</p>
-            </a>
-          ))}
-        </div>
-      </section>
-      <section className="usability-guide" aria-labelledby="use-the-catalog">
-        <div className="home-section wrap">
-          <div className="section-head"><h2 id="use-the-catalog">Know what you are installing</h2></div>
-          <p>Review maturity and operational usability are separate signals.</p>
-          <div className="usability-guide-grid">
-            <article><UsabilityBadge availability="usable-now" /><p>Instructions or a local executable you can use after installation.</p></article>
-            <article><UsabilityBadge availability="setup-required" /><p>An integration or orchestrator that needs credentials, bindings or local policy.</p></article>
-            <article><UsabilityBadge availability="not-verified" /><p>Implementation exists, but current target-scoped operational evidence is not recorded.</p></article>
-            <article><UsabilityBadge availability="template-only" /><p>A reference contract or scaffold to adapt before it can execute.</p></article>
-            <article><UsabilityBadge availability="documentation-only" /><p>An instruction package or guide; it does not provide executable runtime capability.</p></article>
+    <main id="main" tabIndex={-1} className="catalogue-main companion-main">
+      <CatalogueArtwork />
+      <div className="companion-content">
+        <header className="companion-intro">
+          <p className="eyebrow">AI Knowledge Hub · Practical resources</p>
+          <h1>Put the ideas<br />to work.</h1>
+          <p>Skills, tools and templates to accompany the publication. Explore the source and adapt the work to your own context.</p>
+          <div className="actions">
+            <Link href="/skills" className="button">Explore skills</Link>
+            <a href={brand.publication} className="text-link">Read the publication <span aria-hidden="true">↗</span></a>
           </div>
-        </div>
-      </section>
-      <section className="home-recent wrap" aria-labelledby="recent-title">
-        <h2 id="recent-title">Recently added</h2><ul>{newestSkills.map(skill => <li key={skill.id}><a href={`/skills/${skill.id}`}>{skill.name}</a></li>)}</ul>
-      </section>
+        </header>
+
+        <nav className="companion-modules" aria-label="Browse the catalogue">
+          {modules.map((module, index) => (
+            <Link className="companion-module" href={module.href} key={module.href}>
+              <span className="meta module-number" aria-hidden="true">0{index + 1}</span>
+              <h2>{module.name}</h2>
+              <p>{module.description}</p>
+              <span className="meta path-count">{module.count} entries <span aria-hidden="true">↗</span></span>
+            </Link>
+          ))}
+        </nav>
+
+        <section className="publication-paths" aria-labelledby="publication-paths-title">
+          <div className="section-head">
+            <h2 id="publication-paths-title">From reading to practice</h2>
+            <a href={`${brand.publication}/library/`} className="text-link">All articles <span aria-hidden="true">↗</span></a>
+          </div>
+          <p>Selected reading with related resources to inspect and adapt. Each resource keeps its own setup requirements and limits.</p>
+          {guides.map(guide => (
+            <article className="publication-path" key={guide.slug}>
+              <div className="publication-path-reading">
+                <p className="eyebrow">{guide.topic}</p>
+                <h3><a href={publicationGuideUrl(guide)}>{guide.title} <span aria-hidden="true">↗</span></a></h3>
+                <p>{guide.summary}</p>
+              </div>
+              <ul className="publication-path-resources" aria-label={`Resources for ${guide.topic.toLowerCase()}`}>
+                {guide.resources.map(resource => (
+                  <li key={`${resource.module}:${resource.id}`}>
+                    <Link href={publicationResourceHref(resource)}>
+                      <span className="meta">{resource.module === "skills" ? "Skill" : "Tool"}</span>
+                      <span className="publication-resource-name">{resource.entry.name} <span aria-hidden="true">→</span></span>
+                      <UsabilityBadge availability={resource.entry.usability.availability} />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </section>
+
+        <section className="companion-use-guide" aria-labelledby="use-the-catalog">
+          <h2 id="use-the-catalog">Know what you are installing</h2>
+          <p>Review maturity and operational usability are separate signals. Check each resource’s requirements and limits before using it.</p>
+          <dl>
+            <div><dt><UsabilityBadge availability="documentation-only" /></dt><dd>Instructions or guidance. Packaged executable helpers have their own status.</dd></div>
+            <div><dt><UsabilityBadge availability="template-only" /></dt><dd>A reference to adapt before it can execute.</dd></div>
+            <div><dt><UsabilityBadge availability="not-verified" /></dt><dd>Implementation is present; current target-scoped operational evidence is not recorded.</dd></div>
+            <div><dt><UsabilityBadge availability="setup-required" /></dt><dd>Credentials, bindings or local policy are required.</dd></div>
+            <div><dt><UsabilityBadge availability="usable-now" /></dt><dd>Read the entry for the exact scope supported by its evidence.</dd></div>
+          </dl>
+        </section>
+      </div>
     </main>
   );
 }

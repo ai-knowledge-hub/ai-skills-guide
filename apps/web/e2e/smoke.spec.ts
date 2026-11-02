@@ -337,14 +337,14 @@ test("open filter menus stay within the viewport across catalogue breakpoints", 
 
 test("desktop catalogue rail stays at the page edge and stops before the footer", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  for (const route of ["/skills", "/agents", "/plugins", "/tools-mcp"]) {
+  for (const route of ["/", "/skills", "/agents", "/plugins", "/tools-mcp"]) {
     await page.goto(route);
     const rail = page.locator(".catalogue-artwork-panel");
     await expect(rail).toBeVisible();
     await expect.poll(() => page.evaluate(() => {
       const rail = document.querySelector(".catalogue-artwork-panel")!.getBoundingClientRect();
       const header = document.querySelector(".site-header")!.getBoundingClientRect();
-      const reading = document.querySelector(".catalogue-content")!.getBoundingClientRect();
+      const reading = document.querySelector(".catalogue-content, .companion-content")!.getBoundingClientRect();
       return Math.abs(rail.left) < 1 && Math.abs(rail.top - header.bottom) < 1
         && Math.abs(rail.bottom - window.innerHeight) < 1 && Math.abs(reading.left - rail.right) < 1;
     })).toBe(true);
@@ -429,12 +429,40 @@ test("catalogue downloads only the artwork used by its active layout", async ({ 
   for (const width of [1440, 390]) {
     await page.goto("about:blank");
     await page.setViewportSize({ width, height: 1000 });
-    for (const route of ["/skills", "/agents", "/plugins", "/tools-mcp"]) {
+    for (const route of ["/", "/skills", "/agents", "/plugins", "/tools-mcp"]) {
       await page.goto(route, { waitUntil: "networkidle" });
       const artwork = await page.evaluate(() => performance.getEntriesByType("resource")
         .map(resource => new URL(resource.name).pathname)
-        .filter(path => /^\/brand\/community-.*\.webp$/.test(path)));
-      expect(artwork, `${route} at ${width}px`).toEqual([width === 1440 ? "/brand/community-1600.webp" : "/brand/community-1200.webp"]);
+        .filter(path => /^\/brand\/(community|entrance|folded-field)-.*\.webp$/.test(path)));
+      expect(artwork, `${route} at ${width}px`).toEqual([width === 1440 ? "/brand/folded-field-1600.webp" : "/brand/folded-field-960.webp"]);
     }
   }
+});
+
+test("publication paths lead to related resources and back to the reviewed article without changing readiness", async ({ page }) => {
+  // Reviewed against the three published guides; this inventory does not use
+  // the production mapping to calculate its own expected destinations.
+  const pairs = [
+    ["/skills/marketing/meta-google-weekly-performance-review", "agent-architect-playbook-building-ai-skills-marketing-adtech"],
+    ["/skills/marketing/ai-output-eval-scorecard", "agent-architect-playbook-building-ai-skills-marketing-adtech"],
+    ["/tools-mcp/analytics/ga4-mcp-connector", "muscles-of-the-machine-tools-mcp-cli-first-principles-marketing"],
+    ["/tools-mcp/warehouse/bigquery-mcp-query-runner", "muscles-of-the-machine-tools-mcp-cli-first-principles-marketing"],
+    ["/skills/security/ad-platform-agent-auth-review", "building-secure-marketing-agents-ad-platform-authentication-architecture"],
+    ["/skills/agentops/ad-platform-policy-gate-designer", "building-secure-marketing-agents-ad-platform-authentication-architecture"],
+    ["/tools-mcp/adtech/ad-platform-executor-template", "building-secure-marketing-agents-ad-platform-authentication-architecture"]
+  ];
+  for (const [resource, article] of pairs) {
+    await page.goto("/");
+    const paths = page.getByRole("region", { name: "From reading to practice" });
+    const articleURL = `https://ai-knowledge-hub.org/library/${article}/`;
+    await expect(paths.locator(`a[href="${articleURL}"]`)).toBeVisible();
+    await paths.locator(`a[href="${resource}"]`).click();
+    await expect(page).toHaveURL(new RegExp(`${resource}$`));
+    await page.getByRole("link", { name: "Related reading", exact: true }).click();
+    await expect(page.locator("#related-reading")).toBeVisible();
+    await expect(page.locator(`#related-reading a[href="${articleURL}"]`)).toBeVisible();
+    await expect(page.locator("#usability .usability-badge").first()).toHaveText(resource.startsWith("/skills/") ? "Documentation" : "Setup required");
+  }
+  await page.goto("/skills/engineering/implementation-strategy");
+  await expect(page.getByRole("heading", { name: "Related reading", exact: true })).toHaveCount(0);
 });

@@ -1,5 +1,8 @@
 # Catalogue rebranding · 29 October 2026
 
+Follow-up design: [quieter practical companion](practical-companion-landing.md),
+with the owner-selected folded field, narrower rail and curated reading links.
+
 Current review evidence: [final verification, 1 November 2026](rebrand-verification-2026-11-01.md).
 The dated implementation entries below are historical checkpoints; their
 local-only and pending-rollout statements do not describe the later merged state.

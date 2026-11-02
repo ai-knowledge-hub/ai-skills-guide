@@ -1,0 +1,1860 @@
+{
+  "views": 120,
+  "overflow": [],
+  "headingFailures": [],
+  "themeFailures": [],
+  "ctaFailures": [],
+  "rows": [
+    {
+      "name": "home",
+      "route": "/",
+      "width": 320,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "railWidth": 0,
+      "ctaInViewport": true,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "skills",
+      "route": "/skills",
+      "width": 320,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "agents",
+      "route": "/agents",
+      "width": 320,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "plugins",
+      "route": "/plugins",
+      "width": 320,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "tools",
+      "route": "/tools-mcp",
+      "width": 320,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "skill-reading",
+      "route": "/skills/marketing/meta-google-weekly-performance-review",
+      "width": 320,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "tool-reading",
+      "route": "/tools-mcp/warehouse/bigquery-mcp-query-runner",
+      "width": 320,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "unmapped",
+      "route": "/skills/engineering/implementation-strategy",
+      "width": 320,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "empty",
+      "route": "/skills?q=companion-no-match",
+      "width": 320,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "missing",
+      "route": "/skills/companion-missing",
+      "width": 320,
+      "requestedTheme": "dark",
+      "status": 404,
+      "theme": "dark",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "home",
+      "route": "/",
+      "width": 390,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "railWidth": 0,
+      "ctaInViewport": true,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "skills",
+      "route": "/skills",
+      "width": 390,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "agents",
+      "route": "/agents",
+      "width": 390,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "plugins",
+      "route": "/plugins",
+      "width": 390,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "tools",
+      "route": "/tools-mcp",
+      "width": 390,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "skill-reading",
+      "route": "/skills/marketing/meta-google-weekly-performance-review",
+      "width": 390,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "tool-reading",
+      "route": "/tools-mcp/warehouse/bigquery-mcp-query-runner",
+      "width": 390,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "unmapped",
+      "route": "/skills/engineering/implementation-strategy",
+      "width": 390,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "empty",
+      "route": "/skills?q=companion-no-match",
+      "width": 390,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "missing",
+      "route": "/skills/companion-missing",
+      "width": 390,
+      "requestedTheme": "dark",
+      "status": 404,
+      "theme": "dark",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "home",
+      "route": "/",
+      "width": 768,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "railWidth": 0,
+      "ctaInViewport": true,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "skills",
+      "route": "/skills",
+      "width": 768,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "agents",
+      "route": "/agents",
+      "width": 768,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "plugins",
+      "route": "/plugins",
+      "width": 768,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "tools",
+      "route": "/tools-mcp",
+      "width": 768,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "skill-reading",
+      "route": "/skills/marketing/meta-google-weekly-performance-review",
+      "width": 768,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "tool-reading",
+      "route": "/tools-mcp/warehouse/bigquery-mcp-query-runner",
+      "width": 768,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "unmapped",
+      "route": "/skills/engineering/implementation-strategy",
+      "width": 768,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "empty",
+      "route": "/skills?q=companion-no-match",
+      "width": 768,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "missing",
+      "route": "/skills/companion-missing",
+      "width": 768,
+      "requestedTheme": "dark",
+      "status": 404,
+      "theme": "dark",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "home",
+      "route": "/",
+      "width": 1024,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "railWidth": 184.3125,
+      "ctaInViewport": true,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "skills",
+      "route": "/skills",
+      "width": 1024,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "railWidth": 184.3125,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "agents",
+      "route": "/agents",
+      "width": 1024,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "railWidth": 184.3125,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "plugins",
+      "route": "/plugins",
+      "width": 1024,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "railWidth": 184.3125,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "tools",
+      "route": "/tools-mcp",
+      "width": 1024,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "railWidth": 184.3125,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "skill-reading",
+      "route": "/skills/marketing/meta-google-weekly-performance-review",
+      "width": 1024,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "tool-reading",
+      "route": "/tools-mcp/warehouse/bigquery-mcp-query-runner",
+      "width": 1024,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "unmapped",
+      "route": "/skills/engineering/implementation-strategy",
+      "width": 1024,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "empty",
+      "route": "/skills?q=companion-no-match",
+      "width": 1024,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "railWidth": 184.3125,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "missing",
+      "route": "/skills/companion-missing",
+      "width": 1024,
+      "requestedTheme": "dark",
+      "status": 404,
+      "theme": "dark",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "home",
+      "route": "/",
+      "width": 1440,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "railWidth": 259.1875,
+      "ctaInViewport": true,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "skills",
+      "route": "/skills",
+      "width": 1440,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "railWidth": 259.1875,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "agents",
+      "route": "/agents",
+      "width": 1440,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "railWidth": 259.1875,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "plugins",
+      "route": "/plugins",
+      "width": 1440,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "railWidth": 259.1875,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "tools",
+      "route": "/tools-mcp",
+      "width": 1440,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "railWidth": 259.1875,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "skill-reading",
+      "route": "/skills/marketing/meta-google-weekly-performance-review",
+      "width": 1440,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "tool-reading",
+      "route": "/tools-mcp/warehouse/bigquery-mcp-query-runner",
+      "width": 1440,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "unmapped",
+      "route": "/skills/engineering/implementation-strategy",
+      "width": 1440,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "empty",
+      "route": "/skills?q=companion-no-match",
+      "width": 1440,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "railWidth": 259.1875,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "missing",
+      "route": "/skills/companion-missing",
+      "width": 1440,
+      "requestedTheme": "dark",
+      "status": 404,
+      "theme": "dark",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "home",
+      "route": "/",
+      "width": 1920,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "railWidth": 280,
+      "ctaInViewport": true,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "skills",
+      "route": "/skills",
+      "width": 1920,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "railWidth": 280,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "agents",
+      "route": "/agents",
+      "width": 1920,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "railWidth": 280,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "plugins",
+      "route": "/plugins",
+      "width": 1920,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "railWidth": 280,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "tools",
+      "route": "/tools-mcp",
+      "width": 1920,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "railWidth": 280,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "skill-reading",
+      "route": "/skills/marketing/meta-google-weekly-performance-review",
+      "width": 1920,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "tool-reading",
+      "route": "/tools-mcp/warehouse/bigquery-mcp-query-runner",
+      "width": 1920,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "unmapped",
+      "route": "/skills/engineering/implementation-strategy",
+      "width": 1920,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "empty",
+      "route": "/skills?q=companion-no-match",
+      "width": 1920,
+      "requestedTheme": "dark",
+      "status": 200,
+      "theme": "dark",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "railWidth": 280,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "missing",
+      "route": "/skills/companion-missing",
+      "width": 1920,
+      "requestedTheme": "dark",
+      "status": 404,
+      "theme": "dark",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "home",
+      "route": "/",
+      "width": 320,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "railWidth": 0,
+      "ctaInViewport": true,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "skills",
+      "route": "/skills",
+      "width": 320,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "agents",
+      "route": "/agents",
+      "width": 320,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "plugins",
+      "route": "/plugins",
+      "width": 320,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "tools",
+      "route": "/tools-mcp",
+      "width": 320,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "skill-reading",
+      "route": "/skills/marketing/meta-google-weekly-performance-review",
+      "width": 320,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "tool-reading",
+      "route": "/tools-mcp/warehouse/bigquery-mcp-query-runner",
+      "width": 320,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "unmapped",
+      "route": "/skills/engineering/implementation-strategy",
+      "width": 320,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "empty",
+      "route": "/skills?q=companion-no-match",
+      "width": 320,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "missing",
+      "route": "/skills/companion-missing",
+      "width": 320,
+      "requestedTheme": "light",
+      "status": 404,
+      "theme": "light",
+      "scrollWidth": 320,
+      "viewport": 320,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "home",
+      "route": "/",
+      "width": 390,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "railWidth": 0,
+      "ctaInViewport": true,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "skills",
+      "route": "/skills",
+      "width": 390,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "agents",
+      "route": "/agents",
+      "width": 390,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "plugins",
+      "route": "/plugins",
+      "width": 390,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "tools",
+      "route": "/tools-mcp",
+      "width": 390,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "skill-reading",
+      "route": "/skills/marketing/meta-google-weekly-performance-review",
+      "width": 390,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "tool-reading",
+      "route": "/tools-mcp/warehouse/bigquery-mcp-query-runner",
+      "width": 390,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "unmapped",
+      "route": "/skills/engineering/implementation-strategy",
+      "width": 390,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "empty",
+      "route": "/skills?q=companion-no-match",
+      "width": 390,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "missing",
+      "route": "/skills/companion-missing",
+      "width": 390,
+      "requestedTheme": "light",
+      "status": 404,
+      "theme": "light",
+      "scrollWidth": 390,
+      "viewport": 390,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "home",
+      "route": "/",
+      "width": 768,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "railWidth": 0,
+      "ctaInViewport": true,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "skills",
+      "route": "/skills",
+      "width": 768,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "agents",
+      "route": "/agents",
+      "width": 768,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "plugins",
+      "route": "/plugins",
+      "width": 768,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "tools",
+      "route": "/tools-mcp",
+      "width": 768,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "skill-reading",
+      "route": "/skills/marketing/meta-google-weekly-performance-review",
+      "width": 768,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "tool-reading",
+      "route": "/tools-mcp/warehouse/bigquery-mcp-query-runner",
+      "width": 768,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "unmapped",
+      "route": "/skills/engineering/implementation-strategy",
+      "width": 768,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "empty",
+      "route": "/skills?q=companion-no-match",
+      "width": 768,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "railWidth": 0,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-960.webp"
+      ]
+    },
+    {
+      "name": "missing",
+      "route": "/skills/companion-missing",
+      "width": 768,
+      "requestedTheme": "light",
+      "status": 404,
+      "theme": "light",
+      "scrollWidth": 768,
+      "viewport": 768,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "home",
+      "route": "/",
+      "width": 1024,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "railWidth": 184.3125,
+      "ctaInViewport": true,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "skills",
+      "route": "/skills",
+      "width": 1024,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "railWidth": 184.3125,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "agents",
+      "route": "/agents",
+      "width": 1024,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "railWidth": 184.3125,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "plugins",
+      "route": "/plugins",
+      "width": 1024,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "railWidth": 184.3125,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "tools",
+      "route": "/tools-mcp",
+      "width": 1024,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "railWidth": 184.3125,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "skill-reading",
+      "route": "/skills/marketing/meta-google-weekly-performance-review",
+      "width": 1024,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "tool-reading",
+      "route": "/tools-mcp/warehouse/bigquery-mcp-query-runner",
+      "width": 1024,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "unmapped",
+      "route": "/skills/engineering/implementation-strategy",
+      "width": 1024,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "empty",
+      "route": "/skills?q=companion-no-match",
+      "width": 1024,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "railWidth": 184.3125,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "missing",
+      "route": "/skills/companion-missing",
+      "width": 1024,
+      "requestedTheme": "light",
+      "status": 404,
+      "theme": "light",
+      "scrollWidth": 1024,
+      "viewport": 1024,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "home",
+      "route": "/",
+      "width": 1440,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "railWidth": 259.1875,
+      "ctaInViewport": true,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "skills",
+      "route": "/skills",
+      "width": 1440,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "railWidth": 259.1875,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "agents",
+      "route": "/agents",
+      "width": 1440,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "railWidth": 259.1875,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "plugins",
+      "route": "/plugins",
+      "width": 1440,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "railWidth": 259.1875,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "tools",
+      "route": "/tools-mcp",
+      "width": 1440,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "railWidth": 259.1875,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "skill-reading",
+      "route": "/skills/marketing/meta-google-weekly-performance-review",
+      "width": 1440,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "tool-reading",
+      "route": "/tools-mcp/warehouse/bigquery-mcp-query-runner",
+      "width": 1440,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "unmapped",
+      "route": "/skills/engineering/implementation-strategy",
+      "width": 1440,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "empty",
+      "route": "/skills?q=companion-no-match",
+      "width": 1440,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "railWidth": 259.1875,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "missing",
+      "route": "/skills/companion-missing",
+      "width": 1440,
+      "requestedTheme": "light",
+      "status": 404,
+      "theme": "light",
+      "scrollWidth": 1440,
+      "viewport": 1440,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "home",
+      "route": "/",
+      "width": 1920,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "railWidth": 280,
+      "ctaInViewport": true,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "skills",
+      "route": "/skills",
+      "width": 1920,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "railWidth": 280,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "agents",
+      "route": "/agents",
+      "width": 1920,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "railWidth": 280,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "plugins",
+      "route": "/plugins",
+      "width": 1920,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "railWidth": 280,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "tools",
+      "route": "/tools-mcp",
+      "width": 1920,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "railWidth": 280,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "skill-reading",
+      "route": "/skills/marketing/meta-google-weekly-performance-review",
+      "width": 1920,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "tool-reading",
+      "route": "/tools-mcp/warehouse/bigquery-mcp-query-runner",
+      "width": 1920,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "unmapped",
+      "route": "/skills/engineering/implementation-strategy",
+      "width": 1920,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    },
+    {
+      "name": "empty",
+      "route": "/skills?q=companion-no-match",
+      "width": 1920,
+      "requestedTheme": "light",
+      "status": 200,
+      "theme": "light",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "railWidth": 280,
+      "animations": 0,
+      "artwork": [
+        "/brand/folded-field-1600.webp"
+      ]
+    },
+    {
+      "name": "missing",
+      "route": "/skills/companion-missing",
+      "width": 1920,
+      "requestedTheme": "light",
+      "status": 404,
+      "theme": "light",
+      "scrollWidth": 1920,
+      "viewport": 1920,
+      "headingInside": true,
+      "animations": 0,
+      "artwork": []
+    }
+  ],
+  "date": "2026-11-01",
+  "baseline": "96cc5f9",
+  "server": "next start",
+  "node": "20.19.4",
+  "browserTestsPassed": 33,
+  "browserTestSeconds": 27.2,
+  "liveArticleDestinations": {
+    "reviewedOn": "2026-11-01",
+    "status": 200,
+    "count": 3
+  },
+  "relatedResourceLinks": 7,
+  "ownerSelectedSourceSHA256": "699561fd7d949d9c49b12bf8e1c83b9ae90b880bc28072ad6bbdb8b0b7d10ac2",
+  "browser": "156.0.8078.74",
+  "checks": [
+    {
+      "check": "failed-artwork-and-reduced-motion",
+      "route": "/",
+      "theme": "dark",
+      "overflow": false,
+      "reduced": true,
+      "animations": 0,
+      "title": "Put the ideasto work."
+    },
+    {
+      "check": "failed-artwork-and-reduced-motion",
+      "route": "/skills",
+      "theme": "dark",
+      "overflow": false,
+      "reduced": true,
+      "animations": 0,
+      "title": "Skills"
+    },
+    {
+      "check": "failed-artwork-and-reduced-motion",
+      "route": "/",
+      "theme": "light",
+      "overflow": false,
+      "reduced": true,
+      "animations": 0,
+      "title": "Put the ideasto work."
+    },
+    {
+      "check": "failed-artwork-and-reduced-motion",
+      "route": "/skills",
+      "theme": "light",
+      "overflow": false,
+      "reduced": true,
+      "animations": 0,
+      "title": "Skills"
+    },
+    {
+      "check": "no-javascript-home-resource-reading",
+      "url": "http://127.0.0.1:3000/skills/marketing/meta-google-weekly-performance-review#related-reading",
+      "commands": 3
+    },
+    {
+      "check": "keyboard-skip-to-primary-action",
+      "label": "Explore skills",
+      "outline": "2px",
+      "visible": true
+    }
+  ]
+}

@@ -5,6 +5,8 @@ import { buildInstallSnippet, getSkillById, loadSkillsRegistry } from "@/lib/reg
 import InstallCommands from "@/components/InstallCommands";
 import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
 import UsabilityPanel from "@/components/UsabilityPanel";
+import RelatedReading from "@/components/RelatedReading";
+import { relatedPublicationGuides } from "@/lib/publicationLinks";
 
 export async function generateMetadata({ params }: { params: { id: string[] } }): Promise<Metadata> {
   const entry = await getSkillById(params.id.join("/"));
@@ -22,6 +24,7 @@ export default async function SkillDetailPage({ params }: { params: { id: string
   if (!skill) {
     notFound();
   }
+  const relatedGuides = relatedPublicationGuides("skills", skill.id);
 
   return (
     <main id="main" tabIndex={-1} className="detail-page">
@@ -32,7 +35,7 @@ export default async function SkillDetailPage({ params }: { params: { id: string
         <h1>{skill.name}</h1>
         <p>{skill.description}</p>
         <p className="meta">{skill.tags.join(", ")}</p>
-        <div className="detail-use-summary"><UsabilityBadge availability={skill.usability.availability} /><span className="meta">{skill.usability.execution}</span><a href="#usability" className="text-link">Requirements &amp; limits</a></div>
+        <div className="detail-use-summary"><UsabilityBadge availability={skill.usability.availability} /><span className="meta">{skill.usability.execution}</span><a href="#usability" className="text-link">Requirements &amp; limits</a>{relatedGuides.length ? <a href="#related-reading" className="text-link">Related reading</a> : null}</div>
         <div className="detail-install-lead">
           <h2 className="meta">{skill.usability.availability === "template-only" ? "Reference template" : "Install this skill"}</h2>
           <InstallCommands
@@ -47,6 +50,7 @@ export default async function SkillDetailPage({ params }: { params: { id: string
 
       <section className="detail-grid">
         <UsabilityPanel catalogueCompatibility={skill.catalogueCompatibility} compatibility={skill.compatibility} usability={skill.usability} />
+        <RelatedReading guides={relatedGuides} module="skills" id={skill.id} />
         <article className="card detail-panel">
           <h2>Operational Summary</h2>
           <p><span className="meta">Use when:</span> {skill.operational?.use_when ?? "Not documented"}</p>

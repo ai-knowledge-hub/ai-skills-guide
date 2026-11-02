@@ -63,7 +63,7 @@
       "sha256": "cbeb96f61492f471e062b8a4b8ea2ec60642a2672a5f3c072ab9af96523d6acb",
       "bytes": 197244,
       "importedOn": "2026-11-01",
-      "usage": "Active narrow desktop rail; 81% center CSS crop features the owner-selected right-hand oval swirl (2 November 2026).",
+      "usage": "Active desktop rail at 24vw, capped at 380px; 81% center CSS crop features the owner-selected right-hand oval swirl (2 November 2026).",
       "technique": "Full-frame proportional resize and WebP encoding; no authored geometry edited."
     }
   ]

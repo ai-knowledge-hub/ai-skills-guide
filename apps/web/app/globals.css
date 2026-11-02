@@ -117,7 +117,7 @@ a.catalog-card:hover { text-decoration: none; }
 @media (min-width: 1000px) and (min-aspect-ratio: 4/5) {
   .catalogue-main {
     --catalogue-sticky-top: calc(var(--header-height) + 1px); /* Header's bottom border. */
-    --catalogue-rail-width: clamp(160px, 18vw, 280px);
+    --catalogue-rail-width: clamp(220px, 24vw, 380px);
     --catalogue-rail-gap: clamp(28px, 3vw, 48px);
     padding-inline: 0;
   }

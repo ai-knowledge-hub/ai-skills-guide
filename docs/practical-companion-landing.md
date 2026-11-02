@@ -23,12 +23,12 @@ Interaction follows ordinary links, visible focus/hover cues and the existing
 sticky rail. The selected artwork, text and figures remain static. This calmer
 brief does not add an entrance animation, a new renderer or a motion dependency.
 
-Desktop uses `clamp(160px, 18vw, 280px)` for the shared home/catalogue rail,
+Desktop uses `clamp(220px, 24vw, 380px)` for the shared home/catalogue rail,
 contained by `main` so it stops before the footer. Following the owner's
 2 November crop selection, its full-height crop uses `81% center` registration
 to feature the right-hand oval swirl rather than the middle folds. The source
 artwork and delivery files are unchanged. At 1440 CSS pixels the rail is
-approximately 259px,
+approximately 346px, increased from the initial 259px crop,
 compared with approximately 410px at a 900px-high viewport in the prior design.
 Compact home layouts use a 100px artwork band (140px at tablet widths); catalogue
 pages retain their compact heading treatment with the new artwork.
@@ -135,14 +135,17 @@ review step. No provider verification or production promotion occurs.
 The owner selected the oval swirl shown in their screenshot. The shared desktop
 rail now uses `81% center` instead of the original `44% center`, bringing that
 part of the existing artwork into view on Home and all four catalogue pages.
-Rail width, scaling, compact layouts, source pixels and delivery hashes are
-unchanged.
+The owner subsequently approved widening the shared desktop rail from 18vw
+(280px maximum) to 24vw (380px maximum), closer to the publication Library's
+proportions. At 1440px this increases the visible artwork from about 259px to
+346px. Scaling, compact layouts, source pixels and delivery hashes are unchanged.
 
-The production build, lint/types and two existing browser regressions pass
-(rail/footer containment and active-layout artwork requests). A separate local
-Chrome check covers five routes × two themes × six viewport sizes: 1024×768,
-1440×900, 1920×1080, 390×844, 768×1024 and 1024×1440. All 60 views reflow without
-horizontal overflow; all 30 desktop cases keep the selected oval's source focal
-point inside the rail's central half. No page exceptions were observed.
+The production build, lint/types and three existing browser regressions pass
+(open filter menus, rail/footer containment and active-layout artwork requests).
+A separate local Chrome check covers five routes × two themes × eight viewport
+sizes: 1000×768, 1024×768, 1440×900, 1600×900, 1920×1080, 390×844, 768×1024 and
+1024×1440. All 80 views reflow without horizontal or filter-grid overflow; all
+50 desktop cases keep the selected oval's source focal point inside the rail's
+central half. No page exceptions were observed.
 
 [Home, light](reviews/oval-artwork-2026-11-02/home-1440-light.jpg) · [Skills, dark](reviews/oval-artwork-2026-11-02/skills-1440-dark.jpg)

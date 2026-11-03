@@ -188,3 +188,28 @@ Verification against the local Node 20 production build:
 Chrome verification is bounded; this is not a cross-browser accessibility audit.
 
 [Home, light](reviews/oval-artwork-2026-11-02/home-1440-light.jpg) · [Skills, dark](reviews/oval-artwork-2026-11-02/skills-1440-dark.jpg) · [Phone catalogue](reviews/oval-artwork-2026-11-02/tools-390-light.jpg) · [Footer](reviews/oval-artwork-2026-11-02/footer-1440-light.jpg)
+
+## Library artwork restored — 3 November 2026
+
+The owner chose to return to the publication Library's community spiral after
+reviewing the folded-field oval at the larger scale. This supersedes the oval
+selection above. The full-width masthead, larger title plates, shared reading
+edge, quieter Home introduction and 24vw rail (380px maximum) are retained.
+
+Home and all four catalogues now use the existing `community-1600.webp` desktop
+rail at `40% top / auto 100%`, restoring the earlier Library crop. Compact layouts
+use `community-1200.webp` in the existing artwork bands. Both delivery files are
+unchanged publication imports with their recorded hashes. The folded-field
+source and delivery files remain archived with their source record; they are
+no longer requested by these pages. Provenance and the active-layout download
+regression reflect the restored asset selection.
+
+The Node 20 production build (including lint/types), Markdown and diff checks
+pass. All three focused browser regressions pass: open filters, rail/footer
+containment and one active-layout artwork request. A separate Chrome check
+covers five routes × two themes × seven viewports (320, 390, 768, 1000, 1440,
+1920 and a 1024×1440 portrait layout): 70 views with no horizontal overflow,
+clipped heading boxes or page exceptions. Each view requests exactly the active
+community artwork file. Desktop and phone captures were inspected visually.
+
+[Home, light](reviews/library-artwork-2026-11-03/home-1440-light.jpg) · [Skills, dark](reviews/library-artwork-2026-11-03/skills-1440-dark.jpg) · [Phone catalogue](reviews/library-artwork-2026-11-03/tools-mcp-390-light.jpg)

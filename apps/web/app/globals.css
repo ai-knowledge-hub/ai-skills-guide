@@ -48,7 +48,7 @@ main:focus { outline: none; }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
 /* A quiet practical companion. The authored art is isolated from reading. */
 .companion-main { padding-inline: 0; }
-.companion-main::before { content: ''; display: block; height: 100px; background: #fff url('/brand/folded-field-960.webp') 44% 46% / cover no-repeat; }
+.companion-main::before { content: ''; display: block; height: 100px; background: #fff url('/brand/community-1200.webp') 40% 46% / cover no-repeat; }
 .companion-content { padding-inline: var(--gutter); }
 .companion-content > * { max-width: 1030px; }
 .companion-intro { padding-block: 44px 40px; }
@@ -108,7 +108,7 @@ a.catalog-card:hover { text-decoration: none; }
 /* A shared optical frontispiece; no arbitrary module-to-motif mapping. */
 .catalogue-main { isolation: isolate; position: relative; max-width: none; padding-top: 0; }
 .catalogue-heading { position: relative; padding-block: 0 36px; background: var(--paper); }
-.catalogue-heading::before { content: ''; display: block; margin-inline: calc(-1 * var(--gutter)); width: calc(100% + 2 * var(--gutter)); height: 240px; background: #fff url('/brand/folded-field-960.webp') center / cover no-repeat; }
+.catalogue-heading::before { content: ''; display: block; margin-inline: calc(-1 * var(--gutter)); width: calc(100% + 2 * var(--gutter)); height: 240px; background: #fff url('/brand/community-1200.webp') center / cover no-repeat; }
 .catalogue-heading h1 { position: relative; display: table; padding: 16px 28px 22px; background: #fff; color: #000; font-size: clamp(76px, 8vw, 124px); line-height: .95; font-weight: 900; letter-spacing: -.045em; text-transform: uppercase; margin-top: -32px; max-width: 100%; overflow-wrap: anywhere; }
 .catalogue-heading > p { margin-top: 36px; max-width: 56ch; font-size: 17px; background: var(--paper); }
 .catalogue-content { position: relative; background: var(--paper); max-width: 1030px; }
@@ -125,7 +125,7 @@ a.catalog-card:hover { text-decoration: none; }
   .companion-content > * { max-width: 1030px; }
   .companion-intro { padding-top: 72px; }
   .catalogue-artwork { display: block; position: absolute; inset: 0 auto 0 0; width: var(--catalogue-rail-width); z-index: -1; pointer-events: none; }
-  .catalogue-artwork-panel { position: sticky; top: var(--catalogue-sticky-top); height: calc(100svh - var(--catalogue-sticky-top)); max-height: 100%; background: #fff url('/brand/folded-field-1600.webp') 81% center / auto 100% no-repeat; }
+  .catalogue-artwork-panel { position: sticky; top: var(--catalogue-sticky-top); height: calc(100svh - var(--catalogue-sticky-top)); max-height: 100%; background: #fff url('/brand/community-1600.webp') 40% top / auto 100% no-repeat; }
   .catalogue-main .catalogue-heading { max-width: none; padding-top: 72px; background: none; }
   .catalogue-heading::before { content: none; background-image: none; }
   .catalogue-heading h1 { margin-top: 0; margin-left: calc(var(--catalogue-rail-width) - 48px); max-width: calc(100% - var(--catalogue-rail-width) + 48px - var(--gutter)); }

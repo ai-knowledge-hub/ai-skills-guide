@@ -33,7 +33,10 @@ maintainer declarations, not live provider observations.
 Success means that the selected package files were installed for the selected
 adapter. It does not establish application discovery, provider authentication,
 model capabilities, live readiness or workflow execution. Setup guidance points
-to installed documentation rather than unavailable CLI commands.
+to `skills-hub help setup`, an offline guide embedded in the installer binary.
+The [embedded guide](../cmd/skills-hub/setup-guide.md) supersedes retained README
+readiness commands and gives a direct GA4 MCP
+configuration/launch path without modifying package contents or receipts.
 
 Installation retains HTTPS-origin restrictions, exact artifact/manifest
 checksums, schemas, safe extraction, eligibility and platform checks, dependency
@@ -83,3 +86,10 @@ Existing archive, receipt, recovery and release-publication tests supply the
 unchanged integrity oracles. A successful mock or exit status alone is not
 published-client proof; the existing independent file/receipt checker remains
 required.
+
+The retained-package setup regression is run separately with Go and Node.js 22+
+(`python3 -m unittest discover -s scripts/tests -p 'test_installer_setup.py'`).
+It follows a real installation's emitted help command, resolves the embedded MCP
+registration to the retained GA4 package, and executes its credential-free
+healthcheck from outside the checkout with provider fetches blocked. CI selects
+Node 22 for this test. It verifies launch and immutable bytes, not provider access.

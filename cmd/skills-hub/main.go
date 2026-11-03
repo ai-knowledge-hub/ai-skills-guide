@@ -42,8 +42,7 @@ func main() {
 	case "auth", "doctor", "smoke", "run-agent":
 		err = runReadinessCommand(cmd, args)
 	case "help", "-h", "--help":
-		printUsage()
-		return
+		err = runHelp(args)
 	default:
 		err = fmt.Errorf("unknown command: %s", cmd)
 	}
@@ -498,9 +497,12 @@ func runInstall(args []string) error {
 	printUsabilitySummary(os.Stdout, skill)
 	if moduleName == "plugins" {
 		printPluginInstallNotes(os.Stdout, os.Stderr, skill, rt.Runtime, destination, runtimeArtifacts, dependencyResult)
-	} else if moduleName == "agents" && skill.Orchestration != nil {
-		fmt.Printf("install.runtime_artifacts: %s\n", strings.Join(runtimeArtifacts, ", "))
-		printPluginDependencySummary(os.Stdout, dependencyResult)
+	} else {
+		printProviderAuthNextStep(os.Stdout, skill, resolvedVersion.Version, rt.Runtime, rt.TargetPath)
+		if moduleName == "agents" && skill.Orchestration != nil {
+			fmt.Printf("install.runtime_artifacts: %s\n", strings.Join(runtimeArtifacts, ", "))
+			printPluginDependencySummary(os.Stdout, dependencyResult)
+		}
 	}
 	return nil
 }
@@ -706,6 +708,7 @@ func printUsage() {
 		"  help      Show usage and build profile",
 		"",
 		"Examples:",
+		"  skills-hub help setup",
 		"  skills-hub list",
 		"  skills-hub search --tag paid-media --runtime codex",
 		"  skills-hub info --skill marketing/meta-google-weekly-performance-review@latest",

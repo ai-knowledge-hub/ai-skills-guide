@@ -438,6 +438,7 @@ This now writes:
 Example usage:
 
 ```bash
+./bin/skills-hub help setup
 ./bin/skills-hub list
 ./bin/skills-hub search --tag paid-media --runtime codex
 ./bin/skills-hub validate
@@ -475,8 +476,10 @@ Example usage:
 `list`, `search`, and `info` read local registry files; HTTPS delivery is selected
 explicitly for `install`. `search --runtime` filters declared compatibility and
 `install --runtime` selects an adapter. The installer has no local readiness
-flags on `list` or `info`. Review each installed README and its requirements
-before connecting executable packages to your application.
+flags on `list` or `info`. Use `skills-hub help setup` before connecting
+executable packages to your application. This offline guide supersedes retained
+README instructions that require the deferred CLI commands and includes direct
+GA4 MCP setup. Package READMEs retain their immutable historical bytes.
 
 The preserved authentication, smoke, and model-attestation implementation is
 available only through the explicit `runtime_readiness` development build.

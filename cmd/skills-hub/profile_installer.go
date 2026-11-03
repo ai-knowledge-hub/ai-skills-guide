@@ -15,7 +15,7 @@ import (
 const cliBuildProfile = "installer"
 
 func runReadinessCommand(command string, _ []string) error {
-	return fmt.Errorf("%s is not available in the installation-only CLI; runtime readiness is deferred", command)
+	return fmt.Errorf("%s is not available in the installation-only CLI; runtime readiness is deferred; use skills-hub help setup for installer-compatible setup guidance", command)
 }
 func readinessUsage() []string {
 	return []string{"", "Installation does not verify authentication, model capabilities, or runtime operation."}
@@ -27,10 +27,11 @@ func deriveCatalogueStatus(_ context.Context, _ catalogueReadinessFlags, _ insta
 	return catalogueStatus{}, fmt.Errorf("runtime readiness is not available in the installation-only CLI")
 }
 func printProviderAuthNextStep(w io.Writer, entry registry.SkillEntry, _, _, _ string) {
+	fmt.Fprintln(w, "install.setup_guidance: skills-hub help setup")
 	for _, dependency := range entry.ProviderDependencies {
 		fmt.Fprintf(w, "install.auth.provider: %s (%s, %s)\n", dependency.Tool, dependency.Requirement, dependency.Access)
 	}
 	if len(entry.ProviderDependencies) > 0 || (entry.Authentication != nil && entry.Authentication.Status != "none") {
-		fmt.Fprintln(w, "install.next_step: review the installed README and declared setup requirements in your adopting runtime; provider authentication has not been verified")
+		fmt.Fprintln(w, "install.next_step: follow the installer setup guide above; it supersedes retained README readiness commands; provider authentication has not been verified")
 	}
 }

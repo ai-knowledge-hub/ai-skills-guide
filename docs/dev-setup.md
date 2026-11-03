@@ -4,7 +4,8 @@
 
 - Go `>= 1.22`
 - Python `>= 3.10`
-- Node `>= 20`
+- Node `>= 20` for the web app; Node `>= 22` for the retained-package
+  installer setup integration test
 - pnpm `>= 10`
 - `check-jsonschema` (for manifest/schema checks)
 
@@ -47,6 +48,7 @@ make cli-build
 ```
 
 `make registry` now generates:
+
 - `registry/skills-index.json`
 - `registry/agents-index.json`
 - `registry/tools-index.json`

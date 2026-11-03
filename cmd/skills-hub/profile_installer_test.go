@@ -167,7 +167,7 @@ func TestInstallerProviderGuidanceDoesNotAdvertiseDeferredCommands(t *testing.T)
 	entry := registry.SkillEntry{ProviderDependencies: []registry.ProviderDependencyMetadata{{Tool: "analytics/ga4-mcp-connector", Requirement: "required", Access: "read-only"}, {Tool: "warehouse/bigquery-mcp-query-runner", Requirement: "optional", Access: "read-only"}}}
 	var out bytes.Buffer
 	printProviderAuthNextStep(&out, entry, "1.0.0", "codex", "/tmp/unused")
-	for _, want := range []string{"analytics/ga4-mcp-connector", "warehouse/bigquery-mcp-query-runner", "installed README", "has not been verified"} {
+	for _, want := range []string{"analytics/ga4-mcp-connector", "warehouse/bigquery-mcp-query-runner", "skills-hub help setup", "supersedes retained README", "has not been verified"} {
 		if !strings.Contains(out.String(), want) {
 			t.Fatalf("missing setup guidance %q: %s", want, out.String())
 		}

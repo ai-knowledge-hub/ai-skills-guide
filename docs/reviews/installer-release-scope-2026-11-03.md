@@ -70,3 +70,30 @@ issuer ownership remains unresolved and belongs to the deferred readiness
 release. Linux/macOS verification of an actual downloaded and provenance-verified
 public CLI still follows the approved release cut. Broader #52 application,
 provider, executable/composed-package and lifecycle work remains open.
+
+## Review follow-up: retained-package setup guidance
+
+The initial installer message pointed to an installed README, but GA4 0.2.0's
+immutable README sends users to the deferred `skills-hub auth configure` command.
+The installer now directs every successful local/remote installation to
+`skills-hub help setup`. Deferred-command errors also give that replacement.
+The guide is embedded in the CLI binary and works offline, outside the package
+and its receipt-verified tree. It supersedes the historical readiness instructions
+with direct MCP registration and runtime-owned credential configuration.
+
+The added `test_installer_setup.py` regression builds the actual installer,
+installs the retained GA4 archive and confirms its README still contains the
+historical command. It follows both emitted guidance and the rejected old auth
+command to the embedded help, resolves its JSON registration, then executes the
+unchanged package's credential-free healthcheck from outside the checkout with
+provider fetches blocked. A deliberate symlink exercises the retained server's
+entrypoint-path behavior on Linux as well as macOS; the guide includes Node's
+`--preserve-symlinks-main` flag. Healthcheck output proves launch only, not
+provider authentication or access. All installed payload bytes and the receipt
+are unchanged after help and launch; the archived package is unchanged too.
+
+Full Go tests, the preserved readiness-profile tests, the new setup-path
+integration test, changed Markdown, actionlint and diff checks pass locally.
+CI explicitly selects Node 22 for the separate setup integration test. The
+six-platform and public-registry evidence above remains identified with its
+original pre-follow-up binary; no new release publication is claimed.

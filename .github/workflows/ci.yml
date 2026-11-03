@@ -27,6 +27,11 @@ jobs:
           cache: true
       - name: Test published-install evidence checks with local fixtures
         run: python3 -m unittest discover -s scripts/tests -p 'test_published_install.py'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Follow retained-package installer setup guidance without provider access
+        run: python3 -m unittest discover -s scripts/tests -p 'test_installer_setup.py'
 
   manifest-schemas:
     runs-on: ubuntu-latest

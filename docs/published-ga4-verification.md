@@ -124,6 +124,18 @@ all startup checks passed with zero network attempts and no supplied credentials
 This local host used Node.js `v25.8.2`; the workflow explicitly selects Node 22.
 It is local evidence, not a substitute for the Linux/macOS workflow matrix.
 
+The [final published-GA4 workflow](https://github.com/ai-knowledge-hub/ai-skills-guide/actions/runs/41692329447)
+passed on implementation commit `919674d4975d9d644ab97841438bf946acbdfd06`:
+
+- [Linux x86-64 report](reviews/published-ga4-2026-11-03/ci-ubuntu-release.json).
+- [macOS ARM64 report](reviews/published-ga4-2026-11-03/ci-macos-release.json).
+
+Both hosts used Node.js `v22.23.4` and the actual released CLI with successful
+checksum/provenance checks. Together they passed 18/18 installation transitions,
+six real MCP sessions and six healthchecks, with zero detected network attempts
+and no supplied provider credentials. These are adapter-target/process results;
+they do not establish actual Codex/Claude application use or Google access.
+
 All 33 deterministic checker tests passed (17 instruction/release-boundary cases
 and 16 GA4 cases), as did `CGO_ENABLED=0 GOTOOLCHAIN=go1.22.12 go test ./...`,
 `actionlint` v1.7.12 for both changed workflows (shellcheck/pyflakes integrations

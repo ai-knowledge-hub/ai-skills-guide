@@ -68,7 +68,6 @@ export default function SiteHeader() {
     <header className="site-header">
       <div className="header-inner">
         <Link href="/" className="wordmark" aria-label={`${brand.name} home`}>{brand.name}</Link>
-        <span className="header-descriptor">The open-source catalogue</span>
         <nav className="desktop-nav" aria-label="Main navigation">{links}</nav>
         <button className="theme-toggle" type="button" aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} onClick={toggleTheme}>
           {theme === "dark" ? "Light mode" : "Dark mode"}

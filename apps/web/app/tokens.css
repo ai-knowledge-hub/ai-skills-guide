@@ -13,6 +13,8 @@
   --gutter: clamp(20px, 4vw, 64px);
   --header-height: 82px;
   --content-width: 1440px;
+  --catalogue-rail-width: clamp(220px, 24vw, 380px);
+  --catalogue-rail-gap: clamp(28px, 3vw, 48px);
 }
 :root[data-theme="light"] {
   color-scheme: light;

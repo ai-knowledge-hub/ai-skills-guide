@@ -23,7 +23,8 @@ class PublishedInstallCheckTests(unittest.TestCase):
         cls.build = tempfile.TemporaryDirectory(prefix="receipt-verifier-test-")
         cls.verifier = Path(cls.build.name) / "verifier"
         root = Path(__file__).resolve().parents[2]
-        subprocess.run(["go", "build", "-o", str(cls.verifier), "./cmd/published-install-verifier"], cwd=root, check=True)
+        subprocess.run(["go", "build", "-o", str(cls.verifier), "./cmd/published-install-verifier"],
+                       cwd=root, check=True, env={**os.environ, "CGO_ENABLED": "0"})
         cls.release_dir = root / "releases/skills/engineering/implementation-strategy/0.1.0"
 
     @classmethod

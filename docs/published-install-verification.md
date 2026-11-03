@@ -33,6 +33,9 @@ Both modes also use the repository's read-only Go manifest/receipt verifier.
 It is a checker dependency, not a replacement client or a released-CLI fallback.
 Go (the version in `go.mod`) is required to build this helper; package installation
 still runs outside the checkout with binaries only.
+Build the helper with `CGO_ENABLED=0`, as CI and the fixture tests do. It has no
+C dependencies; this avoids the Go 1.22 C-linked helper's `missing LC_UUID`
+startup failure on macOS 26.
 
 ## What is verified
 
@@ -83,7 +86,7 @@ Released client (Python 3.12+ and GitHub CLI with attestation support):
 Build the read-only checker helper once, for either client mode:
 
 ```sh
-go build -o bin/published-install-verifier ./cmd/published-install-verifier
+CGO_ENABLED=0 go build -o bin/published-install-verifier ./cmd/published-install-verifier
 ```
 
 ```sh

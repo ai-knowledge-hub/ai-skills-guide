@@ -3,6 +3,12 @@ name: Published registry installation
 on:
   workflow_dispatch:
     inputs:
+      sample:
+        description: Exact published package to verify
+        required: true
+        type: choice
+        default: instructions
+        options: [instructions, ga4]
       client_source:
         description: Released client or explicitly labelled candidate build
         required: true
@@ -14,10 +20,9 @@ on:
         type: string
         required: false
       registry_url:
-        description: Public HTTPS registry to verify
+        description: Public HTTPS registry (blank selects the sample's module index)
         type: string
-        default: https://skills.ai-knowledge-hub.org/registry/skills-index.json
-        required: true
+        required: false
 
 permissions:
   contents: read
@@ -40,26 +45,35 @@ jobs:
         with:
           go-version-file: go.mod
           cache: true
+      - uses: actions/setup-node@v4
+        if: inputs.sample == 'ga4'
+        with:
+          node-version: 22
       - name: Build read-only manifest and receipt verifier
         env:
           CGO_ENABLED: '0'
         run: go build -o bin/published-install-verifier ./cmd/published-install-verifier
       - name: Build explicit installer candidate (same profile as release)
         if: inputs.client_source == 'candidate'
+        env:
+          CGO_ENABLED: '0'
         run: make cli-build-test
       - name: Check published installation from a source-free temporary directory
         env:
           CLIENT_SOURCE: ${{ inputs.client_source }}
           CLI_RELEASE: ${{ inputs.cli_release }}
           REGISTRY_URL: ${{ inputs.registry_url }}
+          SAMPLE: ${{ inputs.sample }}
           GH_TOKEN: ${{ github.token }}
         run: |
           if [[ "$CLIENT_SOURCE" == "release" ]]; then
             python3 scripts/check-published-install.py \
+              --sample "${SAMPLE:-instructions}" \
               --cli-release "$CLI_RELEASE" --registry-url "$REGISTRY_URL" \
               --report output/published-install/report.json
           else
             python3 scripts/check-published-install.py \
+              --sample "${SAMPLE:-instructions}" \
               --cli bin/skills-hub-test --registry-url "$REGISTRY_URL" \
               --report output/published-install/report.json
           fi
@@ -67,6 +81,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: published-install-${{ matrix.os }}-${{ inputs.client_source }}
+          name: published-install-${{ matrix.os }}-${{ inputs.client_source }}${{ inputs.sample == 'ga4' && '-ga4' || '' }}
           path: output/published-install/report.json
           if-no-files-found: warn

@@ -1,0 +1,120 @@
+{
+  "schema_version": "published-install-check/v1",
+  "checked_at": "2026-11-03T18:05:14.777994+00:00",
+  "status": "passed",
+  "client_kind": "release",
+  "host": {
+    "os": "Darwin",
+    "architecture": "arm64"
+  },
+  "registry_url": "https://skills.ai-knowledge-hub.org/registry/tools-index.json",
+  "sample": "ga4",
+  "package": "analytics/ga4-mcp-connector@0.2.0",
+  "module": "tools",
+  "runtimes": [
+    {
+      "runtime": "codex",
+      "payload_sha256": "8f15badde7c33680e3f0c8ea863ad7ba32a6d7fa74995051a113c8a18d152fa3",
+      "receipt_verified": true,
+      "cold_install": "passed",
+      "startup": {
+        "setup_guidance": "passed",
+        "healthcheck": "passed",
+        "mcp_initialize": "passed",
+        "mcp_tools_list": "passed",
+        "network_attempts": 0,
+        "node_version": "v25.8.2",
+        "credentials_supplied": false,
+        "provider_calls_verified": false
+      },
+      "duplicate_rejected_without_mutation": "passed",
+      "offline_reinstall_restored_release_bytes": "passed"
+    },
+    {
+      "runtime": "claude",
+      "payload_sha256": "8f15badde7c33680e3f0c8ea863ad7ba32a6d7fa74995051a113c8a18d152fa3",
+      "receipt_verified": true,
+      "cold_install": "passed",
+      "startup": {
+        "setup_guidance": "passed",
+        "healthcheck": "passed",
+        "mcp_initialize": "passed",
+        "mcp_tools_list": "passed",
+        "network_attempts": 0,
+        "node_version": "v25.8.2",
+        "credentials_supplied": false,
+        "provider_calls_verified": false
+      },
+      "duplicate_rejected_without_mutation": "passed",
+      "offline_reinstall_restored_release_bytes": "passed"
+    },
+    {
+      "runtime": "generic",
+      "payload_sha256": "8f15badde7c33680e3f0c8ea863ad7ba32a6d7fa74995051a113c8a18d152fa3",
+      "receipt_verified": true,
+      "cold_install": "passed",
+      "startup": {
+        "setup_guidance": "passed",
+        "healthcheck": "passed",
+        "mcp_initialize": "passed",
+        "mcp_tools_list": "passed",
+        "network_attempts": 0,
+        "node_version": "v25.8.2",
+        "credentials_supplied": false,
+        "provider_calls_verified": false
+      },
+      "duplicate_rejected_without_mutation": "passed",
+      "offline_reinstall_restored_release_bytes": "passed"
+    }
+  ],
+  "release": {
+    "tag": "v0.4.0-alpha.1",
+    "url": "https://github.com/ai-knowledge-hub/ai-skills-guide/releases/tag/v0.4.0-alpha.1",
+    "assets": [
+      "SHA256SUMS",
+      "skills-hub_v0.4.0-alpha.1_darwin_amd64",
+      "skills-hub_v0.4.0-alpha.1_darwin_arm64",
+      "skills-hub_v0.4.0-alpha.1_linux_amd64",
+      "skills-hub_v0.4.0-alpha.1_linux_arm64",
+      "skills-hub_v0.4.0-alpha.1_provenance.json",
+      "skills-hub_v0.4.0-alpha.1_windows_amd64.exe",
+      "skills-hub_v0.4.0-alpha.1_windows_arm64.exe"
+    ],
+    "checksum_and_provenance": "passed"
+  },
+  "cli_sha256": "1e26906d6f2e7fba2b3807953683a47f9caa5b6e59db15c41bc5f3ec08f9f34e",
+  "registry_sha256": "f3987f39e54c336fa23ff9031a2f03e3354512cdfc61a7b05af1d002394a3165",
+  "selected_release": {
+    "version": "0.2.0",
+    "released_at": "2026-09-17T00:00:00Z",
+    "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/analytics/ga4-mcp-connector/0.2.0.yaml",
+    "manifest_sha256": "1b430183e498910549e4e5139a08800cf44fe37e32998a54b06a89bb34a5c993",
+    "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/analytics/ga4-mcp-connector/0.2.0.tar.gz",
+    "sha256": "80efc8f9e5176097781da84595a9271b34cc5f1661b098422664cf739e154b84"
+  },
+  "verifier_sha256": "0fc5b729f5442cb9f5081b004c01424ea1e88534e5f89c62f15f3895acce74ed",
+  "pinned_manifest": {
+    "id": "analytics/ga4-mcp-connector",
+    "version": "0.2.0",
+    "runtimes": [
+      "codex",
+      "claude",
+      "generic"
+    ],
+    "runtime_contract_sha256": "d1032674f1ae1d2687860cfd3a66ebd5bc945363a26676b0cd67987fee7a39a4"
+  },
+  "published_files": {
+    ".mcp.json": "e86534de6f62fdeaabaf34cf5f5a74bf480dd5a8214d2d10ff23ca52e299edb3",
+    "README.md": "5ad670e3749a9c63db55217742ad5d2db266fc5f801b3fae2a4dfbefda9d62d4",
+    "TOOL.md": "4f90f90301cc03c8165bc8f3084e2521ba319a953124f876a71d9ceb10453c67",
+    "auth/bearer-token.json": "41dfd19929529ea4b64c22904c568d7f7efc0615bfa0c0b74db745290c12b7c2",
+    "auth/service-account.json": "ce66ae9a3d45b5adf9037287f5ebdad75c11260f6634027739c590b6b83883c9",
+    "examples/input.json": "73e062156054e6260d1c6c2e402d91f456a51fb146258639df336d46af7e571d",
+    "examples/output.json": "e0ee601617833f7407901690f678dd149b19aadfc0f239c8f99621b0b49ad14e",
+    "scripts/ga4_auth_driver.mjs": "4a18bc2ee05736fba98247da73d0d9217b8b7f101320d716397c4e0b929cca1c",
+    "scripts/ga4_mcp_server.mjs": "b14569c35a62aafd23ef536f8cfe5372b005a9a6e0221c9aa3d8ed9c5ec0c69e",
+    "tests/ga4_mcp_server.test.mjs": "e887133657a63749dfae4e54adf8e06b5bab5fbebb4c9e1e68be305a370e02a0",
+    "tests/test-prompts.md": "10790a33a558997695c4a54fd94dacf8d498a501367a9fd3fa05b1a4fd77ca54",
+    "tool.yaml": "1b430183e498910549e4e5139a08800cf44fe37e32998a54b06a89bb34a5c993"
+  }
+}

@@ -32,6 +32,8 @@ jobs:
           node-version: 22
       - name: Follow retained-package installer setup guidance without provider access
         run: python3 -m unittest discover -s scripts/tests -p 'test_installer_setup.py'
+      - name: Test published GA4 installation and credential-free startup evidence
+        run: python3 -m unittest discover -s scripts/tests -p 'test_published_ga4.py'
 
   manifest-schemas:
     runs-on: ubuntu-latest

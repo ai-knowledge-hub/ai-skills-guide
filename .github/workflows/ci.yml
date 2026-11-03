@@ -40,7 +40,9 @@ jobs:
         run: python3 -m pip install --upgrade pip "check-jsonschema==0.37.0"
       - name: Test structural contracts and runtime freshness enforcement
         run: make cli-test
-      - name: Build CLI with an explicit test-only runtime trust root
+      - name: Test preserved readiness development profile
+        run: make cli-runtime-test
+      - name: Build installer candidate without model keys
         run: make cli-build-test
       - name: Generate canonical registry indexes
         run: make registry

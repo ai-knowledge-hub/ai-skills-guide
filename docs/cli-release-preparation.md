@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD013 -->
 
-Prepared on 2 November 2026. This is a reviewable publication plan, not a record
+Updated on 3 November 2026 for the installation-only first CLI release. This is a reviewable publication plan, not a record
 that a new tag, release, deployment or live-runtime proof has been published.
 The content-only website remains independent of the adopting client's installer.
 
@@ -17,39 +17,28 @@ The older GitHub releases have no attached CLI binaries. Do not retrofit them
 with binaries built from today's source: a release binary must match its tag.
 Prepare a new tag after the reviewed work is integrated into `main`.
 
-## Merge and configuration prerequisites
+## Release scope and prerequisites
 
-1. Merge [PR #97](https://github.com/ai-knowledge-hub/ai-skills-guide/pull/97) and
-   this release-preparation change into `dev`; require green checks.
+The first CLI release installs and inspects packages. It does not include
+`auth`, `doctor`, `smoke`, `run-agent`, or local readiness flags on `list`/`info`.
+The advanced implementation remains in the explicit development profile; see
+[installer release scope](cli-installation-release.md).
+
+1. Merge the installer-scope change into `dev` with green checks.
 2. Review and merge the intended `dev` state into `main`, confirm its CI and
    intended production deployment, and record the exact commit.
-3. A release maintainer must confirm these repository Actions variables contain
-   the approved runtime-adapter **public** Ed25519 keys, in canonical standard
-   base64, each decoding to 32 bytes:
-   - `CODEX_MODEL_ATTESTATION_PUBLIC_KEY`
-   - `CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY`
-   - `GENERIC_MODEL_ATTESTATION_PUBLIC_KEY`
-4. Confirm the corresponding signing adapters and key ownership. Key-shaped data
-   alone does not establish an issuer. Keep private signing keys in the adapter
-   deployment, outside this repository. Do not substitute the CI test-vector key
-   or generate a new issuer just to make the release build pass.
+3. Confirm the public registry and immutable package artifacts are the intended
+   published-install subjects.
 
-The existing `make check-runtime-trust` validates representation; `make cli-build`
-and the release builder require all three roots. The issuer contract is in
-[runtime model readiness attestation](model-readiness-attestation.md). These
-runtime model roots are separate from GitHub's binary build-provenance signature.
-They do not require the static website to host an issuer or call a provider.
-
-Repository-variable configuration could not be confirmed in this preparation:
-the local `gh` account returned HTTP 403 with “Your account was suspended” when
-listing variable names. No variable values or secrets were retrieved. GitHub
-connector reads still worked. Treat the configuration as **unconfirmed**, rather
-than missing or approved; use an authorized maintainer account for this check.
+No runtime model public keys, signing adapters, provider credentials or model
+attestations are required to build this installer. The runtime trust-root
+requirements belong only to the deferred readiness development build.
+GitHub binary checksums and build provenance remain mandatory and independent.
 
 ## Cut and observe
 
 Run **Cut Release** from `main`, first with `release_type: minor-alpha` and
-`dry_run: true`. It validates the catalogue, manifests, governed CLI build and
+`dry_run: true`. It validates the catalogue, manifests, installer CLI build and
 web build without pushing a tag or dispatching publication. The dry run does not
 exercise GitHub OIDC attestation or all six cross-compiles.
 
@@ -70,7 +59,7 @@ source or checkout, unmerged tagged source, or dirty checkout. An authenticated,
 paginated release lookup rejects any existing release record for the tag,
 including an empty draft or partial upload. Lookup failures stop publication.
 The guard runs before building and again immediately before draft creation.
-The workflow runs the Go suite, builds governed binaries, attests their digests,
+The workflow runs the Go suite, builds installer binaries, attests their digests,
 then creates a fresh draft and uploads to its specific release ID.
 Per-tag concurrency serializes publication runs.
 

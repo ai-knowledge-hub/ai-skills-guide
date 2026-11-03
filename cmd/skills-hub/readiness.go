@@ -1,3 +1,5 @@
+//go:build runtime_readiness
+
 package main
 
 import (

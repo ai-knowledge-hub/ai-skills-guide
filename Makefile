@@ -1,9 +1,8 @@
 SHELL := /bin/bash
 
-.PHONY: help doctor validate manifests registry release-assets-check test-scripts test ci-local cli-build cli-build-test cli-test check-runtime-trust release-cli-artifacts web-dev web-build web-lint web-e2e release-cut
+.PHONY: help doctor validate manifests registry release-assets-check test-scripts test ci-local cli-build cli-build-test cli-build-runtime-dev cli-runtime-test cli-test check-runtime-trust release-cli-artifacts web-dev web-build web-lint web-e2e release-cut
 
 RUNTIME_TRUST_LDFLAGS = -X github.com/ai-knowledge-hub/ai-skills-guide/internal/agents.codexModelAttestationPublicKey=$(CODEX_MODEL_ATTESTATION_PUBLIC_KEY) -X github.com/ai-knowledge-hub/ai-skills-guide/internal/agents.claudeModelAttestationPublicKey=$(CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY) -X github.com/ai-knowledge-hub/ai-skills-guide/internal/agents.genericModelAttestationPublicKey=$(GENERIC_MODEL_ATTESTATION_PUBLIC_KEY)
-CI_TEST_MODEL_ATTESTATION_PUBLIC_KEY = 11qYAYKxCrfVS/7TyWQHOg7hcvPapiMlrwIaaPcHURo=
 
 help:
 	@echo "Targets:"
@@ -17,8 +16,10 @@ help:
 	@echo "  make ci-local      - Run local checks similar to CI"
 	@echo "  make cli-test      - Run Go unit tests for CLI packages"
 	@echo "  make cli-build     - Build the skills-hub CLI binary"
-	@echo "  make cli-build-test - Build a non-release CLI with an explicit test-only trust root"
-	@echo "  make release-cli-artifacts VERSION=vX.Y.Z - Build governed release binaries and checksums"
+	@echo "  make cli-runtime-test - Test the preserved readiness development profile"
+	@echo "  make cli-build-runtime-dev - Build readiness development CLI with explicit model trust roots"
+	@echo "  make cli-build-test - Build an unreleased candidate with the installer release profile"
+	@echo "  make release-cli-artifacts VERSION=vX.Y.Z - Build installer release binaries and checksums"
 	@echo "  make web-dev       - Run Next.js hub app in dev mode"
 	@echo "  make web-build     - Build Next.js hub app"
 	@echo "  make web-lint      - Lint Next.js hub app"
@@ -67,16 +68,21 @@ check-runtime-trust:
 		--claude "$(CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY)" \
 		--generic "$(GENERIC_MODEL_ATTESTATION_PUBLIC_KEY)"
 
-cli-build: check-runtime-trust
-	go build -ldflags "$(RUNTIME_TRUST_LDFLAGS)" -o bin/skills-hub ./cmd/skills-hub
+cli-build:
+	GOFLAGS= GOWORK=off go build -tags installer_release -o bin/skills-hub ./cmd/skills-hub
 
-cli-build-test: CODEX_MODEL_ATTESTATION_PUBLIC_KEY = $(CI_TEST_MODEL_ATTESTATION_PUBLIC_KEY)
-cli-build-test: CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY = $(CI_TEST_MODEL_ATTESTATION_PUBLIC_KEY)
-cli-build-test: GENERIC_MODEL_ATTESTATION_PUBLIC_KEY = $(CI_TEST_MODEL_ATTESTATION_PUBLIC_KEY)
-cli-build-test: check-runtime-trust
-	go build -ldflags "$(RUNTIME_TRUST_LDFLAGS)" -o bin/skills-hub-test ./cmd/skills-hub
+# Candidates exercise the same command surface as a released installer.
+cli-build-test:
+	GOFLAGS= GOWORK=off go build -tags installer_release -o bin/skills-hub-test ./cmd/skills-hub
 
-release-cli-artifacts: check-runtime-trust
+# Explicit development-only profile; never used by release publication.
+cli-build-runtime-dev: check-runtime-trust
+	go build -tags runtime_readiness -ldflags "$(RUNTIME_TRUST_LDFLAGS)" -o bin/skills-hub-runtime-dev ./cmd/skills-hub
+
+cli-runtime-test:
+	go test -tags runtime_readiness ./cmd/skills-hub
+
+release-cli-artifacts:
 	@if [ -z "$(VERSION)" ]; then echo "Usage: make release-cli-artifacts VERSION=vX.Y.Z"; exit 1; fi
 	bash scripts/build-governed-cli-release.sh "$(VERSION)" "dist"
 

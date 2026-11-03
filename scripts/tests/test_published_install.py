@@ -248,6 +248,30 @@ class PublishedInstallCheckTests(unittest.TestCase):
                 check.released_cli(tag, Path(temporary), {})
             self.assertEqual((Path(temporary) / names[0]).stat().st_mode & 0o111, 0)
 
+    def test_workflow_token_is_bound_to_metadata_and_not_asset_downloads(self):
+        tag = "v1.0.0"
+        names = check.release_asset_names(tag, "Linux", "x86_64")
+        metadata = {"tag_name": tag, "draft": False, "assets": [
+            {"name": name, "browser_download_url": f"https://github.com/{check.REPOSITORY}/releases/download/{tag}/{name}"}
+            for name in names]}
+        binary = b"test binary"
+        responses = [json.dumps(metadata).encode(), binary, f"{check.sha256(binary)}  {names[0]}\n".encode(), b"{}"]
+        with tempfile.TemporaryDirectory() as temporary, patch.dict(os.environ, {"GH_TOKEN": "test-only-token"}), \
+                patch.object(check.platform, "system", return_value="Linux"), \
+                patch.object(check.platform, "machine", return_value="x86_64"), \
+                patch.object(check, "download", side_effect=responses) as download, \
+                patch.object(check.subprocess, "run", return_value=subprocess.CompletedProcess([], 0)):
+            check.released_cli(tag, Path(temporary), {})
+            self.assertEqual(download.call_args_list[0].kwargs,
+                             {"origin": ("https", "api.github.com", 443),
+                              "headers": {"Authorization": "Bearer test-only-token"}})
+            for call in download.call_args_list[1:]:
+                self.assertNotIn("headers", call.kwargs)
+        request = check.urllib.request.Request("https://api.github.com/releases", headers={"Authorization": "Bearer test-only-token"})
+        with self.assertRaisesRegex(ValueError, "cross-origin"):
+            check.HTTPSRedirects(("https", "api.github.com", 443)).redirect_request(
+                request, None, 302, "redirect", {}, "https://release-assets.githubusercontent.com/binary")
+
     def test_malformed_endpoint_retains_failed_candidate_report(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)

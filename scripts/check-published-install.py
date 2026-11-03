@@ -66,10 +66,10 @@ class HTTPSRedirects(urllib.request.HTTPRedirectHandler):
         return super().redirect_request(req, fp, code, msg, headers, newurl)
 
 
-def download(url, origin=None):
+def download(url, origin=None, headers=None):
     actual = https_origin(url)
     require(origin is None or actual == origin, "registry and package must have the same HTTPS origin")
-    request = urllib.request.Request(url, headers={"User-Agent": "skills-hub-published-install-check", "Accept": "*/*"})
+    request = urllib.request.Request(url, headers={"User-Agent": "skills-hub-published-install-check", "Accept": "*/*", **(headers or {})})
     opener = urllib.request.build_opener(HTTPSRedirects(origin))
     with opener.open(request, timeout=30) as response:
         data = response.read(MAX_DOWNLOAD + 1)
@@ -87,7 +87,12 @@ def release_asset_names(tag, system, machine):
 
 def released_cli(tag, directory, report):
     names = release_asset_names(tag, platform.system(), platform.machine())
-    metadata = json.loads(download(f"https://api.github.com/repos/{REPOSITORY}/releases/tags/{tag}"))
+    metadata_url = f"https://api.github.com/repos/{REPOSITORY}/releases/tags/{tag}"
+    token = os.environ.get("GH_TOKEN")
+    # CI's read-only token avoids shared-runner anonymous API rate limits. Bind
+    # it to api.github.com; never attach it to asset downloads or cross-origin redirects.
+    metadata = json.loads(download(metadata_url, origin=https_origin(metadata_url),
+                                   headers={"Authorization": f"Bearer {token}"} if token else None))
     require(metadata.get("tag_name") == tag and not metadata.get("draft"), "release tag does not identify a published release")
     assets = {asset["name"]: asset["browser_download_url"] for asset in metadata.get("assets", [])}
     report["release"] = {"tag": tag, "url": metadata.get("html_url"), "assets": sorted(assets)}

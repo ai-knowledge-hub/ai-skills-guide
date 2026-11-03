@@ -12,6 +12,9 @@ the Codex/Claude applications, write readiness evidence or change catalogue clai
 - CLI: an explicitly selected GitHub release, initially `v0.4.0-alpha.1`.
   The shared checker verifies its checksum and repository/workflow/tag-bound
   provenance before enabling execution. There is no source-built fallback.
+  In CI, the existing read-only `GH_TOKEN` is sent only to the exact GitHub API
+  origin for release metadata, avoiding shared-runner anonymous rate limits.
+  Cross-origin metadata redirects are rejected; asset requests carry no token.
 - Package: exact `analytics/ga4-mcp-connector@0.2.0`, regardless of a newer
   current release. The tools index selects the version-bound artifact and manifest
   digests; package classification and adapter declarations come from the downloaded
@@ -121,7 +124,7 @@ all startup checks passed with zero network attempts and no supplied credentials
 This local host used Node.js `v25.8.2`; the workflow explicitly selects Node 22.
 It is local evidence, not a substitute for the Linux/macOS workflow matrix.
 
-All 32 deterministic checker tests passed (16 instruction/release-boundary cases
+All 33 deterministic checker tests passed (17 instruction/release-boundary cases
 and 16 GA4 cases), as did `CGO_ENABLED=0 GOTOOLCHAIN=go1.22.12 go test ./...`,
 `actionlint` v1.7.12 for both changed workflows (shellcheck/pyflakes integrations
 disabled), and `git diff --check`.

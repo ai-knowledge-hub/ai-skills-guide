@@ -23,9 +23,12 @@ Interaction follows ordinary links, visible focus/hover cues and the existing
 sticky rail. The selected artwork, text and figures remain static. This calmer
 brief does not add an entrance animation, a new renderer or a motion dependency.
 
-Desktop uses `clamp(160px, 18vw, 280px)` for the shared home/catalogue rail,
-contained by `main` so it stops before the footer. Its full-height crop uses 44%
-horizontal registration. At 1440 CSS pixels the rail is approximately 259px,
+Desktop uses `clamp(220px, 24vw, 380px)` for the shared home/catalogue rail,
+contained by `main` so it stops before the footer. Following the owner's
+2 November crop selection, its full-height crop uses `81% center` registration
+to feature the right-hand oval swirl rather than the middle folds. The source
+artwork and delivery files are unchanged. At 1440 CSS pixels the rail is
+approximately 346px, increased from the initial 259px crop,
 compared with approximately 410px at a 900px-high viewport in the prior design.
 Compact home layouts use a 100px artwork band (140px at tablet widths); catalogue
 pages retain their compact heading treatment with the new artwork.
@@ -126,3 +129,87 @@ adds no client effect, dependency, live content request or theme-state writer.
 Chrome coverage is bounded; it is not a complete assistive-technology or
 cross-browser audit. Owner review of the rendered composition remains the PR
 review step. No provider verification or production promotion occurs.
+
+## Oval crop follow-up — 2 November 2026
+
+The owner selected the oval swirl shown in their screenshot. The shared desktop
+rail now uses `81% center` instead of the original `44% center`, bringing that
+part of the existing artwork into view on Home and all four catalogue pages.
+The owner subsequently approved widening the shared desktop rail from 18vw
+(280px maximum) to 24vw (380px maximum), closer to the publication Library's
+proportions. At 1440px this increases the visible artwork from about 259px to
+346px. Scaling, compact layouts, source pixels and delivery hashes are unchanged.
+
+The production build, lint/types and three existing browser regressions pass
+(open filter menus, rail/footer containment and active-layout artwork requests).
+A separate local Chrome check covers five routes × two themes × eight viewport
+sizes: 1000×768, 1024×768, 1440×900, 1600×900, 1920×1080, 390×844, 768×1024 and
+1024×1440. All 80 views reflow without horizontal or filter-grid overflow; all
+50 desktop cases keep the selected oval's source focal point inside the rail's
+central half. No page exceptions were observed.
+
+[Home, light](reviews/oval-artwork-2026-11-02/home-1440-light.jpg) · [Skills, dark](reviews/oval-artwork-2026-11-02/skills-1440-dark.jpg)
+
+## Shared Library frame — 2 November 2026
+
+The owner approved aligning the companion's frame with the publication Library.
+The masthead now spans the viewport, with a 27px desktop wordmark and the four
+catalogue navigation links. “The open-source catalogue” moves into Home's
+introduction. Home retains its smaller “Put the ideas to work” heading.
+
+Catalogue pages use a larger white title plate, overlapping the desktop rail by
+48px. Introductions, filters, result counts, entries and the footer share the
+reading edge. The footer border spans the viewport; its content follows the
+rail on catalogue routes and retains the normal page gutter on detail pages.
+Compact and portrait catalogues use a full-width artwork band with a 32px title
+overlap and a solid reading surface below it. The band is 180px tall on phones
+and 240px on larger compact layouts; Home retains its shallow existing band.
+
+The selected desktop oval crop (`81% center`), 24vw rail (380px maximum), artwork
+bytes, module navigation, filters, install commands, article relationships and
+readiness information remain in place. This changes layout and introductory
+placement; it adds no runtime request, dependency or theme-state writer.
+
+Verification against the local Node 20 production build:
+
+- Build, lint/types and Markdown/diff checks pass.
+- All 33 existing browser tests pass, including keyboard navigation, readable
+  but write-blocked theme storage, filters, copy feedback and article links.
+  The rail/footer regression also passes after the final compact-footer fix.
+- 80 artwork/reflow views cover Home and the four catalogues in both themes;
+  the selected oval remains inside the rail's central half in all 50 rail views.
+- 144 additional views cover Home, the four catalogues and BigQuery details at
+  12 viewport sizes, from 320px through 1920px, including wide portrait screens.
+  No sampled horizontal overflow or clipped heading text; catalogue
+  introductions, filters, entries and footer retain their shared reading edge.
+- The original artwork and both WebP hashes are unchanged. React review retains
+  server-rendered content, the existing theme/menu logic and semantic links.
+
+Chrome verification is bounded; this is not a cross-browser accessibility audit.
+
+[Home, light](reviews/oval-artwork-2026-11-02/home-1440-light.jpg) · [Skills, dark](reviews/oval-artwork-2026-11-02/skills-1440-dark.jpg) · [Phone catalogue](reviews/oval-artwork-2026-11-02/tools-390-light.jpg) · [Footer](reviews/oval-artwork-2026-11-02/footer-1440-light.jpg)
+
+## Library artwork restored — 3 November 2026
+
+The owner chose to return to the publication Library's community spiral after
+reviewing the folded-field oval at the larger scale. This supersedes the oval
+selection above. The full-width masthead, larger title plates, shared reading
+edge, quieter Home introduction and 24vw rail (380px maximum) are retained.
+
+Home and all four catalogues now use the existing `community-1600.webp` desktop
+rail at `40% top / auto 100%`, restoring the earlier Library crop. Compact layouts
+use `community-1200.webp` in the existing artwork bands. Both delivery files are
+unchanged publication imports with their recorded hashes. The folded-field
+source and delivery files remain archived with their source record; they are
+no longer requested by these pages. Provenance and the active-layout download
+regression reflect the restored asset selection.
+
+The Node 20 production build (including lint/types), Markdown and diff checks
+pass. All three focused browser regressions pass: open filters, rail/footer
+containment and one active-layout artwork request. A separate Chrome check
+covers five routes × two themes × seven viewports (320, 390, 768, 1000, 1440,
+1920 and a 1024×1440 portrait layout): 70 views with no horizontal overflow,
+clipped heading boxes or page exceptions. Each view requests exactly the active
+community artwork file. Desktop and phone captures were inspected visually.
+
+[Home, light](reviews/library-artwork-2026-11-03/home-1440-light.jpg) · [Skills, dark](reviews/library-artwork-2026-11-03/skills-1440-dark.jpg) · [Phone catalogue](reviews/library-artwork-2026-11-03/tools-mcp-390-light.jpg)

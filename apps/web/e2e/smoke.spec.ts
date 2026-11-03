@@ -434,7 +434,7 @@ test("catalogue downloads only the artwork used by its active layout", async ({ 
       const artwork = await page.evaluate(() => performance.getEntriesByType("resource")
         .map(resource => new URL(resource.name).pathname)
         .filter(path => /^\/brand\/(community|entrance|folded-field)-.*\.webp$/.test(path)));
-      expect(artwork, `${route} at ${width}px`).toEqual([width === 1440 ? "/brand/folded-field-1600.webp" : "/brand/folded-field-960.webp"]);
+      expect(artwork, `${route} at ${width}px`).toEqual([width === 1440 ? "/brand/community-1600.webp" : "/brand/community-1200.webp"]);
     }
   }
 });

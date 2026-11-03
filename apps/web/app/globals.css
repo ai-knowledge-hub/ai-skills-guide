@@ -24,17 +24,18 @@ main:focus { outline: none; }
 .skip-link { position: fixed; z-index: 100; left: 16px; top: 12px; padding: 14px 20px; background: var(--ink); color: var(--paper); transform: translateY(-150%); }
 .skip-link:focus { transform: none; }
 .site-header { position: sticky; top: 0; z-index: 50; background: var(--paper); border-bottom: 1px solid var(--line); }
-.header-inner { max-width: 1600px; padding-inline: var(--gutter); min-height: var(--header-height); margin: auto; display: flex; align-items: center; gap: 28px; }
-.wordmark { font-size: 24px; font-weight: 700; letter-spacing: -.045em; line-height: 1.1; white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center; }
+.header-inner { padding-inline: var(--gutter); min-height: var(--header-height); display: flex; align-items: center; gap: 30px; }
+.wordmark { font-size: 27px; font-weight: 700; letter-spacing: -.035em; line-height: 1.1; white-space: nowrap; min-height: 44px; display: inline-flex; align-items: center; }
 .wordmark:hover { text-decoration: none; }
-.header-descriptor { font-size: 11px; color: var(--ink-soft); max-width: 95px; line-height: 1.5; }
-.desktop-nav { margin-left: auto; display: flex; gap: 26px; }
+.desktop-nav { margin-left: auto; display: flex; gap: 22px; }
 .desktop-nav a, .theme-toggle { min-height: 44px; display: inline-flex; align-items: center; font-size: 13px; white-space: nowrap; }
 .desktop-nav a[aria-current] { text-decoration: underline; text-underline-offset: 7px; }
 .theme-toggle { border: 0; padding: 0; background: none; color: var(--ink-soft); margin-left: 8px; }
 .theme-toggle:hover { color: var(--ink); }
 .mobile-menu { display: none; }
-.site-footer { border-top: 1px solid var(--line); padding-block: 32px 40px; display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; }
+.site-footer { border-top: 1px solid var(--line); background: var(--paper); }
+.footer-inner { padding-block: 32px 40px; display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; }
+.catalogue-main ~ .site-footer .footer-inner { max-width: calc(1030px + 2 * var(--gutter)); margin: 0; }
 .footer-wordmark { font-weight: 700; letter-spacing: -.045em; font-size: 24px; }
 .site-footer p { font-size: 12px; }
 .site-footer nav { margin-left: auto; display: flex; gap: 28px; font-size: 12px; }
@@ -47,7 +48,7 @@ main:focus { outline: none; }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
 /* A quiet practical companion. The authored art is isolated from reading. */
 .companion-main { padding-inline: 0; }
-.companion-main::before { content: ''; display: block; height: 100px; background: #fff url('/brand/folded-field-960.webp') 44% 46% / cover no-repeat; }
+.companion-main::before { content: ''; display: block; height: 100px; background: #fff url('/brand/community-1200.webp') 40% 46% / cover no-repeat; }
 .companion-content { padding-inline: var(--gutter); }
 .companion-content > * { max-width: 1030px; }
 .companion-intro { padding-block: 44px 40px; }
@@ -106,33 +107,32 @@ a.catalog-card:hover { text-decoration: none; }
 .is-template-only::before { border-style: dashed; }
 /* A shared optical frontispiece; no arbitrary module-to-motif mapping. */
 .catalogue-main { isolation: isolate; position: relative; max-width: none; padding-top: 0; }
-.catalogue-heading { position: relative; max-width: 1440px; margin: auto; padding-top: 64px; min-height: 300px; }
-.catalogue-heading::before { content: ''; position: absolute; left: calc(-1 * var(--gutter)); top: 0; width: min(39vw, 540px); height: 420px; background: #fff url('/brand/folded-field-960.webp') center / cover no-repeat; z-index: -1; }
-.catalogue-heading h1 { display: inline-block; padding: 20px 26px; background: #fff; color: #171717; font-size: clamp(46px, 6vw, 86px); text-transform: uppercase; margin-left: clamp(20px, 14vw, 200px); }
-.catalogue-heading > p { margin-left: 30%; margin-top: 28px; max-width: 56ch; font-size: 17px; background: var(--paper); padding: 12px 0 18px 26px; }
-.catalogue-content { position: relative; background: var(--paper); max-width: 1030px; margin: 0 auto; padding-left: 26px; margin-left: max(25%, calc((100% - 1440px) / 2 + 360px)); }
+.catalogue-heading { position: relative; padding-block: 0 36px; background: var(--paper); }
+.catalogue-heading::before { content: ''; display: block; margin-inline: calc(-1 * var(--gutter)); width: calc(100% + 2 * var(--gutter)); height: 240px; background: #fff url('/brand/community-1200.webp') center / cover no-repeat; }
+.catalogue-heading h1 { position: relative; display: table; padding: 16px 28px 22px; background: #fff; color: #000; font-size: clamp(76px, 8vw, 124px); line-height: .95; font-weight: 900; letter-spacing: -.045em; text-transform: uppercase; margin-top: -32px; max-width: 100%; overflow-wrap: anywhere; }
+.catalogue-heading > p { margin-top: 36px; max-width: 56ch; font-size: 17px; background: var(--paper); }
+.catalogue-content { position: relative; background: var(--paper); max-width: 1030px; }
 .catalogue-artwork { display: none; }
 /* The rail belongs to main, so its sticky panel stops before the footer.
-   Compact/portrait layouts retain the existing artwork heading. */
+   Compact/portrait layouts use a band above the reading surface. */
 @media (min-width: 1000px) and (min-aspect-ratio: 4/5) {
   .catalogue-main {
     --catalogue-sticky-top: calc(var(--header-height) + 1px); /* Header's bottom border. */
-    --catalogue-rail-width: clamp(160px, 18vw, 280px);
-    --catalogue-rail-gap: clamp(28px, 3vw, 48px);
     padding-inline: 0;
   }
   .companion-main::before { display: none; background-image: none; }
   .companion-content { margin-left: var(--catalogue-rail-width); padding-inline: var(--catalogue-rail-gap) var(--gutter); }
   .companion-content > * { max-width: 1030px; }
-  .companion-intro { padding-top: 54px; }
+  .companion-intro { padding-top: 72px; }
   .catalogue-artwork { display: block; position: absolute; inset: 0 auto 0 0; width: var(--catalogue-rail-width); z-index: -1; pointer-events: none; }
-  .catalogue-artwork-panel { position: sticky; top: var(--catalogue-sticky-top); height: calc(100svh - var(--catalogue-sticky-top)); max-height: 100%; background: #fff url('/brand/folded-field-1600.webp') 44% center / auto 100% no-repeat; }
-  .catalogue-main .catalogue-heading { max-width: none; }
+  .catalogue-artwork-panel { position: sticky; top: var(--catalogue-sticky-top); height: calc(100svh - var(--catalogue-sticky-top)); max-height: 100%; background: #fff url('/brand/community-1600.webp') 40% top / auto 100% no-repeat; }
+  .catalogue-main .catalogue-heading { max-width: none; padding-top: 72px; background: none; }
   .catalogue-heading::before { content: none; background-image: none; }
-  .catalogue-heading h1 { margin-left: calc(var(--catalogue-rail-width) - 48px); max-width: calc(100% - var(--catalogue-rail-width) + 48px - var(--gutter)); }
+  .catalogue-heading h1 { margin-top: 0; margin-left: calc(var(--catalogue-rail-width) - 48px); max-width: calc(100% - var(--catalogue-rail-width) + 48px - var(--gutter)); }
   .catalogue-heading > p { margin-left: var(--catalogue-rail-width); max-width: calc(56ch + var(--catalogue-rail-gap) + var(--gutter)); padding-inline: var(--catalogue-rail-gap) var(--gutter); }
   .catalogue-main .catalogue-content { margin-left: var(--catalogue-rail-width); margin-right: 0; max-width: none; padding-inline: var(--catalogue-rail-gap) var(--gutter); }
   .catalogue-content > * { max-width: 1030px; }
+  .catalogue-main ~ .site-footer .footer-inner { max-width: none; margin: 0; padding-left: calc(var(--catalogue-rail-width) + var(--catalogue-rail-gap)); padding-right: max(var(--gutter), calc(100% - var(--catalogue-rail-width) - var(--catalogue-rail-gap) - 1030px)); }
 }
 .filters { display: grid; grid-template-columns: minmax(180px, 2fr) repeat(3, minmax(100px, 1fr)) auto; gap: 8px; align-items: end; padding-block: 14px 26px; }
 .search-label { display: grid; gap: 7px; font-size: 11px; color: var(--ink-soft); }
@@ -194,10 +194,8 @@ a.catalog-card:hover { text-decoration: none; }
 .error-page { padding-block: 100px; }
 .error-page > p { margin-top: 24px; }
 @media (max-width: 1150px) {
-  .header-descriptor { display: none; }
   .header-inner { gap: 20px; }
   .desktop-nav { gap: 20px; }
-  .catalogue-content { margin-left: 21%; }
   .filters { grid-template-columns: repeat(3, 1fr); }
   .search-label { grid-column: 1 / -1; }
   .filters > .button { grid-column: 1 / -1; justify-self: start; }
@@ -216,10 +214,10 @@ a.catalog-card:hover { text-decoration: none; }
   .mobile-menu nav a { display: flex; align-items: center; min-height: 48px; font-size: 18px; }
   .mobile-menu nav a[aria-current] { text-decoration: underline; text-underline-offset: 5px; }
   .section-head { flex-wrap: wrap; gap: 8px 20px; }
-  .catalogue-heading { padding-top: 38px; min-height: 0; padding-bottom: 24px; }
-  .catalogue-heading::before { width: min(78vw, 400px); height: 245px; }
-  .catalogue-heading h1 { font-size: clamp(36px, 9vw, 62px); margin-left: 18px; padding: 16px 20px; max-width: calc(100% - 18px); }
-  .catalogue-heading > p { margin: 28px 0 0 10%; padding: 16px 0 12px 20px; font-size: 16px; }
+  .catalogue-heading { padding-bottom: 24px; }
+  .catalogue-heading::before { height: 180px; }
+  .catalogue-heading h1 { font-size: clamp(36px, 9vw, 62px); padding: 16px 20px; }
+  .catalogue-heading > p { margin-top: 28px; padding: 0; font-size: 16px; }
   .catalogue-content { margin: 0; padding: 0; max-width: none; }
   .filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .input { font-size: 16px; }
@@ -231,7 +229,7 @@ a.catalog-card:hover { text-decoration: none; }
   .detail-install-lead { padding: 20px; margin-inline: -8px; margin-top: 32px; }
   .detail-grid { grid-template-columns: 1fr; gap: 32px; margin-top: 40px; }
   .breadcrumb { margin-bottom: 24px; }
-  .site-footer { padding-block: 24px; gap: 16px 24px; }
+  .footer-inner { padding-block: 24px; gap: 16px 24px; }
   .site-footer nav { width: 100%; margin: 0; gap: 24px; flex-wrap: wrap; }
   .site-footer p { width: 100%; }
 }

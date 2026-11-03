@@ -54,6 +54,10 @@ if [[ -n "$(git status --porcelain)" ]]; then
   exit 1
 fi
 
+echo "[check] installer CLI test/build"
+make cli-test
+make cli-build
+
 echo "[check] web lint/build"
 (
   cd apps/web

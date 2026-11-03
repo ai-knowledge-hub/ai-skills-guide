@@ -55,7 +55,7 @@ push workflow. The explicit dispatch needs `actions: write`; it keeps the
 publication and its provenance on `refs/tags/<version>`.
 
 See the [CLI release preparation checklist](cli-release-preparation.md) for
-governed public-key inputs, expected assets, recovery and published-install proof.
+installer scope, expected assets, recovery and published-install proof.
 
 ## Release type definitions
 
@@ -127,9 +127,10 @@ dispatch `Release On Tag` at an existing prepared tag for recovery.
 
 Publication requires a clean checkout whose HEAD and expected source commit
 match the exact tag, and whose tagged commit is integrated into `origin/main`.
-Branch dispatches and unmerged feature tags are rejected. The existing governed
-builder requires all three runtime public roots before producing six platform
-binaries and `SHA256SUMS`; the workflow adds a signed provenance bundle.
+Branch dispatches and unmerged feature tags are rejected. The installer builder
+requires no runtime model roots and produces six platform binaries and
+`SHA256SUMS`; the workflow adds a signed provenance bundle. Advanced readiness
+commands are excluded from those artifacts.
 Publication also refuses any existing release record for the tag, including
 empty drafts and partial uploads. It checks before building and immediately
 before creating a fresh draft, and fails closed on lookup errors. Assets are

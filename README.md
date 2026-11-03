@@ -400,10 +400,13 @@ Install with explicit targets:
 Mount those folders into your runtime workspace and reference them in your
 agent onboarding/config flow.
 
-## CLI Scaffold (Go)
+## Installation CLI (Go)
 
-This repo now includes a starter CLI at `cmd/skills-hub`
-for local skill management.
+The Go CLI at `cmd/skills-hub` installs and inspects packages. The first
+release exposes `list`, `search`, `info`, `validate`, `install`, and `help`.
+It requires no model-attestation keys and does not authenticate providers,
+execute smoke checks, or run agents. Installation preserves package integrity;
+it does not establish runtime readiness.
 
 Build and test:
 
@@ -435,6 +438,7 @@ This now writes:
 Example usage:
 
 ```bash
+./bin/skills-hub help setup
 ./bin/skills-hub list
 ./bin/skills-hub search --tag paid-media --runtime codex
 ./bin/skills-hub validate
@@ -462,26 +466,29 @@ Example usage:
   --entry analytics/ga4-mcp-connector@latest \
   --runtime generic \
   --target ./my-agent/tools-mcp
-./bin/skills-hub run-agent \
-  --agent marketing/weekly-performance-supervisor \
-  --runtime codex \
-  --model-attestation "$MODEL_ATTESTATION_PATH" \
-  --bindings agents/marketing/weekly-performance-supervisor/config/\
-tool-bindings.example.json \
-  --memory agents/marketing/weekly-performance-supervisor/config/\
-memory-profile.example.json \
-  --governance agents/marketing/weekly-performance-supervisor/config/\
-governance.example.json \
-  --approve-live \
-  --audit-log ./tmp/weekly-performance-supervisor-run.json
+./bin/skills-hub install \
+  --source remote \
+  --registry-url https://skills.ai-knowledge-hub.org/registry/skills-index.json \
+  --entry engineering/implementation-strategy@0.1.0 \
+  --runtime generic --target ./my-agent/skills
 ```
 
-For packages with a versioned authentication contract, use `auth configure`,
-`auth status`, `doctor`, and `smoke` after installation. See
-[Authentication and Runtime Readiness](docs/authentication-readiness.md) for
-the credential-binding and provider-validation protocol.
-Runtime adapters must also provide signed model capability evidence as described
-in [Runtime model readiness attestation](docs/model-readiness-attestation.md).
+`list`, `search`, and `info` read local registry files; HTTPS delivery is selected
+explicitly for `install`. `search --runtime` filters declared compatibility and
+`install --runtime` selects an adapter. The installer has no local readiness
+flags on `list` or `info`. Use `skills-hub help setup` before connecting
+executable packages to your application. This offline guide supersedes retained
+README instructions that require the deferred CLI commands and includes direct
+GA4 MCP setup. Package READMEs retain their immutable historical bytes.
+
+The preserved authentication, smoke, and model-attestation implementation is
+available only through the explicit `runtime_readiness` development build.
+`make cli-runtime-test` tests that profile with isolated test authority;
+`make cli-build-runtime-dev` requires explicit model trust roots and produces
+`bin/skills-hub-runtime-dev`, which is not a release artifact. See
+[installer release scope](docs/cli-installation-release.md),
+[Authentication and Runtime Readiness](docs/authentication-readiness.md), and
+[Runtime model readiness attestation](docs/model-readiness-attestation.md).
 
 Runtime target defaults:
 

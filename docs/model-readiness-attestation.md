@@ -1,32 +1,28 @@
 # Runtime model readiness attestation
 
-Installable agents fail closed until their selected runtime supplies a signed,
-short-lived model capability attestation. The runtime adapter owns the private
-key. The authenticated `skills-hub` release pins the corresponding Ed25519
-public key as a release-governed build input for each runtime identity. Neither
-the install caller nor the installed agent package can select or replace it:
+This contract is preserved for the **development-only readiness profile**.
+It is not part of the first installer release. A successful package installation
+does not verify model capabilities or require a model attestation. See
+[installer release scope](cli-installation-release.md).
 
-```bash
-./bin/skills-hub install \
-  --module agents \
-  --entry marketing/weekly-performance-supervisor@latest \
-  --runtime codex
-```
+The development preflight fails closed until the selected runtime supplies a
+signed, short-lived model capability attestation. The runtime adapter owns the
+private key; the development binary pins the corresponding Ed25519 public key.
+Neither the install caller nor the installed package can replace that authority.
 
-Governed builds require `CODEX_MODEL_ATTESTATION_PUBLIC_KEY`,
-`CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY`, and
-`GENERIC_MODEL_ATTESTATION_PUBLIC_KEY`. `make cli-build`, release-cut, and the
-release-tag workflow inject repository-managed public roots into the matching
-`internal/agents` linker variables. A missing root fails the governed build
-instead of producing an unusable release. Direct development builds contain no
-authority and fail closed. Pull-request CI uses `make cli-build-test`, which
-produces a separately named, non-release binary with an explicit public
-test-vector root; it cannot silently substitute for the governed release build.
-CI also proves with an isolated generated keypair that a matching signed
-attestation reaches `ready`. The private production keys are runtime-adapter
-deployment secrets and must never enter this repository.
-Users must verify the CLI through its normal distribution provenance; a locally
-modified binary is a different trust domain.
+`make cli-build-runtime-dev` requires explicit
+`CODEX_MODEL_ATTESTATION_PUBLIC_KEY`, `CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY`, and
+`GENERIC_MODEL_ATTESTATION_PUBLIC_KEY`, and produces
+`bin/skills-hub-runtime-dev` with the `runtime_readiness` build tag.
+The normal `make cli-build`, candidate build and release builder do not read or
+embed these roots. A release build uses `installer_release`; combining that tag
+with `runtime_readiness` is a compile error. There is no runtime flag to enable
+these development commands in the released installer.
+
+`make cli-runtime-test` retains the signed-attestation integration test with an
+isolated generated keypair. Private production keys remain runtime-adapter
+secrets outside this repository. A direct development build without roots still
+fails closed; it cannot manufacture model authority.
 
 The adapter writes a JSON document with this closed contract:
 
@@ -55,19 +51,20 @@ capabilities, and timestamps are therefore authenticated together.
 Pass the adapter-produced document to preflight:
 
 ```bash
-./bin/skills-hub run-agent \
+./bin/skills-hub-runtime-dev run-agent \
   --agent marketing/weekly-performance-supervisor \
   --runtime codex \
   --model-attestation "$MODEL_ATTESTATION_PATH"
 ```
 
-`run-agent` first selects the trust root from its compiled runtime identity, then
+`run-agent` first selects the trust root from its compiled development runtime
+identity, then
 records the verified model identity, version, capabilities, and the
 attestation SHA-256 in its audit report. Missing, expired, replayed, malformed,
 or under-capable evidence blocks readiness. The command does not accept a
 public-key override, install-time trust input, environment trust input, or
 caller-authored capability flags. A distributor that changes a runtime trust
-root must publish and authenticate a new CLI build; it cannot rotate authority
+root must authenticate a new readiness-enabled build; it cannot rotate authority
 through an agent installation.
 
 When roots are omitted, `run-agent` uses the same Codex or Claude module roots

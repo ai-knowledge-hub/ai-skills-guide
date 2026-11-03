@@ -41,13 +41,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: python3 scripts/check-cli-release-assets.py "$RELEASE_TAG"
-      - name: Test governed CLI
+      - name: Test installer CLI
         run: make cli-test
-      - name: Build governed release binaries and checksums
-        env:
-          CODEX_MODEL_ATTESTATION_PUBLIC_KEY: ${{ vars.CODEX_MODEL_ATTESTATION_PUBLIC_KEY }}
-          CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY: ${{ vars.CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY }}
-          GENERIC_MODEL_ATTESTATION_PUBLIC_KEY: ${{ vars.GENERIC_MODEL_ATTESTATION_PUBLIC_KEY }}
+      - name: Build installer release binaries and checksums
         run: make release-cli-artifacts VERSION="$RELEASE_TAG"
       - name: Attest release binaries
         id: attest

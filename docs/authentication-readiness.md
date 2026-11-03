@@ -1,5 +1,12 @@
 # Authentication and Runtime Readiness
 
+This protocol is preserved for the `runtime_readiness` development profile.
+The first installer release does not expose `auth`, `doctor`, `smoke`, or agent
+preflight. Build the development executable with `make cli-build-runtime-dev`
+and use `bin/skills-hub-runtime-dev` for the commands below. These commands may
+perform provider operations; installation alone does not. See
+[installer release scope](cli-installation-release.md).
+
 `skills-hub` keeps package installation separate from local authentication.
 Released manifests contain authentication methods, required scopes, and
 non-secret binding names. Credential payloads remain in a runtime-owned store.
@@ -10,7 +17,7 @@ Configuration records references to environment-backed credentials; it never
 accepts a credential value as a command-line argument or prompt response.
 
 ```sh
-skills-hub auth configure ads/example-tool@1.0.0 \
+skills-hub-runtime-dev auth configure ads/example-tool@1.0.0 \
   --module tools \
   --method api-key \
   --binding PROVIDER_API_KEY=env:PROVIDER_API_KEY \
@@ -75,8 +82,8 @@ direct environment references remain available for simple runtime-owned stores.
 ## Inspect readiness
 
 ```sh
-skills-hub auth status ads/example-tool@1.0.0 --module tools
-skills-hub doctor ads/example-tool@1.0.0 --module tools --runtime generic
+skills-hub-runtime-dev auth status ads/example-tool@1.0.0 --module tools
+skills-hub-runtime-dev doctor ads/example-tool@1.0.0 --module tools --runtime generic
 ```
 
 Authentication status distinguishes missing bindings, unavailable validation,
@@ -94,7 +101,7 @@ contract. After installation, inspect the plugin rather than inventing a shared
 plugin credential:
 
 ```sh
-skills-hub auth status marketing/performance-reporting-plugin@0.2.0 \
+skills-hub-runtime-dev auth status marketing/performance-reporting-plugin@0.2.0 \
   --module plugins \
   --runtime generic \
   --target ./my-agent/plugins
@@ -118,7 +125,7 @@ not repair state or run the package operation.
 ## Run a smoke check
 
 ```sh
-skills-hub smoke ads/example-tool@1.0.0 --module tools --runtime generic
+skills-hub-runtime-dev smoke ads/example-tool@1.0.0 --module tools --runtime generic
 ```
 
 The smoke command verifies the installed tree and authentication immediately

@@ -12,10 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ai-knowledge-hub/ai-skills-guide/internal/agents"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/installer"
 	pluginvalidate "github.com/ai-knowledge-hub/ai-skills-guide/internal/plugins"
-	"github.com/ai-knowledge-hub/ai-skills-guide/internal/readiness"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/registry"
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/skills"
 )
@@ -41,17 +39,10 @@ func main() {
 		err = runValidate(args)
 	case "install":
 		err = runInstall(args)
-	case "auth":
-		err = runAuth(args)
-	case "doctor":
-		err = runDoctor(args)
-	case "smoke":
-		err = runSmoke(args)
-	case "run-agent":
-		err = runAgent(args)
+	case "auth", "doctor", "smoke", "run-agent":
+		err = runReadinessCommand(cmd, args)
 	case "help", "-h", "--help":
-		printUsage()
-		return
+		err = runHelp(args)
 	default:
 		err = fmt.Errorf("unknown command: %s", cmd)
 	}
@@ -66,9 +57,7 @@ func runList(args []string) error {
 	fs := flag.NewFlagSet("list", flag.ContinueOnError)
 	module := fs.String("module", "skills", "module: skills|agents|tools|plugins")
 	registryPath := fs.String("registry", "", "registry index path (defaults by module)")
-	readinessRuntime := fs.String("runtime", "", "derive local evidence-backed status for this runtime")
-	readinessTarget := fs.String("target", "", "installed module directory used for local status")
-	stateDir := fs.String("state-dir", defaultStateDir(), "local readiness evidence directory")
+	readinessFlags := registerCatalogueReadinessFlags(fs)
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -82,8 +71,8 @@ func runList(args []string) error {
 		return err
 	}
 	var installed installer.RuntimeTarget
-	if strings.TrimSpace(*readinessRuntime) != "" {
-		installed, err = installer.ResolveRuntimeTargetForModule(*readinessRuntime, moduleName, *readinessTarget)
+	if readinessFlags.runtime != nil && strings.TrimSpace(*readinessFlags.runtime) != "" {
+		installed, err = installer.ResolveRuntimeTargetForModule(*readinessFlags.runtime, moduleName, *readinessFlags.target)
 		if err != nil {
 			return err
 		}
@@ -96,7 +85,7 @@ func runList(args []string) error {
 		localStatus := ""
 		if installed.TargetPath != "" {
 			ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-			derived, deriveErr := readiness.DeriveCatalogStatus(ctx, readiness.InspectOptions{StateDir: *stateDir, Module: moduleName, Entry: s, Version: s.Latest, PackageDir: filepath.Join(installed.TargetPath, filepath.FromSlash(s.ID)), TargetRoot: installed.TargetPath, Runtime: installed.Runtime})
+			derived, deriveErr := deriveCatalogueStatus(ctx, readinessFlags, installed, moduleName, s, s.Latest)
 			cancel()
 			if deriveErr != nil {
 				localStatus = "not-verified"
@@ -104,7 +93,7 @@ func runList(args []string) error {
 				localStatus = derived.Availability
 			}
 		}
-		fmt.Printf("%s\t%s\t%s\t%s\t%s", s.ID, status, s.Usability.Availability, s.Latest, s.Name)
+		fmt.Printf("%s\t%s\t%s\t%s\t%s", s.ID, status, catalogueDisplayEntry(s).Usability.Availability, s.Latest, s.Name)
 		if localStatus != "" {
 			fmt.Printf("\t%s", localStatus)
 		}
@@ -153,9 +142,7 @@ func runInfo(args []string) error {
 	entriesRoot := fs.String("root", "", "module root directory (defaults by module)")
 	skillSpec := fs.String("skill", "", "skill id, optionally with @version")
 	entrySpec := fs.String("entry", "", "entry id, optionally with @version")
-	readinessRuntime := fs.String("runtime", "", "derive local evidence-backed status for this runtime")
-	readinessTarget := fs.String("target", "", "installed module directory used for local status")
-	stateDir := fs.String("state-dir", defaultStateDir(), "local readiness evidence directory")
+	readinessFlags := registerCatalogueReadinessFlags(fs)
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -207,13 +194,13 @@ func runInfo(args []string) error {
 	printUsabilitySummary(os.Stdout, skill)
 	printCompatibilitySummary(os.Stdout, skill, resolvedVersion.Version)
 	fmt.Printf("deprecated: %t\n", skill.Deprecated)
-	if strings.TrimSpace(*readinessRuntime) != "" {
-		installed, targetErr := installer.ResolveRuntimeTargetForModule(*readinessRuntime, moduleName, *readinessTarget)
+	if readinessFlags.runtime != nil && strings.TrimSpace(*readinessFlags.runtime) != "" {
+		installed, targetErr := installer.ResolveRuntimeTargetForModule(*readinessFlags.runtime, moduleName, *readinessFlags.target)
 		if targetErr != nil {
 			return targetErr
 		}
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-		derived, deriveErr := readiness.DeriveCatalogStatus(ctx, readiness.InspectOptions{StateDir: *stateDir, Module: moduleName, Entry: skill, Version: resolvedVersion.Version, PackageDir: filepath.Join(installed.TargetPath, filepath.FromSlash(skill.ID)), TargetRoot: installed.TargetPath, Runtime: installed.Runtime})
+		derived, deriveErr := deriveCatalogueStatus(ctx, readinessFlags, installed, moduleName, skill, resolvedVersion.Version)
 		cancel()
 		if deriveErr != nil {
 			return deriveErr
@@ -389,6 +376,7 @@ func runInstall(args []string) error {
 		printInstallLifecycleWarning(os.Stderr, result.Registry)
 		printInstallUsabilityWarning(os.Stderr, result.Registry)
 		fmt.Printf("Installed %s@%s to %s (runtime=%s source=remote cache=%s)\n", result.Registry.ID, result.Version, result.Destination, rt.Runtime, cacheStatus)
+		fmt.Println("install.scope: package files installed; runtime operation has not been verified")
 		printUsabilitySummary(os.Stdout, result.Registry)
 		printProviderAuthNextStep(os.Stdout, result.Registry, result.Version, rt.Runtime, rt.TargetPath)
 		return nil
@@ -505,17 +493,22 @@ func runInstall(args []string) error {
 	}
 
 	fmt.Printf("Installed %s@%s to %s (runtime=%s)\n", skill.ID, resolvedVersion.Version, destination, rt.Runtime)
+	fmt.Println("install.scope: package files installed; runtime operation has not been verified")
 	printUsabilitySummary(os.Stdout, skill)
 	if moduleName == "plugins" {
 		printPluginInstallNotes(os.Stdout, os.Stderr, skill, rt.Runtime, destination, runtimeArtifacts, dependencyResult)
-	} else if moduleName == "agents" && skill.Orchestration != nil {
-		fmt.Printf("install.runtime_artifacts: %s\n", strings.Join(runtimeArtifacts, ", "))
-		printPluginDependencySummary(os.Stdout, dependencyResult)
+	} else {
+		printProviderAuthNextStep(os.Stdout, skill, resolvedVersion.Version, rt.Runtime, rt.TargetPath)
+		if moduleName == "agents" && skill.Orchestration != nil {
+			fmt.Printf("install.runtime_artifacts: %s\n", strings.Join(runtimeArtifacts, ", "))
+			printPluginDependencySummary(os.Stdout, dependencyResult)
+		}
 	}
 	return nil
 }
 
 func printUsabilitySummary(w io.Writer, entry registry.SkillEntry) {
+	entry = catalogueDisplayEntry(entry)
 	fmt.Fprintf(w, "usability.availability: %s\n", entry.Usability.Availability)
 	fmt.Fprintf(w, "usability.execution: %s\n", entry.Usability.Execution)
 	fmt.Fprintf(w, "usability.source: %s\n", entry.Usability.Source)
@@ -622,23 +615,6 @@ func printPluginInstallNotes(
 	printProviderAuthNextStep(stdout, entry, entry.Latest, runtime, filepath.Dir(filepath.Dir(destination)))
 }
 
-func printProviderAuthNextStep(w io.Writer, entry registry.SkillEntry, version, runtimeName, pluginTargetRoot string) {
-	if len(entry.ProviderDependencies) == 0 {
-		return
-	}
-	for _, dependency := range entry.ProviderDependencies {
-		fmt.Fprintf(w, "install.auth.provider: %s (%s, %s)\n", dependency.Tool, dependency.Requirement, dependency.Access)
-	}
-	fmt.Fprintf(
-		w,
-		"install.auth.next_step: skills-hub auth status %s@%s --module plugins --runtime %s --target %q\n",
-		entry.ID,
-		version,
-		runtimeName,
-		pluginTargetRoot,
-	)
-}
-
 func printPluginDependencySummary(stdout io.Writer, deps installer.DependencyInstallResult) {
 	fmt.Fprintf(stdout, "deps.skills.installed: %d\n", len(deps.InstalledSkills))
 	if len(deps.InstalledSkills) > 0 {
@@ -717,7 +693,8 @@ func parseSkillSpec(spec string) (string, string, error) {
 
 func printUsage() {
 	lines := []string{
-		"skills-hub: manage local skill, agent, tool, and plugin packages",
+		"skills-hub: install and inspect skill, agent, tool, and plugin packages",
+		"build_profile: " + cliBuildProfile,
 		"",
 		"Usage:",
 		"  skills-hub <command> [flags]",
@@ -728,12 +705,10 @@ func printUsage() {
 		"  info      Show details for one entry",
 		"  validate  Validate local skill structure and prompt coverage",
 		"  install   Install from an explicit local or verified remote source",
-		"  auth      Configure or inspect runtime-owned authentication bindings",
-		"  doctor    Diagnose installation, platform, and authentication readiness",
-		"  smoke     Run the declared non-destructive smoke check and record evidence",
-		"  run-agent Run production preflight checks for an installed agent package",
+		"  help      Show usage and build profile",
 		"",
 		"Examples:",
+		"  skills-hub help setup",
 		"  skills-hub list",
 		"  skills-hub search --tag paid-media --runtime codex",
 		"  skills-hub info --skill marketing/meta-google-weekly-performance-review@latest",
@@ -745,104 +720,9 @@ func printUsage() {
 		"  skills-hub install --module plugins --entry marketing/performance-reporting-plugin@latest --runtime codex",
 		"  skills-hub install --skill marketing/meta-google-weekly-performance-review@0.1.0 --runtime generic --target ./my-agent/skills",
 		"  skills-hub install --source remote --registry-url https://skills.ai-knowledge-hub.org/registry/skills-index.json --entry engineering/implementation-strategy@latest --runtime codex",
-		"  skills-hub auth configure ads/example@latest --module tools --binding PROVIDER_API_KEY=env:PROVIDER_API_KEY --generation PROVIDER_API_KEY=env:PROVIDER_API_KEY_GENERATION --validator-command provider-auth-check",
-		"  skills-hub auth status ads/example@latest --module tools",
-		"  skills-hub auth status marketing/performance-reporting-plugin@latest --module plugins --runtime codex",
-		"  skills-hub doctor ads/example@latest --module tools --runtime codex",
-		"  skills-hub smoke ads/example@latest --module tools --runtime codex",
-		"  skills-hub run-agent --agent marketing/weekly-performance-supervisor --runtime codex --model-attestation /path/from/runtime/model-attestation.json --approve-live",
 	}
+	lines = append(lines, readinessUsage()...)
 	fmt.Println(strings.Join(lines, "\n"))
-}
-
-func runAgent(args []string) error {
-	fs := flag.NewFlagSet("run-agent", flag.ContinueOnError)
-	agentID := fs.String("agent", "", "agent id in <domain>/<slug> format")
-	runtimeName := fs.String("runtime", "generic", "compiled runtime binding set (codex, claude, generic)")
-	stateDir := fs.String("state-dir", defaultStateDir(), "non-secret provider authentication state directory")
-	agentsRoot := fs.String("agents-root", "", "agents root directory override")
-	skillsRoot := fs.String("skills-root", "", "skills root directory override")
-	toolsRoot := fs.String("tools-root", "", "tools root directory override")
-	modelAttestationPath := fs.String("model-attestation", "", "path to a signed runtime model attestation")
-	bindingsPath := fs.String("bindings", "", "path to JSON tool bindings")
-	memoryPath := fs.String("memory", "", "path to JSON memory profile")
-	governancePath := fs.String("governance", "", "path to JSON governance profile")
-	auditPath := fs.String("audit-log", "", "path to output JSON audit report")
-	approveLive := fs.Bool("approve-live", false, "approve live actions for this run")
-	if err := fs.Parse(args); err != nil {
-		return err
-	}
-	if strings.TrimSpace(*agentID) == "" {
-		return errors.New("--agent is required")
-	}
-	resolvedAgentsRoot, resolvedSkillsRoot, resolvedToolsRoot, err := resolveRunAgentRoots(*runtimeName, *agentsRoot, *skillsRoot, *toolsRoot)
-	if err != nil {
-		return err
-	}
-
-	report, err := agents.RunPreflight(agents.RunOptions{
-		AgentsRoot:           resolvedAgentsRoot,
-		SkillsRoot:           resolvedSkillsRoot,
-		ToolsRoot:            resolvedToolsRoot,
-		AgentID:              strings.TrimSpace(*agentID),
-		Runtime:              strings.TrimSpace(*runtimeName),
-		StateDir:             strings.TrimSpace(*stateDir),
-		BindingsPath:         strings.TrimSpace(*bindingsPath),
-		MemoryPath:           strings.TrimSpace(*memoryPath),
-		GovernancePath:       strings.TrimSpace(*governancePath),
-		ApproveLive:          *approveLive,
-		AuditPath:            strings.TrimSpace(*auditPath),
-		ModelAttestationPath: strings.TrimSpace(*modelAttestationPath),
-	})
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("agent: %s\n", report.AgentID)
-	fmt.Printf("status: %s\n", report.Status)
-	if len(report.WorkflowSteps) > 0 {
-		fmt.Printf("workflow_steps: %d\n", len(report.WorkflowSteps))
-	}
-	if len(report.Warnings) > 0 {
-		fmt.Println("warnings:")
-		for _, w := range report.Warnings {
-			fmt.Printf("  - %s\n", w)
-		}
-	}
-	if len(report.BlockingReasons) > 0 {
-		fmt.Println("blocking_reasons:")
-		for _, b := range report.BlockingReasons {
-			fmt.Printf("  - %s\n", b)
-		}
-	}
-
-	if report.Status != "ready" {
-		return fmt.Errorf("agent preflight not ready: %s", report.Status)
-	}
-	return nil
-}
-
-func resolveRunAgentRoots(runtimeName, agentsRoot, skillsRoot, toolsRoot string) (string, string, string, error) {
-	resolve := func(module, explicit string) (string, error) {
-		target, err := installer.ResolveRuntimeTargetForModule(runtimeName, module, strings.TrimSpace(explicit))
-		if err != nil {
-			return "", fmt.Errorf("resolve %s root: %w", module, err)
-		}
-		return target.TargetPath, nil
-	}
-	agentsPath, err := resolve("agents", agentsRoot)
-	if err != nil {
-		return "", "", "", err
-	}
-	skillsPath, err := resolve("skills", skillsRoot)
-	if err != nil {
-		return "", "", "", err
-	}
-	toolsPath, err := resolve("tools", toolsRoot)
-	if err != nil {
-		return "", "", "", err
-	}
-	return agentsPath, skillsPath, toolsPath, nil
 }
 
 func normalizeModule(raw string) (string, error) {

@@ -20,18 +20,13 @@ if [[ -n "$(git status --porcelain --untracked-files=all)" ]]; then
   exit 1
 fi
 
-go run ./cmd/runtime-trust-validator \
-  --codex "${CODEX_MODEL_ATTESTATION_PUBLIC_KEY:-}" \
-  --claude "${CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY:-}" \
-  --generic "${GENERIC_MODEL_ATTESTATION_PUBLIC_KEY:-}"
-
 if [[ -e "$output_dir" ]] && [[ -n "$(find "$output_dir" -mindepth 1 -maxdepth 1 -print -quit)" ]]; then
   echo "Refusing to overwrite non-empty output directory: $output_dir" >&2
   exit 1
 fi
 mkdir -p "$output_dir"
 
-ldflags="-s -w -buildid= -X github.com/ai-knowledge-hub/ai-skills-guide/internal/agents.codexModelAttestationPublicKey=${CODEX_MODEL_ATTESTATION_PUBLIC_KEY} -X github.com/ai-knowledge-hub/ai-skills-guide/internal/agents.claudeModelAttestationPublicKey=${CLAUDE_MODEL_ATTESTATION_PUBLIC_KEY} -X github.com/ai-knowledge-hub/ai-skills-guide/internal/agents.genericModelAttestationPublicKey=${GENERIC_MODEL_ATTESTATION_PUBLIC_KEY}"
+ldflags="-s -w -buildid="
 targets=(linux/amd64 linux/arm64 darwin/amd64 darwin/arm64 windows/amd64 windows/arm64)
 
 for target in "${targets[@]}"; do
@@ -43,7 +38,7 @@ for target in "${targets[@]}"; do
   fi
   artifact="$output_dir/skills-hub_${version}_${os}_${arch}${suffix}"
   echo "Building $artifact"
-  CGO_ENABLED=0 GOOS="$os" GOARCH="$arch" go build -trimpath -ldflags "$ldflags" -o "$artifact" ./cmd/skills-hub
+  GOFLAGS= GOWORK=off CGO_ENABLED=0 GOOS="$os" GOARCH="$arch" go build -tags installer_release -trimpath -ldflags "$ldflags" -o "$artifact" ./cmd/skills-hub
 done
 
 (

@@ -20,8 +20,9 @@ The check has two mutually exclusive inputs:
 - `--cli /absolute/path/to/binary`: copy the explicitly supplied candidate into
   the disposable workspace and label the report `candidate`. This verifies the
   published package delivery with that binary; it cannot certify a released CLI.
-  The workflow builds the existing `skills-hub-test` candidate using explicit
-  test-only runtime trust roots. It is not a governed release binary.
+  The workflow builds `skills-hub-test` with the same installation-only
+  profile as a release. It needs no model roots, but remains a source-built
+  candidate without released-client provenance.
 
 An exact package version is intentionally fixed for this narrow check. `latest`
 does not silently change the subject. The sample must remain instruction-only,
@@ -111,7 +112,7 @@ a release or deploy a website.
 The **Published registry installation** workflow is manually dispatched and
 records Linux/macOS results independently. `release` is the default mode and
 requires an exact tag. A maintainer can explicitly choose `candidate` to check
-delivery before publishing a governed CLI. Evidence is uploaded even for a
+delivery before publishing an installer CLI. Evidence is uploaded even for a
 failed prerequisite. Public-network availability does not gate every PR.
 The workflow must first be integrated onto the repository's default branch to
 appear as a dispatchable workflow in GitHub Actions.
@@ -158,7 +159,7 @@ the read-only verifier's digest, pinned-manifest runtime contract and successful
 runtime receipt checks. The earlier ten-test, payload-only pass remains in Git
 history at `c928fe8`; it did not cover the complete receipt or duplicate metadata.
 
-The next release step is to publish a governed CLI through the existing release
+The next release step is to publish an installer CLI through the existing release
 workflow, then run `release` mode against the intended registry deployment.
 This change does not manufacture that release or close #52. Its broader provider,
 execution, platform and lifecycle requirements remain separate.

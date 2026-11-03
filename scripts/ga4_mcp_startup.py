@@ -49,7 +49,12 @@ class Process:
         finally:
             self.selector.close()
             for stream in (self.child.stdin, self.child.stdout, self.child.stderr):
-                stream.close()
+                try:
+                    stream.close()
+                except BrokenPipeError:
+                    # Preserve the original startup failure and still close the
+                    # other descriptors if the server exited before reading.
+                    pass
 
     def pump(self):
         remaining = self.deadline - time.monotonic()

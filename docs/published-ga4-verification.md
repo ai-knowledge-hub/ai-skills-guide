@@ -121,7 +121,7 @@ all startup checks passed with zero network attempts and no supplied credentials
 This local host used Node.js `v25.8.2`; the workflow explicitly selects Node 22.
 It is local evidence, not a substitute for the Linux/macOS workflow matrix.
 
-All 31 deterministic checker tests passed (16 instruction/release-boundary cases
-and 15 GA4 cases), as did `CGO_ENABLED=0 GOTOOLCHAIN=go1.22.12 go test ./...`,
+All 32 deterministic checker tests passed (16 instruction/release-boundary cases
+and 16 GA4 cases), as did `CGO_ENABLED=0 GOTOOLCHAIN=go1.22.12 go test ./...`,
 `actionlint` v1.7.12 for both changed workflows (shellcheck/pyflakes integrations
 disabled), and `git diff --check`.

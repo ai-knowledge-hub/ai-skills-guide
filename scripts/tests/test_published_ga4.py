@@ -227,6 +227,16 @@ class PublishedGA4Tests(unittest.TestCase):
                         process.read()
                 self.assertIsNotNone(process.child.poll())
 
+    def test_server_exit_before_initialization_closes_every_pipe(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with self.assertRaisesRegex(ValueError, "closed input"):
+                with check.ga4_startup.Process([shutil.which("node"), "-e", "process.exit(0)"], temporary) as process:
+                    process.child.wait(timeout=5)
+                    process.send({"jsonrpc": "2.0", "id": 1, "method": "initialize"})
+            self.assertIsNotNone(process.child.poll())
+            self.assertTrue(all(stream.closed for stream in
+                                [process.child.stdin, process.child.stdout, process.child.stderr]))
+
     def test_mcp_envelopes_cannot_substitute_request_or_error_for_success(self):
         for document in [{"jsonrpc": "2.0", "id": True, "result": {}},
                          {"jsonrpc": "2.0", "id": 2, "result": {}},

@@ -104,5 +104,27 @@ Together they pass **24/24 installation-policy transitions and 12 first-use
 probes** using Node 22.23.4, with advisory hooks, zero detected network attempts,
 no executed proposed verification command and `merge_authorized: false`.
 
-Windows implementation and hosted results are recorded separately below; this
-baseline does not itself establish Windows execution.
+## Windows results — 4 November 2026
+
+The [released-client workflow](https://github.com/ai-knowledge-hub/ai-skills-guide/actions/runs/41825202687)
+passed all three host jobs on implementation commit
+`068fa6d32d4a90b31a3728bf08cd2ac469d27fd8`:
+
+- [Windows AMD64 report](reviews/published-windows-2026-11-04/ci-windows-release.json).
+- [Linux x86-64 report](reviews/published-windows-2026-11-04/ci-ubuntu-release.json).
+- [macOS ARM64 report](reviews/published-windows-2026-11-04/ci-macos-release.json).
+
+All three inspected reports identify `v0.4.0-alpha.1`, passed checksum and signed
+provenance, the exact instruction archive/manifest and all three adapters.
+Windows passes **9/9 transitions**, for **27/27 across the three hosts**. The
+Windows binary SHA-256 is
+`7c9e4fc5712fdf117679188cc9cfe05843cb1ad7a6f9243fbc0c3aae75b73ec2`.
+No candidate CLI was built or substituted.
+
+The first native fixture run exposed WindowsPath's case-insensitive sort order
+in the independent test receipt builder. Commit `9605d6f` corrects that fixture
+to sort case-sensitive portable path strings; it changes no checker or workflow
+behavior. The [native Windows fixture job](https://github.com/ai-knowledge-hub/ai-skills-guide/actions/runs/41825336359/job/126558523834)
+then passed **8/8 tests with no skips**, including the real junction. All 70
+checker tests pass on macOS with only that Windows-only case skipped. Actionlint
+v1.7.12 on both changed workflows and `git diff --check` also pass.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bounded #52 proof: pinned published instruction or GA4 package, no provider calls."""
+"""Bounded #52 proof: pinned published instruction or MCP packages, no provider calls."""
 
 import argparse
 import datetime
@@ -33,11 +33,15 @@ INSTRUCTIONS = {"module": "skills", "id": PACKAGE, "version": VERSION, "manifest
 GA4 = {"module": "tools", "id": "analytics/ga4-mcp-connector", "version": "0.2.0", "manifest": "tool.yaml",
        "registry": "https://skills.ai-knowledge-hub.org/registry/tools-index.json",
        "repair": "scripts/ga4_mcp_server.mjs",
-       "required": {"tool.yaml", "README.md", "TOOL.md", ".mcp.json", "scripts/ga4_mcp_server.mjs"}}
-SAMPLES = {"instructions": INSTRUCTIONS, "ga4": GA4}
-spec = importlib.util.spec_from_file_location("ga4_startup", Path(__file__).with_name("ga4_mcp_startup.py"))
-ga4_startup = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(ga4_startup)
+       "required": {"tool.yaml", "README.md", "TOOL.md", ".mcp.json", "scripts/ga4_mcp_server.mjs"}, "startup": "ga4"}
+BIGQUERY = {**GA4, "id": "warehouse/bigquery-mcp-query-runner", "repair": "scripts/bigquery_mcp_server.mjs",
+            "required": {"tool.yaml", "README.md", "TOOL.md", ".mcp.json", "scripts/bigquery_mcp_server.mjs"}, "startup": "bigquery"}
+META_ADS = {**GA4, "id": "ads/meta-ads-mcp-connector", "repair": "scripts/meta_ads_mcp_server.mjs",
+            "required": {"tool.yaml", "README.md", "TOOL.md", ".mcp.json", "scripts/meta_ads_mcp_server.mjs"}, "startup": "meta-ads"}
+SAMPLES = {"instructions": INSTRUCTIONS, "ga4": GA4, "bigquery": BIGQUERY, "meta-ads": META_ADS}
+spec = importlib.util.spec_from_file_location("mcp_startup", Path(__file__).with_name("published_mcp_startup.py"))
+mcp_startup = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(mcp_startup)
 
 
 def require(condition, message):
@@ -146,7 +150,7 @@ def archive_files(data, sample=INSTRUCTIONS, modes=None):
             total += member.size
             require(total <= MAX_DOWNLOAD, "expanded archive exceeds verification limit")
             if member.isfile():
-                require(sample == GA4 or not member.mode & 0o111, "instruction sample unexpectedly contains executable files")
+                require(sample["module"] == "tools" or not member.mode & 0o111, "instruction sample unexpectedly contains executable files")
                 files[name] = archive.extractfile(member).read()
             if modes is not None:
                 modes[name] = 0o755 if member.isdir() or member.mode & 0o111 else 0o644
@@ -209,15 +213,15 @@ def verify_installed(package_dir, expected_files, runtime, artifact_sha, verifie
         if relative != RECEIPT:
             actual_modes[relative] = stat.S_IMODE(path.stat().st_mode)
         if path.is_file():
-            require(sample == GA4 or not path.stat().st_mode & 0o111, "installed instruction file unexpectedly became executable")
+            require(sample["module"] == "tools" or not path.stat().st_mode & 0o111, "installed instruction file unexpectedly became executable")
             actual[relative] = path.read_bytes()
     receipt = json.loads(actual.pop(RECEIPT, b"{}"))
     for key, value in {"schema_version": "skills-hub.install-receipt/v1", "source": "remote", "module": sample["module"],
                        "id": sample["id"], "version": sample["version"], "runtime": runtime, "artifact_sha256": artifact_sha}.items():
         require(receipt.get(key) == value, f"installed receipt has incorrect {key}")
     require(actual == expected_files, "installed file inventory/bytes differ from the downloaded release")
-    if sample == GA4:
-        require(modes is not None and actual_modes == modes, "installed GA4 inventory/permissions differ from the downloaded release")
+    if sample["module"] == "tools":
+        require(modes is not None and actual_modes == modes, "installed tool inventory/permissions differ from the downloaded release")
     inspect_pinned(verifier, manifest_path, manifest_sha, package_dir, runtime, artifact_sha, sample)
     return sha256(json.dumps({name: sha256(data) for name, data in sorted(actual.items())}).encode())
 
@@ -231,7 +235,7 @@ def verify_runtime(binary, registry_url, runtime, directory, files, artifact_sha
     package_dir = target / sample["id"]
     args = [str(binary), "install", "--source", "remote", "--module", sample["module"], "--registry-url", registry_url,
             "--entry", f"{sample['id']}@{sample['version']}", "--runtime", runtime, "--target", str(target), "--cache-dir", str(cache)]
-    if sample == GA4:
+    if sample["module"] == "tools":
         args += ["--execution-runtime", "node22"]
     # No adopting-client credentials, runtime homes or checkout/package paths are
     # supplied. Explicit target/cache paths keep all writes in disposable space.
@@ -241,10 +245,10 @@ def verify_runtime(binary, registry_url, runtime, directory, files, artifact_sha
     result["payload_sha256"] = verify_installed(package_dir, files, runtime, artifact_sha, verifier, manifest_path, manifest_sha, sample, modes)
     result["receipt_verified"] = True
     result["cold_install"] = "passed"
-    if sample == GA4:
+    if sample["module"] == "tools":
         before_startup = filesystem_snapshot(package_dir)
-        result["startup"] = ga4_startup.verify(binary, completed.stdout, package_dir, work)
-        require(filesystem_snapshot(package_dir) == before_startup, "GA4 startup mutated installed files or receipt")
+        result["startup"] = mcp_startup.verify(binary, completed.stdout, package_dir, work, sample["startup"])
+        require(filesystem_snapshot(package_dir) == before_startup, "MCP startup mutated installed files or receipt")
     before = filesystem_snapshot(package_dir)
     duplicate = subprocess.run(args, cwd=work, env=environment, capture_output=True, timeout=150)
     after = filesystem_snapshot(package_dir)

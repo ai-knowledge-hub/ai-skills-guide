@@ -8,7 +8,7 @@ on:
         required: true
         type: choice
         default: instructions
-        options: [instructions, ga4]
+        options: [instructions, ga4, bigquery, meta-ads]
       client_source:
         description: Released client or explicitly labelled candidate build
         required: true
@@ -46,7 +46,7 @@ jobs:
           go-version-file: go.mod
           cache: true
       - uses: actions/setup-node@v4
-        if: inputs.sample == 'ga4'
+        if: inputs.sample == 'ga4' || inputs.sample == 'bigquery' || inputs.sample == 'meta-ads'
         with:
           node-version: 22
       - name: Build read-only manifest and receipt verifier
@@ -81,6 +81,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: published-install-${{ matrix.os }}-${{ inputs.client_source }}${{ inputs.sample == 'ga4' && '-ga4' || '' }}
+          name: published-install-${{ matrix.os }}-${{ inputs.client_source }}${{ inputs.sample && inputs.sample != 'instructions' && format('-{0}', inputs.sample) || '' }}
           path: output/published-install/report.json
           if-no-files-found: warn

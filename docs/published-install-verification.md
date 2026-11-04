@@ -12,6 +12,8 @@ This remains the default `--sample instructions` case. A separate, explicitly
 pinned `--sample ga4` case adds published tool installation and credential-free
 MCP startup; see [GA4 verification](published-ga4-verification.md). Its tool-aware
 manifest, receipt and permission checks do not relax the instruction-only case.
+The `bigquery` and `meta-ads` samples extend the same controls to two more exact
+published releases; see [BigQuery and Meta Ads verification](published-tools-verification.md).
 
 ## Client provenance is explicit
 
@@ -124,8 +126,9 @@ delivery before publishing an installer CLI. Evidence is uploaded even for a
 failed prerequisite. Public-network availability does not gate every PR.
 The workflow must first be integrated onto the repository's default branch to
 appear as a dispatchable workflow in GitHub Actions.
-The `sample` input defaults to `instructions`; `ga4` selects the tools index and
-Node.js 22. Leaving `registry_url` blank selects the sample's module index.
+The `sample` input defaults to `instructions`; `ga4`, `bigquery` and `meta-ads`
+select the tools index and Node.js 22. Leaving `registry_url` blank selects the
+sample's module index.
 
 Normal PR CI runs the deterministic harness tests:
 

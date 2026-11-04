@@ -103,14 +103,21 @@ class Process:
         line, self.output = self.output.split(b"\n", 1)
         return json.loads(line)
 
-    def finish(self):
+    def collect(self):
         self.child.stdin.close()
         while self.selector.get_map():
             self.pump()
         remaining = self.deadline - time.monotonic()
         require(remaining > 0, "MCP process timed out")
         require(self.child.wait(timeout=remaining) == 0, "MCP process exited unsuccessfully")
-        require(not self.output, "MCP process emitted unexpected extra output")
+        output, self.output = self.output, b""
+        return output
+
+    def finish(self):
+        require(not self.collect(), "MCP process emitted unexpected extra output")
+
+    def document(self):
+        return json.loads(self.collect())
 
 
 def registration(guide, package_dir, sample="ga4"):
@@ -148,17 +155,7 @@ def response(document, request_id):
     return document["result"]
 
 
-def verify(binary, install_output, package_dir, work, sample="ga4"):
-    profile = PROFILES[sample]
-    guidance = re.search(rb"^install.setup_guidance: (.+)$", install_output, re.M)
-    require(guidance is not None and guidance.group(1).split() == [b"skills-hub", b"help", b"setup"],
-            "installed MCP package lacks the compatible setup redirect")
-    guide = subprocess.run([str(binary), "help", "setup"], cwd=work, env={"PATH": os.defpath},
-                           capture_output=True, check=True, timeout=15).stdout.decode()
-    # Exercise the guide's symlink-safe absolute registration outside the package.
-    linked = work / "installed-tool-link"
-    linked.symlink_to(package_dir, target_is_directory=True)
-    server = registration(guide, linked, sample)
+def node_runtime():
     node = shutil.which("node")
     require(node is not None, "MCP startup verification requires Node.js 22+")
     node = str(Path(node).resolve())
@@ -166,6 +163,10 @@ def verify(binary, install_output, package_dir, work, sample="ga4"):
                              capture_output=True, check=True, timeout=10).stdout.decode().strip()
     require(re.fullmatch(r"v\d+\.\d+\.\d+", version) and int(version[1:].split(".")[0]) >= 22,
             "MCP startup verification requires Node.js 22+")
+    return node, version
+
+
+def network_guard(work):
     marker = work / "network-attempts"
     guard = work / "block-network.mjs"
     # Catch attempted provider calls even if the package catches the exception.
@@ -187,6 +188,21 @@ net.connect = net.createConnection = deny;
 http.request = http.get = https.request = https.get = tls.connect = deny;
 syncBuiltinESMExports();
 """.replace("MARKER", json.dumps(str(marker))))
+    return marker, guard
+
+
+def verify(binary, install_output, package_dir, work, sample="ga4"):
+    profile = PROFILES[sample]
+    guidance = re.search(rb"^install.setup_guidance: (.+)$", install_output, re.M)
+    require(guidance is not None and guidance.group(1).split() == [b"skills-hub", b"help", b"setup"],
+            "installed MCP package lacks the compatible setup redirect")
+    guide = subprocess.run([str(binary), "help", "setup"], cwd=work, env={"PATH": os.defpath},
+                           capture_output=True, check=True, timeout=15).stdout.decode()
+    linked = work / "installed-tool-link"
+    linked.symlink_to(package_dir, target_is_directory=True)
+    server = registration(guide, linked, sample)
+    node, version = node_runtime()
+    marker, guard = network_guard(work)
     command = [node, "--import", str(guard), *server["args"]]
     with Process(command + ["--healthcheck"], work) as process:
         health = process.read()

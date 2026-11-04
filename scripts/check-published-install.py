@@ -38,10 +38,19 @@ BIGQUERY = {**GA4, "id": "warehouse/bigquery-mcp-query-runner", "repair": "scrip
             "required": {"tool.yaml", "README.md", "TOOL.md", ".mcp.json", "scripts/bigquery_mcp_server.mjs"}, "startup": "bigquery"}
 META_ADS = {**GA4, "id": "ads/meta-ads-mcp-connector", "repair": "scripts/meta_ads_mcp_server.mjs",
             "required": {"tool.yaml", "README.md", "TOOL.md", ".mcp.json", "scripts/meta_ads_mcp_server.mjs"}, "startup": "meta-ads"}
-SAMPLES = {"instructions": INSTRUCTIONS, "ga4": GA4, "bigquery": BIGQUERY, "meta-ads": META_ADS}
+CODE_MAINTENANCE = {"module": "plugins", "id": "engineering/code-maintenance-plugin", "version": "0.2.0",
+                    "manifest": "plugin.yaml", "registry": "https://skills.ai-knowledge-hub.org/registry/plugins-index.json",
+                    "required": {"plugin.yaml", "plugin.json", "dependencies.lock.json", "checksums.txt", "sbom.cdx.json",
+                                 "provenance.json", "README.md", "scripts/first_use.mjs", "examples/first-use-input.json"},
+                    "artifact_sha256": "7d170bcd18bb15c58eacd99fc8a0def78498ca795e62eae9fc951301b308f93a"}
+SAMPLES = {"instructions": INSTRUCTIONS, "ga4": GA4, "bigquery": BIGQUERY, "meta-ads": META_ADS,
+           "code-maintenance": CODE_MAINTENANCE}
 spec = importlib.util.spec_from_file_location("mcp_startup", Path(__file__).with_name("published_mcp_startup.py"))
 mcp_startup = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mcp_startup)
+spec = importlib.util.spec_from_file_location("plugin_check", Path(__file__).with_name("published_plugin.py"))
+plugin_check = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(plugin_check)
 
 
 def require(condition, message):
@@ -129,6 +138,8 @@ def selected_release(index, sample=INSTRUCTIONS):
     versions = [item for item in entry.get("versions", []) if item.get("version") == sample["version"]]
     require(len(versions) == 1, "pinned package release must occur exactly once")
     version = versions[0]
+    if sample.get("artifact_sha256"):
+        require(version.get("sha256") == sample["artifact_sha256"], "pinned plugin artifact differs from reviewed release")
     for key in ["sha256", "manifest_sha256"]:
         require(re.fullmatch(r"[a-f0-9]{64}", version.get(key, "")), f"invalid {key} in published release")
     return version
@@ -150,7 +161,7 @@ def archive_files(data, sample=INSTRUCTIONS, modes=None):
             total += member.size
             require(total <= MAX_DOWNLOAD, "expanded archive exceeds verification limit")
             if member.isfile():
-                require(sample["module"] == "tools" or not member.mode & 0o111, "instruction sample unexpectedly contains executable files")
+                require(sample["module"] in {"tools", "plugins"} or not member.mode & 0o111, "instruction sample unexpectedly contains executable files")
                 files[name] = archive.extractfile(member).read()
             if modes is not None:
                 modes[name] = 0o755 if member.isdir() or member.mode & 0o111 else 0o644
@@ -228,6 +239,10 @@ def verify_installed(package_dir, expected_files, runtime, artifact_sha, verifie
 
 def verify_runtime(binary, registry_url, runtime, directory, files, artifact_sha, result, verifier, manifest_path, manifest_sha,
                    sample=INSTRUCTIONS, modes=None):
+    if sample["module"] == "plugins":
+        inspector = lambda package: inspect_pinned(verifier, manifest_path, manifest_sha, package, runtime, artifact_sha, sample)
+        return plugin_check.verify_runtime(binary, registry_url, runtime, directory, files, modes, artifact_sha, result,
+                                           inspector, filesystem_snapshot, mcp_startup)
     work = directory / runtime
     work.mkdir()
     target = work / "runtime" / sample["module"]
@@ -313,6 +328,8 @@ def main():
             require(sha256(manifest) == version["manifest_sha256"], "published manifest checksum mismatch")
             modes = {}
             files = archive_files(archive, sample, modes)
+            if sample["module"] == "plugins":
+                plugin_check.verify_archive(files, modes)
             require(files[sample["manifest"]] == manifest, "served manifest differs from the archive manifest")
             pinned_dir = clean / "pinned-release"
             pinned_dir.mkdir()

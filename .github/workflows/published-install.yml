@@ -8,7 +8,7 @@ on:
         required: true
         type: choice
         default: instructions
-        options: [instructions, ga4, bigquery, meta-ads]
+        options: [instructions, ga4, bigquery, meta-ads, code-maintenance]
       client_source:
         description: Released client or explicitly labelled candidate build
         required: true
@@ -46,7 +46,7 @@ jobs:
           go-version-file: go.mod
           cache: true
       - uses: actions/setup-node@v4
-        if: inputs.sample == 'ga4' || inputs.sample == 'bigquery' || inputs.sample == 'meta-ads'
+        if: inputs.sample != 'instructions'
         with:
           node-version: 22
       - name: Build read-only manifest and receipt verifier

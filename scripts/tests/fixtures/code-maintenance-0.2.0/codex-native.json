@@ -1,0 +1,6 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "code-maintenance-plugin",
+  "version": "0.2.0",
+  "description": "Package repo planning, verification, test-gap analysis, coverage review, and PR drafting into one governed maintenance workflow plugin."
+}

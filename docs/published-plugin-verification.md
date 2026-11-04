@@ -168,6 +168,20 @@ The plugin passed a local macOS ARM64 released-client run for all three adapters
 verification of all five dependencies in both cold and offline clean installs.
 The local host used Node.js `v25.8.2`; the workflow selects Node 22.
 
+The [published-plugin workflow](https://github.com/ai-knowledge-hub/ai-skills-guide/actions/runs/41806849554)
+passed on implementation commit `e7cdfc4767c70968678ea815bf0ee1c1b1c95eaa`:
+
+- [Linux x86-64 report](reviews/published-plugin-2026-11-04/ci-ubuntu-release.json).
+- [macOS ARM64 report](reviews/published-plugin-2026-11-04/ci-macos-release.json).
+
+Both hosts used Node.js `v22.23.4` and the actual released CLI, with candidate
+builds skipped. The retained reports verify **24/24 installation-policy
+transitions**, all five skill dependencies in each cold and offline clean
+closure, adapter registration, receipts and **12 first-use probes**. Every hook
+remained advisory; every first-use result kept merge unauthorized, executed no
+proposed verification command and recorded zero network attempts. These are
+delivery and local-plan results, not application-use or native-enforcement proof.
+
 All 62 checker tests passed (45 instruction/MCP cases and 17 plugin cases), as
 did `CGO_ENABLED=0 GOTOOLCHAIN=go1.22.12 go test ./...`, `actionlint` v1.7.12 for
 both changed workflows (shellcheck/pyflakes integrations disabled), and

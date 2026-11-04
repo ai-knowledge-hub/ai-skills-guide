@@ -1,0 +1,124 @@
+{
+  "schema_version": "published-install-check/v1",
+  "checked_at": "2026-11-04T07:38:12.888016+00:00",
+  "status": "passed",
+  "client_kind": "release",
+  "host": {
+    "os": "Darwin",
+    "architecture": "arm64"
+  },
+  "registry_url": "https://skills.ai-knowledge-hub.org/registry/tools-index.json",
+  "sample": "bigquery",
+  "package": "warehouse/bigquery-mcp-query-runner@0.2.0",
+  "module": "tools",
+  "runtimes": [
+    {
+      "runtime": "codex",
+      "payload_sha256": "96e143082f330d64470fd24f05a6cc26dc212f0933019c3e0fb42059f1e7961f",
+      "receipt_verified": true,
+      "cold_install": "passed",
+      "startup": {
+        "setup_guidance": "passed",
+        "healthcheck": "passed",
+        "mcp_initialize": "passed",
+        "mcp_tools_list": "passed",
+        "network_attempts": 0,
+        "node_version": "v22.23.4",
+        "credentials_supplied": false,
+        "provider_calls_verified": false,
+        "server": "bigquery-mcp-query-runner"
+      },
+      "duplicate_rejected_without_mutation": "passed",
+      "offline_reinstall_restored_release_bytes": "passed"
+    },
+    {
+      "runtime": "claude",
+      "payload_sha256": "96e143082f330d64470fd24f05a6cc26dc212f0933019c3e0fb42059f1e7961f",
+      "receipt_verified": true,
+      "cold_install": "passed",
+      "startup": {
+        "setup_guidance": "passed",
+        "healthcheck": "passed",
+        "mcp_initialize": "passed",
+        "mcp_tools_list": "passed",
+        "network_attempts": 0,
+        "node_version": "v22.23.4",
+        "credentials_supplied": false,
+        "provider_calls_verified": false,
+        "server": "bigquery-mcp-query-runner"
+      },
+      "duplicate_rejected_without_mutation": "passed",
+      "offline_reinstall_restored_release_bytes": "passed"
+    },
+    {
+      "runtime": "generic",
+      "payload_sha256": "96e143082f330d64470fd24f05a6cc26dc212f0933019c3e0fb42059f1e7961f",
+      "receipt_verified": true,
+      "cold_install": "passed",
+      "startup": {
+        "setup_guidance": "passed",
+        "healthcheck": "passed",
+        "mcp_initialize": "passed",
+        "mcp_tools_list": "passed",
+        "network_attempts": 0,
+        "node_version": "v22.23.4",
+        "credentials_supplied": false,
+        "provider_calls_verified": false,
+        "server": "bigquery-mcp-query-runner"
+      },
+      "duplicate_rejected_without_mutation": "passed",
+      "offline_reinstall_restored_release_bytes": "passed"
+    }
+  ],
+  "release": {
+    "tag": "v0.4.0-alpha.1",
+    "url": "https://github.com/ai-knowledge-hub/ai-skills-guide/releases/tag/v0.4.0-alpha.1",
+    "assets": [
+      "SHA256SUMS",
+      "skills-hub_v0.4.0-alpha.1_darwin_amd64",
+      "skills-hub_v0.4.0-alpha.1_darwin_arm64",
+      "skills-hub_v0.4.0-alpha.1_linux_amd64",
+      "skills-hub_v0.4.0-alpha.1_linux_arm64",
+      "skills-hub_v0.4.0-alpha.1_provenance.json",
+      "skills-hub_v0.4.0-alpha.1_windows_amd64.exe",
+      "skills-hub_v0.4.0-alpha.1_windows_arm64.exe"
+    ],
+    "checksum_and_provenance": "passed"
+  },
+  "cli_sha256": "1e26906d6f2e7fba2b3807953683a47f9caa5b6e59db15c41bc5f3ec08f9f34e",
+  "registry_sha256": "f3987f39e54c336fa23ff9031a2f03e3354512cdfc61a7b05af1d002394a3165",
+  "selected_release": {
+    "version": "0.2.0",
+    "released_at": "2026-09-18T00:00:00Z",
+    "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/warehouse/bigquery-mcp-query-runner/0.2.0.yaml",
+    "manifest_sha256": "380615648601d908e7db43a67df504b36b5e8babe5b3ac9bf9e51125200beded",
+    "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/warehouse/bigquery-mcp-query-runner/0.2.0.tar.gz",
+    "sha256": "0ea4c8301f2292f4790ae8d18344fffc9bc6e4aa8dbf82244574f21608745871"
+  },
+  "verifier_sha256": "d398ed0b61363aabacacd8118957dcfaa9cb8ccb0e91a448e1b5df8d661fdf8d",
+  "pinned_manifest": {
+    "id": "warehouse/bigquery-mcp-query-runner",
+    "version": "0.2.0",
+    "runtimes": [
+      "codex",
+      "claude",
+      "generic"
+    ],
+    "runtime_contract_sha256": "ab890938dd2894a8510eca0e43003e8529f01413ac63a14f0851219641e3742c"
+  },
+  "published_files": {
+    ".mcp.json": "13b3da279a0edd841e36d170aebedd289afa72bb2aacc621ae1adb9c7aff8ac2",
+    "README.md": "64f253824d8c8786d2ed476c36f4f8e84e7b7d7bcee08f05d3e4dcc8a20ba0a8",
+    "TOOL.md": "06b2325730f1998c4dfb6ffd1b19ba6792e2009430473651c465a746b0b3c111",
+    "auth/bearer-token.json": "ebaae9455e485f8d1dd6a28738cbd68058ac1d4b706d82002523115c01106949",
+    "auth/service-account.json": "5f10e61038e6a7d331eb6ad250c8895b0802fa8884a9cf5a37a93497576727a5",
+    "auth/workload-identity.json": "87b0679d335cc1cdb626cf5cbacdbad9257eb75f677c19f7448d08dbbc7eefb8",
+    "examples/input.json": "e1aab37ca79570c798c7b95021f4d7196d2a71ae5361ecd1000b9f3e2268e7e9",
+    "examples/output.json": "731a7c8d9469b002902fca5cab1aa7df736d59b077e01514652f7a3bfaef0503",
+    "scripts/bigquery_auth_driver.mjs": "f73cb5989dc74c6f9fdad6c036d06fdef88a70c0f5669bd21d2a28b10b6b61a1",
+    "scripts/bigquery_mcp_server.mjs": "dd354ee4626368cf2b58acaf6ea93ed6a5abbba16467e1318cd64f6f4e926a5e",
+    "tests/bigquery_mcp_server.test.mjs": "76ea9ceedbd9065402be9805812233bb5a991ce6de84ea3593374efd154b5995",
+    "tests/test-prompts.md": "73b543a575cf75393ea1b1590abfe4e437cd4f236bcab0269d3b1cb17dcf57da",
+    "tool.yaml": "380615648601d908e7db43a67df504b36b5e8babe5b3ac9bf9e51125200beded"
+  }
+}

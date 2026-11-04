@@ -7,6 +7,10 @@ tools registry using an actual released CLI. It verifies installation and local
 MCP process startup. It does not authenticate to Google, retrieve reports, launch
 the Codex/Claude applications, write readiness evidence or change catalogue claims.
 
+The shared harness now also supports the separately pinned
+[BigQuery and Meta Ads cases](published-tools-verification.md). The GA4 case
+continues to validate its own identity, registration and input contract.
+
 ## Pinned subjects and authority
 
 - CLI: an explicitly selected GitHub release, initially `v0.4.0-alpha.1`.

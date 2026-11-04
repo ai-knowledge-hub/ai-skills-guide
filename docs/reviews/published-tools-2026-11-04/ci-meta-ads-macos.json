@@ -1,0 +1,122 @@
+{
+  "schema_version": "published-install-check/v1",
+  "checked_at": "2026-11-04T07:38:18.072564+00:00",
+  "status": "passed",
+  "client_kind": "release",
+  "host": {
+    "os": "Darwin",
+    "architecture": "arm64"
+  },
+  "registry_url": "https://skills.ai-knowledge-hub.org/registry/tools-index.json",
+  "sample": "meta-ads",
+  "package": "ads/meta-ads-mcp-connector@0.2.0",
+  "module": "tools",
+  "runtimes": [
+    {
+      "runtime": "codex",
+      "payload_sha256": "f64361f85a27bb9329d49a0b3a4f2e38353aef02afae4d0dfe00cdd3180a40c6",
+      "receipt_verified": true,
+      "cold_install": "passed",
+      "startup": {
+        "setup_guidance": "passed",
+        "healthcheck": "passed",
+        "mcp_initialize": "passed",
+        "mcp_tools_list": "passed",
+        "network_attempts": 0,
+        "node_version": "v22.23.4",
+        "credentials_supplied": false,
+        "provider_calls_verified": false,
+        "server": "meta-ads-mcp-connector"
+      },
+      "duplicate_rejected_without_mutation": "passed",
+      "offline_reinstall_restored_release_bytes": "passed"
+    },
+    {
+      "runtime": "claude",
+      "payload_sha256": "f64361f85a27bb9329d49a0b3a4f2e38353aef02afae4d0dfe00cdd3180a40c6",
+      "receipt_verified": true,
+      "cold_install": "passed",
+      "startup": {
+        "setup_guidance": "passed",
+        "healthcheck": "passed",
+        "mcp_initialize": "passed",
+        "mcp_tools_list": "passed",
+        "network_attempts": 0,
+        "node_version": "v22.23.4",
+        "credentials_supplied": false,
+        "provider_calls_verified": false,
+        "server": "meta-ads-mcp-connector"
+      },
+      "duplicate_rejected_without_mutation": "passed",
+      "offline_reinstall_restored_release_bytes": "passed"
+    },
+    {
+      "runtime": "generic",
+      "payload_sha256": "f64361f85a27bb9329d49a0b3a4f2e38353aef02afae4d0dfe00cdd3180a40c6",
+      "receipt_verified": true,
+      "cold_install": "passed",
+      "startup": {
+        "setup_guidance": "passed",
+        "healthcheck": "passed",
+        "mcp_initialize": "passed",
+        "mcp_tools_list": "passed",
+        "network_attempts": 0,
+        "node_version": "v22.23.4",
+        "credentials_supplied": false,
+        "provider_calls_verified": false,
+        "server": "meta-ads-mcp-connector"
+      },
+      "duplicate_rejected_without_mutation": "passed",
+      "offline_reinstall_restored_release_bytes": "passed"
+    }
+  ],
+  "release": {
+    "tag": "v0.4.0-alpha.1",
+    "url": "https://github.com/ai-knowledge-hub/ai-skills-guide/releases/tag/v0.4.0-alpha.1",
+    "assets": [
+      "SHA256SUMS",
+      "skills-hub_v0.4.0-alpha.1_darwin_amd64",
+      "skills-hub_v0.4.0-alpha.1_darwin_arm64",
+      "skills-hub_v0.4.0-alpha.1_linux_amd64",
+      "skills-hub_v0.4.0-alpha.1_linux_arm64",
+      "skills-hub_v0.4.0-alpha.1_provenance.json",
+      "skills-hub_v0.4.0-alpha.1_windows_amd64.exe",
+      "skills-hub_v0.4.0-alpha.1_windows_arm64.exe"
+    ],
+    "checksum_and_provenance": "passed"
+  },
+  "cli_sha256": "1e26906d6f2e7fba2b3807953683a47f9caa5b6e59db15c41bc5f3ec08f9f34e",
+  "registry_sha256": "f3987f39e54c336fa23ff9031a2f03e3354512cdfc61a7b05af1d002394a3165",
+  "selected_release": {
+    "version": "0.2.0",
+    "released_at": "2026-09-19T00:00:00Z",
+    "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/tools-mcp/ads/meta-ads-mcp-connector/0.2.0.yaml",
+    "manifest_sha256": "5140f9e2ed4afaaec4360ea3b56cd039fd64ccc671c44831c6e83bf29f80f1f0",
+    "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/ads/meta-ads-mcp-connector/0.2.0.tar.gz",
+    "sha256": "3dfbe1eecdf4f6587fa041fd0e27ee56c6951a76b881bca94209182bd0c2c61e"
+  },
+  "verifier_sha256": "d398ed0b61363aabacacd8118957dcfaa9cb8ccb0e91a448e1b5df8d661fdf8d",
+  "pinned_manifest": {
+    "id": "ads/meta-ads-mcp-connector",
+    "version": "0.2.0",
+    "runtimes": [
+      "codex",
+      "claude",
+      "generic"
+    ],
+    "runtime_contract_sha256": "4ae770ff0d2ae0b5e69a06b453716f902d6773787744590a9e2c81628d67ace4"
+  },
+  "published_files": {
+    ".mcp.json": "7a09208a35db30f4d66b3b80b593e00cb90fa0939820edf57b543c692354fd1c",
+    "README.md": "9cdb70a1438f07103e1c9bdd05f27e7ca0ba29960203ed49abcba7cd906e9e0d",
+    "TOOL.md": "67018112ed92c17fe01365dbc60844fe0e54065fdcae45658cfdb75da8982c7f",
+    "auth/bearer-token.json": "5d39190dd2f0f4d43f1207da57e52c2398437980e06bae97b6916f1bbbc332aa",
+    "examples/input.json": "14c357d115c7e5c81297eb4cc153e92a589c4face1b1c9bd6f7c3a32b5cd20b9",
+    "examples/output.json": "7943f1daedec1616d0890940fb3f6dd228eefbbc98ee607c62aa0b240ba49c52",
+    "scripts/meta_ads_auth_driver.mjs": "d21999409b7abf26a78b48c7c8c585b7ec0013446d28ecf0792c4b19b71cd37e",
+    "scripts/meta_ads_mcp_server.mjs": "54693be7a510cf00bc9426cb9f4023c1b7fc1b43a3a66a547a93d8f24179db28",
+    "tests/meta_ads_mcp_server.test.mjs": "a8a0d032e66d3658fc654549cc55ce9d402dff2f71effac18331080647420fb5",
+    "tests/test-prompts.md": "b7b096efcaaa829a526f89c00f43f1c98811bbb32b0968a93930fe2d21b7f2bc",
+    "tool.yaml": "5140f9e2ed4afaaec4360ea3b56cd039fd64ccc671c44831c6e83bf29f80f1f0"
+  }
+}

@@ -81,7 +81,7 @@ class PublishedGA4Tests(unittest.TestCase):
         package = self.package(directory / "package", files)
         work = directory / "outside-package"
         work.mkdir()
-        return check.ga4_startup.verify(self.binary, b"install.setup_guidance: skills-hub help setup\n", package, work)
+        return check.mcp_startup.verify(self.binary, b"install.setup_guidance: skills-hub help setup\n", package, work)
 
     def test_selection_pins_ga4_and_ignores_newer_release_declarations(self):
         pinned = {"version": "0.2.0", "sha256": self.artifact_sha, "manifest_sha256": self.manifest_sha}
@@ -180,11 +180,11 @@ class PublishedGA4Tests(unittest.TestCase):
                       self.guide.replace('"type": "stdio"', '"env": {"GA4_CREDENTIAL": "value"}, "type": "stdio"'),
                       self.guide + '\n```json\n{}\n```']:
             with self.subTest(guide=guide[-80:]), self.assertRaises(ValueError):
-                check.ga4_startup.registration(guide, Path("/installed"))
+                check.mcp_startup.registration(guide, Path("/installed"))
 
     def test_missing_guidance_rejects_before_executing_help_or_server(self):
-        with patch.object(check.ga4_startup.subprocess, "run") as run, self.assertRaises(ValueError):
-            check.ga4_startup.verify(self.binary, b"read README\n", Path("/package"), Path("/work"))
+        with patch.object(check.mcp_startup.subprocess, "run") as run, self.assertRaises(ValueError):
+            check.mcp_startup.verify(self.binary, b"read README\n", Path("/package"), Path("/work"))
         run.assert_not_called()
 
     def test_constant_health_success_cannot_fake_mcp_startup(self):
@@ -205,7 +205,7 @@ class PublishedGA4Tests(unittest.TestCase):
         node = shutil.which("node")
         for output in ["not json\n", '{}\nextra\n']:
             with self.subTest(output=output), tempfile.TemporaryDirectory() as temporary, self.assertRaises(ValueError):
-                with check.ga4_startup.Process([node, "-e", f"process.stdout.write({json.dumps(output)})"], temporary) as process:
+                with check.mcp_startup.Process([node, "-e", f"process.stdout.write({json.dumps(output)})"], temporary) as process:
                     process.read()
                     process.finish()
 
@@ -223,14 +223,14 @@ class PublishedGA4Tests(unittest.TestCase):
                             ("process.stderr.write('x'.repeat(300000));setInterval(()=>{},1000)", "output exceeded")]:
             with self.subTest(error=error), tempfile.TemporaryDirectory() as temporary:
                 with self.assertRaisesRegex(ValueError, error):
-                    with check.ga4_startup.Process([node, "-e", code], temporary, timeout=1) as process:
+                    with check.mcp_startup.Process([node, "-e", code], temporary, timeout=1) as process:
                         process.read()
                 self.assertIsNotNone(process.child.poll())
 
     def test_server_exit_before_initialization_closes_every_pipe(self):
         with tempfile.TemporaryDirectory() as temporary:
             with self.assertRaisesRegex(ValueError, "closed input"):
-                with check.ga4_startup.Process([shutil.which("node"), "-e", "process.exit(0)"], temporary) as process:
+                with check.mcp_startup.Process([shutil.which("node"), "-e", "process.exit(0)"], temporary) as process:
                     process.child.wait(timeout=5)
                     process.send({"jsonrpc": "2.0", "id": 1, "method": "initialize"})
             self.assertIsNotNone(process.child.poll())
@@ -244,7 +244,7 @@ class PublishedGA4Tests(unittest.TestCase):
                          {"jsonrpc": "2.0", "id": 1, "result": {}, "error": {}},
                          {"jsonrpc": "2.0", "id": 1, "result": []}]:
             with self.subTest(document=document), self.assertRaises(ValueError):
-                check.ga4_startup.response(document, 1)
+                check.mcp_startup.response(document, 1)
 
     def test_startup_mutation_fails_before_duplicate_or_repair(self):
         script = b"import fs from 'node:fs'; fs.appendFileSync(new URL('../README.md', import.meta.url), 'mutated');\n"

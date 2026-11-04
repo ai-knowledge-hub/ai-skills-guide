@@ -36,7 +36,7 @@ func run(args []string, output io.Writer) error {
 	packageDir := flags.String("package-dir", "", "optional installed package to verify")
 	runtime := flags.String("runtime", "", "selected adapter")
 	artifact := flags.String("artifact-sha256", "", "expected published archive SHA-256")
-	module := flags.String("module", "skills", "bounded sample module: skills or tools (GA4 0.2.0 only)")
+	module := flags.String("module", "skills", "bounded sample module: skills or tools (pinned MCP 0.2.0 cases only)")
 	if err := flags.Parse(args); err != nil {
 		return err
 	}
@@ -64,16 +64,27 @@ func run(args []string, output io.Writer) error {
 			return errors.New("pinned sample must be instruction-only without executable helpers")
 		}
 	case "tools":
-		if filepath.Base(*path) != "tool.yaml" || manifest.ID != "analytics/ga4-mcp-connector" || manifest.Version != "0.2.0" ||
+		contracts := map[string]struct {
+			script   string
+			bindings []string
+			scopes   []string
+		}{
+			"analytics/ga4-mcp-connector":         {"scripts/ga4_mcp_server.mjs", []string{"GA4_CREDENTIAL"}, []string{"https://www.googleapis.com/auth/analytics.readonly"}},
+			"warehouse/bigquery-mcp-query-runner": {"scripts/bigquery_mcp_server.mjs", []string{"BQ_CREDENTIAL", "BQ_POLICY"}, []string{"https://www.googleapis.com/auth/bigquery"}},
+			"ads/meta-ads-mcp-connector":          {"scripts/meta_ads_mcp_server.mjs", []string{"META_ADS_CREDENTIAL", "META_ADS_POLICY"}, []string{"ads_read", "business_management"}},
+		}
+		pinned, supported := contracts[manifest.ID]
+		if !supported || filepath.Base(*path) != "tool.yaml" || manifest.Version != "0.2.0" ||
 			manifest.Usability.Execution != "remote-integration" || manifest.Usability.Availability != "setup-required" ||
 			manifest.Execution.Kind != "mcp-server" || !manifest.Artifact.SelfContained ||
-			!reflect.DeepEqual(manifest.Execution.Command, []string{"node", "scripts/ga4_mcp_server.mjs"}) ||
-			!reflect.DeepEqual(manifest.Execution.Healthcheck, []string{"node", "scripts/ga4_mcp_server.mjs", "--healthcheck"}) ||
+			!reflect.DeepEqual(manifest.Execution.Command, []string{"node", pinned.script}) ||
+			!reflect.DeepEqual(manifest.Execution.Healthcheck, []string{"node", pinned.script, "--healthcheck"}) ||
 			!reflect.DeepEqual(manifest.Execution.SupportedRuntimes, []string{"node22"}) ||
+			!reflect.DeepEqual(manifest.Execution.SupportedPlatforms, []string{"linux", "macos"}) ||
 			manifest.Authentication.Status != "required" ||
-			!reflect.DeepEqual(manifest.Authentication.CredentialBindings, []string{"GA4_CREDENTIAL"}) ||
-			!reflect.DeepEqual(manifest.Authentication.Scopes, []string{"https://www.googleapis.com/auth/analytics.readonly"}) {
-			return errors.New("tool sample must match the pinned GA4 0.2.0 setup-required MCP contract")
+			!reflect.DeepEqual(manifest.Authentication.CredentialBindings, pinned.bindings) ||
+			!reflect.DeepEqual(manifest.Authentication.Scopes, pinned.scopes) {
+			return errors.New("tool sample must match an explicitly pinned 0.2.0 setup-required MCP contract")
 		}
 	default:
 		return errors.New("unsupported sample module")

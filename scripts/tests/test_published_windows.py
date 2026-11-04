@@ -52,7 +52,9 @@ class WindowsDeliveryTests(unittest.TestCase):
             path.write_bytes(data)
             path.chmod(0o644)
         digest = hashlib.sha256()
-        for path in sorted(root.rglob("*")):
+        # WindowsPath ordering folds case, unlike the receipt's portable,
+        # case-sensitive slash-path order. Keep this reference model explicit.
+        for path in sorted(root.rglob("*"), key=lambda item: item.relative_to(root).as_posix()):
             name = path.relative_to(root).as_posix()
             kind, mode = ("dir", "755") if path.is_dir() else ("file", "644")
             digest.update(f"{kind}\0{name}\0{mode}\0".encode())

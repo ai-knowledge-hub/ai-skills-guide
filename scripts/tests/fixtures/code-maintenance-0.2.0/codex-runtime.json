@@ -1,0 +1,56 @@
+{
+  "schema_version": "skills-hub.runtime-package/v1",
+  "runtime": "codex",
+  "source_lock": "dependencies.lock.json",
+  "package": {
+    "id": "engineering/code-maintenance-plugin",
+    "name": "Code Maintenance Plugin",
+    "version": "0.2.0",
+    "description": "Package repo planning, verification, test-gap analysis, coverage review, and PR drafting into one governed maintenance workflow plugin."
+  },
+  "registrations": {
+    "skills": [
+      {
+        "id": "engineering/code-change-verification",
+        "version": "0.1.0",
+        "path": "./skills/code-change-verification",
+        "enforcement": "native"
+      },
+      {
+        "id": "engineering/coverage-gap-reporter",
+        "version": "0.1.0",
+        "path": "./skills/coverage-gap-reporter",
+        "enforcement": "native"
+      },
+      {
+        "id": "engineering/implementation-strategy",
+        "version": "0.1.0",
+        "path": "./skills/implementation-strategy",
+        "enforcement": "native"
+      },
+      {
+        "id": "engineering/pr-review-and-draft",
+        "version": "0.1.0",
+        "path": "./skills/pr-review-and-draft",
+        "enforcement": "native"
+      },
+      {
+        "id": "engineering/test-gap-analyzer",
+        "version": "0.1.0",
+        "path": "./skills/test-gap-analyzer",
+        "enforcement": "native"
+      }
+    ],
+    "agents": [],
+    "mcp_servers": [],
+    "config": [],
+    "hooks": [
+      {
+        "id": "verification-before-complete",
+        "path": "./hooks/verification-before-complete.md",
+        "enforcement": "advisory",
+        "reason": "the source hook is guidance, not an executable native hook definition"
+      }
+    ]
+  }
+}

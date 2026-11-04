@@ -14,6 +14,8 @@ MCP startup; see [GA4 verification](published-ga4-verification.md). Its tool-awa
 manifest, receipt and permission checks do not relax the instruction-only case.
 The `bigquery` and `meta-ads` samples extend the same controls to two more exact
 published releases; see [BigQuery and Meta Ads verification](published-tools-verification.md).
+The separately pinned `code-maintenance` sample verifies a self-contained plugin
+and its activated skill closure; see [published plugin verification](published-plugin-verification.md).
 
 ## Client provenance is explicit
 
@@ -129,6 +131,9 @@ appear as a dispatchable workflow in GitHub Actions.
 The `sample` input defaults to `instructions`; `ga4`, `bigquery` and `meta-ads`
 select the tools index and Node.js 22. Leaving `registry_url` blank selects the
 sample's module index.
+`code-maintenance` selects the plugins index and checks bundle registration and
+first use with Node 22. Its offline check installs into a fresh target, while
+requiring the existing multi-package in-place upgrade restriction to hold.
 
 Normal PR CI runs the deterministic harness tests:
 

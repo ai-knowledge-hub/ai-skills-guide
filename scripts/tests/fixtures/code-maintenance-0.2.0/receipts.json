@@ -1,0 +1,113 @@
+{
+  "root": {
+    "schema_version": "skills-hub.install-receipt/v1",
+    "source": "remote",
+    "module": "plugins",
+    "id": "engineering/code-maintenance-plugin",
+    "version": "0.2.0",
+    "runtime": "generic",
+    "artifact_sha256": "7d170bcd18bb15c58eacd99fc8a0def78498ca795e62eae9fc951301b308f93a",
+    "runtime_contract_sha256": "7c040394d0078f9a10bb904d89d8aa5b67498d44245f4a38827b07af44e82d94",
+    "tree_sha256": "575d74f3004fbb674786de2a7c0ca0ebef5da175d89247042275c9c1bff1aeb7",
+    "closure": [
+      {
+        "module": "skills",
+        "id": "engineering/code-change-verification",
+        "version": "0.1.0",
+        "runtime_contract_sha256": "0e034ef1ad1c1eb0a15dc7b7ba15ecfdc6931fe5267c38a4e0a4bf354fb04934",
+        "tree_sha256": "5b429988109d521b8ff6441b5bb87e9d6004f67d1d65706e89992580688d7575"
+      },
+      {
+        "module": "skills",
+        "id": "engineering/coverage-gap-reporter",
+        "version": "0.1.0",
+        "runtime_contract_sha256": "1e1949795c2be3ba166cad87c230276e8a23fc48cec9639a369d62747c532682",
+        "tree_sha256": "abe2a80b86196ba6cf53497d21341b330d1ec9baf3b52b4a8dca24ad6b71023b"
+      },
+      {
+        "module": "skills",
+        "id": "engineering/implementation-strategy",
+        "version": "0.1.0",
+        "runtime_contract_sha256": "695b5bccd308e33ab968c5673c3fc37b84ad7d18af13a85e141e3dc627cda6b0",
+        "tree_sha256": "2bcef0042de07929da2b5edcb163c55281acbbf9ae57cb81ac4b39a7d20e890b"
+      },
+      {
+        "module": "skills",
+        "id": "engineering/pr-review-and-draft",
+        "version": "0.1.0",
+        "runtime_contract_sha256": "b88de88b4f28d615793f89babad9231ae779f7695e4eae33601e2363375626d5",
+        "tree_sha256": "7f1d946b4e419b3cd69f3cc1e80b8e0d0b25a4d4a6effef7a8ab358404bc91c5"
+      },
+      {
+        "module": "skills",
+        "id": "engineering/test-gap-analyzer",
+        "version": "0.1.0",
+        "runtime_contract_sha256": "67dd67f56770a7aa04411691bf5d589fe21295daba0b4762be5b8ef6c5f1d0dd",
+        "tree_sha256": "05f1308e5834ae95aee08948f59c22b4c21a8b9c4ac310487667f2dfb4779834"
+      }
+    ],
+    "installed_at": "2026-11-04T08:46:49.947433Z"
+  },
+  "skills": {
+    "engineering/code-change-verification": {
+      "schema_version": "skills-hub.install-receipt/v1",
+      "source": "bundled",
+      "module": "skills",
+      "id": "engineering/code-change-verification",
+      "version": "0.1.0",
+      "runtime": "generic",
+      "runtime_contract_sha256": "0e034ef1ad1c1eb0a15dc7b7ba15ecfdc6931fe5267c38a4e0a4bf354fb04934",
+      "tree_sha256": "5b429988109d521b8ff6441b5bb87e9d6004f67d1d65706e89992580688d7575",
+      "parent_artifact_sha256": "7d170bcd18bb15c58eacd99fc8a0def78498ca795e62eae9fc951301b308f93a",
+      "installed_at": "2026-11-04T08:46:49.938192Z"
+    },
+    "engineering/test-gap-analyzer": {
+      "schema_version": "skills-hub.install-receipt/v1",
+      "source": "bundled",
+      "module": "skills",
+      "id": "engineering/test-gap-analyzer",
+      "version": "0.1.0",
+      "runtime": "generic",
+      "runtime_contract_sha256": "67dd67f56770a7aa04411691bf5d589fe21295daba0b4762be5b8ef6c5f1d0dd",
+      "tree_sha256": "05f1308e5834ae95aee08948f59c22b4c21a8b9c4ac310487667f2dfb4779834",
+      "parent_artifact_sha256": "7d170bcd18bb15c58eacd99fc8a0def78498ca795e62eae9fc951301b308f93a",
+      "installed_at": "2026-11-04T08:46:49.942356Z"
+    },
+    "engineering/implementation-strategy": {
+      "schema_version": "skills-hub.install-receipt/v1",
+      "source": "bundled",
+      "module": "skills",
+      "id": "engineering/implementation-strategy",
+      "version": "0.1.0",
+      "runtime": "generic",
+      "runtime_contract_sha256": "695b5bccd308e33ab968c5673c3fc37b84ad7d18af13a85e141e3dc627cda6b0",
+      "tree_sha256": "2bcef0042de07929da2b5edcb163c55281acbbf9ae57cb81ac4b39a7d20e890b",
+      "parent_artifact_sha256": "7d170bcd18bb15c58eacd99fc8a0def78498ca795e62eae9fc951301b308f93a",
+      "installed_at": "2026-11-04T08:46:49.940457Z"
+    },
+    "engineering/coverage-gap-reporter": {
+      "schema_version": "skills-hub.install-receipt/v1",
+      "source": "bundled",
+      "module": "skills",
+      "id": "engineering/coverage-gap-reporter",
+      "version": "0.1.0",
+      "runtime": "generic",
+      "runtime_contract_sha256": "1e1949795c2be3ba166cad87c230276e8a23fc48cec9639a369d62747c532682",
+      "tree_sha256": "abe2a80b86196ba6cf53497d21341b330d1ec9baf3b52b4a8dca24ad6b71023b",
+      "parent_artifact_sha256": "7d170bcd18bb15c58eacd99fc8a0def78498ca795e62eae9fc951301b308f93a",
+      "installed_at": "2026-11-04T08:46:49.939386Z"
+    },
+    "engineering/pr-review-and-draft": {
+      "schema_version": "skills-hub.install-receipt/v1",
+      "source": "bundled",
+      "module": "skills",
+      "id": "engineering/pr-review-and-draft",
+      "version": "0.1.0",
+      "runtime": "generic",
+      "runtime_contract_sha256": "b88de88b4f28d615793f89babad9231ae779f7695e4eae33601e2363375626d5",
+      "tree_sha256": "7f1d946b4e419b3cd69f3cc1e80b8e0d0b25a4d4a6effef7a8ab358404bc91c5",
+      "parent_artifact_sha256": "7d170bcd18bb15c58eacd99fc8a0def78498ca795e62eae9fc951301b308f93a",
+      "installed_at": "2026-11-04T08:46:49.94142Z"
+    }
+  }
+}

@@ -12,6 +12,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
+	"reflect"
 	"strings"
 
 	"github.com/ai-knowledge-hub/ai-skills-guide/internal/installer"
@@ -27,13 +29,14 @@ func main() {
 
 func run(args []string, output io.Writer) error {
 	flags := flag.NewFlagSet("published-install-verifier", flag.ContinueOnError)
-	path := flags.String("manifest", "", "digest-bound pinned skill.yaml")
+	path := flags.String("manifest", "", "digest-bound pinned skill.yaml or tool.yaml")
 	digest := flags.String("manifest-sha256", "", "expected manifest SHA-256")
 	id := flags.String("id", "", "expected pinned package ID")
 	version := flags.String("version", "", "expected pinned version")
 	packageDir := flags.String("package-dir", "", "optional installed package to verify")
 	runtime := flags.String("runtime", "", "selected adapter")
 	artifact := flags.String("artifact-sha256", "", "expected published archive SHA-256")
+	module := flags.String("module", "skills", "bounded sample module: skills or tools (GA4 0.2.0 only)")
 	if err := flags.Parse(args); err != nil {
 		return err
 	}
@@ -55,8 +58,25 @@ func run(args []string, output io.Writer) error {
 	if manifest.ID != *id || manifest.Version != *version {
 		return errors.New("manifest does not match the pinned subject")
 	}
-	if manifest.Usability.Execution != "instructions" || manifest.Usability.Availability != "documentation-only" || len(manifest.Usability.ExecutableHelpers) != 0 {
-		return errors.New("pinned sample must be instruction-only without executable helpers")
+	switch *module {
+	case "skills":
+		if filepath.Base(*path) != "skill.yaml" || manifest.Usability.Execution != "instructions" || manifest.Usability.Availability != "documentation-only" || len(manifest.Usability.ExecutableHelpers) != 0 {
+			return errors.New("pinned sample must be instruction-only without executable helpers")
+		}
+	case "tools":
+		if filepath.Base(*path) != "tool.yaml" || manifest.ID != "analytics/ga4-mcp-connector" || manifest.Version != "0.2.0" ||
+			manifest.Usability.Execution != "remote-integration" || manifest.Usability.Availability != "setup-required" ||
+			manifest.Execution.Kind != "mcp-server" || !manifest.Artifact.SelfContained ||
+			!reflect.DeepEqual(manifest.Execution.Command, []string{"node", "scripts/ga4_mcp_server.mjs"}) ||
+			!reflect.DeepEqual(manifest.Execution.Healthcheck, []string{"node", "scripts/ga4_mcp_server.mjs", "--healthcheck"}) ||
+			!reflect.DeepEqual(manifest.Execution.SupportedRuntimes, []string{"node22"}) ||
+			manifest.Authentication.Status != "required" ||
+			!reflect.DeepEqual(manifest.Authentication.CredentialBindings, []string{"GA4_CREDENTIAL"}) ||
+			!reflect.DeepEqual(manifest.Authentication.Scopes, []string{"https://www.googleapis.com/auth/analytics.readonly"}) {
+			return errors.New("tool sample must match the pinned GA4 0.2.0 setup-required MCP contract")
+		}
+	default:
+		return errors.New("unsupported sample module")
 	}
 	contract, err := installer.RuntimeContractSHA256(registry.ProjectManifest(manifest), manifest.Version)
 	if err != nil {
@@ -73,7 +93,7 @@ func run(args []string, output io.Writer) error {
 		if !validDigest(*artifact) || !declaresRuntime(manifest.Runtimes, *runtime) {
 			return errors.New("installed verification requires an artifact digest and declared runtime")
 		}
-		receipt, err := installer.VerifyInstallReceipt(*packageDir, "skills", *id, *version, *runtime, *artifact, contract)
+		receipt, err := installer.VerifyInstallReceipt(*packageDir, *module, *id, *version, *runtime, *artifact, contract)
 		if err != nil {
 			return err
 		}

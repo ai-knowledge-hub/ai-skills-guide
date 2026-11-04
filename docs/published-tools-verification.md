@@ -151,6 +151,21 @@ transitions, three MCP sessions and three healthchecks per tool, with no supplie
 credentials or detected startup network attempts. The Linux/macOS Node 22 workflow
 matrix supplies the separate CI evidence.
 
+The final matrix passed at implementation commit
+`c56b9498bcb46ffc025d19ef062d26de8add5423`, using Node.js `v22.23.4` and the actual
+released `v0.4.0-alpha.1` client:
+
+| Tool | Workflow | Linux x86-64 report | macOS ARM64 report |
+| --- | --- | --- | --- |
+| BigQuery | [Run 41793607555](https://github.com/ai-knowledge-hub/ai-skills-guide/actions/runs/41793607555) | [JSON](reviews/published-tools-2026-11-04/ci-bigquery-ubuntu.json) | [JSON](reviews/published-tools-2026-11-04/ci-bigquery-macos.json) |
+| Meta Ads | [Run 41793611156](https://github.com/ai-knowledge-hub/ai-skills-guide/actions/runs/41793611156) | [JSON](reviews/published-tools-2026-11-04/ci-meta-ads-ubuntu.json) | [JSON](reviews/published-tools-2026-11-04/ci-meta-ads-macos.json) |
+
+All four reports passed exact CLI/package identity, checksum/provenance and
+receipt checks. They confirm **36/36 installation transitions**, **12 actual MCP
+sessions** and **12 healthchecks**, with no supplied provider credentials and
+zero detected startup network attempts. Candidate builds were skipped in all
+four jobs. These results do not promote Google or Meta provider readiness.
+
 All 45 deterministic checker tests passed (17 instruction/client cases, 16 GA4
 cases and 12 parameterized BigQuery/Meta Ads cases), as did
 `CGO_ENABLED=0 GOTOOLCHAIN=go1.22.12 go test ./...`, `actionlint` v1.7.12 for both

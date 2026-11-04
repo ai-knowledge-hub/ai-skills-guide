@@ -27,6 +27,8 @@ jobs:
           cache: true
       - name: Test published-install evidence checks with local fixtures
         run: python3 -m unittest discover -s scripts/tests -p 'test_published_install.py'
+      - name: Test Windows delivery boundaries with local fixtures
+        run: python3 -m unittest discover -s scripts/tests -p 'test_published_windows.py'
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -38,6 +40,20 @@ jobs:
         run: python3 -m unittest discover -s scripts/tests -p 'test_published_tools.py'
       - name: Test published plugin closure, registration and first-use evidence
         run: python3 -m unittest discover -s scripts/tests -p 'test_published_plugin.py'
+
+  windows-install-checks:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Test Windows executable, environment, receipt and junction boundaries natively
+        run: python -m unittest discover -s scripts/tests -p 'test_published_windows.py'
 
   manifest-schemas:
     runs-on: ubuntu-latest

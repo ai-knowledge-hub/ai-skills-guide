@@ -84,3 +84,41 @@ jobs:
           name: published-install-${{ matrix.os }}-${{ inputs.client_source }}${{ inputs.sample && inputs.sample != 'instructions' && format('-{0}', inputs.sample) || '' }}
           path: output/published-install/report.json
           if-no-files-found: warn
+
+  windows-instructions:
+    # Published Windows binary execution is deliberately limited to this
+    # instruction-only sample. MCP/plugin process checks remain Linux/macOS.
+    if: inputs.sample == 'instructions' && inputs.client_source == 'release'
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Build read-only Windows manifest and receipt verifier
+        env:
+          CGO_ENABLED: '0'
+        run: go build -o bin/published-install-verifier.exe ./cmd/published-install-verifier
+      - name: Check published Windows installation outside the checkout
+        env:
+          CLI_RELEASE: ${{ inputs.cli_release }}
+          REGISTRY_URL: ${{ inputs.registry_url }}
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python scripts/check-published-install.py
+          --sample instructions --cli-release "$env:CLI_RELEASE"
+          --registry-url "$env:REGISTRY_URL"
+          --verifier bin/published-install-verifier.exe
+          --report output/published-install/report.json
+      - name: Retain bounded Windows success or failure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: published-install-windows-latest-release
+          path: output/published-install/report.json
+          if-no-files-found: warn

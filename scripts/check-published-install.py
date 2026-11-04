@@ -8,7 +8,7 @@ import io
 import importlib.util
 import json
 import os
-from pathlib import Path, PurePosixPath
+from pathlib import Path, PurePosixPath, PureWindowsPath
 import platform
 import re
 import shutil
@@ -27,7 +27,7 @@ VERSION = "0.1.0"
 REGISTRY = "https://skills.ai-knowledge-hub.org/registry/skills-index.json"
 RECEIPT = ".skills-hub-install.json"
 MAX_DOWNLOAD = 32 * 1024 * 1024
-DEFAULT_VERIFIER = Path(__file__).resolve().parents[1] / "bin" / "published-install-verifier"
+DEFAULT_VERIFIER = Path(__file__).resolve().parents[1] / "bin" / ("published-install-verifier.exe" if os.name == "nt" else "published-install-verifier")
 INSTRUCTIONS = {"module": "skills", "id": PACKAGE, "version": VERSION, "manifest": "skill.yaml",
                 "registry": REGISTRY, "repair": "SKILL.md", "required": {"SKILL.md", "README.md", "skill.yaml"}}
 GA4 = {"module": "tools", "id": "analytics/ga4-mcp-connector", "version": "0.2.0", "manifest": "tool.yaml",
@@ -62,6 +62,30 @@ def sha256(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def executable_name(name):
+    return name + (".exe" if platform.system() == "Windows" else "")
+
+
+def clean_environment(work=None):
+    """Keep credentials/runtime homes out; retain Windows' required OS context."""
+    if platform.system() != "Windows":
+        return {"PATH": os.defpath}
+    system_root = os.environ.get("SYSTEMROOT") or os.environ.get("SystemRoot")
+    require(system_root, "Windows requires SYSTEMROOT for a clean child environment")
+    environment = {"SYSTEMROOT": system_root, "PATH": str(PureWindowsPath(system_root) / "System32")}
+    if work is not None:
+        temporary = work / "process-temp"
+        temporary.mkdir(exist_ok=True)
+        environment.update(TEMP=str(temporary), TMP=str(temporary))
+    return environment
+
+
+def is_reparse_point(metadata):
+    # Junctions and other reparse points need not be reported as symlinks by
+    # pathlib. Never traverse them when inspecting an installed package.
+    return bool(getattr(metadata, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT)
+
+
 def https_origin(url):
     parsed = urllib.parse.urlsplit(url)
     require(parsed.scheme == "https" and parsed.hostname and not parsed.username
@@ -92,10 +116,11 @@ def download(url, origin=None, headers=None):
 
 def release_asset_names(tag, system, machine):
     require(re.fullmatch(r"v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?", tag), "an exact vX.Y.Z release tag is required")
-    os_name = {"Darwin": "darwin", "Linux": "linux"}.get(system)
-    arch = {"arm64": "arm64", "aarch64": "arm64", "x86_64": "amd64", "AMD64": "amd64"}.get(machine)
-    require(os_name and arch, "this check supports macOS/Linux on amd64/arm64")
-    return f"skills-hub_{tag}_{os_name}_{arch}", "SHA256SUMS", f"skills-hub_{tag}_provenance.json"
+    os_name = {"Darwin": "darwin", "Linux": "linux", "Windows": "windows"}.get(system)
+    arch = {"arm64": "arm64", "aarch64": "arm64", "x86_64": "amd64", "amd64": "amd64"}.get(machine.lower())
+    require(os_name and arch, "this check supports macOS/Linux/Windows on amd64/arm64")
+    suffix = ".exe" if system == "Windows" else ""
+    return f"skills-hub_{tag}_{os_name}_{arch}{suffix}", "SHA256SUMS", f"skills-hub_{tag}_provenance.json"
 
 
 def released_cli(tag, directory, report):
@@ -178,7 +203,7 @@ def inspect_pinned(verifier, manifest_path, manifest_sha, package_dir=None, runt
             "--id", sample["id"], "--version", sample["version"], "--module", sample["module"]]
     if package_dir is not None:
         args += ["--package-dir", str(package_dir), "--runtime", runtime, "--artifact-sha256", artifact_sha]
-    result = subprocess.run(args, env={"PATH": os.defpath}, capture_output=True, timeout=30)
+    result = subprocess.run(args, env=clean_environment(), capture_output=True, timeout=30)
     require(result.returncode == 0, "pinned manifest/receipt verification failed: " + result.stderr.decode(errors="replace")[-2000:])
     document = json.loads(result.stdout)
     require(document.get("id") == sample["id"] and document.get("version") == sample["version"], "verifier returned another pinned subject")
@@ -189,7 +214,8 @@ def inspect_pinned(verifier, manifest_path, manifest_sha, package_dir=None, runt
 
 def filesystem_snapshot(root):
     """Use lstat: never follow a changed link while comparing duplicate effects."""
-    require(root.exists() and not root.is_symlink(), "installed root was removed or replaced by a link")
+    require(root.exists() and not root.is_symlink() and not is_reparse_point(root.lstat()),
+            "installed root was removed or replaced by a link/reparse point")
     snapshot = {}
 
     def visit(path):
@@ -199,12 +225,17 @@ def filesystem_snapshot(root):
         # Access time is omitted because reading the payload can update it.
         value = [stat.S_IFMT(mode), stat.S_IMODE(mode), metadata.st_uid, metadata.st_gid,
                  metadata.st_ino, metadata.st_nlink, metadata.st_mtime_ns, metadata.st_ctime_ns]
-        if stat.S_ISREG(mode):
+        value += [getattr(metadata, "st_file_attributes", None), getattr(metadata, "st_reparse_tag", None),
+                  getattr(metadata, "st_birthtime_ns", None)]
+        if is_reparse_point(metadata):
+            # Record the redirect itself, never read or recurse into its target.
+            value.append(os.readlink(path))
+        elif stat.S_ISREG(mode):
             value.append(path.read_bytes())
         elif stat.S_ISLNK(mode):
             value.append(os.readlink(path))
         snapshot[name] = value
-        if stat.S_ISDIR(mode):
+        if stat.S_ISDIR(mode) and not is_reparse_point(metadata):
             for child in path.iterdir():
                 visit(child)
 
@@ -214,11 +245,12 @@ def filesystem_snapshot(root):
 
 def verify_installed(package_dir, expected_files, runtime, artifact_sha, verifier, manifest_path, manifest_sha,
                      sample=INSTRUCTIONS, modes=None):
-    require(package_dir.is_dir() and not package_dir.is_symlink(), "CLI reported success without an installed package")
+    require(package_dir.is_dir() and not package_dir.is_symlink() and not is_reparse_point(package_dir.lstat()),
+            "CLI reported success without an installed package")
     actual = {}
     actual_modes = {}
     for path in package_dir.rglob("*"):
-        require(not path.is_symlink(), "installed package contains a symlink")
+        require(not path.is_symlink() and not is_reparse_point(path.lstat()), "installed package contains a symlink/reparse point")
         require(path.is_dir() or path.is_file(), "installed package contains a special file")
         relative = path.relative_to(package_dir).as_posix()
         if relative != RECEIPT:
@@ -254,7 +286,7 @@ def verify_runtime(binary, registry_url, runtime, directory, files, artifact_sha
         args += ["--execution-runtime", "node22"]
     # No adopting-client credentials, runtime homes or checkout/package paths are
     # supplied. Explicit target/cache paths keep all writes in disposable space.
-    environment = {"PATH": os.defpath}
+    environment = clean_environment(work)
     completed = subprocess.run(args, cwd=work, env=environment, capture_output=True, timeout=150)
     require(completed.returncode == 0, "cold remote install failed: " + completed.stderr.decode(errors="replace")[-2000:])
     result["payload_sha256"] = verify_installed(package_dir, files, runtime, artifact_sha, verifier, manifest_path, manifest_sha, sample, modes)
@@ -302,9 +334,14 @@ def main():
               "host": {"os": platform.system(), "architecture": platform.machine()},
               "registry_url": args.registry_url, "sample": args.sample,
               "package": f"{sample['id']}@{sample['version']}", "module": sample["module"], "runtimes": []}
-    stage = "client"
+    stage = "host"
     try:
-        with tempfile.TemporaryDirectory(prefix="skills52-clean-") as temporary:
+        require(platform.system() != "Windows" or args.sample == "instructions",
+                "Windows verification is limited to the instruction-only sample; MCP/plugin startup is unsupported")
+        stage = "client"
+        # A space deliberately exercises native executable/target/cache argument
+        # handling. No shell or checkout-relative package paths are involved.
+        with tempfile.TemporaryDirectory(prefix="skills52-clean space-") as temporary:
             clean = Path(temporary)
             bin_dir = clean / "bin"
             bin_dir.mkdir()
@@ -312,7 +349,7 @@ def main():
                 binary = released_cli(args.cli_release, bin_dir, report)
             else:
                 require(args.cli.is_file(), "candidate binary is missing")
-                binary = bin_dir / "skills-hub-candidate"
+                binary = bin_dir / executable_name("skills-hub-candidate")
                 shutil.copyfile(args.cli.resolve(), binary)
                 binary.chmod(0o755)
             report["cli_sha256"] = sha256(binary.read_bytes())
@@ -339,7 +376,7 @@ def main():
                 path.write_bytes(data)
                 path.chmod(modes[name])
             require(args.verifier.is_file(), "build bin/published-install-verifier before running this check")
-            verifier = bin_dir / "published-install-verifier"
+            verifier = bin_dir / executable_name("published-install-verifier")
             shutil.copyfile(args.verifier.resolve(), verifier)
             verifier.chmod(0o755)
             report["verifier_sha256"] = sha256(verifier.read_bytes())

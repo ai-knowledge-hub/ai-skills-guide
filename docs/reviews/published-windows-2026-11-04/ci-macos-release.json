@@ -1,0 +1,87 @@
+{
+  "schema_version": "published-install-check/v1",
+  "checked_at": "2026-11-04T11:58:19.924970+00:00",
+  "status": "passed",
+  "client_kind": "release",
+  "host": {
+    "os": "Darwin",
+    "architecture": "arm64"
+  },
+  "registry_url": "https://skills.ai-knowledge-hub.org/registry/skills-index.json",
+  "sample": "instructions",
+  "package": "engineering/implementation-strategy@0.1.0",
+  "module": "skills",
+  "runtimes": [
+    {
+      "runtime": "codex",
+      "payload_sha256": "7e65be96fd5a03612e4ff681f08c3eb7d3b55e29bee7693716e6df32ebe7ccec",
+      "receipt_verified": true,
+      "cold_install": "passed",
+      "duplicate_rejected_without_mutation": "passed",
+      "offline_reinstall_restored_release_bytes": "passed"
+    },
+    {
+      "runtime": "claude",
+      "payload_sha256": "7e65be96fd5a03612e4ff681f08c3eb7d3b55e29bee7693716e6df32ebe7ccec",
+      "receipt_verified": true,
+      "cold_install": "passed",
+      "duplicate_rejected_without_mutation": "passed",
+      "offline_reinstall_restored_release_bytes": "passed"
+    },
+    {
+      "runtime": "generic",
+      "payload_sha256": "7e65be96fd5a03612e4ff681f08c3eb7d3b55e29bee7693716e6df32ebe7ccec",
+      "receipt_verified": true,
+      "cold_install": "passed",
+      "duplicate_rejected_without_mutation": "passed",
+      "offline_reinstall_restored_release_bytes": "passed"
+    }
+  ],
+  "release": {
+    "tag": "v0.4.0-alpha.1",
+    "url": "https://github.com/ai-knowledge-hub/ai-skills-guide/releases/tag/v0.4.0-alpha.1",
+    "assets": [
+      "SHA256SUMS",
+      "skills-hub_v0.4.0-alpha.1_darwin_amd64",
+      "skills-hub_v0.4.0-alpha.1_darwin_arm64",
+      "skills-hub_v0.4.0-alpha.1_linux_amd64",
+      "skills-hub_v0.4.0-alpha.1_linux_arm64",
+      "skills-hub_v0.4.0-alpha.1_provenance.json",
+      "skills-hub_v0.4.0-alpha.1_windows_amd64.exe",
+      "skills-hub_v0.4.0-alpha.1_windows_arm64.exe"
+    ],
+    "checksum_and_provenance": "passed"
+  },
+  "cli_sha256": "1e26906d6f2e7fba2b3807953683a47f9caa5b6e59db15c41bc5f3ec08f9f34e",
+  "registry_sha256": "31b3310d93073e9f89d674bc604d75fbf40f188bab94442add2ba23ffa9279ec",
+  "selected_release": {
+    "version": "0.1.0",
+    "released_at": "2026-03-19T00:00:00Z",
+    "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/engineering/implementation-strategy/0.1.0.yaml",
+    "manifest_sha256": "79bbfdb791b739c6fa8396ba27fb3de48354707f00932221f0e4b1f55e2ab199",
+    "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/implementation-strategy/0.1.0.tar.gz",
+    "sha256": "6e0946ab1e76fc8769171fa874f8cd4373e47655559a26c90cca4914efe5ab72"
+  },
+  "verifier_sha256": "772602f1181efe3ceedc295e35df064106016bef6ba7bfb7eadc5038e29e4281",
+  "pinned_manifest": {
+    "id": "engineering/implementation-strategy",
+    "version": "0.1.0",
+    "runtimes": [
+      "codex",
+      "claude",
+      "generic"
+    ],
+    "runtime_contract_sha256": "695b5bccd308e33ab968c5673c3fc37b84ad7d18af13a85e141e3dc627cda6b0",
+    "name": "Implementation Strategy",
+    "description": "Plan repo-aware code changes before editing by mapping scope, commands, risks, and likely side effects."
+  },
+  "published_files": {
+    "README.md": "4589fc48729e8e42cd55cd7d626577973515e7ef351d425274cde2c01c39d0de",
+    "SKILL.md": "b06bf3e43f62774787484a04e7293e414f71fe7222202a51dc475898a633cc9b",
+    "config/repo-intake-checklist.yaml": "03b2326fa67b6f54e57d2fd8d0f35cb1b8618df92ca13605ee2c43f45054963c",
+    "examples/input.json": "3ba8fad01c2dd872b9a993e3a0eac2d2cc479b332624cd9f8ab464cc6e1e03de",
+    "examples/output.json": "f73acc8122a1f67594f66b1846eda72d189f027ac109e239887e91510e50785e",
+    "skill.yaml": "79bbfdb791b739c6fa8396ba27fb3de48354707f00932221f0e4b1f55e2ab199",
+    "tests/test-prompts.md": "fed9eb01d1b194f09c6c65acd2a46005c172d244b4a923ef6e64818c362f6bbf"
+  }
+}

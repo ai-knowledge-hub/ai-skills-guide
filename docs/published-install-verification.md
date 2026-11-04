@@ -16,6 +16,8 @@ The `bigquery` and `meta-ads` samples extend the same controls to two more exact
 published releases; see [BigQuery and Meta Ads verification](published-tools-verification.md).
 The separately pinned `code-maintenance` sample verifies a self-contained plugin
 and its activated skill closure; see [published plugin verification](published-plugin-verification.md).
+Released-client instruction dispatches also run on Windows AMD64; see
+[Windows verification scope and evidence](published-windows-verification.md).
 
 ## Client provenance is explicit
 
@@ -122,7 +124,8 @@ a release or deploy a website.
 ## CI and failure-space checks
 
 The **Published registry installation** workflow is manually dispatched and
-records Linux/macOS results independently. `release` is the default mode and
+records Linux/macOS results independently, plus a Windows job for released-client
+instruction checks. `release` is the default mode and
 requires an exact tag. A maintainer can explicitly choose `candidate` to check
 delivery before publishing an installer CLI. Evidence is uploaded even for a
 failed prerequisite. Public-network availability does not gate every PR.

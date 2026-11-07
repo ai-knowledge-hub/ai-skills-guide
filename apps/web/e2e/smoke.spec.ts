@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { catalogueCompatibility } from "../lib/catalogueCompatibility";
 import { loadRegistry } from "../lib/registry";
 import { latestToolPageNotes } from "./catalogue-page-notes";
+import { readReleaseFiles } from "../lib/releaseFiles";
 
 const sampleSkillPath = "/skills/marketing/meta-google-weekly-performance-review";
 const sampleAgentPath = "/agents/marketing/weekly-performance-supervisor";
@@ -48,7 +49,7 @@ test("skill detail copy-button smoke", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Packaged executable helpers" })).toBeVisible();
   await expect(page.getByText("scripts/compute_metrics.py", { exact: true })).toBeVisible();
   await expect(page.getByText("Not verified", { exact: true })).toBeVisible();
-  const copyButtons = page.locator(".copy-button");
+  const copyButtons = page.locator(".install-inline .copy-button");
 
   await expect(copyButtons).toHaveCount(3);
   await expect(copyButtons.first()).toHaveText("Copy");
@@ -84,12 +85,65 @@ test("agents route and detail smoke", async ({ page }) => {
   await expect(usability.getByText("GA4 and BigQuery credentials", { exact: false })).toBeVisible();
   await expect(page.getByText("Install this agent", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Install (Codex)" })).toBeVisible();
-  await expect(page.locator(".copy-button")).toHaveCount(3);
+  await expect(page.locator(".install-inline .copy-button")).toHaveCount(3);
   await expect(page.locator("pre.install").first()).toContainText("--module agents");
 
   await page.goto("/agents/marketing/campaign-qa-supervisor");
   await page.getByText("View agent workflow", { exact: true }).click();
   await expect(preview.getByText(/campaign configuration reader is not yet available/)).toBeVisible();
+});
+
+test("instruction copy preserves released source and recovers from clipboard failure", async ({ page }) => {
+  await page.addInitScript(() => {
+    const state = window as Window & { __copiedInstructions?: string; __clipboardBlocked?: boolean };
+    Object.defineProperty(navigator, "clipboard", {
+      configurable: true,
+      value: {
+        writeText: async (value: string) => {
+          if (state.__clipboardBlocked) throw new Error("Clipboard blocked");
+          state.__copiedInstructions = value;
+        }
+      }
+    });
+  });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const { module, route, filename } of [
+    { module: "skills", route: sampleSkillPath, filename: "SKILL.md" },
+    { module: "agents", route: sampleAgentPath, filename: "AGENT.md" },
+  ] as const) {
+    const registry = await loadRegistry(module);
+    const entry = registry.skills.find((entry) => entry.id === route.split("/").slice(2).join("/"))!;
+    const files = await readReleaseFiles(module, entry, [filename]);
+    const source = files?.get(filename);
+    expect(source).toBeTruthy();
+
+    await page.goto(route);
+    const copy = page.getByRole("button", { name: `Copy full ${filename} text` });
+    await expect(copy).not.toBeVisible();
+    await page.locator(".detail-disclosure > summary").click();
+    if (module === "agents") {
+      await expect(copy).not.toBeVisible();
+      await page.getByText("Read agent instructions (AGENT.md)", { exact: true }).click();
+    }
+    await copy.focus();
+    await copy.press("Enter");
+    await expect(copy).toHaveText("Copied");
+    await expect.poll(() => page.evaluate(() => (window as Window & { __copiedInstructions?: string }).__copiedInstructions)).toBe(source);
+
+    await page.evaluate(() => { (window as Window & { __clipboardBlocked?: boolean }).__clipboardBlocked = true; });
+    await copy.click();
+    const fallback = page.getByRole("textbox", { name: `${filename} source text` });
+    await expect(fallback).toHaveValue(source!);
+    await expect(page.getByText("Clipboard unavailable. Select and copy the source below.", { exact: true })).toBeVisible();
+    await expect(copy).toHaveText("Copy full text");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+
+    await page.evaluate(() => { (window as Window & { __clipboardBlocked?: boolean }).__clipboardBlocked = false; });
+    await copy.click();
+    await expect(copy).toHaveText("Copied");
+    await expect(fallback).toHaveCount(0);
+  }
 });
 
 test("plugins route and detail smoke", async ({ page }) => {

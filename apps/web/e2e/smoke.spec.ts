@@ -66,9 +66,18 @@ test("agents route and detail smoke", async ({ page }) => {
   await page.goto(sampleAgentPath);
   await expect(page.getByRole("heading", { name: "Weekly Performance Supervisor" })).toBeVisible();
   await expect(page.getByText("Marketing Agents / Performance")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Operational Summary" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Coordinates" })).toBeVisible();
-  await expect(page.getByText("semi-autonomous")).toBeVisible();
+  const preview = page.locator(".detail-disclosure");
+  const workflowToggle = preview.locator(":scope > summary");
+  await expect(preview).not.toHaveAttribute("open", "");
+  await workflowToggle.focus();
+  await workflowToggle.press("Enter");
+  await expect(preview.getByRole("heading", { name: "What it coordinates" })).toBeVisible();
+  await expect(preview.getByText("QA gating and blocking decisions")).toBeVisible();
+  await expect(preview.getByRole("heading", { name: "Expected outputs" })).toBeVisible();
+  await expect(preview.getByText("Semi-autonomous", { exact: true })).toBeVisible();
+  await expect(preview.getByText(/require human approval before any external publish/)).toBeVisible();
+  await preview.getByText("Read agent instructions (AGENT.md)", { exact: true }).click();
+  await expect(preview.getByText("Never bypass critical QA failures.")).toBeVisible();
   const usability = page.locator(".detail-panel").filter({ has: page.getByRole("heading", { name: "How You Can Use This" }) }).first();
   await expect(usability.getByText("Setup required", { exact: true }).first()).toBeVisible();
   await expect(usability.getByText("orchestrator", { exact: false })).toBeVisible();
@@ -77,6 +86,10 @@ test("agents route and detail smoke", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Install (Codex)" })).toBeVisible();
   await expect(page.locator(".copy-button")).toHaveCount(3);
   await expect(page.locator("pre.install").first()).toContainText("--module agents");
+
+  await page.goto("/agents/marketing/campaign-qa-supervisor");
+  await page.getByText("View agent workflow", { exact: true }).click();
+  await expect(preview.getByText(/campaign configuration reader is not yet available/)).toBeVisible();
 });
 
 test("plugins route and detail smoke", async ({ page }) => {
@@ -95,8 +108,11 @@ test("plugins route and detail smoke", async ({ page }) => {
   await page.goto(samplePluginPath);
   await expect(page.getByRole("heading", { name: "Performance Reporting Plugin" })).toBeVisible();
   await expect(page.getByText("Marketing Plugins / Reporting")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Declared Composition" })).toBeVisible();
+  const preview = page.locator(".detail-disclosure");
+  await expect(preview).not.toHaveAttribute("open", "");
+  await preview.locator("summary").first().click();
   await expect(page.getByRole("heading", { name: "Referenced Skills" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Referenced Tools" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Reference template" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Install (Codex)" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "Packaged Hooks" })).toBeVisible();
@@ -107,9 +123,11 @@ test("new plugin domains smoke", async ({ page }) => {
   await page.goto(sampleEngineeringPluginPath);
   await expect(page.getByRole("heading", { name: "Code Maintenance Plugin" })).toBeVisible();
   await expect(page.getByText("Engineering Plugins / Maintenance")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Installed Skills" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "engineering/code-change-verification" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "verification-before-complete" })).toBeVisible();
+  await page.getByText("View package contents", { exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Bundled skills" })).toBeVisible();
+  await expect(page.getByRole("listitem").filter({ has: page.getByRole("link", { name: "engineering/code-change-verification" }) })).toContainText("v0.1.0");
+  await page.locator("summary").filter({ hasText: "verification-before-complete" }).click();
+  await expect(page.getByText("Before marking work complete:", { exact: true })).toBeVisible();
 
   await page.goto(sampleSecurityPluginPath);
   await expect(page.getByRole("heading", { name: "Runtime Safety Plugin" })).toBeVisible();
@@ -117,12 +135,14 @@ test("new plugin domains smoke", async ({ page }) => {
   const securityRequirements = page.locator(".detail-panel").filter({ has: page.getByRole("heading", { name: "Requirements" }) }).first();
   await expect(securityRequirements.getByRole("heading", { name: "Requirements" })).toBeVisible();
   await expect(securityRequirements.getByText("human-review-for-live-remediation")).toBeVisible();
-  await expect(page.getByRole("link", { name: "quarantine-suspicious-instructions" })).toBeVisible();
+  await page.getByText("View package contents", { exact: true }).click();
+  await expect(page.locator("summary").filter({ hasText: "quarantine-suspicious-instructions" })).toBeVisible();
 
   await page.goto(sampleHarnessPluginPath);
   await expect(page.getByRole("heading", { name: "Harness Governance Plugin" })).toBeVisible();
   await expect(page.getByText("AgentOps Plugins / Governance")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Installed Skills" })).toBeVisible();
+  await page.getByText("View package contents", { exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Bundled skills" })).toBeVisible();
   await expect(page.getByRole("link", { name: "agentops/harness-run-reflection" })).toBeVisible();
   const harnessRequirements = page.locator(".detail-panel").filter({ has: page.getByRole("heading", { name: "Requirements" }) }).first();
   await expect(harnessRequirements.getByText("human-approval-for-harness-update")).toBeVisible();
@@ -153,8 +173,12 @@ test("tools route and detail smoke", async ({ page }) => {
   await page.goto(sampleToolPath);
   await expect(page.getByRole("heading", { name: "GA4 MCP Connector" })).toBeVisible();
   await expect(page.getByText("tools-mcp/analytics").first()).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Operational Summary" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Capabilities" })).toBeVisible();
+  await expect(page.getByText("Read only · Google Analytics 4", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "What it can do" })).toHaveCount(0);
+  await page.getByText("View capabilities and access", { exact: true }).click();
+  await expect(page.getByRole("heading", { name: "What it can do" })).toBeVisible();
+  await expect(page.getByText("Run bounded read-only reports for explicitly allowed GA4 properties.", { exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Access limits" })).toBeVisible();
   await expect(page.getByText("remote-mcp-server")).toBeVisible();
   const ga4Usability = page.locator(".detail-panel").filter({ has: page.getByRole("heading", { name: "How You Can Use This" }) }).first();
   await expect(ga4Usability.getByText("Setup required", { exact: true }).first()).toBeVisible();

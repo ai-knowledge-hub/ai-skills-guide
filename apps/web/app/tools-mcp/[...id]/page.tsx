@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import UsabilityBadge from "@/components/UsabilityBadge";
 import { notFound } from "next/navigation";
 import InstallCommands from "@/components/InstallCommands";
+import DetailDisclosure from "@/components/DetailDisclosure";
 import { buildModuleInstallSnippet, getEntryById, loadToolsRegistry } from "@/lib/registry";
 import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
 import UsabilityPanel from "@/components/UsabilityPanel";
@@ -26,6 +27,12 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
   }
   const latestVersion = entry.versions.find((v) => v.version === entry.latest) ?? entry.versions[0];
   const relatedGuides = relatedPublicationGuides("tools", entry.id);
+  const isReference = entry.usability.availability === "template-only";
+  const { connected_system, access_level, capabilities, trust_boundary, approval_boundary, auth_required } = entry.operational ?? {};
+  const access = access_level === "read-write" ? "Read and write"
+    : access_level === "read-only" ? "Read only"
+    : access_level;
+  const accessSummary = [access, connected_system].filter(Boolean).join(" · ");
 
   return (
     <main id="main" tabIndex={-1} className="detail-page">
@@ -35,10 +42,37 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
         <p className="meta">{formatCategoryLabel(entry.category)}</p>
         <h1>{entry.name}</h1>
         <p>{entry.description}</p>
+        {accessSummary ? (
+          <div className="detail-purpose">
+            <h2>{isReference ? "Intended access" : "Access"}</h2>
+            <p>{accessSummary}</p>
+          </div>
+        ) : null}
         <p className="meta">{entry.tags.join(", ")}</p>
         <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{entry.usability.execution}</span><a href="#usability" className="text-link">Requirements &amp; limits</a>{relatedGuides.length ? <a href="#related-reading" className="text-link">Related reading</a> : null}</div>
+        <DetailDisclosure show="View capabilities and access" hide="Hide capabilities and access" detail={`v${entry.latest}`}>
+          <section>
+            <h2>{isReference ? "Intended capabilities" : "What it can do"}</h2>
+            {capabilities?.length ? (
+              <ul>{capabilities.map((capability) => <li key={capability}>{capability}</li>)}</ul>
+            ) : <p>Capabilities are not documented for this release.</p>}
+          </section>
+          {approval_boundary || trust_boundary ? (
+            <section>
+              <h2>Access limits</h2>
+              {approval_boundary ? <p>{approval_boundary}</p> : null}
+              {trust_boundary ? <p className="meta">Trust boundary · {trust_boundary}</p> : null}
+            </section>
+          ) : null}
+          {auth_required?.length ? (
+            <section>
+              <h2>Credentials and setup</h2>
+              <ul>{auth_required.map((requirement) => <li key={requirement}>{requirement}</li>)}</ul>
+            </section>
+          ) : null}
+        </DetailDisclosure>
         <div className="detail-install-lead">
-          <h2 className="meta">{entry.usability.availability === "template-only" ? "Reference template" : "Install this connector"}</h2>
+          <h2 className="meta">{isReference ? "Reference template" : "Install this connector"}</h2>
           <InstallCommands
             compact
             availability={entry.usability.availability}
@@ -53,13 +87,6 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
         <UsabilityPanel catalogueCompatibility={entry.catalogueCompatibility} compatibility={entry.compatibility} usability={entry.usability} />
         <RelatedReading guides={relatedGuides} module="tools" id={entry.id} />
         <article className="card detail-panel">
-          <h2>Operational Summary</h2>
-          <p><span className="meta">Connected system:</span> {entry.operational?.connected_system ?? "Not documented"}</p>
-          <p><span className="meta">Access level:</span> {entry.operational?.access_level ?? "Not documented"}</p>
-          <p><span className="meta">Trust boundary:</span> {entry.operational?.trust_boundary ?? "Not documented"}</p>
-          <p><span className="meta">Approval boundary:</span> {entry.operational?.approval_boundary ?? "Not documented"}</p>
-        </article>
-        <article className="card detail-panel">
           <h2>Status</h2>
           <p><span className="meta">Readiness:</span> {formatReadinessLabel(entry.readiness)}</p>
           <p><span className="meta">Security reviewed:</span> {entry.security_reviewed ? "yes" : "no"}</p>
@@ -69,7 +96,6 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
           <h2>Runtime &amp; Dependencies</h2>
           <p><span className="meta">ID:</span> {entry.id}</p>
           <p><span className="meta">Runtimes:</span> {entry.runtimes.join(", ")}</p>
-          <p><span className="meta">Auth required:</span> {entry.operational?.auth_required?.length ? entry.operational.auth_required.join(", ") : "Not documented"}</p>
           {entry.replaced_by ? <p><span className="meta">Replaced by:</span> {entry.replaced_by}</p> : null}
         </article>
         <article className="card detail-panel">
@@ -77,18 +103,6 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
           <p><span className="meta">MCP servers:</span> {entry.dependencies?.mcp_servers?.length ? entry.dependencies.mcp_servers.join(", ") : "Not documented"}</p>
           <p><span className="meta">APIs:</span> {entry.dependencies?.apis?.length ? entry.dependencies.apis.join(", ") : "Not documented"}</p>
           <p><span className="meta">Local tools:</span> {entry.dependencies?.tools?.length ? entry.dependencies.tools.join(", ") : "Not documented"}</p>
-        </article>
-        <article className="card detail-panel">
-          <h2>Capabilities</h2>
-          {entry.operational?.capabilities?.length ? (
-            <ul>
-              {entry.operational.capabilities.map((capability) => (
-                <li key={capability}>{capability}</li>
-              ))}
-            </ul>
-          ) : (
-            <p>Not documented.</p>
-          )}
         </article>
         <article className="card detail-panel">
           <h2>Latest Version</h2>

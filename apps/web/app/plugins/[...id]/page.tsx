@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import UsabilityBadge from "@/components/UsabilityBadge";
 import { notFound } from "next/navigation";
 import InstallCommands from "@/components/InstallCommands";
+import PluginContents from "@/components/PluginContents";
 import { buildModuleInstallSnippet, getEntryById, loadPluginsRegistry } from "@/lib/registry";
 import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
 import UsabilityPanel from "@/components/UsabilityPanel";
@@ -37,6 +38,7 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
         <p>{entry.description}</p>
         <p className="meta">{entry.tags.join(", ")}</p>
         <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{entry.usability.execution}</span><a href="#usability" className="text-link">Requirements &amp; limits</a></div>
+        <PluginContents entry={entry} />
         <div className="detail-install-lead">
           <h2 className="meta">{entry.usability.availability === "template-only" ? "Reference composition" : "Install this plugin"}</h2>
           <InstallCommands
@@ -103,69 +105,6 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
           <p><span className="meta">Lifecycle:</span> {entry.deprecated ? "Deprecated" : "Active"}</p>
         </article>
         <article className="card detail-panel">
-          <h2>{entry.usability.availability === "template-only" ? "Declared Composition" : "Install Summary"}</h2>
-          <p><span className="meta">Referenced skills:</span> {entry.includes?.skills?.length ?? 0}</p>
-          <p><span className="meta">Referenced agents:</span> {entry.includes?.agents?.length ?? 0}</p>
-          <p><span className="meta">Referenced tools:</span> {entry.includes?.tools?.length ?? 0}</p>
-          <p><span className="meta">Packaged hooks:</span> {entry.includes?.hooks?.length ?? 0}</p>
-        </article>
-        <article className="card detail-panel">
-          <h2>{entry.usability.availability === "template-only" ? "Referenced Skills" : "Installed Skills"}</h2>
-          {entry.includes?.skills?.length ? (
-            <ul>
-              {entry.includes.skills.map((skillId) => (
-                <li key={skillId}>
-                  <a href={`/skills/${skillId}`}>{skillId}</a>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No bundled skills declared.</p>
-          )}
-        </article>
-        <article className="card detail-panel">
-          <h2>{entry.usability.availability === "template-only" ? "Referenced Agents" : "Installed Agents"}</h2>
-          {entry.includes?.agents?.length ? (
-            <ul>
-              {entry.includes.agents.map((agentId) => (
-                <li key={agentId}>
-                  <a href={`/agents/${agentId}`}>{agentId}</a>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No bundled agents declared.</p>
-          )}
-        </article>
-        <article className="card detail-panel">
-          <h2>{entry.usability.availability === "template-only" ? "Referenced Tools" : "Installed Tools"}</h2>
-          {entry.includes?.tools?.length ? (
-            <ul>
-              {entry.includes.tools.map((toolId) => (
-                <li key={toolId}>
-                  <a href={`/tools-mcp/${toolId}`}>{toolId}</a>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No bundled tools declared.</p>
-          )}
-        </article>
-        <article className="card detail-panel">
-          <h2>Packaged Hooks</h2>
-          {entry.includes?.hooks?.length ? (
-            <ul>
-              {entry.includes.hooks.map((hookId) => (
-                <li key={hookId}>
-                  <a href={`${REPO_BLOB_BASE}/${packageBasePath}/hooks/${hookId}.md`}>{hookId}</a>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No packaged hooks declared.</p>
-          )}
-        </article>
-        <article className="card detail-panel">
           <h2>Metadata</h2>
           <p><span className="meta">ID:</span> {entry.id}</p>
           <p><span className="meta">Latest:</span> {entry.latest}</p>
@@ -176,15 +115,11 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
           <h2>Requirements</h2>
           <p><span className="meta">Secrets:</span> {entry.requires?.secrets?.length ?? 0}</p>
           <p><span className="meta">Approvals:</span> {entry.requires?.approvals?.length ?? 0}</p>
-          <p><span className="meta">Hooks:</span> {entry.includes?.hooks?.length ?? 0}</p>
           {entry.requires?.secrets?.length ? (
             <p><span className="meta">Secret names:</span> {entry.requires.secrets.join(", ")}</p>
           ) : null}
           {entry.requires?.approvals?.length ? (
             <p><span className="meta">Approval rules:</span> {entry.requires.approvals.join(", ")}</p>
-          ) : null}
-          {entry.includes?.hooks?.length ? (
-            <p><span className="meta">Hook names:</span> {entry.includes.hooks.join(", ")}</p>
           ) : null}
         </article>
         <article className="card detail-panel">

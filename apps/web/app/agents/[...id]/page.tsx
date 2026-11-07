@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import InstallCommands from "@/components/InstallCommands";
 import DetailDisclosure from "@/components/DetailDisclosure";
 import InstructionMarkdown from "@/components/InstructionMarkdown";
+import CopyInstructions from "@/components/CopyInstructions";
 import { buildModuleInstallSnippet, getEntryById, loadAgentsRegistry } from "@/lib/registry";
 import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
 import UsabilityPanel from "@/components/UsabilityPanel";
@@ -77,7 +78,10 @@ export default async function AgentDetailPage({ params }: { params: { id: string
           {instructions ? (
             <details className="detail-disclosure-nested">
               <summary>Read agent instructions (AGENT.md)</summary>
-              <div className="detail-disclosure-document"><InstructionMarkdown source={instructions} /></div>
+              <div className="detail-disclosure-document">
+                <CopyInstructions source={instructions} filename="AGENT.md" />
+                <InstructionMarkdown source={instructions} />
+              </div>
             </details>
           ) : null}
         </DetailDisclosure>

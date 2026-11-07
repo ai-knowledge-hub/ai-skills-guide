@@ -57,7 +57,7 @@ extraction and admission checks before indexing.
 
 - `/` overview
 - `/skills` catalog with filters
-- `/skills/<category>/<slug>` skill details with install snippets
+- `/skills/<category>/<slug>` skill details with install snippets and an expandable `SKILL.md` preview from the same retained release archive
 - `/agents` catalog with filters
 - `/agents/<category>/<slug>` agent details
 - `/tools-mcp` catalog with filters

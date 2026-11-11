@@ -24,27 +24,55 @@ label alone is not that evidence.
 
 | Availability | Install result | What remains |
 | --- | --- | --- |
-| `usable-now` | Instructions or a local executable are copied into the runtime. | Supply task inputs and run the documented first step. |
-| `setup-required` | The package is installed, but does not become operational by installation alone. | Configure dependencies, tool bindings, credentials, and policy. |
-| `not-verified` | An implementation is present, but installation does not prove it works for your target. | Obtain current target-scoped operational evidence before relying on it. |
+| `usable-now` | Inspect the operation and target covered by the recorded evidence. | Confirm that evidence matches the intended environment. Static publication does not promote retained declarations to this state. |
+| `setup-required` | The entry identifies required configuration, credentials or runtime bindings. | Follow the setup requirements and verify operation for the intended target. |
+| `not-verified` | Check the entry's implementation and installation information. This classification alone does not establish installability. | Obtain current target-scoped operational evidence before relying on it. |
 | `template-only` | Operational installation is blocked; repository source remains available as a reference. | Copy only as a scaffold, then implement and review the missing provider/runtime binding. |
 | `documentation-only` | No runtime installation is implied. | Use the material as a guide or contribution map. |
 
-The `execution` value adds the technical shape:
+The `execution` value describes resource form. The site presents these values
+in plain language separately from their availability badge:
 
-- `instructions`: reusable procedural knowledge for an agent
-- `local-tool`: deterministic code runnable on the local machine
-- `remote-integration`: client or connector to an external system
+- `instructions`: agent instructions
+- `local-tool`: a local program
+- `remote-integration`: an API or MCP integration
 - `integration-template`: a provider boundary without a working connection
-- `orchestrator`: an agent that coordinates dependencies and requires bindings
-- `bundle`: a plugin that installs several catalog entries together
-- `documentation`: a learning or architecture pack
+- `orchestrator`: an agent workflow with coordination and binding requirements
+- `bundle`: a component bundle, whose own classification determines whether
+  it is a template or an installable package
+- `documentation`: a guide
+
+## From inspection to operation
+
+Detail pages separate the following steps:
+
+1. **File installation** places the package files and generated configuration in
+   selected directories. Instruction files can also be read or copied directly.
+2. **Native discovery** confirms that the agent application finds and accepts
+   those instructions, tools or plugin registrations.
+3. **Mock execution** exercises sample fixtures. It establishes only the
+   observed sample behaviour, without proving connected provider operation.
+4. **Connected operation** requires current configuration, provider
+   authentication, scoped permissions and a successful first operation in the
+   intended environment. Human approvals remain specific to the intended effect.
+
+File delivery alone does not meet the normative contract's full `installed`
+predicate, which also requires complete dependency integrity and accepted
+runtime registration. The website's commands explain file installation, while
+runtime checks determine native discovery and operation. A mock result cannot
+establish live credentials, provider access or permission to perform writes.
+
+Review maturity, security declarations and lifecycle are displayed separately.
+A security declaration or a compatibility note does not verify operation.
 
 ## Module behavior
 
 ### Skills
 
-Current skills are `documentation-only` instruction packages. Installation makes their guidance discoverable; it does not authorize executable runtime capability. Seven skills separately disclose packaged local helpers as `not-verified`; installing their instructions does not promote or verify those helpers.
+Instruction-primary skills supply readable procedures. Their instruction files
+can be installed or copied for an agent to discover. Skills that include local
+programs disclose those helpers independently, with their own setup, limits and
+evidence. Reading or copying the guidance does not verify a helper's execution.
 
 ### Tools and MCP
 
@@ -52,15 +80,31 @@ Specification-only connectors and servers are `template-only`. Implemented local
 
 ### Agents
 
-Current agents are `template-only` orchestrator definitions. Operational installation is blocked because no launchable orchestrator or verified runtime bindings are packaged.
+Agent packages define coordinated work, expected outputs, memory, governance
+and runtime bindings. Check each detail page for installation requirements,
+provider setup and missing capabilities. For example, the campaign QA agent 0.2.0
+requires a campaign configuration reader that is currently unavailable.
+Generated configuration still needs native discovery and environment-specific
+verification before connected use.
 
 ### Plugins
 
-Most plugins are `template-only` source compositions with advisory hooks. The
-content-repurposing plugin is the first self-contained `not-verified` bundle;
-its locked dependency closure can be installed, while its lack of current
-target-scoped evidence remains visible. Operational installation stays blocked
-for every plugin that has not published the same locked artifact records.
+The catalogue includes both source-composition templates and implemented
+bundles. A template can be inspected and adapted, and its detail page offers no
+operational installation command. Eligible bundles provide file-installation
+commands and expose their locked components and hooks. Installability does not
+establish native discovery, authentication or operation in a particular target.
+
+The ChatGPT Advertising Experiment Plugin 0.2.0 has distinct mock-lab,
+live-read and live-write declarations. Its live writes are **unavailable**
+because no supported OpenAI Ads mutation adapter is included. Control-plane,
+executor or approval configuration cannot supply that missing implementation.
+The UI links this explanation to the exact retained release while preserving
+its original `not-verified` field. A newer release requires its own review.
+
+The OpenAI Ads API Client's reviewed release notes independently disclose
+missing automatic pagination, retries and rate-limit backoff. Related guides or
+sample workflows cannot supply those features to the installed client.
 
 ### Packs
 

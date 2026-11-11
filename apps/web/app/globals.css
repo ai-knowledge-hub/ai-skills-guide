@@ -228,6 +228,12 @@ a.catalog-card:hover { text-decoration: none; }
 .detail-panel a { text-decoration: underline; text-underline-offset: 4px; }
 .detail-panel code { font-family: var(--font-code); font-size: 13px; }
 .detail-grid .install-card { padding: 24px; background: var(--paper-muted); }
+.install-explanation { max-width: 65ch; font-size: 14px; }
+.readiness-explainer { margin-block: 24px; }
+.readiness-explainer > summary { padding-block: 12px; min-height: 44px; font-size: 14px; }
+.readiness-explainer dl { margin-top: 12px; }
+.readiness-explainer dt { font-weight: 700; font-size: 14px; }
+.readiness-explainer dd { margin: 4px 0 16px; color: var(--ink-soft); font-size: 14px; line-height: 1.7; }
 .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
 .tag { padding: 5px 10px; background: var(--paper-muted); font-size: 12px; color: var(--ink-soft); }
 .error-page { padding-block: 100px; }

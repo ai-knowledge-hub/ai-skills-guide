@@ -2,18 +2,20 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { RegistryEntry } from "@/lib/registry";
+import { availabilityDescriptions, installationExplanation } from "@/lib/cataloguePresentation";
 
 type InstallCommandsProps = {
   codex: string;
   claude: string;
   generic: string;
   availability: RegistryEntry["usability"]["availability"];
+  execution: RegistryEntry["usability"]["execution"];
   compact?: boolean;
 };
 
 type RuntimeKey = "codex" | "claude" | "generic";
 
-export default function InstallCommands({ codex, claude, generic, availability, compact = false }: InstallCommandsProps) {
+export default function InstallCommands({ codex, claude, generic, availability, execution, compact = false }: InstallCommandsProps) {
   const [copied, setCopied] = useState<RuntimeKey | null>(null);
   const [failed, setFailed] = useState<RuntimeKey | null>(null);
   const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -51,13 +53,14 @@ export default function InstallCommands({ codex, claude, generic, availability, 
     return (
       <article className={compact ? "install-inline" : "card detail-panel install-card"}>
         <h3>Reference template</h3>
-        <p>This entry cannot be installed into an operational runtime. Copy its source from the repository only as a scaffold for implementation and review.</p>
+        <p>{availabilityDescriptions[availability]}</p>
       </article>
     );
   }
 
   return (
     <article className={compact ? "install-inline" : "card detail-panel install-card"}>
+      <p className="install-explanation">{installationExplanation(execution)}</p>
       {rows.map((row) => (
         <section key={row.key} className="install-item">
           <div className="install-head">

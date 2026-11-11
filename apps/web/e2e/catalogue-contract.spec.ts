@@ -8,6 +8,7 @@ import { catalogueCompatibility, findCatalogueCompatibility, type CatalogueCompa
 import { loadRegistry, withCatalogueCompatibility, type ModuleKey, type RegistryEntry, type RegistryIndex } from "../lib/registry";
 import { projectCurrentCatalogEntry } from "../lib/currentCatalogueProjection.mjs";
 import { latestToolPageNotes } from "./catalogue-page-notes";
+import { capabilityNotes, findCapabilityNote } from "../lib/capabilityNotes";
 
 // Independent review inventory: docs/tool-version-review.md and its retained
 // releases. Additional entries/releases need not acquire a note automatically.
@@ -66,6 +67,27 @@ test("annotation selection uses exact module, identity and release without range
         }
       }
     }
+  }
+});
+
+test("unavailable-capability explanations are release-specific and preserve recorded status", async () => {
+  for (const note of capabilityNotes) {
+    const releasePath = path.resolve("../../releases/plugins", note.id, note.version, "registry-entry.json");
+    const bytes = await fs.readFile(releasePath, "utf8");
+    const released = JSON.parse(bytes) as RegistryEntry;
+    const capability = released.capability_readiness?.find((item) => item.id === note.capability);
+    expect(capability?.availability).toBe("not-verified");
+    expect(capability?.limitations?.join(" ")).toContain("No supported OpenAI Ads mutation adapter");
+    expect(findCapabilityNote(note.module, note.id, note.version, note.capability)).toBe(note);
+    for (const subject of [
+      ["tools", note.id, note.version, note.capability],
+      [note.module, `${note.id}-other`, note.version, note.capability],
+      [note.module, note.id, "0.3.0", note.capability],
+      [note.module, note.id, note.version, "live-read"],
+    ] as const) {
+      expect(findCapabilityNote(subject[0], subject[1], subject[2], subject[3])).toBeUndefined();
+    }
+    expect(await fs.readFile(releasePath, "utf8")).toBe(bytes);
   }
 });
 

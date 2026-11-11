@@ -4,8 +4,11 @@ import { notFound } from "next/navigation";
 import InstallCommands from "@/components/InstallCommands";
 import PluginContents from "@/components/PluginContents";
 import { buildModuleInstallSnippet, getEntryById, loadPluginsRegistry } from "@/lib/registry";
-import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
+import { formatCategoryLabel } from "@/lib/categoryLabels";
 import UsabilityPanel from "@/components/UsabilityPanel";
+import ReviewStatus from "@/components/ReviewStatus";
+import { resourceFormLabels } from "@/lib/cataloguePresentation";
+import { findCapabilityNote } from "@/lib/capabilityNotes";
 
 const REPO_BLOB_BASE = "https://github.com/ai-knowledge-hub/ai-skills-guide/blob/main";
 
@@ -37,25 +40,25 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
         <h1>{entry.name}</h1>
         <p>{entry.description}</p>
         <p className="meta">{entry.tags.join(", ")}</p>
-        <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{entry.usability.execution}</span><a href="#usability" className="text-link">Requirements &amp; limits</a></div>
+        <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{resourceFormLabels[entry.usability.execution]}</span><a href="#usability" className="text-link">Requirements &amp; limits</a></div>
         <PluginContents entry={entry} />
         <div className="detail-install-lead">
-          <h2 className="meta">{entry.usability.availability === "template-only" ? "Reference composition" : "Install this plugin"}</h2>
+          <h2 className="meta">{entry.usability.availability === "template-only" ? "Reference composition" : "Install plugin files"}</h2>
           <InstallCommands
             compact
             availability={entry.usability.availability}
+            execution={entry.usability.execution}
             codex={buildModuleInstallSnippet("plugins", entry, "codex")}
             claude={buildModuleInstallSnippet("plugins", entry, "claude")}
             generic={buildModuleInstallSnippet("plugins", entry, "generic")}
           />
           {entry.usability.availability !== "template-only" ? (
             <>
-              <p className="meta">Plugin installs also resolve bundled skills, agents, and tools into their native runtime directories. Packaged hooks stay inside the plugin directory.</p>
-              <p className="meta">Codex and Claude installs also generate a runtime-specific plugin manifest inside the installed plugin directory.</p>
+              <p className="meta">Bundled skills, agents and tools are placed in the selected runtime directories. Hooks stay inside the plugin directory. Codex and Claude targets also receive a generated plugin manifest.</p>
             </>
           ) : null}
           {!entry.security_reviewed ? (
-            <p className="meta">This plugin is still experimental. Review bundled components, required secrets, and approval rules before enabling it in a live runtime.</p>
+            <p className="meta">No security review is declared for this release. Review bundled components, required secrets and approval rules before live use.</p>
           ) : null}
           {entry.requires?.secrets?.length || entry.requires?.approvals?.length ? (
             <ul>
@@ -75,35 +78,33 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
         {entry.capability_readiness?.length ? (
           <article className="card detail-panel">
             <h2>Capability readiness</h2>
-            {entry.capability_readiness.map((capability) => (
-              <section key={capability.id}>
-                <h3>{capability.name}</h3>
-                <p>
-                  <span className="meta">Status:</span> {capability.availability}
-                  {" · "}
-                  <span className="meta">Access:</span> {capability.access}
-                </p>
-                <p>{capability.description}</p>
-                {capability.requires_setup?.length ? (
-                  <ul>
-                    {capability.requires_setup.map((requirement) => <li key={requirement}>{requirement}</li>)}
-                  </ul>
-                ) : null}
-                {capability.limitations?.length ? (
-                  <ul>
-                    {capability.limitations.map((limitation) => <li key={limitation}>{limitation}</li>)}
-                  </ul>
-                ) : null}
-              </section>
-            ))}
+            {entry.capability_readiness.map((capability) => {
+              const note = findCapabilityNote("plugins", entry.id, entry.latest, capability.id);
+              return (
+                <section key={capability.id}>
+                  <h3>{capability.name}</h3>
+                  <p>
+                    {note ? <strong>{note.label}</strong> : <UsabilityBadge availability={capability.availability} />}
+                    {!note ? <> · <span className="meta">{capability.access === "offline" ? "Sample fixtures" : capability.access === "read-only" ? "Read only" : "Read and write"}</span></> : null}
+                  </p>
+                  <p>{note?.explanation ?? capability.description}</p>
+                  {note ? <p className="meta">Recorded classification · {capability.availability} · <a href={note.source.url}>{note.source.label}</a></p> : null}
+                  {capability.requires_setup?.length ? (
+                    <ul>
+                      {capability.requires_setup.map((requirement) => <li key={requirement}>{requirement}</li>)}
+                    </ul>
+                  ) : null}
+                  {capability.limitations?.length ? (
+                    <ul>
+                      {capability.limitations.map((limitation) => <li key={limitation}>{limitation}</li>)}
+                    </ul>
+                  ) : null}
+                </section>
+              );
+            })}
           </article>
         ) : null}
-        <article className="card detail-panel">
-          <h2>Status</h2>
-          <p><span className="meta">Readiness:</span> {formatReadinessLabel(entry.readiness)}</p>
-          <p><span className="meta">Security reviewed:</span> {entry.security_reviewed ? "yes" : "no"}</p>
-          <p><span className="meta">Lifecycle:</span> {entry.deprecated ? "Deprecated" : "Active"}</p>
-        </article>
+        <ReviewStatus entry={entry} />
         <article className="card detail-panel">
           <h2>Metadata</h2>
           <p><span className="meta">ID:</span> {entry.id}</p>

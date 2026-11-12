@@ -167,9 +167,9 @@ export async function loadResourceFirstUse(module: ModuleKey, entry: RegistryEnt
     ...(matchedNote?.sources ?? []),
   ])];
   const files = await readReleaseFiles(directory, entry, names, {
-    // README supplements instruction-based resources but is the primary
-    // document for plugins. Preview limits must remain strict for the latter.
-    optionalNames: names.filter((name) => name.startsWith("examples/") || (name === "README.md" && name !== document)),
+    // README and examples enrich the summary; unavailable previews must not
+    // hide the remaining metadata or plugin contents.
+    optionalNames: names.filter((name) => name.startsWith("examples/") || name === "README.md"),
   });
   const note = matchedNote?.sources.every((source) => files?.has(source)) ? matchedNote : undefined;
   const instructions = files?.get(document) ?? "";

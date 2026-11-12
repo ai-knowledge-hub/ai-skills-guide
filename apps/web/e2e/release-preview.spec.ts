@@ -31,11 +31,11 @@ const readmeSubjects: { module: ModuleKey; id: string; document: string; manifes
   { module: "skills", id: "marketing/meta-google-weekly-performance-review", document: "SKILL.md", manifest: "skill.yaml" },
   { module: "agents", id: "marketing/weekly-performance-supervisor", document: "AGENT.md", manifest: "agent.yaml" },
   { module: "tools", id: "analytics/ga4-mcp-connector", document: "TOOL.md", manifest: "tool.yaml" },
-  { module: "plugins", id: "engineering/code-maintenance-plugin", document: "README.md", manifest: "plugin.yaml" },
+  { module: "plugins", id: "marketing/performance-reporting-plugin", document: "README.md", manifest: "plugin.yaml" },
 ];
 
 for (const subject of readmeSubjects) {
-  test(`${subject.module} keep primary documents required when README previews are unavailable`, async () => {
+  test(`${subject.module} keep detail summaries available when README previews are unavailable`, async () => {
     const registry = await loadRegistry(subject.module);
     const entry = registry.skills.find((item) => item.id === subject.id)!;
     const original = structuredClone(entry);
@@ -50,16 +50,12 @@ for (const subject of readmeSubjects) {
         await writeArchive(path.join(root, directory, entry.id, entry.latest, "package.tar.gz"), files);
         process.env.RELEASE_STORE_ROOT = root;
 
-        if (subject.document === "README.md") {
-          // Plugins use README as their primary document, so its preview limit
-          // must remain enforced rather than silently dropping the content.
-          await expect(loadResourceFirstUse(subject.module, entry)).rejects.toThrow();
-          continue;
-        }
-
         const content = await loadResourceFirstUse(subject.module, entry);
         expect(content.files?.has("README.md"), example.name).toBe(false);
-        expect(content.files?.get(subject.document)).toBe(released!.get(subject.document));
+        if (subject.document !== "README.md") {
+          expect(content.files?.get(subject.document)).toBe(released!.get(subject.document));
+          expect(content.sources).toContain(subject.document);
+        }
         expect(content.files?.get(subject.manifest)).toBe(released!.get(subject.manifest));
         expect(content.inputs).toContain(subject.module === "skills" ? "google_account_id" : "Inputs are not documented for this release.");
         const declaredOutputs = entry.operational?.outputs;
@@ -67,7 +63,7 @@ for (const subject of readmeSubjects) {
           ? declaredOutputs.map((item) => `- ${item}`).join("\n")
           : "Expected outputs are not documented for this release. Inspect its guide before use.");
         expect(content.sources).not.toContain("README.md");
-        expect(content.sources).toContain(subject.document);
+        expect(content.sources).toContain(subject.manifest);
         expect(content.sample).toBeUndefined();
         expect(entry).toEqual(original);
       }

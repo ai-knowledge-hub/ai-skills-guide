@@ -59,7 +59,7 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
         <ResourceFirstUse entry={entry} content={firstUse}>
           {isReference ? (
             <DetailDisclosure show="Read reference guide" hide="Hide reference guide" detail={`TOOL.md · v${entry.latest}`}>
-              {firstUse.files?.get("TOOL.md") ? <InstructionMarkdown source={firstUse.files.get("TOOL.md")!} /> : <p>Reference instructions are not documented for this release.</p>}
+              {firstUse.files?.get("TOOL.md") ? <InstructionMarkdown source={firstUse.files.get("TOOL.md")!} /> : <p>Reference guide preview is unavailable here. Open the release package for the full content.</p>}
             </DetailDisclosure>
           ) : <a className="button" href="#usability">Review setup requirements</a>}
         </ResourceFirstUse>

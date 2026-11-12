@@ -6,7 +6,7 @@ import { pack } from "tar-stream";
 import { expect, test } from "@playwright/test";
 import { loadRegistry, type ModuleKey } from "../lib/registry";
 import { readReleaseFiles } from "../lib/releaseFiles";
-import { loadResourceFirstUse } from "../lib/resourceFirstUse";
+import { firstUseNotes, loadResourceFirstUse } from "../lib/resourceFirstUse";
 
 async function writeArchive(filename: string, files: Map<string, string | Buffer>) {
   const archive = pack();
@@ -31,42 +31,61 @@ const readmeSubjects: { module: ModuleKey; id: string; document: string; manifes
   { module: "skills", id: "marketing/meta-google-weekly-performance-review", document: "SKILL.md", manifest: "skill.yaml" },
   { module: "agents", id: "marketing/weekly-performance-supervisor", document: "AGENT.md", manifest: "agent.yaml" },
   { module: "tools", id: "analytics/ga4-mcp-connector", document: "TOOL.md", manifest: "tool.yaml" },
+  { module: "tools", id: "adtech/conversion-event-reconciler", document: "TOOL.md", manifest: "tool.yaml" },
   { module: "plugins", id: "marketing/performance-reporting-plugin", document: "README.md", manifest: "plugin.yaml" },
 ];
 
 for (const subject of readmeSubjects) {
-  test(`${subject.module} keep detail summaries available when README previews are unavailable`, async () => {
+  test(`${subject.id} keeps summaries available when any release preview is unavailable`, async () => {
     const registry = await loadRegistry(subject.module);
     const entry = registry.skills.find((item) => item.id === subject.id)!;
     const original = structuredClone(entry);
     const directory = subject.module === "tools" ? "tools-mcp" : subject.module;
-    const released = await readReleaseFiles(directory, entry, [subject.document, subject.manifest, "README.md"]);
+    const note = firstUseNotes.find((item) => item.module === subject.module && item.id === entry.id && item.version === entry.latest);
+    const names = [...new Set([
+      subject.document, subject.manifest, "README.md", "examples/input.json", "examples/output.json", "examples/first-use-input.json",
+      ...(note?.sources ?? []),
+    ])];
+    const released = await readReleaseFiles(directory, entry, names);
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "readme-preview-"));
     const previousRoot = process.env.RELEASE_STORE_ROOT;
     try {
-      for (const example of unpreviewableExamples) {
-        const files = new Map<string, string | Buffer>(released!);
-        files.set("README.md", example.content);
-        await writeArchive(path.join(root, directory, entry.id, entry.latest, "package.tar.gz"), files);
-        process.env.RELEASE_STORE_ROOT = root;
+      for (const name of names) {
+        for (const example of unpreviewableExamples) {
+          const files = new Map<string, string | Buffer>(released!);
+          // Keep oversized Markdown valid and retain YAML semantics by adding
+          // only a comment to the original manifest.
+          const body = example.name === "large valid JSON" && !name.endsWith(".json")
+            ? Buffer.from(`${released!.get(name) ?? ""}\n# ${"x".repeat(1024 * 1024)}`)
+            : example.content;
+          files.set(name, body);
+          await writeArchive(path.join(root, directory, entry.id, entry.latest, "package.tar.gz"), files);
+          process.env.RELEASE_STORE_ROOT = root;
 
-        const content = await loadResourceFirstUse(subject.module, entry);
-        expect(content.files?.has("README.md"), example.name).toBe(false);
-        if (subject.document !== "README.md") {
-          expect(content.files?.get(subject.document)).toBe(released!.get(subject.document));
-          expect(content.sources).toContain(subject.document);
+          const content = await loadResourceFirstUse(subject.module, entry);
+          expect(content.files?.has(name), `${name}: ${example.name}`).toBe(false);
+          expect(content.unavailablePreviews).toEqual([name]);
+          expect(content.sources).not.toContain(name);
+          for (const source of content.sources) expect(content.files?.has(source)).toBe(true);
+          for (const [filename, source] of released!) {
+            if (filename !== name) expect(content.files?.get(filename)).toBe(source);
+          }
+          expect(content.inputs).not.toBe("");
+          expect(content.outputs).not.toBe("");
+          expect(content.requirements.length).toBeGreaterThan(0);
+          expect(entry).toEqual(original);
         }
-        expect(content.files?.get(subject.manifest)).toBe(released!.get(subject.manifest));
-        expect(content.inputs).toContain(subject.module === "skills" ? "google_account_id" : "Inputs are not documented for this release.");
-        const declaredOutputs = entry.operational?.outputs;
-        expect(content.outputs).toBe(declaredOutputs?.length
-          ? declaredOutputs.map((item) => `- ${item}`).join("\n")
-          : "Expected outputs are not documented for this release. Inspect its guide before use.");
-        expect(content.sources).not.toContain("README.md");
-        expect(content.sources).toContain(subject.manifest);
-        expect(content.sample).toBeUndefined();
-        expect(entry).toEqual(original);
       }
+      await writeArchive(path.join(root, directory, entry.id, entry.latest, "package.tar.gz"), new Map(names.map((name) => [name, Buffer.alloc(0)])));
+      const metadataOnly = await loadResourceFirstUse(subject.module, entry);
+      expect(metadataOnly.sources).toEqual([]);
+      expect(metadataOnly.unavailablePreviews).toEqual(names);
+      expect(metadataOnly.sample).toBeUndefined();
+      expect(metadataOnly.inputs).toContain("could not be summarized");
+      const outputs = entry.operational?.outputs;
+      expect(metadataOnly.outputs).toBe(outputs?.length
+        ? outputs.map((item) => `- ${item}`).join("\n")
+        : "Expected outputs could not be summarized from the available previews. Inspect the release package before use.");
     } finally {
       if (previousRoot === undefined) delete process.env.RELEASE_STORE_ROOT;
       else process.env.RELEASE_STORE_ROOT = previousRoot;
@@ -100,13 +119,14 @@ for (const example of unpreviewableExamples) {
       expect(content.inputs).toContain("Meta and Google Ads account IDs");
       expect(content.outputs).toContain("Executive summary and KPI table");
       expect(content.sources).not.toContain("examples/output.json");
+      expect(content.unavailablePreviews).toEqual(["examples/input.json", "examples/output.json"]);
       expect(entry).toEqual(original);
 
-      // Required documents still fail preview validation rather than silently
-      // disappearing when they contain the same unpreviewable content.
+      // Consumers that require a document (rather than a best-effort summary)
+      // retain the reader's strict default.
       files.set("SKILL.md", example.content);
       await writeArchive(path.join(root, "skills", entry.id, entry.latest, "package.tar.gz"), files);
-      await expect(loadResourceFirstUse("skills", entry)).rejects.toThrow();
+      await expect(readReleaseFiles("skills", entry, ["SKILL.md"])).rejects.toThrow();
     } finally {
       if (previousRoot === undefined) delete process.env.RELEASE_STORE_ROOT;
       else process.env.RELEASE_STORE_ROOT = previousRoot;

@@ -11,7 +11,7 @@ export async function readReleaseFiles(
   module: "skills" | "agents" | "plugins" | "tools-mcp",
   { id, latest }: Pick<RegistryEntry, "id" | "latest">,
   names: string[],
-  { optionalNames = [] }: { optionalNames?: string[] } = {},
+  { optionalNames = [], onUnavailable }: { optionalNames?: string[]; onUnavailable?: (name: string) => void } = {},
 ) {
   // Read only requested files from the same retained archive users install.
   const releaseRoot = process.env.RELEASE_STORE_ROOT ?? path.resolve(process.cwd(), "..", "..", "releases");
@@ -39,8 +39,9 @@ export async function readReleaseFiles(
 
     if (header.type !== "file" || !header.size || header.size > maxPreviewFileBytes) {
       if (optional.has(header.name)) {
-        // Optional examples can be valid release content without being suitable
+        // Optional files can be valid release content without being suitable
         // for a bounded text preview. Drain them without buffering their bytes.
+        onUnavailable?.(header.name);
         stream.on("end", next);
         stream.resume();
       } else {
@@ -56,6 +57,7 @@ export async function readReleaseFiles(
         files.set(header.name, decoder.decode(Buffer.concat(chunks)));
         next();
       } catch (error) {
+        if (optional.has(header.name)) onUnavailable?.(header.name);
         next(optional.has(header.name) ? undefined : error);
       }
     });

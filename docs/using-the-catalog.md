@@ -50,6 +50,10 @@ retained release files. Editorial explanations identify an exact module,
 package and version, with their source filenames beside the release link.
 Missing information is shown explicitly.
 
+Bounded previews may omit large, empty or non-UTF-8 files. Detail pages identify
+unavailable previews while retaining catalogue metadata, remaining contents and
+release links. Catalogue metadata is attributed separately from previewed files.
+
 Instruction packages lead with reading and copying. Applying pasted
 instructions depends on the receiving agent app or chat's supported behaviour.
 Templates lead with inspecting the reference. Integrations lead with reviewing

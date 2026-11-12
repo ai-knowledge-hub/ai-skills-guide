@@ -42,7 +42,8 @@ export default function ResourceFirstUse({ entry, content, children }: {
           </DetailDisclosure>
         ) : children}
       </section>
-      <p className="meta resource-summary-source">{content.sources.length ? `Summary sources · ${content.sources.join(", ")}` : "Summary from catalogue metadata"} · v{entry.latest}{release ? <> · <a href={release.artifact_url}>Release package</a></> : null}</p>
+      {content.unavailablePreviews.length ? <p className="meta">Preview unavailable here · {content.unavailablePreviews.join(", ")}. Open the release package for the full content.</p> : null}
+      <p className="meta resource-summary-source">Summary sources · Catalogue metadata{content.sources.length ? `, ${content.sources.join(", ")}` : ""} · v{entry.latest}{release ? <> · <a href={release.artifact_url}>Release package</a></> : null}</p>
     </section>
   );
 }

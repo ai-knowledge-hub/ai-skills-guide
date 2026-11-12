@@ -166,10 +166,12 @@ export async function loadResourceFirstUse(module: ModuleKey, entry: RegistryEnt
     document, manifest, "README.md", "examples/input.json", "examples/output.json", "examples/first-use-input.json",
     ...(matchedNote?.sources ?? []),
   ])];
+  const unavailablePreviews: string[] = [];
   const files = await readReleaseFiles(directory, entry, names, {
-    // README and examples enrich the summary; unavailable previews must not
-    // hide the remaining metadata or plugin contents.
-    optionalNames: names.filter((name) => name.startsWith("examples/") || name === "README.md"),
+    // Every file here enriches a summary backed by registry metadata. Preview
+    // limits must not introduce additional requirements for valid releases.
+    optionalNames: names,
+    onUnavailable: (name) => unavailablePreviews.push(name),
   });
   const note = matchedNote?.sources.every((source) => files?.has(source)) ? matchedNote : undefined;
   const instructions = files?.get(document) ?? "";
@@ -177,11 +179,15 @@ export async function loadResourceFirstUse(module: ModuleKey, entry: RegistryEnt
   const inputs = note?.inputs ? bulletList(note.inputs)
     : instructionSection(instructions, ["Inputs required", "Inputs"])
       || exampleFields(files?.get(exampleInputPath))
-      || "Inputs are not documented for this release. Inspect its guide before use.";
+      || (unavailablePreviews.length
+        ? "Inputs could not be summarized from the available previews. Inspect the release package before use."
+        : "Inputs are not documented for this release. Inspect its guide before use.");
   const outputs = note?.outputs ? bulletList(note.outputs)
     : entry.operational?.outputs?.length ? bulletList(entry.operational.outputs)
       : exampleFields(files?.get("examples/output.json"))
-        || "Expected outputs are not documented for this release. Inspect its guide before use.";
+        || (unavailablePreviews.length
+          ? "Expected outputs could not be summarized from the available previews. Inspect the release package before use."
+          : "Expected outputs are not documented for this release. Inspect its guide before use.");
   const requirements = note?.prerequisites
     ?? (entry.usability.requires_setup?.length ? entry.usability.requires_setup : undefined)
     ?? (entry.operational?.auth_required?.length ? entry.operational.auth_required : undefined)
@@ -197,7 +203,7 @@ export async function loadResourceFirstUse(module: ModuleKey, entry: RegistryEnt
   const limits = [...(entry.usability.limitations ?? []), ...(entry.operational?.approval_boundary ? [entry.operational.approval_boundary] : [])];
   if (entry.usability.executable_helpers?.length) limits.push("Packaged programs have independent setup and verification requirements. Reading or copying this procedure does not verify their execution.");
   return {
-    files, document, inputs, outputs, requirements, firstStep, limits,
+    files, document, inputs, outputs, requirements, firstStep, limits, unavailablePreviews,
     sample: !isTemplate ? note?.sample : undefined,
     exampleInput: files?.get(exampleInputPath),
     exampleOutput: files?.get("examples/output.json"),

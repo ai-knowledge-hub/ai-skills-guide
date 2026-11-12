@@ -45,6 +45,8 @@ test("first-use leads with inputs, output and a supported action before installa
   await expect(firstUse.getByText("Meta and Google Ads account IDs", { exact: true })).toBeVisible();
   await expect(firstUse.getByText("Executive summary and KPI table with period deltas", { exact: true })).toBeVisible();
   await expect(firstUse.getByText(/chat that supports pasted instructions/)).toBeVisible();
+  await expect(firstUse.locator(".resource-summary-source")).toContainText("Catalogue metadata");
+  await expect(firstUse.locator(".resource-summary-source")).toContainText("SKILL.md");
   await expect(firstUse.getByText(/Packaged programs have independent setup/)).toBeVisible();
   await expect(page.locator(".resource-install")).not.toHaveAttribute("open", "");
   await expect(page.getByRole("button", { name: "Copy codex installation command" })).not.toBeVisible();

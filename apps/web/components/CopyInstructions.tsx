@@ -3,11 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 
 export default function CopyInstructions({ source, filename }: { source: string; filename: "SKILL.md" | "AGENT.md" }) {
+  const [canCopy, setCanCopy] = useState(false);
   const [status, setStatus] = useState<"idle" | "copied" | "failed">("idle");
   const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const attempt = useRef(0);
 
   useEffect(() => {
+    setCanCopy(true);
     setStatus("idle");
     return () => {
       attempt.current += 1;
@@ -40,11 +42,13 @@ export default function CopyInstructions({ source, filename }: { source: string;
           type="button"
           className="button button--secondary copy-button"
           aria-label={`Copy full ${filename} text`}
+          disabled={!canCopy}
           onClick={copy}
         >
           {status === "copied" ? "Copied" : "Copy full text"}
         </button>
       </div>
+      <noscript><p className="meta">Select the instructions below to copy them. The copy button requires JavaScript.</p></noscript>
       {status === "failed" ? (
         <textarea
           className="instruction-copy-source"

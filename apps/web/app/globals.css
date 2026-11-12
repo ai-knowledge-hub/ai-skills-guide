@@ -333,6 +333,17 @@ a.catalog-card:hover { text-decoration: none; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
 
+/* Browser zoom and short windows need the reading space more than a sticky
+   masthead. Keep the existing design, but let navigation scroll with the page. */
+@media (max-height: 500px) {
+  html { scroll-padding-top: 24px; }
+  .site-header { position: relative; }
+  .catalogue-main { --catalogue-sticky-top: 0px; }
+  #usability { scroll-margin-top: 0; }
+  .mobile-menu nav { max-height: none; }
+  .filter-menu { max-height: calc(100dvh - 32px); }
+}
+
 @media (min-width: 761px) and (max-width: 999px) {
   .companion-main::before { height: 140px; }
 }

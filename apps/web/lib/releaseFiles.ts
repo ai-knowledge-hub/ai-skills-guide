@@ -11,24 +11,41 @@ export async function readReleaseFiles(
   module: "skills" | "agents" | "plugins" | "tools-mcp",
   { id, latest }: Pick<RegistryEntry, "id" | "latest">,
   names: string[],
+  { optionalNames = [] }: { optionalNames?: string[] } = {},
 ) {
   // Read only requested files from the same retained archive users install.
   const releaseRoot = process.env.RELEASE_STORE_ROOT ?? path.resolve(process.cwd(), "..", "..", "releases");
   const archivePath = path.join(releaseRoot, module, id, latest, "package.tar.gz");
   const archive = extract();
   const requested = new Set(names);
+  const optional = new Set(optionalNames);
+  const seen = new Set<string>();
   const files = new Map<string, string>();
   const decoder = new TextDecoder("utf-8", { fatal: true });
 
   archive.on("entry", (header, stream, next) => {
+    stream.on("error", (error) => archive.destroy(error));
     if (!requested.has(header.name)) {
       stream.on("end", next);
       stream.resume();
       return;
     }
 
-    if (files.has(header.name) || header.type !== "file" || !header.size || header.size > maxPreviewFileBytes) {
+    if (seen.has(header.name)) {
       next(new Error(`Invalid ${header.name} in ${id}@${latest}`));
+      return;
+    }
+    seen.add(header.name);
+
+    if (header.type !== "file" || !header.size || header.size > maxPreviewFileBytes) {
+      if (optional.has(header.name)) {
+        // Optional examples can be valid release content without being suitable
+        // for a bounded text preview. Drain them without buffering their bytes.
+        stream.on("end", next);
+        stream.resume();
+      } else {
+        next(new Error(`Invalid ${header.name} in ${id}@${latest}`));
+      }
       return;
     }
 
@@ -39,7 +56,7 @@ export async function readReleaseFiles(
         files.set(header.name, decoder.decode(Buffer.concat(chunks)));
         next();
       } catch (error) {
-        next(error);
+        next(optional.has(header.name) ? undefined : error);
       }
     });
   });

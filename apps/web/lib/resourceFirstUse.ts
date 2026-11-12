@@ -162,10 +162,13 @@ export async function loadResourceFirstUse(module: ModuleKey, entry: RegistryEnt
   const document = module === "skills" ? "SKILL.md" : module === "agents" ? "AGENT.md" : module === "tools" ? "TOOL.md" : "README.md";
   const manifest = module === "skills" ? "skill.yaml" : module === "agents" ? "agent.yaml" : module === "tools" ? "tool.yaml" : "plugin.yaml";
   const matchedNote = findFirstUseNote(module, entry.id, entry.latest);
-  const files = await readReleaseFiles(directory, entry, [...new Set([
+  const names = [...new Set([
     document, manifest, "README.md", "examples/input.json", "examples/output.json", "examples/first-use-input.json",
     ...(matchedNote?.sources ?? []),
-  ])]);
+  ])];
+  const files = await readReleaseFiles(directory, entry, names, {
+    optionalNames: names.filter((name) => name.startsWith("examples/")),
+  });
   const note = matchedNote?.sources.every((source) => files?.has(source)) ? matchedNote : undefined;
   const instructions = files?.get(document) ?? "";
   const exampleInputPath = files?.has("examples/first-use-input.json") ? "examples/first-use-input.json" : "examples/input.json";

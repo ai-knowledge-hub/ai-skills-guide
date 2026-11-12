@@ -13,6 +13,8 @@ import UsabilityPanel from "@/components/UsabilityPanel";
 import ReviewStatus from "@/components/ReviewStatus";
 import { resourceFormLabels } from "@/lib/cataloguePresentation";
 import { findCapabilityNote } from "@/lib/capabilityNotes";
+import RelatedReading from "@/components/RelatedReading";
+import { relatedGuidesForResource } from "@/lib/publicationLinks";
 
 const REPO_BLOB_BASE = "https://github.com/ai-knowledge-hub/ai-skills-guide/blob/main";
 
@@ -36,6 +38,7 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
   const packageBasePath = `plugins/${entry.id}`;
   const firstUse = await loadResourceFirstUse("plugins", entry);
   const installation = await loadInstallationGuidance("plugins", entry);
+  const relatedGuides = relatedGuidesForResource("plugins", entry.id, entry.latest);
 
   return (
     <main id="main" tabIndex={-1} className="detail-page">
@@ -45,7 +48,7 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
         <p className="meta">{formatCategoryLabel(entry.category)}</p>
         <h1>{entry.name}</h1>
         <p>{entry.description}</p>
-        <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{resourceFormLabels[entry.usability.execution]}</span><a href="#usability" className="text-link">Requirements &amp; limits</a></div>
+        <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{resourceFormLabels[entry.usability.execution]}</span><a href="#usability" className="text-link">Requirements &amp; limits</a>{relatedGuides.length ? <a href="#related-reading" className="text-link">Related reading</a> : null}</div>
         <ResourceFirstUse entry={entry} content={firstUse}>
           <PluginContents entry={entry} />
         </ResourceFirstUse>
@@ -112,6 +115,7 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
             })}
           </article>
         ) : null}
+        <RelatedReading guides={relatedGuides} />
       </section>
       <details className="resource-technical">
         <summary>Technical details and release files</summary>

@@ -44,6 +44,14 @@ in plain language separately from their availability badge:
 
 ## From inspection to operation
 
+Related reading is optional. Selected resources link to a Publication article
+or Harness learning guide with a specific reason to read it. The editorial
+mapping in `apps/web/lib/publicationLinks.ts` supports skills, agents, plugins
+and tools, records review provenance, and pins release-specific examples to
+their exact resource version. Unmapped resources have no related-reading panel.
+These links do not change resource readiness, compatibility or installation
+requirements, and the linked implementation may have a different scope.
+
 Each resource detail starts with purpose, resource form, inputs, outputs,
 prerequisites and a suitable first action. Summaries use current metadata and
 retained release files. Editorial explanations identify an exact module,

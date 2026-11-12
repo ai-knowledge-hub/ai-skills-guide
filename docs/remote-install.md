@@ -15,15 +15,21 @@ that should consume a released artifact rather than mutable source files.
 
 ## Install a published release
 
+First prepare the [released installer](getting-started.md#install-published-files)
+and put it on PATH, or use its absolute path. The following commands assume
+`skills-hub` is on PATH and can run outside a repository checkout. If using an
+unreleased `make cli-build` candidate, run from the checkout root and replace
+`skills-hub` with `./bin/skills-hub`.
+
 Each module uses its own registry index:
 
 ```bash
-./bin/skills-hub install \
+skills-hub install \
   --source remote \
   --module skills \
   --registry-url \
     https://skills.ai-knowledge-hub.org/registry/skills-index.json \
-  --entry engineering/implementation-strategy@latest \
+  --entry engineering/implementation-strategy@0.1.0 \
   --runtime codex
 ```
 
@@ -52,7 +58,7 @@ the default execution capabilities. Additional environments must be selected
 explicitly with a repeatable flag, for example:
 
 ```bash
-./bin/skills-hub install \
+skills-hub install \
   --source remote \
   --registry-url https://skills.example.test/registry/skills-index.json \
   --entry engineering/example@1.0.0 \
@@ -103,9 +109,10 @@ Remote installation completes these stages in order:
 No downloaded package byte reaches a final runtime directory before the plugin
 and its complete dependency closure pass verification and validation.
 
-`skills-hub doctor` and `skills-hub smoke` require this receipt and recompute
-the installed-tree digest. Packages installed by an older CLI must be
-reinstalled before those commands can produce current readiness evidence.
+The public installation-only binary does not expose `auth`, `doctor`, `smoke`
+or `run-agent`. Those commands belong to the deferred development profile;
+its evidence checks require a matching receipt. Use `skills-hub help setup`
+and the package's direct setup instructions with the public installer.
 
 ## Cache and offline operation
 
@@ -127,21 +134,21 @@ different location with `--cache-dir`.
 An online fetch is required once before an offline install:
 
 ```bash
-./bin/skills-hub install \
+skills-hub install \
   --source remote \
   --registry-url \
     https://skills.ai-knowledge-hub.org/registry/skills-index.json \
-  --entry engineering/implementation-strategy@1.0.0 \
+  --entry engineering/implementation-strategy@0.1.0 \
   --runtime generic \
   --target ./runtime/skills
 
-./bin/skills-hub install \
+skills-hub install \
   --source remote \
   --offline \
   --force \
   --registry-url \
     https://skills.ai-knowledge-hub.org/registry/skills-index.json \
-  --entry engineering/implementation-strategy@1.0.0 \
+  --entry engineering/implementation-strategy@0.1.0 \
   --runtime generic \
   --target ./runtime/skills
 ```

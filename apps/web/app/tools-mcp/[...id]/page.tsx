@@ -1,3 +1,4 @@
+import { loadInstallationGuidance } from "@/lib/installationGuidance";
 import type { Metadata } from "next";
 import UsabilityBadge from "@/components/UsabilityBadge";
 import { notFound } from "next/navigation";
@@ -34,6 +35,7 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
   const latestVersion = entry.versions.find((v) => v.version === entry.latest) ?? entry.versions[0];
   const relatedGuides = relatedPublicationGuides("tools", entry.id);
   const firstUse = await loadResourceFirstUse("tools", entry);
+  const installation = await loadInstallationGuidance("tools", entry);
   const isReference = entry.usability.availability === "template-only";
   const { connected_system, access_level, capabilities, trust_boundary, approval_boundary, auth_required } = entry.operational ?? {};
   const access = access_level === "read-write" ? "Read and write"
@@ -87,11 +89,12 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
         <InstallationDetails title={isReference ? "Reference template" : "Install tool files"}>
           <InstallCommands
             compact
-            availability={entry.usability.availability}
-            execution={entry.usability.execution}
-            codex={buildModuleInstallSnippet("tools", entry, "codex")}
-            claude={buildModuleInstallSnippet("tools", entry, "claude")}
-            generic={buildModuleInstallSnippet("tools", entry, "generic")}
+            module="tools"
+            entry={entry}
+            guidance={installation}
+            codex={buildModuleInstallSnippet("tools", entry, "codex", installation)}
+            claude={buildModuleInstallSnippet("tools", entry, "claude", installation)}
+            generic={buildModuleInstallSnippet("tools", entry, "generic", installation)}
           />
         </InstallationDetails>
       </article>

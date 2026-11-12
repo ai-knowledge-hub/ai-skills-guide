@@ -15,6 +15,8 @@ const sampleToolPath = "/tools-mcp/analytics/ga4-mcp-connector";
 
 async function openInstallation(page: Page) {
   await page.locator(".resource-install > summary").click();
+  const codex = page.locator(".install-runtime-option > summary").filter({ hasText: /^Codex$/ });
+  if (await codex.count()) await codex.click();
 }
 
 async function openTechnicalDetails(page: Page) {
@@ -260,7 +262,7 @@ test("plugin listing and detail distinguish templates from file-installable bund
       await expect(page.getByRole("heading", { name: "Referenced skills" })).toBeVisible();
     } else {
       await expect(page.getByRole("heading", { name: "Install plugin files" })).toBeVisible();
-      await expect(page.getByRole("button", { name: /installation command/ })).toHaveCount(3);
+      await expect(page.getByRole("button", { name: /installation command/ })).toHaveCount(1);
       await expect(page.locator(".install-explanation")).toContainText("Confirm discovery in your agent app");
       await expect(page.locator("#usability")).toContainText("Current operational evidence for your environment is not shown here.");
       await page.getByText("View package contents", { exact: true }).click();
@@ -351,7 +353,7 @@ test("tools route and detail smoke", async ({ page }) => {
   await page.goto(sampleToolPath);
   await expect(page.getByRole("heading", { name: "GA4 MCP Connector" })).toBeVisible();
   await openTechnicalDetails(page);
-  await expect(page.getByText("tools-mcp/analytics").first()).toBeVisible();
+  await expect(page.locator(".resource-technical").getByText("tools-mcp/analytics").first()).toBeVisible();
   await expect(page.getByText("Read only · Google Analytics 4", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "What it can do" })).toHaveCount(0);
   await page.getByText("View capabilities and access", { exact: true }).click();

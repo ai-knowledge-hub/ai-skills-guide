@@ -1,3 +1,4 @@
+import { loadInstallationGuidance } from "@/lib/installationGuidance";
 import type { Metadata } from "next";
 import UsabilityBadge from "@/components/UsabilityBadge";
 import { notFound } from "next/navigation";
@@ -34,6 +35,7 @@ export default async function AgentDetailPage({ params }: { params: { id: string
   const { role, coordinates, autonomy_level, approval_boundary } = entry.operational ?? {};
   const autonomy = autonomy_level === "execution-capable-with-approval" ? "Execution with approval" : autonomy_level;
   const firstUse = await loadResourceFirstUse("agents", entry);
+  const installation = await loadInstallationGuidance("agents", entry);
   const instructions = firstUse.files?.get("AGENT.md");
 
   return (
@@ -75,11 +77,12 @@ export default async function AgentDetailPage({ params }: { params: { id: string
         <InstallationDetails title={entry.usability.availability === "template-only" ? "Reference template" : "Install agent files"}>
           <InstallCommands
             compact
-            availability={entry.usability.availability}
-            execution={entry.usability.execution}
-            codex={buildModuleInstallSnippet("agents", entry, "codex")}
-            claude={buildModuleInstallSnippet("agents", entry, "claude")}
-            generic={buildModuleInstallSnippet("agents", entry, "generic")}
+            module="agents"
+            entry={entry}
+            guidance={installation}
+            codex={buildModuleInstallSnippet("agents", entry, "codex", installation)}
+            claude={buildModuleInstallSnippet("agents", entry, "claude", installation)}
+            generic={buildModuleInstallSnippet("agents", entry, "generic", installation)}
           />
         </InstallationDetails>
       </article>

@@ -1,3 +1,4 @@
+import { loadInstallationGuidance } from "@/lib/installationGuidance";
 import type { Metadata } from "next";
 import UsabilityBadge from "@/components/UsabilityBadge";
 import { notFound } from "next/navigation";
@@ -34,6 +35,7 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
   const latestVersion = entry.versions.find((v) => v.version === entry.latest) ?? entry.versions[0];
   const packageBasePath = `plugins/${entry.id}`;
   const firstUse = await loadResourceFirstUse("plugins", entry);
+  const installation = await loadInstallationGuidance("plugins", entry);
 
   return (
     <main id="main" tabIndex={-1} className="detail-page">
@@ -51,11 +53,12 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
         <InstallationDetails title={entry.usability.availability === "template-only" ? "Reference composition" : "Install plugin files"}>
           <InstallCommands
             compact
-            availability={entry.usability.availability}
-            execution={entry.usability.execution}
-            codex={buildModuleInstallSnippet("plugins", entry, "codex")}
-            claude={buildModuleInstallSnippet("plugins", entry, "claude")}
-            generic={buildModuleInstallSnippet("plugins", entry, "generic")}
+            module="plugins"
+            entry={entry}
+            guidance={installation}
+            codex={buildModuleInstallSnippet("plugins", entry, "codex", installation)}
+            claude={buildModuleInstallSnippet("plugins", entry, "claude", installation)}
+            generic={buildModuleInstallSnippet("plugins", entry, "generic", installation)}
           />
           {entry.usability.availability !== "template-only" ? (
             <>

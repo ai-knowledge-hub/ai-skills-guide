@@ -228,9 +228,23 @@ a.catalog-card:hover { text-decoration: none; }
 #usability { scroll-margin-top: calc(var(--header-height) + 24px); }
 .detail-install-lead { margin-top: 48px; padding: 30px; background: var(--paper-muted); }
 .detail-install-lead > .meta { text-transform: uppercase; letter-spacing: .08em; margin-bottom: 24px; }
-.install-inline { display: grid; gap: 24px; }
+.install-inline { display: grid; gap: 24px; overflow-wrap: anywhere; }
+.install-inline a { text-decoration: underline; text-underline-offset: 3px; }
+.install-hosts { max-width: 76ch; font-size: 14px; line-height: 1.65; }
+.installer-setup, .install-runtime-choices { max-width: 76ch; }
+.installer-setup > h3, .install-runtime-choices > h3 { font-size: 16px; margin-bottom: 12px; }
+.installer-setup p, .install-runtime-choices > p, .install-item > p { font-size: 14px; line-height: 1.65; }
+.installer-setup details > p, .installer-setup details > ul, .install-item > p { margin-block: 12px; }
+.installer-setup ul { padding-left: 20px; color: var(--ink-soft); }
+.installer-setup li + li { margin-top: 6px; }
+.installer-setup pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.install-runtime-option { border-top: 1px solid var(--line); margin-top: 12px; }
+.install-runtime-option > summary { min-height: 44px; padding-block: 12px; font-size: 14px; font-weight: 600; }
+.install-runtime-option .install-item { padding-bottom: 16px; }
+.install-runtime-option .install-head { margin-top: 20px; }
+.copy-button:disabled { opacity: .5; cursor: default; }
 .install-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 12px; }
-.install-head h2, .install-head h3 { font-size: 16px; letter-spacing: -.015em; }
+.install-head h2, .install-head h3, .install-head h4 { font-size: 16px; letter-spacing: -.015em; }
 .install { font-family: var(--font-code); font-size: 13px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; margin: 0; color: var(--code-ink); background: var(--code-bg); }
 .copy-button { background: var(--paper); padding: 8px 14px; min-width: 70px; font-size: 12px; }
 .copy-status { font-size: 12px; margin-top: 8px; color: var(--ink); }

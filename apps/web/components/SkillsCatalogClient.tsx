@@ -8,6 +8,7 @@ import FilterSelect, { type FilterOption } from "@/components/FilterSelect";
 import type { CatalogInitialFilters } from "@/lib/catalogFilters";
 import { formatCategoryLabel } from "@/lib/categoryLabels";
 import UsabilityBadge from "@/components/UsabilityBadge";
+import { resourceFormLabels } from "@/lib/cataloguePresentation";
 
 type SkillsCatalogClientProps = {
   skills: SkillEntry[];
@@ -179,7 +180,7 @@ export default function SkillsCatalogClient({ skills, categories, tags, initial 
             <h2>{skill.name}</h2>
             <p className="meta">{formatCategoryLabel(skill.category)}</p>
             <p>{skill.description}</p>
-            <p className="meta">Execution: {skill.usability.execution}</p>
+            <p className="meta">{resourceFormLabels[skill.usability.execution]}</p>
             {skill.usability.limitations?.[0] ? <p className="meta">Limit: {skill.usability.limitations[0]}</p> : null}
             <div className="tags">
               {skill.tags.map((entry) => (

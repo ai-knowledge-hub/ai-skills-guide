@@ -3,8 +3,10 @@ import UsabilityBadge from "@/components/UsabilityBadge";
 import { notFound } from "next/navigation";
 import { buildInstallSnippet, getSkillById, loadSkillsRegistry } from "@/lib/registry";
 import InstallCommands from "@/components/InstallCommands";
-import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
+import { formatCategoryLabel } from "@/lib/categoryLabels";
 import UsabilityPanel from "@/components/UsabilityPanel";
+import ReviewStatus from "@/components/ReviewStatus";
+import { resourceFormLabels } from "@/lib/cataloguePresentation";
 import RelatedReading from "@/components/RelatedReading";
 import SkillInstructions from "@/components/SkillInstructions";
 import { relatedPublicationGuides } from "@/lib/publicationLinks";
@@ -44,13 +46,14 @@ export default async function SkillDetailPage({ params }: { params: { id: string
           </div>
         ) : null}
         <p className="meta">{skill.tags.join(", ")}</p>
-        <div className="detail-use-summary"><UsabilityBadge availability={skill.usability.availability} /><span className="meta">{skill.usability.execution}</span><a href="#usability" className="text-link">Requirements &amp; limits</a>{relatedGuides.length ? <a href="#related-reading" className="text-link">Related reading</a> : null}</div>
+        <div className="detail-use-summary"><UsabilityBadge availability={skill.usability.availability} /><span className="meta">{resourceFormLabels[skill.usability.execution]}</span><a href="#usability" className="text-link">Requirements &amp; limits</a>{relatedGuides.length ? <a href="#related-reading" className="text-link">Related reading</a> : null}</div>
         {instructions ? <SkillInstructions source={instructions} version={skill.latest} /> : null}
         <div className="detail-install-lead">
-          <h2 className="meta">{skill.usability.availability === "template-only" ? "Reference template" : "Install this skill"}</h2>
+          <h2 className="meta">{skill.usability.availability === "template-only" ? "Reference template" : "Install instruction files"}</h2>
           <InstallCommands
             compact
             availability={skill.usability.availability}
+            execution={skill.usability.execution}
             codex={buildInstallSnippet(skill, "codex")}
             claude={buildInstallSnippet(skill, "claude")}
             generic={buildInstallSnippet(skill, "generic")}
@@ -66,12 +69,7 @@ export default async function SkillDetailPage({ params }: { params: { id: string
           <p><span className="meta">Execution mode:</span> {skill.operational?.execution_mode ?? "Not documented"}</p>
           <p><span className="meta">Approval boundary:</span> {skill.operational?.approval_boundary ?? "Not documented"}</p>
         </article>
-        <article className="card detail-panel">
-          <h2>Status</h2>
-          <p><span className="meta">Readiness:</span> {formatReadinessLabel(skill.readiness)}</p>
-          <p><span className="meta">Security reviewed:</span> {skill.security_reviewed ? "yes" : "no"}</p>
-          <p><span className="meta">Lifecycle:</span> {skill.deprecated ? "Deprecated" : "Active"}</p>
-        </article>
+        <ReviewStatus entry={skill} />
         <article className="card detail-panel">
           <h2>Runtime &amp; Dependencies</h2>
           <p><span className="meta">ID:</span> {skill.id}</p>

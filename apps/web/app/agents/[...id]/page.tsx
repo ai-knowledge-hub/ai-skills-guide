@@ -6,8 +6,10 @@ import DetailDisclosure from "@/components/DetailDisclosure";
 import InstructionMarkdown from "@/components/InstructionMarkdown";
 import CopyInstructions from "@/components/CopyInstructions";
 import { buildModuleInstallSnippet, getEntryById, loadAgentsRegistry } from "@/lib/registry";
-import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
+import { formatCategoryLabel } from "@/lib/categoryLabels";
 import UsabilityPanel from "@/components/UsabilityPanel";
+import ReviewStatus from "@/components/ReviewStatus";
+import { resourceFormLabels } from "@/lib/cataloguePresentation";
 import { readReleaseFiles } from "@/lib/releaseFiles";
 
 export async function generateMetadata({ params }: { params: { id: string[] } }): Promise<Metadata> {
@@ -48,7 +50,7 @@ export default async function AgentDetailPage({ params }: { params: { id: string
           </div>
         ) : null}
         <p className="meta">{entry.tags.join(", ")}</p>
-        <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{entry.usability.execution}</span><a href="#usability" className="text-link">Requirements &amp; limits</a></div>
+        <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{resourceFormLabels[entry.usability.execution]}</span><a href="#usability" className="text-link">Requirements &amp; limits</a></div>
         <DetailDisclosure show="View agent workflow" hide="Hide agent workflow" detail={`v${entry.latest}`}>
           <section>
             <h2>What it coordinates</h2>
@@ -86,10 +88,11 @@ export default async function AgentDetailPage({ params }: { params: { id: string
           ) : null}
         </DetailDisclosure>
         <div className="detail-install-lead">
-          <h2 className="meta">{entry.usability.availability === "template-only" ? "Reference template" : "Install this agent"}</h2>
+          <h2 className="meta">{entry.usability.availability === "template-only" ? "Reference template" : "Install agent files"}</h2>
           <InstallCommands
             compact
             availability={entry.usability.availability}
+            execution={entry.usability.execution}
             codex={buildModuleInstallSnippet("agents", entry, "codex")}
             claude={buildModuleInstallSnippet("agents", entry, "claude")}
             generic={buildModuleInstallSnippet("agents", entry, "generic")}
@@ -99,12 +102,7 @@ export default async function AgentDetailPage({ params }: { params: { id: string
 
       <section className="detail-grid">
         <UsabilityPanel catalogueCompatibility={entry.catalogueCompatibility} compatibility={entry.compatibility} usability={entry.usability} />
-        <article className="card detail-panel">
-          <h2>Status</h2>
-          <p><span className="meta">Readiness:</span> {formatReadinessLabel(entry.readiness)}</p>
-          <p><span className="meta">Security reviewed:</span> {entry.security_reviewed ? "yes" : "no"}</p>
-          <p><span className="meta">Lifecycle:</span> {entry.deprecated ? "Deprecated" : "Active"}</p>
-        </article>
+        <ReviewStatus entry={entry} />
         <article className="card detail-panel">
           <h2>Runtime &amp; Dependencies</h2>
           <p><span className="meta">ID:</span> {entry.id}</p>

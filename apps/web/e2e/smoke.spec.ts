@@ -81,9 +81,9 @@ test("agents route and detail smoke", async ({ page }) => {
   await expect(preview.getByText("Never bypass critical QA failures.")).toBeVisible();
   const usability = page.locator(".detail-panel").filter({ has: page.getByRole("heading", { name: "How You Can Use This" }) }).first();
   await expect(usability.getByText("Setup required", { exact: true }).first()).toBeVisible();
-  await expect(usability.getByText("orchestrator", { exact: false })).toBeVisible();
+  await expect(usability.getByText("Resource form: Agent workflow", { exact: true })).toBeVisible();
   await expect(usability.getByText("GA4 and BigQuery credentials", { exact: false })).toBeVisible();
-  await expect(page.getByText("Install this agent", { exact: true })).toBeVisible();
+  await expect(page.getByText("Install agent files", { exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Install (Codex)" })).toBeVisible();
   await expect(page.locator(".install-inline .copy-button")).toHaveCount(3);
   await expect(page.locator("pre.install").first()).toContainText("--module agents");
@@ -173,6 +173,59 @@ test("plugins route and detail smoke", async ({ page }) => {
   await expect(page.getByRole("link", { name: "marketing/meta-google-weekly-performance-review" })).toBeVisible();
 });
 
+test("plugin listing and detail distinguish templates from file-installable bundles", async ({ page }) => {
+  for (const example of [
+    { name: "Performance Reporting Plugin", path: samplePluginPath, template: true },
+    { name: "Content Repurposing Plugin", path: "/plugins/marketing/content-repurposing-plugin", template: false },
+    { name: "Code Maintenance Plugin", path: sampleEngineeringPluginPath, template: false },
+  ]) {
+    await page.goto("/plugins");
+    const introduction = page.locator(".catalogue-heading > p");
+    await expect(introduction).toContainText("installable bundles and reference templates");
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", (await introduction.textContent())!);
+    await page.getByRole("searchbox", { name: "Search the catalogue" }).fill(example.name);
+    const card = page.locator(".catalog-card").filter({ has: page.getByRole("heading", { name: example.name, exact: true }) });
+    await expect(card.locator(".usability-badge")).toHaveText(example.template ? "Template only" : "Not verified");
+    await card.getByRole("link").first().click();
+    await expect(page).toHaveURL(example.path);
+    if (example.template) {
+      await expect(page.getByRole("heading", { name: "Reference composition" })).toBeVisible();
+      await expect(page.locator(".install-inline")).toContainText("Implementation is required before the described workflow can run.");
+      await expect(page.getByRole("button", { name: /installation command/ })).toHaveCount(0);
+      await page.getByText("View reference contents", { exact: true }).click();
+      await expect(page.getByRole("heading", { name: "Referenced skills" })).toBeVisible();
+    } else {
+      await expect(page.getByRole("heading", { name: "Install plugin files" })).toBeVisible();
+      await expect(page.getByRole("button", { name: /installation command/ })).toHaveCount(3);
+      await expect(page.locator(".install-explanation")).toContainText("Confirm discovery in your agent app");
+      await expect(page.locator("#usability")).toContainText("Current operational evidence for your environment is not shown here.");
+      await page.getByText("View package contents", { exact: true }).click();
+      await expect(page.getByRole("heading", { name: "Bundled skills" })).toBeVisible();
+    }
+  }
+});
+
+test("instruction use and program evidence remain separate", async ({ page }) => {
+  await page.goto(sampleSkillPath);
+  await expect(page.locator(".detail-use-summary")).toContainText("Agent instructions");
+  await expect(page.getByRole("button", { name: "Copy full SKILL.md text" })).not.toBeVisible();
+  await page.getByText("Read full instructions", { exact: true }).click();
+  await expect(page.getByRole("button", { name: "Copy full SKILL.md text" })).toBeVisible();
+  await expect(page.locator(".install-explanation")).toContainText("commands copy guidance");
+  const usability = page.locator("#usability");
+  const helper = usability.locator("section").filter({ has: page.locator("code", { hasText: "scripts/compute_metrics.py" }) });
+  await expect(helper.locator(".usability-badge")).toHaveText("Not verified");
+  const explanation = usability.locator("details");
+  await explanation.locator("summary").focus();
+  await explanation.locator("summary").press("Enter");
+  for (const term of ["File installation", "Native discovery", "Mock execution", "Connected operation"]) {
+    await expect(explanation.getByText(term, { exact: true })).toBeVisible();
+  }
+  await page.goto("/tools-mcp/adtech/openai-ads-api-client");
+  await expect(page.locator("#usability")).toContainText("Automatic pagination, retries and rate-limit backoff are not included.");
+  await expect(page.getByRole("button", { name: "Copy codex installation command" })).toBeVisible();
+});
+
 test("new plugin domains smoke", async ({ page }) => {
   await page.goto(sampleEngineeringPluginPath);
   await expect(page.getByRole("heading", { name: "Code Maintenance Plugin" })).toBeVisible();
@@ -209,14 +262,18 @@ test("effectful plugin capabilities remain independently projected", async ({ pa
   await expect(readiness.getByRole("heading", { name: "Mock lab" })).toBeVisible();
   await expect(readiness.getByRole("heading", { name: "Live read" })).toBeVisible();
   await expect(readiness.getByRole("heading", { name: "Live write" })).toBeVisible();
-  for (const name of ["Mock lab", "Live read", "Live write"]) {
+  for (const name of ["Mock lab", "Live read"]) {
     const capability = readiness.locator("section").filter({ has: page.getByRole("heading", { name, exact: true }) });
-    await expect(capability.getByText("Status: not-verified", { exact: false })).toBeVisible();
+    await expect(capability.locator(".usability-badge")).toHaveText("Not verified");
   }
-  await expect(readiness.getByText("Status: usable-now", { exact: false })).toHaveCount(0);
-  await expect(readiness.getByText("Status: setup-required", { exact: false })).toHaveCount(0);
+  const writes = readiness.locator("section").filter({ has: page.getByRole("heading", { name: "Live write", exact: true }) });
+  await expect(writes.getByText("Unavailable", { exact: true })).toBeVisible();
+  await expect(writes.getByText("Live writes unavailable: no supported OpenAI Ads mutation adapter is included in this release.", { exact: true })).toBeVisible();
+  await expect(writes.getByText("Recorded classification · not-verified", { exact: false })).toBeVisible();
+  await expect(writes.getByRole("link", { name: "Release declaration" })).toHaveAttribute("href", /\/0a81fa98c8c47cebab16f93bdaf1283b21ed88c4\/releases\/plugins\/marketing\/chatgpt-advertising-experiment-plugin\/0\.2\.0\/plugin\.yaml$/);
+  await expect(readiness.locator(".is-usable-now, .is-setup-required")).toHaveCount(0);
   await expect(page.locator("#usability .usability-badge").first()).toHaveText("Not verified");
-  await expect(readiness.getByText("No supported OpenAI Ads mutation adapter", { exact: false })).toBeVisible();
+  await expect(writes.getByRole("listitem").filter({ hasText: "No supported OpenAI Ads mutation adapter" })).toBeVisible();
 });
 
 test("tools route and detail smoke", async ({ page }) => {
@@ -236,7 +293,7 @@ test("tools route and detail smoke", async ({ page }) => {
   await expect(page.getByText("remote-mcp-server")).toBeVisible();
   const ga4Usability = page.locator(".detail-panel").filter({ has: page.getByRole("heading", { name: "How You Can Use This" }) }).first();
   await expect(ga4Usability.getByText("Setup required", { exact: true }).first()).toBeVisible();
-  await expect(ga4Usability.getByText("remote-integration", { exact: false })).toBeVisible();
+  await expect(ga4Usability.getByText("Resource form: API or MCP integration", { exact: true })).toBeVisible();
   await expect(ga4Usability.getByText("GA4_CREDENTIAL runtime binding", { exact: false })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Install (Codex)" })).toBeVisible();
   await expect(page.locator(".copy-button")).toHaveCount(3);

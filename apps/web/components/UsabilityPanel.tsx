@@ -1,13 +1,15 @@
 /** @jsxImportSource react */
 import type { RegistryEntry } from "@/lib/registry";
 import UsabilityBadge from "@/components/UsabilityBadge";
+import { availabilityDescriptions, resourceFormLabels } from "@/lib/cataloguePresentation";
 
 export default function UsabilityPanel({ usability, compatibility, catalogueCompatibility }: { usability: RegistryEntry["usability"]; compatibility?: RegistryEntry["compatibility"]; catalogueCompatibility?: RegistryEntry["catalogueCompatibility"] }) {
   return (
     <article id="usability" className="card detail-panel" aria-labelledby="usability-heading">
       <h2 id="usability-heading">How You Can Use This</h2>
       <p><UsabilityBadge availability={usability.availability} /></p>
-      <p><span className="meta">Execution:</span> {usability.execution}</p>
+      <p><span className="meta">Resource form:</span> {resourceFormLabels[usability.execution]}</p>
+      <p>{availabilityDescriptions[usability.availability]}</p>
       {usability.quickstart ? <p><span className="meta">First run:</span> <code>{usability.quickstart}</code></p> : null}
       {usability.requires_setup?.length ? (
         <><p className="meta">Setup required</p><ul>{usability.requires_setup.map((item) => <li key={item}>{item}</li>)}</ul></>
@@ -18,15 +20,29 @@ export default function UsabilityPanel({ usability, compatibility, catalogueComp
       {usability.executable_helpers?.length ? (
         <>
           <h3>Packaged executable helpers</h3>
+          <p>Each program has its own setup requirements and operational evidence. Reading or copying the instructions does not verify these programs.</p>
           {usability.executable_helpers.map((helper) => (
             <section key={helper.entrypoint}>
-              <p><code>{helper.entrypoint}</code> · <UsabilityBadge availability={helper.availability} /> · {helper.execution}</p>
+              <p><code>{helper.entrypoint}</code> · <UsabilityBadge availability={helper.availability} /> · {resourceFormLabels[helper.execution]}</p>
               {helper.quickstart ? <p><span className="meta">First run:</span> <code>{helper.quickstart}</code></p> : null}
               <ul>{helper.limitations.map((item) => <li key={item}>{item}</li>)}</ul>
             </section>
           ))}
         </>
       ) : null}
+      <details className="readiness-explainer">
+        <summary>What installation and verification mean</summary>
+        <dl>
+          <dt>File installation</dt>
+          <dd>Places package files and generated configuration in the selected directories.</dd>
+          <dt>Native discovery</dt>
+          <dd>Your agent app finds and accepts the instructions, tools or plugin registrations.</dd>
+          <dt>Mock execution</dt>
+          <dd>Exercises sample fixtures. Connected data and provider effects need a separate check.</dd>
+          <dt>Connected operation</dt>
+          <dd>Requires current configuration, provider authentication, scoped permissions and a successful operation in your intended environment.</dd>
+        </dl>
+      </details>
       <h3>Declared compatibility</h3>
       {catalogueCompatibility ? (
         <>

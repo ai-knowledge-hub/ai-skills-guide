@@ -4,8 +4,10 @@ import { notFound } from "next/navigation";
 import InstallCommands from "@/components/InstallCommands";
 import DetailDisclosure from "@/components/DetailDisclosure";
 import { buildModuleInstallSnippet, getEntryById, loadToolsRegistry } from "@/lib/registry";
-import { formatCategoryLabel, formatReadinessLabel } from "@/lib/categoryLabels";
+import { formatCategoryLabel } from "@/lib/categoryLabels";
 import UsabilityPanel from "@/components/UsabilityPanel";
+import ReviewStatus from "@/components/ReviewStatus";
+import { resourceFormLabels } from "@/lib/cataloguePresentation";
 import RelatedReading from "@/components/RelatedReading";
 import { relatedPublicationGuides } from "@/lib/publicationLinks";
 
@@ -49,7 +51,7 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
           </div>
         ) : null}
         <p className="meta">{entry.tags.join(", ")}</p>
-        <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{entry.usability.execution}</span><a href="#usability" className="text-link">Requirements &amp; limits</a>{relatedGuides.length ? <a href="#related-reading" className="text-link">Related reading</a> : null}</div>
+        <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{resourceFormLabels[entry.usability.execution]}</span><a href="#usability" className="text-link">Requirements &amp; limits</a>{relatedGuides.length ? <a href="#related-reading" className="text-link">Related reading</a> : null}</div>
         <DetailDisclosure show="View capabilities and access" hide="Hide capabilities and access" detail={`v${entry.latest}`}>
           <section>
             <h2>{isReference ? "Intended capabilities" : "What it can do"}</h2>
@@ -72,10 +74,11 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
           ) : null}
         </DetailDisclosure>
         <div className="detail-install-lead">
-          <h2 className="meta">{isReference ? "Reference template" : "Install this connector"}</h2>
+          <h2 className="meta">{isReference ? "Reference template" : "Install tool files"}</h2>
           <InstallCommands
             compact
             availability={entry.usability.availability}
+            execution={entry.usability.execution}
             codex={buildModuleInstallSnippet("tools", entry, "codex")}
             claude={buildModuleInstallSnippet("tools", entry, "claude")}
             generic={buildModuleInstallSnippet("tools", entry, "generic")}
@@ -86,12 +89,7 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
       <section className="detail-grid">
         <UsabilityPanel catalogueCompatibility={entry.catalogueCompatibility} compatibility={entry.compatibility} usability={entry.usability} />
         <RelatedReading guides={relatedGuides} module="tools" id={entry.id} />
-        <article className="card detail-panel">
-          <h2>Status</h2>
-          <p><span className="meta">Readiness:</span> {formatReadinessLabel(entry.readiness)}</p>
-          <p><span className="meta">Security reviewed:</span> {entry.security_reviewed ? "yes" : "no"}</p>
-          <p><span className="meta">Lifecycle:</span> {entry.deprecated ? "Deprecated" : "Active"}</p>
-        </article>
+        <ReviewStatus entry={entry} />
         <article className="card detail-panel">
           <h2>Runtime &amp; Dependencies</h2>
           <p><span className="meta">ID:</span> {entry.id}</p>

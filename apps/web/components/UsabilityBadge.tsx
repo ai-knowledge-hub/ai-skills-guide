@@ -1,5 +1,6 @@
 /** @jsxImportSource react */
 import type { RegistryEntry } from "@/lib/registry";
+import { availabilityDescriptions } from "@/lib/cataloguePresentation";
 
 type Availability = RegistryEntry["usability"]["availability"];
 
@@ -13,7 +14,7 @@ const labels: Record<Availability, string> = {
 
 export default function UsabilityBadge({ availability }: { availability: Availability }) {
   return (
-    <span className={`catalog-status-badge usability-badge is-${availability}`}>
+    <span className={`catalog-status-badge usability-badge is-${availability}`} title={availabilityDescriptions[availability]}>
       {labels[availability]}
     </span>
   );

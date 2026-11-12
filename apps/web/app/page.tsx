@@ -24,7 +24,7 @@ export default async function HomePage() {
   const modules = [
     { href: "/skills", name: "Skills", count: skillsRegistry.skills.length, description: "Reusable procedures for recurring work." },
     { href: "/agents", name: "Agents", count: agentsRegistry.skills.length, description: "Templates for coordinating roles, skills and tools." },
-    { href: "/plugins", name: "Plugins", count: pluginsRegistry.skills.length, description: "Compositions to inspect and adapt to your workflow." },
+    { href: "/plugins", name: "Plugins", count: pluginsRegistry.skills.length, description: "Installable bundles and reference compositions." },
     { href: "/tools-mcp", name: "Tools & MCP", count: toolsRegistry.skills.length, description: "Integrations with explicit setup and access requirements." }
   ];
 
@@ -87,7 +87,7 @@ export default async function HomePage() {
           <dl>
             <div><dt><UsabilityBadge availability="documentation-only" /></dt><dd>Instructions or guidance. Packaged executable helpers have their own status.</dd></div>
             <div><dt><UsabilityBadge availability="template-only" /></dt><dd>A reference to adapt before it can execute.</dd></div>
-            <div><dt><UsabilityBadge availability="not-verified" /></dt><dd>Implementation is present; current target-scoped operational evidence is not recorded.</dd></div>
+            <div><dt><UsabilityBadge availability="not-verified" /></dt><dd>Current operational evidence for your environment is not shown. Inspect implementation and installation details.</dd></div>
             <div><dt><UsabilityBadge availability="setup-required" /></dt><dd>Credentials, bindings or local policy are required.</dd></div>
             <div><dt><UsabilityBadge availability="usable-now" /></dt><dd>Read the entry for the exact scope supported by its evidence.</dd></div>
           </dl>

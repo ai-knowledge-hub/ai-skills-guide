@@ -47,7 +47,7 @@ export default async function HomePage() {
               <span className="meta module-number" aria-hidden="true">0{index + 1}</span>
               <h2>{module.name}</h2>
               <p>{module.description}</p>
-              <span className="meta path-count">{module.count} entries <span aria-hidden="true">↗</span></span>
+              <span className="meta path-count">{module.count} entries</span>
             </Link>
           ))}
         </nav>
@@ -55,14 +55,14 @@ export default async function HomePage() {
         <section className="publication-paths" aria-labelledby="publication-paths-title">
           <div className="section-head">
             <h2 id="publication-paths-title">From reading to practice</h2>
-            <a href={`${brand.publication}/library/`} className="text-link">All articles <span aria-hidden="true">↗</span></a>
+            <a href={`${brand.publication}/library/`} className="text-link">All articles</a>
           </div>
           <p>Selected reading with related resources to inspect and adapt. Each resource keeps its own setup requirements and limits.</p>
           {guides.map(guide => (
             <article className="publication-path" key={guide.slug}>
               <div className="publication-path-reading">
                 <p className="eyebrow">{guide.topic}</p>
-                <h3><a href={publicationGuideUrl(guide)}>{guide.title} <span aria-hidden="true">↗</span></a></h3>
+                <h3><a href={publicationGuideUrl(guide)}>{guide.title}</a></h3>
                 <p>{guide.summary}</p>
               </div>
               <ul className="publication-path-resources" aria-label={`Resources for ${guide.topic.toLowerCase()}`}>
@@ -70,7 +70,7 @@ export default async function HomePage() {
                   <li key={`${resource.module}:${resource.id}`}>
                     <Link href={publicationResourceHref(resource)}>
                       <span className="meta">{resource.module === "skills" ? "Skill" : "Tool"}</span>
-                      <span className="publication-resource-name">{resource.entry.name} <span aria-hidden="true">→</span></span>
+                      <span className="publication-resource-name">{resource.entry.name}</span>
                       <UsabilityBadge availability={resource.entry.usability.availability} />
                     </Link>
                   </li>

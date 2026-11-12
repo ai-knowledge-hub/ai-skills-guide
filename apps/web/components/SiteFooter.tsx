@@ -7,7 +7,7 @@ export default function SiteFooter() {
       <div className="footer-inner wrap">
         <div className="footer-identity">
           <a className="footer-wordmark" href="/">{brand.name} <span>{brand.siteName}</span></a>
-          <a className="text-link" href={brand.repository}>View the source <span aria-hidden="true">↗</span></a>
+          <a className="text-link" href={brand.repository}>View the source</a>
         </div>
         <FamilyNavigation label="Explore AI Knowledge Hub" descriptions />
       </div>

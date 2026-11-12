@@ -10,7 +10,7 @@ export default function FamilyNavigation({ label, descriptions = false }: { labe
             {key === "skills" ? (
               <Link href="/" aria-current="true">{site.label}</Link>
             ) : (
-              <a href={site.url}>{site.label} <span aria-hidden="true">↗</span></a>
+              <a href={site.url}>{site.label}</a>
             )}
             {descriptions ? <p>{site.role}</p> : null}
           </li>

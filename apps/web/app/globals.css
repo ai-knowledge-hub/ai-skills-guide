@@ -37,7 +37,7 @@ main:focus { outline: none; }
 .header-family { min-height: 45px; padding-inline: var(--gutter); border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 24px; }
 .header-family > p { font-size: 12px; }
 .family-nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 24px; }
-.family-nav a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 12px; white-space: nowrap; }
+.family-nav a { display: inline-flex; align-items: center; min-height: 44px; font-size: 12px; white-space: nowrap; }
 .family-nav a[aria-current] { font-weight: 700; text-decoration: underline; text-underline-offset: 5px; }
 .site-footer { border-top: 1px solid var(--line); background: var(--paper); }
 .footer-inner { padding-block: 32px 40px; display: grid; gap: 20px; }
@@ -68,9 +68,8 @@ main:focus { outline: none; }
 .companion-module h2 { font-size: 24px; }
 .companion-module p { font-size: 14px; line-height: 1.6; }
 .companion-module:hover { text-decoration: none; }
-.companion-module:hover h2 { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; }
+.companion-module:is(:hover, :focus-visible) h2 { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 1px; }
 .companion-module .path-count { white-space: nowrap; }
-.companion-module .path-count span { margin-left: 12px; }
 .publication-paths { padding-top: 72px; }
 .publication-paths > p { max-width: 65ch; font-size: 16px; margin-bottom: 30px; }
 .publication-path { display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; border-top: 1px solid var(--line); padding-block: 32px 40px; }
@@ -81,7 +80,7 @@ main:focus { outline: none; }
 .publication-path-resources a { display: grid; gap: 8px; padding-block: 12px 18px; }
 .publication-path-resources li:first-child a { padding-top: 0; }
 .publication-path-resources a:hover { text-decoration: none; }
-.publication-path-resources a:hover .publication-resource-name { text-decoration: underline; text-underline-offset: 5px; }
+.publication-path-resources a:is(:hover, :focus-visible) .publication-resource-name { text-decoration: underline; text-underline-offset: 5px; }
 .publication-resource-name { font-size: 18px; line-height: 1.4; font-weight: 700; letter-spacing: -.02em; }
 .companion-use-guide { border-top: 1px solid var(--line); padding-top: 32px; margin-top: 24px; }
 .companion-use-guide > p { max-width: 65ch; font-size: 15px; margin-top: 18px; }
@@ -98,7 +97,7 @@ main:focus { outline: none; }
 .catalog-card { padding-block: 28px 30px; border-top: 1px solid var(--line); }
 .catalog-card-link { display: block; }
 .catalog-card-link:hover { text-decoration: none; }
-.catalog-card-link:hover h2, a.catalog-card:hover h3 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; }
+.catalog-card-link:is(:hover, :focus-visible) h2, a.catalog-card:is(:hover, :focus-visible) h3 { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; }
 .catalog-card-head { display: flex; gap: 12px 24px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
 .catalog-card-domain { letter-spacing: .065em; text-transform: uppercase; }
 .catalog-card h2 { font-size: 27px; max-width: 38ch; line-height: 1.22; }

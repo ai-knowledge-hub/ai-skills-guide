@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { brand, moduleNavigation } from "@/lib/brand";
+import FamilyNavigation from "@/components/FamilyNavigation";
 
 export default function SiteHeader() {
   const pathname = usePathname();
@@ -67,8 +68,10 @@ export default function SiteHeader() {
   return (
     <header className="site-header">
       <div className="header-inner">
-        <Link href="/" className="wordmark" aria-label={`${brand.name} home`}>{brand.name}</Link>
-        <nav className="desktop-nav" aria-label="Main navigation">{links}</nav>
+        <Link href="/" className="wordmark" aria-label={`${brand.name} — ${brand.siteName} home`}>
+          <span>{brand.name}</span><span className="wordmark-site">{brand.siteName}</span>
+        </Link>
+        <nav className="desktop-nav" aria-label="Catalogue">{links}</nav>
         <button className="theme-toggle" type="button" aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} onClick={toggleTheme}>
           {theme === "dark" ? "Light mode" : "Dark mode"}
         </button>
@@ -78,8 +81,12 @@ export default function SiteHeader() {
           if (!event.currentTarget.contains(event.relatedTarget as Node | null)) closeMenu();
         }}>
           <summary>Menu</summary>
-          <nav aria-label="Mobile navigation">{links}<a href={brand.publication}>The publication</a></nav>
+          <nav aria-label="Catalogue">{links}</nav>
         </details>
+      </div>
+      <div className="header-family">
+        <p>{brand.descriptor}</p>
+        <FamilyNavigation label="AI Knowledge Hub sites" />
       </div>
     </header>
   );

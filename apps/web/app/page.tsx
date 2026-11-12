@@ -33,12 +33,11 @@ export default async function HomePage() {
       <CatalogueArtwork />
       <div className="companion-content">
         <header className="companion-intro">
-          <p className="eyebrow">The open-source catalogue</p>
-          <h1>Put the ideas<br />to work.</h1>
-          <p>Skills, tools and templates to accompany the publication. Explore the source and adapt the work to your own context.</p>
+          <p className="eyebrow">Skills · The open-source catalogue</p>
+          <h1>Skills for<br />practical AI work.</h1>
+          <p>{brand.descriptor} Inspect the source, adapt a resource or configure it for your own work. Check its requirements and evidence before you use it.</p>
           <div className="actions">
             <Link href="/skills" className="button">Explore skills</Link>
-            <a href={brand.publication} className="text-link">Read the publication <span aria-hidden="true">↗</span></a>
           </div>
         </header>
 

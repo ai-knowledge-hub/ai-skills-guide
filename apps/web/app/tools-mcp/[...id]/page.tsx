@@ -14,7 +14,7 @@ import UsabilityPanel from "@/components/UsabilityPanel";
 import ReviewStatus from "@/components/ReviewStatus";
 import { resourceFormLabels } from "@/lib/cataloguePresentation";
 import RelatedReading from "@/components/RelatedReading";
-import { relatedPublicationGuides } from "@/lib/publicationLinks";
+import { relatedGuidesForResource } from "@/lib/publicationLinks";
 
 export async function generateMetadata({ params }: { params: { id: string[] } }): Promise<Metadata> {
   const entry = await getEntryById("tools", params.id.join("/"));
@@ -33,7 +33,7 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
     notFound();
   }
   const latestVersion = entry.versions.find((v) => v.version === entry.latest) ?? entry.versions[0];
-  const relatedGuides = relatedPublicationGuides("tools", entry.id);
+  const relatedGuides = relatedGuidesForResource("tools", entry.id, entry.latest);
   const firstUse = await loadResourceFirstUse("tools", entry);
   const installation = await loadInstallationGuidance("tools", entry);
   const isReference = entry.usability.availability === "template-only";
@@ -101,7 +101,7 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
 
       <section className="detail-grid resource-evidence">
         <UsabilityPanel catalogueCompatibility={entry.catalogueCompatibility} compatibility={entry.compatibility} usability={entry.usability} />
-        <RelatedReading guides={relatedGuides} module="tools" id={entry.id} />
+        <RelatedReading guides={relatedGuides} />
       </section>
       <details className="resource-technical">
         <summary>Technical details and release files</summary>

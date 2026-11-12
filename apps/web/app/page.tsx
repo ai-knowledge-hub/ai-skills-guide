@@ -1,8 +1,8 @@
 import Link from "next/link";
 import CatalogueArtwork from "@/components/CatalogueArtwork";
 import { loadAgentsRegistry, loadPluginsRegistry, loadSkillsRegistry, loadToolsRegistry } from "@/lib/registry";
-import { brand } from "@/lib/brand";
-import { publicationGuides, publicationGuideUrl, publicationResourceHref } from "@/lib/publicationLinks";
+import { brand, familySites } from "@/lib/brand";
+import { companionGuides, companionGuideUrl, companionResourceHref, matchesCompanionResource } from "@/lib/publicationLinks";
 import UsabilityBadge from "@/components/UsabilityBadge";
 
 export default async function HomePage() {
@@ -11,16 +11,19 @@ export default async function HomePage() {
   ]);
   const entries = {
     skills: new Map(skillsRegistry.skills.map(entry => [entry.id, entry])),
-    tools: new Map(toolsRegistry.skills.map(entry => [entry.id, entry]))
+    tools: new Map(toolsRegistry.skills.map(entry => [entry.id, entry])),
+    agents: new Map(agentsRegistry.skills.map(entry => [entry.id, entry])),
+    plugins: new Map(pluginsRegistry.skills.map(entry => [entry.id, entry]))
   };
-  const guides = publicationGuides.map(guide => ({
+  const guides = companionGuides.map(guide => ({
     ...guide,
-    resources: guide.resources.map(resource => {
+    resources: guide.resources.flatMap(resource => {
       const entry = entries[resource.module].get(resource.id);
-      if (!entry) throw new Error(`Publication relationship points to missing ${resource.module} entry: ${resource.id}`);
-      return { ...resource, entry };
+      if (!entry) throw new Error(`Companion relationship points to missing ${resource.module} entry: ${resource.id}`);
+      return matchesCompanionResource(resource, resource.module, entry.id, entry.latest) ? [{ ...resource, entry }] : [];
     })
-  }));
+  })).filter(guide => guide.resources.length);
+  const resourceLabels = { skills: "Skill", agents: "Agent", plugins: "Plugin", tools: "Tool" };
   const modules = [
     { href: "/skills", name: "Skills", count: skillsRegistry.skills.length, description: "Reusable procedures for recurring work." },
     { href: "/agents", name: "Agents", count: agentsRegistry.skills.length, description: "Templates for coordinating roles, skills and tools." },
@@ -55,21 +58,21 @@ export default async function HomePage() {
         <section className="publication-paths" aria-labelledby="publication-paths-title">
           <div className="section-head">
             <h2 id="publication-paths-title">From reading to practice</h2>
-            <a href={`${brand.publication}/library/`} className="text-link">All articles</a>
+            <a href={`${brand.publication}/library/`} className="text-link">Publication library</a>
           </div>
-          <p>Selected reading with related resources to inspect and adapt. Each resource keeps its own setup requirements and limits.</p>
+          <p>Optional reading and learning guides with related resources to inspect and adapt. Each resource keeps its own setup requirements and limits.</p>
           {guides.map(guide => (
-            <article className="publication-path" key={guide.slug}>
+            <article className="publication-path" key={companionGuideUrl(guide)}>
               <div className="publication-path-reading">
-                <p className="eyebrow">{guide.topic}</p>
-                <h3><a href={publicationGuideUrl(guide)}>{guide.title}</a></h3>
+                <p className="eyebrow">{familySites[guide.site].label} · {guide.topic}</p>
+                <h3><a href={companionGuideUrl(guide)}>{guide.title}</a></h3>
                 <p>{guide.summary}</p>
               </div>
               <ul className="publication-path-resources" aria-label={`Resources for ${guide.topic.toLowerCase()}`}>
                 {guide.resources.map(resource => (
                   <li key={`${resource.module}:${resource.id}`}>
-                    <Link href={publicationResourceHref(resource)}>
-                      <span className="meta">{resource.module === "skills" ? "Skill" : "Tool"}</span>
+                    <Link href={companionResourceHref(resource)}>
+                      <span className="meta">{resourceLabels[resource.module]}</span>
                       <span className="publication-resource-name">{resource.entry.name}</span>
                       <UsabilityBadge availability={resource.entry.usability.availability} />
                     </Link>

@@ -13,7 +13,7 @@ import ReviewStatus from "@/components/ReviewStatus";
 import { resourceFormLabels } from "@/lib/cataloguePresentation";
 import RelatedReading from "@/components/RelatedReading";
 import SkillInstructions from "@/components/SkillInstructions";
-import { relatedPublicationGuides } from "@/lib/publicationLinks";
+import { relatedGuidesForResource } from "@/lib/publicationLinks";
 
 export async function generateMetadata({ params }: { params: { id: string[] } }): Promise<Metadata> {
   const entry = await getSkillById(params.id.join("/"));
@@ -31,7 +31,7 @@ export default async function SkillDetailPage({ params }: { params: { id: string
   if (!skill) {
     notFound();
   }
-  const relatedGuides = relatedPublicationGuides("skills", skill.id);
+  const relatedGuides = relatedGuidesForResource("skills", skill.id, skill.latest);
   const firstUse = await loadResourceFirstUse("skills", skill);
   const installation = await loadInstallationGuidance("skills", skill);
   const instructions = firstUse.files?.get("SKILL.md");
@@ -63,7 +63,7 @@ export default async function SkillDetailPage({ params }: { params: { id: string
 
       <section className="detail-grid resource-evidence">
         <UsabilityPanel catalogueCompatibility={skill.catalogueCompatibility} compatibility={skill.compatibility} usability={skill.usability} />
-        <RelatedReading guides={relatedGuides} module="skills" id={skill.id} />
+        <RelatedReading guides={relatedGuides} />
       </section>
       <details className="resource-technical">
         <summary>Technical details and release files</summary>

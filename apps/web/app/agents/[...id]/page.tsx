@@ -14,6 +14,8 @@ import { formatCategoryLabel } from "@/lib/categoryLabels";
 import UsabilityPanel from "@/components/UsabilityPanel";
 import ReviewStatus from "@/components/ReviewStatus";
 import { resourceFormLabels } from "@/lib/cataloguePresentation";
+import RelatedReading from "@/components/RelatedReading";
+import { relatedGuidesForResource } from "@/lib/publicationLinks";
 
 export async function generateMetadata({ params }: { params: { id: string[] } }): Promise<Metadata> {
   const entry = await getEntryById("agents", params.id.join("/"));
@@ -37,6 +39,7 @@ export default async function AgentDetailPage({ params }: { params: { id: string
   const firstUse = await loadResourceFirstUse("agents", entry);
   const installation = await loadInstallationGuidance("agents", entry);
   const instructions = firstUse.files?.get("AGENT.md");
+  const relatedGuides = relatedGuidesForResource("agents", entry.id, entry.latest);
 
   return (
     <main id="main" tabIndex={-1} className="detail-page">
@@ -46,7 +49,7 @@ export default async function AgentDetailPage({ params }: { params: { id: string
         <p className="meta">{formatCategoryLabel(entry.category)}</p>
         <h1>{entry.name}</h1>
         <p>{entry.description}</p>
-        <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{resourceFormLabels[entry.usability.execution]}</span><a href="#usability" className="text-link">Requirements &amp; limits</a></div>
+        <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{resourceFormLabels[entry.usability.execution]}</span><a href="#usability" className="text-link">Requirements &amp; limits</a>{relatedGuides.length ? <a href="#related-reading" className="text-link">Related reading</a> : null}</div>
         <ResourceFirstUse entry={entry} content={firstUse}>
           <DetailDisclosure show="View agent workflow" hide="Hide agent workflow" detail={`v${entry.latest}`}>
             {role ? <p>{role}</p> : null}
@@ -89,6 +92,7 @@ export default async function AgentDetailPage({ params }: { params: { id: string
 
       <section className="detail-grid resource-evidence">
         <UsabilityPanel catalogueCompatibility={entry.catalogueCompatibility} compatibility={entry.compatibility} usability={entry.usability} />
+        <RelatedReading guides={relatedGuides} />
       </section>
       <details className="resource-technical">
         <summary>Technical details and release files</summary>

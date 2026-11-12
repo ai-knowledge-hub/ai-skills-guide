@@ -49,8 +49,8 @@ export default async function SkillDetailPage({ params }: { params: { id: string
         <InstallationDetails title={skill.usability.availability === "template-only" ? "Reference template" : "Install instruction files"}>
           <InstallCommands
             compact
-            availability={skill.usability.availability}
-            execution={skill.usability.execution}
+            module="skills"
+            entry={skill}
             codex={buildInstallSnippet(skill, "codex")}
             claude={buildInstallSnippet(skill, "claude")}
             generic={buildInstallSnippet(skill, "generic")}

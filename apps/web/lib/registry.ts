@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { projectCurrentCatalogEntry } from "./currentCatalogueProjection.mjs";
 import { findCatalogueCompatibility, type CatalogueCompatibility } from "./catalogueCompatibility";
+import { executionRuntimeFor, moduleDirectory } from "./installation";
 
 export type ModuleKey = "skills" | "agents" | "tools" | "plugins";
 
@@ -238,11 +239,7 @@ export async function getSkillById(id: string): Promise<SkillEntry | undefined> 
 }
 
 export function buildInstallSnippet(skill: RegistryEntry, runtime: "codex" | "claude" | "generic") {
-  const base = `./bin/skills-hub install ${skill.id}@${skill.latest}`;
-  if (runtime === "generic") {
-    return `${base} --runtime generic --target ./my-agent/skills`;
-  }
-  return `${base} --runtime ${runtime}`;
+  return buildModuleInstallSnippet("skills", skill, runtime);
 }
 
 export function buildModuleInstallSnippet(
@@ -250,20 +247,11 @@ export function buildModuleInstallSnippet(
   entry: RegistryEntry,
   runtime: "codex" | "claude" | "generic"
 ) {
-  const moduleFlag = module === "tools" ? "tools" : module;
-  const base = `./bin/skills-hub install --module ${moduleFlag} --entry ${entry.id}@${entry.latest}`;
-  if (runtime === "generic") {
-    const targetDir =
-      module === "agents"
-        ? "./my-agent/agents"
-        : module === "plugins"
-          ? "./my-agent/plugins"
-        : module === "tools"
-          ? "./my-agent/tools-mcp"
-          : "./my-agent/skills";
-    return `${base} --runtime generic --target ${targetDir}`;
-  }
-  return `${base} --runtime ${runtime}`;
+  const registry = `https://skills.ai-knowledge-hub.org/registry/${module}-index.json`;
+  const base = `skills-hub install --source remote --module ${module} --registry-url ${registry} --entry ${entry.id}@${entry.latest} --runtime ${runtime}`;
+  const target = runtime === "generic" ? ` --target ./my-agent/${moduleDirectory(module)}` : "";
+  const executionRuntime = executionRuntimeFor(entry, runtime);
+  return `${base}${target}${executionRuntime ? ` --execution-runtime ${executionRuntime}` : ""}`;
 }
 
 export function uniqueValues(values: string[]) {

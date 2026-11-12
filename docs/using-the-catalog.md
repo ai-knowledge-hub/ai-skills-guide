@@ -85,6 +85,18 @@ runtime registration. The website's commands explain file installation, while
 runtime checks determine native discovery and operation. A mock result cannot
 establish live credentials, provider access or permission to perform writes.
 
+The installation section explains how to obtain the released installer before
+showing commands. Choose a declared Codex, Claude or generic adapter to open its
+exact-version HTTPS installation command. Native disclosures keep each option
+readable without JavaScript. Generic commands include an explicit target; native
+adapter defaults and environment overrides are described beside the command.
+Executable packages also name the selected execution environment, which must
+already be available. That declaration does not install or attest the runtime.
+Use the reported installed package directory for the documented first-use step,
+and `skills-hub help setup` for the public installer's offline setup guide.
+See [getting started](getting-started.md#install-published-files) for acquisition
+and the separately labelled developer-checkout alternative.
+
 Review maturity, security declarations and lifecycle are displayed separately.
 A security declaration or a compatibility note does not verify operation.
 

@@ -87,8 +87,8 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
         <InstallationDetails title={isReference ? "Reference template" : "Install tool files"}>
           <InstallCommands
             compact
-            availability={entry.usability.availability}
-            execution={entry.usability.execution}
+            module="tools"
+            entry={entry}
             codex={buildModuleInstallSnippet("tools", entry, "codex")}
             claude={buildModuleInstallSnippet("tools", entry, "claude")}
             generic={buildModuleInstallSnippet("tools", entry, "generic")}

@@ -75,8 +75,8 @@ export default async function AgentDetailPage({ params }: { params: { id: string
         <InstallationDetails title={entry.usability.availability === "template-only" ? "Reference template" : "Install agent files"}>
           <InstallCommands
             compact
-            availability={entry.usability.availability}
-            execution={entry.usability.execution}
+            module="agents"
+            entry={entry}
             codex={buildModuleInstallSnippet("agents", entry, "codex")}
             claude={buildModuleInstallSnippet("agents", entry, "claude")}
             generic={buildModuleInstallSnippet("agents", entry, "generic")}

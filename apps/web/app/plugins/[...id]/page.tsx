@@ -51,8 +51,8 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
         <InstallationDetails title={entry.usability.availability === "template-only" ? "Reference composition" : "Install plugin files"}>
           <InstallCommands
             compact
-            availability={entry.usability.availability}
-            execution={entry.usability.execution}
+            module="plugins"
+            entry={entry}
             codex={buildModuleInstallSnippet("plugins", entry, "codex")}
             claude={buildModuleInstallSnippet("plugins", entry, "claude")}
             generic={buildModuleInstallSnippet("plugins", entry, "generic")}

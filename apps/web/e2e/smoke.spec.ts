@@ -25,7 +25,7 @@ async function openTechnicalDetails(page: Page) {
 
 test("home route smoke", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("link", { name: "Skills", exact: true })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Catalogue", exact: true }).getByRole("link", { name: "Skills", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Agents", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Plugins", exact: true })).toBeVisible();
   await expect(page.getByRole("link", { name: "Tools & MCP", exact: true })).toBeVisible();
@@ -438,7 +438,7 @@ for (const saved of ["dark", "light"] as const) {
     await page.getByRole("button", { name: `Switch to ${selected} mode` }).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", selected);
     const documentOrigin = await page.evaluate(() => performance.timeOrigin);
-    await page.getByRole("navigation", { name: "Main navigation", exact: true }).getByRole("link", { name: "Skills", exact: true }).click();
+    await page.getByRole("navigation", { name: "Catalogue", exact: true }).getByRole("link", { name: "Skills", exact: true }).click();
     await expect(page).toHaveURL(/\/skills$/);
     expect(await page.evaluate(() => performance.timeOrigin)).toBe(documentOrigin);
     await expect(page.locator("html")).toHaveAttribute("data-theme", selected);
@@ -467,7 +467,7 @@ test("theme changes from another tab survive subsequent navigation", async ({ pa
   await otherTab.getByRole("button", { name: "Switch to dark mode" }).click();
   await expect(page.getByRole("button", { name: "Switch to light mode" })).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await page.getByRole("navigation", { name: "Main navigation", exact: true }).getByRole("link", { name: "Skills", exact: true }).click();
+  await page.getByRole("navigation", { name: "Catalogue", exact: true }).getByRole("link", { name: "Skills", exact: true }).click();
   await expect(page).toHaveURL(/\/skills$/);
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await otherTab.close();

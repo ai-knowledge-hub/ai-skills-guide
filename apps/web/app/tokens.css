@@ -11,7 +11,8 @@
   --code-bg: #111111;
   --code-ink: #f4f3ed;
   --gutter: clamp(20px, 4vw, 64px);
-  --header-height: 82px;
+  --header-height: 127px;
+  --masthead-height: 82px;
   --content-width: 1440px;
   --catalogue-rail-width: clamp(220px, 24vw, 380px);
   --catalogue-rail-gap: clamp(28px, 3vw, 48px);
@@ -26,4 +27,4 @@
   --code-bg: #efeeeb;
   --code-ink: #171717;
 }
-@media (max-width: 760px) { :root { --header-height: 72px; } }
+@media (max-width: 760px) { :root { --header-height: 117px; --masthead-height: 72px; } }

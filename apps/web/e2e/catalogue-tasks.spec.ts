@@ -1,4 +1,6 @@
 import { expect, test } from "@playwright/test";
+import { loadRegistry } from "../lib/registry";
+import { readReleaseFiles } from "../lib/releaseFiles";
 
 const weekly = "/skills/marketing/meta-google-weekly-performance-review";
 const agent = "/agents/marketing/weekly-performance-supervisor";
@@ -47,7 +49,12 @@ test("instruction copy controls truthfully disclose their no-JavaScript limit fo
   const context = await browser.newContext({ javaScriptEnabled: false });
   try {
     const page = await context.newPage();
-    for (const [path, filename] of [[weekly, "SKILL.md"], [agent, "AGENT.md"]]) {
+    for (const [module, path, filename] of [["skills", weekly, "SKILL.md"], ["agents", agent, "AGENT.md"]] as const) {
+      const registry = await loadRegistry(module);
+      const entry = registry.skills.find(entry => path === `/${module}/${entry.id}`)!;
+      const released = await readReleaseFiles(module, entry, [filename]);
+      const releasedSource = released?.get(filename);
+      if (releasedSource === undefined) throw new Error(`Missing retained source: ${module}/${entry.id}/${filename}`);
       await page.goto(`http://127.0.0.1:3000${path}`);
       if (filename === "SKILL.md") await page.getByText("Read full instructions", { exact: true }).click();
       else {
@@ -55,8 +62,15 @@ test("instruction copy controls truthfully disclose their no-JavaScript limit fo
         await page.getByText("Read agent instructions (AGENT.md)", { exact: true }).click();
       }
       await expect(page.getByRole("button", { name: `Copy full ${filename} text` })).toBeDisabled();
-      await expect(page.getByText("Select the instructions below to copy them. The copy button requires JavaScript.", { exact: true })).toBeVisible();
+      await expect(page.getByText("The copy button requires JavaScript. Open the source text to select the complete file.", { exact: true })).toBeVisible();
       await expect(page.getByText(filename === "SKILL.md" ? "Never fabricate numbers." : "Never bypass critical QA failures.", { exact: true })).toBeVisible();
+      await page.getByText(`Read source text (${filename})`, { exact: true }).click();
+      const source = page.getByRole("textbox", { name: `${filename} source text`, exact: true });
+      await expect(source).toHaveValue(releasedSource);
+      if (filename === "SKILL.md") await expect(source).toHaveValue(/^---\nname: meta-google-weekly-performance-review\n/);
+      await source.focus();
+      await source.press(process.platform === "darwin" ? "Meta+A" : "Control+A");
+      expect(await source.evaluate(el => (el as HTMLTextAreaElement).selectionEnd - (el as HTMLTextAreaElement).selectionStart)).toBe(releasedSource.length);
     }
   } finally { await context.close(); }
 });

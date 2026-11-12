@@ -48,7 +48,13 @@ export default function CopyInstructions({ source, filename }: { source: string;
           {status === "copied" ? "Copied" : "Copy full text"}
         </button>
       </div>
-      <noscript><p className="meta">Select the instructions below to copy them. The copy button requires JavaScript.</p></noscript>
+      <noscript>
+        <p className="meta">The copy button requires JavaScript. Open the source text to select the complete file.</p>
+        <details className="detail-disclosure-nested">
+          <summary>Read source text ({filename})</summary>
+          <textarea className="instruction-copy-source" aria-label={`${filename} source text`} readOnly rows={10} value={source} />
+        </details>
+      </noscript>
       {status === "failed" ? (
         <textarea
           className="instruction-copy-source"

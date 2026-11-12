@@ -9,6 +9,7 @@ import { loadRegistry, withCatalogueCompatibility, type ModuleKey, type Registry
 import { projectCurrentCatalogEntry } from "../lib/currentCatalogueProjection.mjs";
 import { latestToolPageNotes } from "./catalogue-page-notes";
 import { capabilityNotes, findCapabilityNote } from "../lib/capabilityNotes";
+import { firstUseNotes, findFirstUseNote, instructionSection, loadResourceFirstUse } from "../lib/resourceFirstUse";
 
 // Independent review inventory: docs/tool-version-review.md and its retained
 // releases. Additional entries/releases need not acquire a note automatically.
@@ -23,6 +24,41 @@ const reviewedTools = [
 ] as const;
 const modules: ModuleKey[] = ["skills", "agents", "tools", "plugins"];
 const subjectKey = (module: ModuleKey, id: string, version: string) => JSON.stringify([module, id, version]);
+
+test("first-use summaries keep exact release scope and point to retained sources", async () => {
+  for (const note of firstUseNotes) {
+    const registry = await loadRegistry(note.module);
+    const directory = note.module === "tools" ? "tools-mcp" : note.module;
+    const retained = JSON.parse(await fs.readFile(path.resolve("../../releases", directory, note.id, note.version, "registry-entry.json"), "utf8")) as RegistryEntry;
+    const entry: RegistryEntry = {
+      ...projectCurrentCatalogEntry(retained), latest: note.version,
+      versions: registry.skills.find((item) => item.id === note.id)?.versions.filter((release) => release.version === note.version) ?? [],
+    };
+    const original = structuredClone(entry);
+    const content = await loadResourceFirstUse(note.module, entry);
+    for (const source of note.sources) expect(content.files?.has(source), `${note.id}: ${source}`).toBe(true);
+    if (note.sample) {
+      expect(content.files?.get("README.md")).toContain(note.sample.command);
+      expect(content.firstStep).toContain("After file installation");
+    }
+    expect(entry).toEqual(original);
+    expect(findFirstUseNote(note.module, note.id, note.version)).toBe(note);
+    expect(findFirstUseNote(note.module, note.id, "unreviewed-release")).toBeUndefined();
+    expect(findFirstUseNote(note.module === "skills" ? "agents" : "skills", note.id, note.version)).toBeUndefined();
+    expect(findFirstUseNote(note.module, `${note.id}-other`, note.version)).toBeUndefined();
+  }
+});
+
+test("missing first-use information stays explicit and fenced examples do not become inputs", async () => {
+  const source = "# Guide\n\n## Output format\n```md\n## Inputs required\n- A fictitious field in an output template\n```\n\n## Inputs required\n- Supplied export\n\n## Workflow\nContinue";
+  expect(instructionSection(source, ["Inputs required"])).toBe("- Supplied export");
+  const registry = await loadRegistry("skills");
+  const fixture: RegistryEntry = { ...registry.skills[0], id: "fixtures/undocumented-resource", latest: "1.0.0", operational: undefined, requires: undefined };
+  const content = await loadResourceFirstUse("skills", fixture);
+  expect(content.inputs).toContain("Inputs are not documented");
+  expect(content.outputs).toContain("Expected outputs are not documented");
+  expect(content.sample).toBeUndefined();
+});
 
 test("reviewed content has unique retained subjects and usable provenance", async () => {
   const seen = new Set<string>();

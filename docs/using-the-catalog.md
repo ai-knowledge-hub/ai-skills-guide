@@ -44,6 +44,25 @@ in plain language separately from their availability badge:
 
 ## From inspection to operation
 
+Each resource detail starts with purpose, resource form, inputs, outputs,
+prerequisites and a suitable first action. Summaries use current metadata and
+retained release files. Editorial explanations identify an exact module,
+package and version, with their source filenames beside the release link.
+Missing information is shown explicitly.
+
+Instruction packages lead with reading and copying. Applying pasted
+instructions depends on the receiving agent app or chat's supported behaviour.
+Templates lead with inspecting the reference. Integrations lead with reviewing
+setup requirements and access limits. Documented offline samples identify the
+runtime, installed-package working directory, sample input and expected result.
+Sample fixtures and expected outputs are synthetic examples, distinct from
+current execution or provider evidence.
+
+File-installation commands and technical metadata are separate native
+disclosures. Requirements, compatibility notes, helper status and complete
+instructions remain readable without JavaScript. Copy controls require
+JavaScript and clipboard access; selectable text remains available to read.
+
 Detail pages separate the following steps:
 
 1. **File installation** places the package files and generated configuration in

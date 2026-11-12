@@ -171,6 +171,29 @@ a.catalog-card:hover { text-decoration: none; }
 .detail-use-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; margin-top: 18px; }
 .detail-purpose { max-width: 65ch; margin-top: 24px; }
 .detail-purpose h2 { margin-bottom: 4px; font-size: 14px; letter-spacing: 0; }
+.resource-first-use { margin-top: 28px; max-width: 90ch; }
+.resource-use-when { margin-bottom: 24px; font-size: 15px; }
+.resource-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 40px; border-top: 1px solid var(--line); padding-top: 24px; }
+.resource-facts > section > h2, .resource-requirements > h2, .resource-first-step > h2 { margin-bottom: 10px; font-size: 18px; letter-spacing: -.02em; }
+.resource-first-use :is(p, li) { font-size: 15px; line-height: 1.65; }
+.resource-first-use ul { color: var(--ink-soft); padding-left: 18px; margin-block: 0; }
+.resource-first-use li + li { margin-top: 6px; }
+.resource-first-use code { font-family: var(--font-code); font-size: .875em; }
+.resource-requirements { margin-top: 24px; }
+.resource-first-step { margin-top: 28px; }
+.resource-first-step > .button { margin-top: 20px; }
+.first-use-limits { margin-top: 16px; }
+.first-use-limits > summary { color: var(--ink-soft); font-size: 13px; padding-block: 10px; min-height: 44px; }
+.first-use-limits ul { max-width: 76ch; }
+.resource-first-use .resource-summary-source { margin-top: 18px; font-size: 11px; overflow-wrap: anywhere; }
+.resource-summary-source a { text-decoration: underline; text-underline-offset: 3px; }
+.resource-install, .resource-technical { margin-top: 32px; border-top: 1px solid var(--line); }
+.resource-install > summary, .resource-technical > summary { min-height: 54px; padding-block: 16px; font-size: 14px; }
+.resource-install > summary h2 { display: inline; font-size: 14px; letter-spacing: 0; }
+.resource-install .detail-install-lead { margin-top: 0; }
+.resource-technical .detail-grid { margin-top: 0; padding-top: 16px; }
+.resource-evidence > :only-child { grid-column: 1 / -1; max-width: 76ch; }
+@media (max-width: 760px) { .resource-facts { grid-template-columns: 1fr; gap: 24px; } }
 .detail-disclosure { margin-top: 16px; border-block: 1px solid var(--line); }
 .detail-disclosure > summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 18px; min-height: 54px; padding-block: 10px; list-style: none; }
 .detail-disclosure > summary::-webkit-details-marker { display: none; }

@@ -8,7 +8,7 @@ import type { RegistryEntry } from "./registry";
 const maxPreviewFileBytes = 1024 * 1024;
 
 export async function readReleaseFiles(
-  module: "skills" | "agents" | "plugins",
+  module: "skills" | "agents" | "plugins" | "tools-mcp",
   { id, latest }: Pick<RegistryEntry, "id" | "latest">,
   names: string[],
 ) {
@@ -51,12 +51,4 @@ export async function readReleaseFiles(
     throw error;
   }
   return files;
-}
-
-export async function loadSkillInstructions(entry: Pick<RegistryEntry, "id" | "latest">) {
-  const files = await readReleaseFiles("skills", entry, ["SKILL.md"]);
-  if (!files) return null;
-  const source = files.get("SKILL.md");
-  if (!source) throw new Error(`Missing SKILL.md in ${entry.id}@${entry.latest}`);
-  return source;
 }

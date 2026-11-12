@@ -50,7 +50,7 @@ test("unavailable bundled requirements keep previews readable without guessing i
     }
     await writeArchive(path.join(root, "agents", entry.id, entry.latest, "package.tar.gz"), largeClosure);
     const bounded = await loadInstallationGuidance("agents", entry);
-    expect(bounded.unavailable.length).toBeGreaterThan(0);
+    expect(bounded.unavailable).toContain("bundled/tools-mcp/fixtures/tool-5/tool.yaml");
     expect(buildModuleInstallSnippet("agents", entry, "generic", bounded)).toBe("");
   } finally {
     if (previousRoot === undefined) delete process.env.RELEASE_STORE_ROOT;
@@ -58,6 +58,52 @@ test("unavailable bundled requirements keep previews readable without guessing i
     await fs.rm(root, { recursive: true, force: true });
   }
 });
+
+for (const subject of [
+  { module: "agents", id: "marketing/weekly-performance-supervisor" },
+  { module: "plugins", id: "engineering/code-maintenance-plugin" },
+] as const) {
+  test(`${subject.module} withhold commands for missing or mismatched expected closure members`, async () => {
+    const registry = await loadRegistry(subject.module);
+    const entry = registry.skills.find((item) => item.id === subject.id)!;
+    const lockPath = entry.artifact?.dependency_lock;
+    const original = await readReleaseFiles(subject.module, entry, (name) => name === lockPath || /^bundled\/.+\/(skill|agent|tool)\.yaml$/.test(name));
+    const missing = subject.module === "agents"
+      ? ["bundled/tools-mcp/analytics/ga4-mcp-connector/tool.yaml", "bundled/tools-mcp/warehouse/bigquery-mcp-query-runner/tool.yaml"]
+      : [JSON.parse(original!.get(lockPath!)!).components[0].manifest_path as string];
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "missing-closure-"));
+    const previousRoot = process.env.RELEASE_STORE_ROOT;
+    try {
+      // Model partial stores without changing any real retained release.
+      for (const mutation of ["absent", "misnamed", "wrong-version", ...(lockPath ? ["missing-lock", "unlocked-extra"] : [])]) {
+        const files = new Map(original!);
+        if (mutation === "missing-lock") files.delete(lockPath!);
+        else if (mutation === "unlocked-extra") {
+          files.set("bundled/skills/fixtures/extra/skill.yaml", 'schema_version: "1.1"\nid: fixtures/extra\nversion: "0.1.0"\nruntimes: [codex, claude, generic]\n');
+        } else {
+          for (const name of missing) {
+            const source = files.get(name)!;
+            files.delete(name);
+            if (mutation === "misnamed") files.set(name.replace(/yaml$/, "yml"), source);
+            if (mutation === "wrong-version") files.set(name, source.replace(/^version:.*$/m, 'version: "9.9.9"'));
+          }
+        }
+        await writeArchive(path.join(root, subject.module, entry.id, entry.latest, "package.tar.gz"), files);
+        process.env.RELEASE_STORE_ROOT = root;
+        const guidance = await loadInstallationGuidance(subject.module, entry);
+        expect(guidance.unavailable.length, mutation).toBeGreaterThan(0);
+        if (["absent", "misnamed", "wrong-version"].includes(mutation)) {
+          for (const name of missing) expect(guidance.unavailable, mutation).toContain(name);
+        }
+        for (const runtime of ["codex", "claude", "generic"] as const) expect(buildModuleInstallSnippet(subject.module, entry, runtime, guidance)).toBe("");
+      }
+    } finally {
+      if (previousRoot === undefined) delete process.env.RELEASE_STORE_ROOT;
+      else process.env.RELEASE_STORE_ROOT = previousRoot;
+      await fs.rm(root, { recursive: true, force: true });
+    }
+  });
+}
 
 const readmeSubjects: { module: ModuleKey; id: string; document: string; manifest: string }[] = [
   { module: "skills", id: "marketing/meta-google-weekly-performance-review", document: "SKILL.md", manifest: "skill.yaml" },

@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import UsabilityBadge from "@/components/UsabilityBadge";
 import { notFound } from "next/navigation";
 import InstallCommands from "@/components/InstallCommands";
+import InstallationDetails from "@/components/InstallationDetails";
+import ResourceFirstUse from "@/components/ResourceFirstUse";
+import { loadResourceFirstUse } from "@/lib/resourceFirstUse";
 import PluginContents from "@/components/PluginContents";
 import { buildModuleInstallSnippet, getEntryById, loadPluginsRegistry } from "@/lib/registry";
 import { formatCategoryLabel } from "@/lib/categoryLabels";
@@ -30,6 +33,7 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
   }
   const latestVersion = entry.versions.find((v) => v.version === entry.latest) ?? entry.versions[0];
   const packageBasePath = `plugins/${entry.id}`;
+  const firstUse = await loadResourceFirstUse("plugins", entry);
 
   return (
     <main id="main" tabIndex={-1} className="detail-page">
@@ -39,11 +43,12 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
         <p className="meta">{formatCategoryLabel(entry.category)}</p>
         <h1>{entry.name}</h1>
         <p>{entry.description}</p>
-        <p className="meta">{entry.tags.join(", ")}</p>
         <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{resourceFormLabels[entry.usability.execution]}</span><a href="#usability" className="text-link">Requirements &amp; limits</a></div>
-        <PluginContents entry={entry} />
-        <div className="detail-install-lead">
-          <h2 className="meta">{entry.usability.availability === "template-only" ? "Reference composition" : "Install plugin files"}</h2>
+        <ResourceFirstUse entry={entry} content={firstUse}>
+          <PluginContents entry={entry} />
+        </ResourceFirstUse>
+        {firstUse.sample ? <PluginContents entry={entry} /> : null}
+        <InstallationDetails title={entry.usability.availability === "template-only" ? "Reference composition" : "Install plugin files"}>
           <InstallCommands
             compact
             availability={entry.usability.availability}
@@ -70,10 +75,10 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
               ) : null}
             </ul>
           ) : null}
-        </div>
+        </InstallationDetails>
       </article>
 
-      <section className="detail-grid">
+      <section className="detail-grid resource-evidence">
         <UsabilityPanel catalogueCompatibility={entry.catalogueCompatibility} compatibility={entry.compatibility} usability={entry.usability} />
         {entry.capability_readiness?.length ? (
           <article className="card detail-panel">
@@ -104,48 +109,54 @@ export default async function PluginDetailPage({ params }: { params: { id: strin
             })}
           </article>
         ) : null}
-        <ReviewStatus entry={entry} />
-        <article className="card detail-panel">
-          <h2>Metadata</h2>
-          <p><span className="meta">ID:</span> {entry.id}</p>
-          <p><span className="meta">Latest:</span> {entry.latest}</p>
-          <p><span className="meta">Runtimes:</span> {entry.runtimes.join(", ")}</p>
-          {entry.replaced_by ? <p><span className="meta">Replaced by:</span> {entry.replaced_by}</p> : null}
-        </article>
-        <article className="card detail-panel">
-          <h2>Requirements</h2>
-          <p><span className="meta">Secrets:</span> {entry.requires?.secrets?.length ?? 0}</p>
-          <p><span className="meta">Approvals:</span> {entry.requires?.approvals?.length ?? 0}</p>
-          {entry.requires?.secrets?.length ? (
-            <p><span className="meta">Secret names:</span> {entry.requires.secrets.join(", ")}</p>
-          ) : null}
-          {entry.requires?.approvals?.length ? (
-            <p><span className="meta">Approval rules:</span> {entry.requires.approvals.join(", ")}</p>
-          ) : null}
-        </article>
-        <article className="card detail-panel">
-          <h2>Latest Version</h2>
-          <p><span className="meta">Released:</span> {latestVersion?.released_at.slice(0, 10) ?? "n/a"}</p>
-          <p>
-            <span className="meta">Manifest:</span>{" "}
-            {latestVersion ? <a href={latestVersion.manifest_url}>{latestVersion.manifest_url}</a> : "n/a"}
-          </p>
-          <p>
-            <span className="meta">Artifact:</span>{" "}
-            {latestVersion ? <a href={latestVersion.artifact_url}>{latestVersion.artifact_url}</a> : "n/a"}
-          </p>
-        </article>
-        <article className="card detail-panel">
-          <h2>Package Files</h2>
-          <ul>
-            <li><a href={`${REPO_BLOB_BASE}/${packageBasePath}/README.md`}>README.md</a></li>
-            <li><a href={`${REPO_BLOB_BASE}/${packageBasePath}/plugin.yaml`}>plugin.yaml</a></li>
-            <li><a href={`${REPO_BLOB_BASE}/${packageBasePath}/plugin.json`}>plugin.json</a></li>
-            <li><a href={`${REPO_BLOB_BASE}/${packageBasePath}/tests/test-prompts.md`}>tests/test-prompts.md</a></li>
-            <li><a href={`${REPO_BLOB_BASE}/${packageBasePath}/examples/overview.md`}>examples/overview.md</a></li>
-          </ul>
-        </article>
       </section>
+      <details className="resource-technical">
+        <summary>Technical details and release files</summary>
+        <section className="detail-grid">
+          <ReviewStatus entry={entry} />
+          <article className="card detail-panel">
+            <h2>Metadata</h2>
+            <p><span className="meta">ID:</span> {entry.id}</p>
+            <p><span className="meta">Tags:</span> {entry.tags.join(", ")}</p>
+            <p><span className="meta">Latest:</span> {entry.latest}</p>
+            <p><span className="meta">Runtimes:</span> {entry.runtimes.join(", ")}</p>
+            {entry.replaced_by ? <p><span className="meta">Replaced by:</span> {entry.replaced_by}</p> : null}
+          </article>
+          <article className="card detail-panel">
+            <h2>Requirements</h2>
+            <p><span className="meta">Secrets:</span> {entry.requires?.secrets?.length ?? 0}</p>
+            <p><span className="meta">Approvals:</span> {entry.requires?.approvals?.length ?? 0}</p>
+            {entry.requires?.secrets?.length ? (
+              <p><span className="meta">Secret names:</span> {entry.requires.secrets.join(", ")}</p>
+            ) : null}
+            {entry.requires?.approvals?.length ? (
+              <p><span className="meta">Approval rules:</span> {entry.requires.approvals.join(", ")}</p>
+            ) : null}
+          </article>
+          <article className="card detail-panel">
+            <h2>Latest Version</h2>
+            <p><span className="meta">Released:</span> {latestVersion?.released_at.slice(0, 10) ?? "n/a"}</p>
+            <p>
+              <span className="meta">Manifest:</span>{" "}
+              {latestVersion ? <a href={latestVersion.manifest_url}>{latestVersion.manifest_url}</a> : "n/a"}
+            </p>
+            <p>
+              <span className="meta">Artifact:</span>{" "}
+              {latestVersion ? <a href={latestVersion.artifact_url}>{latestVersion.artifact_url}</a> : "n/a"}
+            </p>
+          </article>
+          <article className="card detail-panel">
+            <h2>Package Files</h2>
+            <ul>
+              <li><a href={`${REPO_BLOB_BASE}/${packageBasePath}/README.md`}>README.md</a></li>
+              <li><a href={`${REPO_BLOB_BASE}/${packageBasePath}/plugin.yaml`}>plugin.yaml</a></li>
+              <li><a href={`${REPO_BLOB_BASE}/${packageBasePath}/plugin.json`}>plugin.json</a></li>
+              <li><a href={`${REPO_BLOB_BASE}/${packageBasePath}/tests/test-prompts.md`}>tests/test-prompts.md</a></li>
+              <li><a href={`${REPO_BLOB_BASE}/${packageBasePath}/examples/overview.md`}>examples/overview.md</a></li>
+            </ul>
+          </article>
+        </section>
+      </details>
     </main>
   );
 }

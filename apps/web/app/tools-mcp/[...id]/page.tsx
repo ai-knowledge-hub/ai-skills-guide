@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import UsabilityBadge from "@/components/UsabilityBadge";
 import { notFound } from "next/navigation";
 import InstallCommands from "@/components/InstallCommands";
+import InstallationDetails from "@/components/InstallationDetails";
+import ResourceFirstUse from "@/components/ResourceFirstUse";
+import { loadResourceFirstUse } from "@/lib/resourceFirstUse";
 import DetailDisclosure from "@/components/DetailDisclosure";
+import InstructionMarkdown from "@/components/InstructionMarkdown";
 import { buildModuleInstallSnippet, getEntryById, loadToolsRegistry } from "@/lib/registry";
 import { formatCategoryLabel } from "@/lib/categoryLabels";
 import UsabilityPanel from "@/components/UsabilityPanel";
@@ -29,6 +33,7 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
   }
   const latestVersion = entry.versions.find((v) => v.version === entry.latest) ?? entry.versions[0];
   const relatedGuides = relatedPublicationGuides("tools", entry.id);
+  const firstUse = await loadResourceFirstUse("tools", entry);
   const isReference = entry.usability.availability === "template-only";
   const { connected_system, access_level, capabilities, trust_boundary, approval_boundary, auth_required } = entry.operational ?? {};
   const access = access_level === "read-write" ? "Read and write"
@@ -50,8 +55,14 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
             <p>{accessSummary}</p>
           </div>
         ) : null}
-        <p className="meta">{entry.tags.join(", ")}</p>
         <div className="detail-use-summary"><UsabilityBadge availability={entry.usability.availability} /><span className="meta">{resourceFormLabels[entry.usability.execution]}</span><a href="#usability" className="text-link">Requirements &amp; limits</a>{relatedGuides.length ? <a href="#related-reading" className="text-link">Related reading</a> : null}</div>
+        <ResourceFirstUse entry={entry} content={firstUse}>
+          {isReference ? (
+            <DetailDisclosure show="Read reference guide" hide="Hide reference guide" detail={`TOOL.md · v${entry.latest}`}>
+              {firstUse.files?.get("TOOL.md") ? <InstructionMarkdown source={firstUse.files.get("TOOL.md")!} /> : <p>Reference guide preview is unavailable here. Open the release package for the full content.</p>}
+            </DetailDisclosure>
+          ) : <a className="button" href="#usability">Review setup requirements</a>}
+        </ResourceFirstUse>
         <DetailDisclosure show="View capabilities and access" hide="Hide capabilities and access" detail={`v${entry.latest}`}>
           <section>
             <h2>{isReference ? "Intended capabilities" : "What it can do"}</h2>
@@ -73,8 +84,7 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
             </section>
           ) : null}
         </DetailDisclosure>
-        <div className="detail-install-lead">
-          <h2 className="meta">{isReference ? "Reference template" : "Install tool files"}</h2>
+        <InstallationDetails title={isReference ? "Reference template" : "Install tool files"}>
           <InstallCommands
             compact
             availability={entry.usability.availability}
@@ -83,39 +93,45 @@ export default async function ToolDetailPage({ params }: { params: { id: string[
             claude={buildModuleInstallSnippet("tools", entry, "claude")}
             generic={buildModuleInstallSnippet("tools", entry, "generic")}
           />
-        </div>
+        </InstallationDetails>
       </article>
 
-      <section className="detail-grid">
+      <section className="detail-grid resource-evidence">
         <UsabilityPanel catalogueCompatibility={entry.catalogueCompatibility} compatibility={entry.compatibility} usability={entry.usability} />
         <RelatedReading guides={relatedGuides} module="tools" id={entry.id} />
-        <ReviewStatus entry={entry} />
-        <article className="card detail-panel">
-          <h2>Runtime &amp; Dependencies</h2>
-          <p><span className="meta">ID:</span> {entry.id}</p>
-          <p><span className="meta">Runtimes:</span> {entry.runtimes.join(", ")}</p>
-          {entry.replaced_by ? <p><span className="meta">Replaced by:</span> {entry.replaced_by}</p> : null}
-        </article>
-        <article className="card detail-panel">
-          <h2>Dependencies &amp; Setup</h2>
-          <p><span className="meta">MCP servers:</span> {entry.dependencies?.mcp_servers?.length ? entry.dependencies.mcp_servers.join(", ") : "Not documented"}</p>
-          <p><span className="meta">APIs:</span> {entry.dependencies?.apis?.length ? entry.dependencies.apis.join(", ") : "Not documented"}</p>
-          <p><span className="meta">Local tools:</span> {entry.dependencies?.tools?.length ? entry.dependencies.tools.join(", ") : "Not documented"}</p>
-        </article>
-        <article className="card detail-panel">
-          <h2>Latest Version</h2>
-          <p><span className="meta">Latest:</span> {entry.latest}</p>
-          <p><span className="meta">Released:</span> {latestVersion?.released_at.slice(0, 10) ?? "n/a"}</p>
-          <p>
-            <span className="meta">Manifest:</span>{" "}
-            {latestVersion ? <a href={latestVersion.manifest_url}>{latestVersion.manifest_url}</a> : "n/a"}
-          </p>
-          <p>
-            <span className="meta">Artifact:</span>{" "}
-            {latestVersion ? <a href={latestVersion.artifact_url}>{latestVersion.artifact_url}</a> : "n/a"}
-          </p>
-        </article>
       </section>
+      <details className="resource-technical">
+        <summary>Technical details and release files</summary>
+        <section className="detail-grid">
+          <ReviewStatus entry={entry} />
+          <article className="card detail-panel">
+            <h2>Runtime &amp; Dependencies</h2>
+            <p><span className="meta">ID:</span> {entry.id}</p>
+            <p><span className="meta">Tags:</span> {entry.tags.join(", ")}</p>
+            <p><span className="meta">Runtimes:</span> {entry.runtimes.join(", ")}</p>
+            {entry.replaced_by ? <p><span className="meta">Replaced by:</span> {entry.replaced_by}</p> : null}
+          </article>
+          <article className="card detail-panel">
+            <h2>Dependencies &amp; Setup</h2>
+            <p><span className="meta">MCP servers:</span> {entry.dependencies?.mcp_servers?.length ? entry.dependencies.mcp_servers.join(", ") : "Not documented"}</p>
+            <p><span className="meta">APIs:</span> {entry.dependencies?.apis?.length ? entry.dependencies.apis.join(", ") : "Not documented"}</p>
+            <p><span className="meta">Local tools:</span> {entry.dependencies?.tools?.length ? entry.dependencies.tools.join(", ") : "Not documented"}</p>
+          </article>
+          <article className="card detail-panel">
+            <h2>Latest Version</h2>
+            <p><span className="meta">Latest:</span> {entry.latest}</p>
+            <p><span className="meta">Released:</span> {latestVersion?.released_at.slice(0, 10) ?? "n/a"}</p>
+            <p>
+              <span className="meta">Manifest:</span>{" "}
+              {latestVersion ? <a href={latestVersion.manifest_url}>{latestVersion.manifest_url}</a> : "n/a"}
+            </p>
+            <p>
+              <span className="meta">Artifact:</span>{" "}
+              {latestVersion ? <a href={latestVersion.artifact_url}>{latestVersion.artifact_url}</a> : "n/a"}
+            </p>
+          </article>
+        </section>
+      </details>
     </main>
   );
 }

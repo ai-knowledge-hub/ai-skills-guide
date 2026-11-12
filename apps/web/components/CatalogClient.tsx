@@ -28,6 +28,7 @@ export default function CatalogClient({ entries, categories, tags, basePath, ini
   // updates avoid a server round-trip for data already present in the client.
   useEffect(() => {
     if (timer.current) clearTimeout(timer.current);
+    timer.current = null;
     setQ(query);
   }, [query]);
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
@@ -44,14 +45,27 @@ export default function CatalogClient({ entries, categories, tags, basePath, ini
   function search(value: string) {
     setQ(value);
     if (timer.current) clearTimeout(timer.current);
-    timer.current = setTimeout(() => updateUrl({ q: value.trim() ? [value.trim()] : [] }), 180);
+    timer.current = setTimeout(() => {
+      timer.current = null;
+      updateUrl({ q: value.trim() ? [value.trim()] : [] });
+    }, 180);
+  }
+  function flushSearchBeforeNavigation() {
+    if (!timer.current) return;
+    clearTimeout(timer.current);
+    timer.current = null;
+    // Commit the catalogue's history entry before Link starts its transition.
+    // A delayed replaceState during that transition can cancel navigation.
+    updateUrl({ q: q.trim() ? [q.trim()] : [] });
   }
   function select(kind: FilterKind, values: string[]) {
     if (timer.current) clearTimeout(timer.current);
+    timer.current = null;
     updateUrl({ [kind]: values, q: q.trim() ? [q.trim()] : [] });
   }
   function resetFilters() {
     if (timer.current) clearTimeout(timer.current);
+    timer.current = null;
     setQ("");
     updateUrl({ q: [], tag: [], category: [], runtime: [] });
   }
@@ -88,7 +102,7 @@ export default function CatalogClient({ entries, categories, tags, basePath, ini
     <p className="meta results-count" role="status">{filtered.length} result(s)</p>
     {filtered.length ? <section className="grid" aria-label="Catalogue results">
       {filtered.map(entry => <article key={entry.id} className="card catalog-card">
-        <Link href={`${basePath}/${entry.id}`} className="catalog-card-link">
+        <Link href={`${basePath}/${entry.id}`} className="catalog-card-link" onClick={flushSearchBeforeNavigation}>
           <div className="catalog-card-head"><p className="meta catalog-card-domain">{formatCategoryFamily(entry.category)}</p><UsabilityBadge availability={entry.usability.availability} /></div>
           <h2>{entry.name}</h2><p>{entry.description}</p>
           <p className="meta">{resourceFormLabels[entry.usability.execution]}</p>

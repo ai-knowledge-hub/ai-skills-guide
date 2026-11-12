@@ -90,8 +90,13 @@ showing commands. Choose a declared Codex, Claude or generic adapter to open its
 exact-version HTTPS installation command. Native disclosures keep each option
 readable without JavaScript. Generic commands include an explicit target; native
 adapter defaults and environment overrides are described beside the command.
-Executable packages also name the selected execution environment, which must
-already be available. That declaration does not install or attest the runtime.
+The full retained closure determines executable environments and the intersection
+of supported installer hosts. Agent and plugin dependencies can write other
+module directories, shown beside the target. Installer binary availability is
+separate from package host support: for example, the weekly agent's bundled MCP
+servers exclude Windows. All selected environments must already be available;
+their declarations do not install or attest runtimes. If bundled requirements
+cannot be read, no command is generated from incomplete information.
 Use the reported installed package directory for the documented first-use step,
 and `skills-hub help setup` for the public installer's offline setup guide.
 See [getting started](getting-started.md#install-published-files) for acquisition

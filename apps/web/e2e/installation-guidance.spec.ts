@@ -1,12 +1,14 @@
 import { expect, test } from "@playwright/test";
 import { buildModuleInstallSnippet, loadRegistry, type ModuleKey } from "../lib/registry";
+import { loadInstallationGuidance } from "../lib/installationGuidance";
 
-const subjects: { module: ModuleKey; id: string; directory: string; environment?: string }[] = [
+const subjects: { module: ModuleKey; id: string; directory: string; environments?: string[] }[] = [
   { module: "skills", id: "marketing/meta-google-weekly-performance-review", directory: "skills" },
-  { module: "agents", id: "marketing/weekly-performance-supervisor", directory: "agents" },
-  { module: "plugins", id: "engineering/code-maintenance-plugin", directory: "plugins", environment: "node22" },
-  { module: "tools", id: "analytics/ga4-mcp-connector", directory: "tools-mcp", environment: "node22" },
-  { module: "tools", id: "adtech/openai-ads-api-client", directory: "tools-mcp", environment: "python3" },
+  { module: "agents", id: "marketing/weekly-performance-supervisor", directory: "agents", environments: ["node22"] },
+  { module: "agents", id: "adtech/chatgpt-ads-experiment-supervisor", directory: "agents", environments: ["node22", "python3"] },
+  { module: "plugins", id: "engineering/code-maintenance-plugin", directory: "plugins", environments: ["node22"] },
+  { module: "tools", id: "analytics/ga4-mcp-connector", directory: "tools-mcp", environments: ["node22"] },
+  { module: "tools", id: "adtech/openai-ads-api-client", directory: "tools-mcp", environments: ["python3"] },
 ];
 
 test("published commands pin module releases, HTTPS source, adapter and execution requirements", async () => {
@@ -14,8 +16,10 @@ test("published commands pin module releases, HTTPS source, adapter and executio
     const registry = await loadRegistry(subject.module);
     const entry = registry.skills.find((item) => item.id === subject.id)!;
     const original = structuredClone(entry);
+    const guidance = await loadInstallationGuidance(subject.module, entry);
+    expect(guidance.unavailable).toEqual([]);
     for (const runtime of ["codex", "claude", "generic"] as const) {
-      const command = buildModuleInstallSnippet(subject.module, entry, runtime);
+      const command = buildModuleInstallSnippet(subject.module, entry, runtime, guidance);
       const args = command.split(" ");
       const value = (flag: string) => args[args.indexOf(flag) + 1];
       expect(args.slice(0, 2)).toEqual(["skills-hub", "install"]);
@@ -26,8 +30,13 @@ test("published commands pin module releases, HTTPS source, adapter and executio
       expect(value("--runtime")).toBe(runtime);
       expect(args.includes("--target")).toBe(runtime === "generic");
       if (runtime === "generic") expect(value("--target")).toBe(`./my-agent/${subject.directory}`);
-      expect(args.includes("--execution-runtime")).toBe(!!subject.environment);
-      if (subject.environment) expect(value("--execution-runtime")).toBe(subject.environment);
+      const environments = args.flatMap((arg, index) => arg === "--execution-runtime" ? [args[index + 1]] : []);
+      expect(environments.sort()).toEqual([...(subject.environments ?? [])].sort());
+      // Installer compatibility is an OR per manifest and an AND across the
+      // release closure. Every component must match the selected environment.
+      for (const constraint of guidance.constraints) {
+        expect(constraint.runtimes.some((required) => [runtime, "native", ...environments].includes(required))).toBe(true);
+      }
       expect(command).not.toContain("./bin/");
       expect(command).not.toContain("@latest");
     }
@@ -67,12 +76,33 @@ test("each module shows matching selected commands and target effects", async ({
     await expect(selected.locator("pre.install")).toContainText(`--module ${subject.module}`);
     await expect(selected.locator("pre.install")).toContainText(`--target ./my-agent/${subject.directory}`);
     await expect(selected.getByText(`./my-agent/${subject.directory}/${subject.id}`, { exact: true })).toBeVisible();
-    if (subject.environment) {
-      await expect(selected.locator("pre.install")).toContainText(`--execution-runtime ${subject.environment}`);
-      await expect(selected.getByText(/declares that environment; it does not install it/)).toBeVisible();
+    if (subject.environments?.length) {
+      for (const environment of subject.environments) await expect(selected.locator("pre.install")).toContainText(`--execution-runtime ${environment}`);
+      await expect(selected.getByText(/declares those environments; it does not install them/)).toBeVisible();
     }
-    if (subject.module === "plugins") await expect(selected.getByText(/sibling skill, agent and tool directories/)).toBeVisible();
+    if (subject.module === "agents" || subject.module === "plugins") await expect(selected.locator(".install-closure-effects")).toContainText("./my-agent/skills");
+    if (subject.id === "marketing/weekly-performance-supervisor") await expect(selected.locator(".install-closure-effects")).toContainText("./my-agent/tools-mcp");
   }
+});
+
+test("closure host restrictions are shown before installer acquisition", async ({ page }) => {
+  for (const path of ["/tools-mcp/analytics/ga4-mcp-connector", "/agents/marketing/weekly-performance-supervisor"]) {
+    await page.goto(path);
+    await page.locator(".resource-install > summary").click();
+    await expect(page.locator(".install-hosts")).toContainText("Linux, macOS");
+    await expect(page.locator(".install-hosts")).toContainText("Windows is not supported for this release");
+    expect(await page.locator(".install-hosts").evaluate((element) => !!(element.compareDocumentPosition(document.querySelector(".installer-setup")!) & Node.DOCUMENT_POSITION_FOLLOWING))).toBe(true);
+  }
+});
+
+test("agent constraints follow the retained closure rather than current dependency listings", async () => {
+  const registry = await loadRegistry("agents");
+  const entry = registry.skills.find((item) => item.id === "marketing/weekly-performance-supervisor")!;
+  const guidance = await loadInstallationGuidance("agents", { ...entry, dependencies: undefined });
+  expect(guidance.platforms).toEqual(["linux", "macos"]);
+  expect(guidance.bundledModules).toEqual(["skills", "tools"]);
+  expect(guidance.constraints.map((item) => item.source)).toContain("tools-mcp/analytics/ga4-mcp-connector@0.2.0");
+  expect(guidance.constraints.map((item) => item.source)).toContain("tools-mcp/warehouse/bigquery-mcp-query-runner@0.2.0");
 });
 
 test("native adapter choices and acquisition guidance remain usable without JavaScript", async ({ browser }) => {

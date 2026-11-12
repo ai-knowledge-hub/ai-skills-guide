@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { projectCurrentCatalogEntry } from "./currentCatalogueProjection.mjs";
 import { findCatalogueCompatibility, type CatalogueCompatibility } from "./catalogueCompatibility";
-import { executionRuntimeFor, moduleDirectory } from "./installation";
+import { executionRuntimesFor, moduleDirectory, type InstallationGuidance } from "./installation";
 
 export type ModuleKey = "skills" | "agents" | "tools" | "plugins";
 
@@ -139,6 +139,7 @@ export type RegistryEntry = {
     apis?: string[];
     mcp_servers?: string[];
   };
+  orchestration?: Record<string, unknown>;
   includes?: {
     skills?: string[];
     agents?: string[];
@@ -238,20 +239,22 @@ export async function getSkillById(id: string): Promise<SkillEntry | undefined> 
   return getEntryById("skills", id);
 }
 
-export function buildInstallSnippet(skill: RegistryEntry, runtime: "codex" | "claude" | "generic") {
-  return buildModuleInstallSnippet("skills", skill, runtime);
+export function buildInstallSnippet(skill: RegistryEntry, runtime: "codex" | "claude" | "generic", guidance: InstallationGuidance) {
+  return buildModuleInstallSnippet("skills", skill, runtime, guidance);
 }
 
 export function buildModuleInstallSnippet(
   module: ModuleKey,
   entry: RegistryEntry,
-  runtime: "codex" | "claude" | "generic"
+  runtime: "codex" | "claude" | "generic",
+  guidance: InstallationGuidance,
 ) {
+  if (guidance.unavailable.length || !guidance.adapters.includes(runtime) || guidance.platforms?.length === 0) return "";
   const registry = `https://skills.ai-knowledge-hub.org/registry/${module}-index.json`;
   const base = `skills-hub install --source remote --module ${module} --registry-url ${registry} --entry ${entry.id}@${entry.latest} --runtime ${runtime}`;
   const target = runtime === "generic" ? ` --target ./my-agent/${moduleDirectory(module)}` : "";
-  const executionRuntime = executionRuntimeFor(entry, runtime);
-  return `${base}${target}${executionRuntime ? ` --execution-runtime ${executionRuntime}` : ""}`;
+  const environments = executionRuntimesFor(guidance, runtime).map((value) => ` --execution-runtime ${value}`).join("");
+  return `${base}${target}${environments}`;
 }
 
 export function uniqueValues(values: string[]) {

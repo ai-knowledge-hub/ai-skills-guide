@@ -40,7 +40,18 @@ Confirm your app discovers that location; copying files is not native adoption.
 Claude uses `~/.claude/<module>` with `CLAUDE_HOME`/`CLAUDE_CODE_HOME` overrides.
 Generic requires an explicit `--target` module directory relative to your chosen
 working directory, or an absolute target. Bundle dependencies can also write
-sibling module directories. The installer reports the actual destination.
+sibling module directories. Agent dependency closures can also write sibling
+skills, agents and tools. Review their generated adapter configuration before
+connecting them to your app. The installer reports the actual destinations.
+
+The site derives execution environments and common supported hosts from the
+selected release and the manifests in its retained dependency closure. For
+example, the weekly reporting agent needs Node.js 22 for its bundled GA4 and
+BigQuery servers even though the agent has no executable root entrypoint. These
+dependencies restrict its installer hosts to Linux/macOS; a Windows CLI binary
+does not make that package installable on Windows. Mixed closures may require
+both Node.js and Python. If the complete requirements cannot be read, the site
+withholds a generated command and directs you to inspect the release.
 
 Run `skills-hub help setup` after installation. Follow the resource's documented
 runtime, working directory, inputs and expected output for its first operation.

@@ -4,7 +4,8 @@ import path from "node:path";
 import { gzipSync } from "node:zlib";
 import { pack } from "tar-stream";
 import { expect, test } from "@playwright/test";
-import { loadRegistry, type ModuleKey } from "../lib/registry";
+import { buildModuleInstallSnippet, loadRegistry, type ModuleKey } from "../lib/registry";
+import { loadInstallationGuidance } from "../lib/installationGuidance";
 import { readReleaseFiles } from "../lib/releaseFiles";
 import { firstUseNotes, loadResourceFirstUse } from "../lib/resourceFirstUse";
 
@@ -26,6 +27,37 @@ const unpreviewableExamples = [
   { name: "empty file", content: Buffer.alloc(0) },
   { name: "invalid UTF-8", content: Buffer.from([0xff]) },
 ];
+
+test("unavailable bundled requirements keep previews readable without guessing install commands", async () => {
+  const registry = await loadRegistry("agents");
+  const entry = registry.skills.find((item) => item.id === "marketing/weekly-performance-supervisor")!;
+  const root = await fs.mkdtemp(path.join(os.tmpdir(), "closure-preview-"));
+  const previousRoot = process.env.RELEASE_STORE_ROOT;
+  const filename = "bundled/tools-mcp/analytics/ga4-mcp-connector/tool.yaml";
+  try {
+    for (const example of [...unpreviewableExamples, { name: "invalid YAML", content: Buffer.from("id: [") }]) {
+      await writeArchive(path.join(root, "agents", entry.id, entry.latest, "package.tar.gz"), new Map([[filename, example.content]]));
+      process.env.RELEASE_STORE_ROOT = root;
+      const guidance = await loadInstallationGuidance("agents", entry);
+      expect(guidance.unavailable).toContain(filename);
+      for (const runtime of ["codex", "claude", "generic"] as const) {
+        expect(buildModuleInstallSnippet("agents", entry, runtime, guidance)).toBe("");
+      }
+    }
+    const largeClosure = new Map<string, string>();
+    for (let index = 0; index < 6; index++) {
+      largeClosure.set(`bundled/tools-mcp/fixtures/tool-${index}/tool.yaml`, `schema_version: "2.1"\nid: fixtures/tool-${index}\nversion: "0.1.0"\nruntimes: [codex, claude, generic]\nexecution:\n  kind: script\n  supported_platforms: [linux, macos]\n  supported_runtimes: [node22]\n# ${"x".repeat(800 * 1024)}`);
+    }
+    await writeArchive(path.join(root, "agents", entry.id, entry.latest, "package.tar.gz"), largeClosure);
+    const bounded = await loadInstallationGuidance("agents", entry);
+    expect(bounded.unavailable.length).toBeGreaterThan(0);
+    expect(buildModuleInstallSnippet("agents", entry, "generic", bounded)).toBe("");
+  } finally {
+    if (previousRoot === undefined) delete process.env.RELEASE_STORE_ROOT;
+    else process.env.RELEASE_STORE_ROOT = previousRoot;
+    await fs.rm(root, { recursive: true, force: true });
+  }
+});
 
 const readmeSubjects: { module: ModuleKey; id: string; document: string; manifest: string }[] = [
   { module: "skills", id: "marketing/meta-google-weekly-performance-review", document: "SKILL.md", manifest: "skill.yaml" },

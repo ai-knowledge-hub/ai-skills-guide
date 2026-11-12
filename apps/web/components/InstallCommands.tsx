@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import type { ModuleKey, RegistryEntry } from "@/lib/registry";
-import { executionRuntimeFor, installationTarget, installerRelease, type RuntimeKey } from "@/lib/installation";
+import { executionRuntimesFor, installationTarget, installationModuleTarget, installerRelease, type InstallationGuidance, type RuntimeKey } from "@/lib/installation";
 import { availabilityDescriptions, installationExplanation } from "@/lib/cataloguePresentation";
 
 type InstallCommandsProps = {
@@ -11,10 +11,11 @@ type InstallCommandsProps = {
   generic: string;
   module: ModuleKey;
   entry: Pick<RegistryEntry, "id" | "runtimes" | "usability" | "execution">;
+  guidance: InstallationGuidance;
   compact?: boolean;
 };
 
-export default function InstallCommands({ codex, claude, generic, module, entry, compact = false }: InstallCommandsProps) {
+export default function InstallCommands({ codex, claude, generic, module, entry, guidance, compact = false }: InstallCommandsProps) {
   const { availability, execution } = entry.usability;
   const runtimeGroup = useId();
   const [canCopy, setCanCopy] = useState(false);
@@ -63,9 +64,20 @@ export default function InstallCommands({ codex, claude, generic, module, entry,
     );
   }
 
+  if (guidance.unavailable.length || guidance.platforms?.length === 0) {
+    return <article className={compact ? "install-inline" : "card detail-panel install-card"}>
+      <h3>Review installation requirements</h3>
+      <p>{guidance.unavailable.length ? "The full release requirements could not be read here. Inspect the release package and requirements above before constructing an installation command." : "The release and its bundled dependencies declare no common supported installer host. Review their platform requirements before installation."}</p>
+    </article>;
+  }
+
+  const platformLabels: Record<string, string> = { linux: "Linux", macos: "macOS", windows: "Windows" };
+  const excludedHosts = guidance.platforms ? Object.keys(platformLabels).filter((value) => !guidance.platforms!.includes(value)) : [];
+
   return (
     <article className={compact ? "install-inline" : "card detail-panel install-card"}>
       <p className="install-explanation">{installationExplanation(execution)}</p>
+      <p className="install-hosts">{guidance.platforms ? <><strong>Declared installation hosts · {guidance.platforms.map((value) => platformLabels[value]).join(", ")}</strong>. This includes bundled dependency restrictions.{excludedHosts.length ? <> {excludedHosts.map((value) => platformLabels[value]).join(", ")} {excludedHosts.length === 1 ? "is" : "are"} not supported for this release.</> : null}</> : "No installer host restriction is declared for these files. Confirm native app discovery separately."}</p>
       <section className="installer-setup">
         <h3>1. Get the installer</h3>
         <p>Use the <a href={installerRelease.url}>installation-only CLI {installerRelease.version}</a>. The commands below assume <code>skills-hub</code> is on your PATH; no repository checkout is needed.</p>
@@ -95,18 +107,18 @@ export default function InstallCommands({ codex, claude, generic, module, entry,
         <h3 id={`${runtimeGroup}-heading`}>2. Choose an agent app</h3>
         <p>Open one supported adapter to see its command. Run it from any folder; the generic example uses a target relative to that folder.</p>
         <noscript><p>Select and copy command text directly. Copy buttons require JavaScript.</p></noscript>
-        {rows.filter((row) => entry.runtimes.includes(row.key)).map((row) => {
-          const environment = executionRuntimeFor(entry, row.key);
-          const environmentLabel = environment === "node22" ? "Node.js 22 or newer"
-            : environment === "python3" ? "the package's required Python 3 version" : environment;
+        {rows.filter((row) => guidance.adapters.includes(row.key)).map((row) => {
+          const environments = executionRuntimesFor(guidance, row.key);
+          const environmentLabels = environments.map((environment) => environment === "node22" ? "Node.js 22 or newer"
+            : environment === "python3" ? "the package's required Python 3 version" : environment);
           return (
             <details key={row.key} className="install-runtime-option" {...{ name: runtimeGroup }}>
               <summary>{row.key === "generic" ? "Generic / another app" : row.key === "codex" ? "Codex" : "Claude"}</summary>
               <section className="install-item">
                 <p>Package location · <code>{installationTarget(module, entry.id, row.key)}</code></p>
                 {row.key === "generic" ? <p>Choose your intended module directory in <code>--target</code> before running. The installer appends the package ID beneath it.</p> : <p className="meta">{row.key === "codex" ? "CODEX_HOME can change this root." : "CLAUDE_HOME or CLAUDE_CODE_HOME can change this root."} Confirm that your app discovers this location; <a href="https://github.com/ai-knowledge-hub/ai-skills-guide/issues/52">default-path compatibility remains under verification</a>.</p>}
-                {module === "plugins" ? <p>Bundled dependencies may also write sibling skill, agent and tool directories. Review generated registrations before enabling the plugin.</p> : null}
-                {environment ? <p>Have {environmentLabel} available first. <code>--execution-runtime</code> declares that environment; it does not install it.</p> : null}
+                {guidance.bundledModules.length ? <p className="install-closure-effects">For the shown root, also writes bundled components under {guidance.bundledModules.map((child) => installationModuleTarget(child, row.key)).join(", ")}. {module === "agents" || row.key !== "generic" ? "Review the generated adapter registration/configuration files before connecting the package to your app." : "Connect this plugin directory and its components to your app manually."}</p> : null}
+                {environments.length ? <p>For this command, have {environmentLabels.join(" and ")} available first. <code>--execution-runtime</code> declares those environments; it does not install them.</p> : null}
                 <div className="install-head">
                   <h4>{row.title}</h4>
                   <button
@@ -126,7 +138,7 @@ export default function InstallCommands({ codex, claude, generic, module, entry,
             </details>
           );
         })}
-        {!rows.some((row) => entry.runtimes.includes(row.key)) ? <p>No supported installation adapter is declared for this release.</p> : null}
+        {!rows.some((row) => guidance.adapters.includes(row.key)) ? <p>No common installation adapter is declared for this release and its bundled dependencies.</p> : null}
       </section>
     </article>
   );

@@ -1,3 +1,4 @@
+import { loadInstallationGuidance } from "@/lib/installationGuidance";
 import type { Metadata } from "next";
 import UsabilityBadge from "@/components/UsabilityBadge";
 import { notFound } from "next/navigation";
@@ -32,6 +33,7 @@ export default async function SkillDetailPage({ params }: { params: { id: string
   }
   const relatedGuides = relatedPublicationGuides("skills", skill.id);
   const firstUse = await loadResourceFirstUse("skills", skill);
+  const installation = await loadInstallationGuidance("skills", skill);
   const instructions = firstUse.files?.get("SKILL.md");
 
   return (
@@ -51,9 +53,10 @@ export default async function SkillDetailPage({ params }: { params: { id: string
             compact
             module="skills"
             entry={skill}
-            codex={buildInstallSnippet(skill, "codex")}
-            claude={buildInstallSnippet(skill, "claude")}
-            generic={buildInstallSnippet(skill, "generic")}
+            guidance={installation}
+            codex={buildInstallSnippet(skill, "codex", installation)}
+            claude={buildInstallSnippet(skill, "claude", installation)}
+            generic={buildInstallSnippet(skill, "generic", installation)}
           />
         </InstallationDetails>
       </article>

@@ -230,6 +230,7 @@ a.catalog-card:hover { text-decoration: none; }
 .detail-install-lead > .meta { text-transform: uppercase; letter-spacing: .08em; margin-bottom: 24px; }
 .install-inline { display: grid; gap: 24px; overflow-wrap: anywhere; }
 .install-inline a { text-decoration: underline; text-underline-offset: 3px; }
+.install-hosts { max-width: 76ch; font-size: 14px; line-height: 1.65; }
 .installer-setup, .install-runtime-choices { max-width: 76ch; }
 .installer-setup > h3, .install-runtime-choices > h3 { font-size: 16px; margin-bottom: 12px; }
 .installer-setup p, .install-runtime-choices > p, .install-item > p { font-size: 14px; line-height: 1.65; }

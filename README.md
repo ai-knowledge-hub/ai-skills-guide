@@ -505,6 +505,11 @@ Runtime target defaults:
     or `~/.claude/tools-mcp`)
 - `--runtime generic` -> requires explicit `--target`
 
+The [native Codex discovery check](docs/native-codex-discovery.md) verifies one
+exact published skill with a pinned client, including these legacy defaults and
+explicit user/repository `.agents/skills` targets. Discovery evidence remains
+separate from installation, instruction execution and provider readiness.
+
 ## Contributing
 
 See `CONTRIBUTING.md` and `docs/how-to-contribute-a-skill.md`.

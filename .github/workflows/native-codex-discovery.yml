@@ -1,0 +1,67 @@
+name: Native Codex skill discovery
+
+on:
+  workflow_dispatch:
+    inputs:
+      client_source:
+        description: Released installer or explicitly labelled candidate
+        type: choice
+        default: release
+        options: [release, candidate]
+        required: true
+      cli_release:
+        description: Exact installer tag with binaries, checksums and signed provenance
+        type: string
+        default: v0.4.0-alpha.1
+        required: true
+
+permissions:
+  contents: read
+  attestations: read
+
+jobs:
+  discovery:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Build read-only manifest and receipt verifier
+        env:
+          CGO_ENABLED: '0'
+        run: go build -o bin/published-install-verifier ./cmd/published-install-verifier
+      - name: Build explicit installer candidate
+        if: inputs.client_source == 'candidate'
+        env:
+          CGO_ENABLED: '0'
+        run: make cli-build-test
+      - name: Verify published package discovery with pinned Codex 0.168.0
+        env:
+          CLIENT_SOURCE: ${{ inputs.client_source }}
+          CLI_RELEASE: ${{ inputs.cli_release }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [[ "$CLIENT_SOURCE" == "release" ]]; then
+            python3 scripts/check-native-codex-discovery.py \
+              --cli-release "$CLI_RELEASE" --report output/native-codex/report.json
+          else
+            python3 scripts/check-native-codex-discovery.py \
+              --cli bin/skills-hub-test --report output/native-codex/report.json
+          fi
+      - name: Retain exact-client discovery evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-codex-${{ matrix.os }}-${{ inputs.client_source }}
+          path: output/native-codex/report.json
+          if-no-files-found: warn

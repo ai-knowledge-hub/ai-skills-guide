@@ -1,0 +1,372 @@
+{
+  "schema_version": "native-codex-discovery/v1",
+  "status": "passed",
+  "checked_at": "2026-11-13T08:04:54.955827+00:00",
+  "host": {
+    "os": "Darwin",
+    "architecture": "arm64"
+  },
+  "installer_kind": "release",
+  "package": "engineering/implementation-strategy@0.1.0",
+  "registry_url": "https://skills.ai-knowledge-hub.org/registry/skills-index.json",
+  "codex": {
+    "version": "0.168.0",
+    "archive_url": "https://github.com/openai/codex/releases/download/rust-v0.168.0/codex-aarch64-apple-darwin.tar.gz",
+    "archive_sha256": "c94dffc075ce5527a55d060f35412b45d1c1c1d16306a337dcf0d8e3ecfebc98",
+    "binary_sha256": "1b7ee0f02650f3e2d31f50232699f667a1cbe60f431a57e118f2e785fe372c4b"
+  },
+  "cases": [
+    {
+      "case": "default-user",
+      "status": "passed",
+      "target": "$WORK/default-user/home/.codex/skills",
+      "explicit_target": false,
+      "probes": [
+        {
+          "state": "baseline",
+          "skills": [],
+          "errors": [],
+          "status": "passed"
+        },
+        {
+          "state": "installed",
+          "skills": [
+            {
+              "name": "implementation-strategy",
+              "description": "Read the repository, map impacted files and commands, then write a change strategy before editing code. Use for non-trivial code maintenance tasks or any request that may affect core runtime behavior.",
+              "path": "$WORK/default-user/home/.codex/skills/engineering/implementation-strategy/SKILL.md",
+              "scope": "user",
+              "enabled": true,
+              "pluginId": null
+            }
+          ],
+          "errors": [],
+          "status": "passed"
+        },
+        {
+          "state": "missing",
+          "skills": [],
+          "errors": [],
+          "status": "passed"
+        },
+        {
+          "state": "malformed",
+          "skills": [],
+          "errors": [
+            {
+              "path": "$WORK/default-user/home/.codex/skills/engineering/implementation-strategy/SKILL.md",
+              "message": "missing field `description`"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "state": "restored",
+          "skills": [
+            {
+              "name": "implementation-strategy",
+              "description": "Read the repository, map impacted files and commands, then write a change strategy before editing code. Use for non-trivial code maintenance tasks or any request that may affect core runtime behavior.",
+              "path": "$WORK/default-user/home/.codex/skills/engineering/implementation-strategy/SKILL.md",
+              "scope": "user",
+              "enabled": true,
+              "pluginId": null
+            }
+          ],
+          "errors": [],
+          "status": "passed"
+        }
+      ],
+      "initialize": {
+        "userAgent": "skills_hub_discovery_check/0.168.0 (Mac OS 26.6.2; arm64) unknown (skills_hub_discovery_check; 0.1.0)",
+        "codexHome": "$WORK/default-user/home/.codex",
+        "platformFamily": "unix",
+        "platformOs": "macos"
+      },
+      "payload_sha256": "7e65be96fd5a03612e4ff681f08c3eb7d3b55e29bee7693716e6df32ebe7ccec",
+      "receipt_verified": true
+    },
+    {
+      "case": "explicit-user",
+      "status": "passed",
+      "target": "$WORK/explicit-user/home/.agents/skills",
+      "explicit_target": true,
+      "probes": [
+        {
+          "state": "baseline",
+          "skills": [],
+          "errors": [],
+          "status": "passed"
+        },
+        {
+          "state": "installed",
+          "skills": [
+            {
+              "name": "implementation-strategy",
+              "description": "Read the repository, map impacted files and commands, then write a change strategy before editing code. Use for non-trivial code maintenance tasks or any request that may affect core runtime behavior.",
+              "path": "$WORK/explicit-user/home/.agents/skills/engineering/implementation-strategy/SKILL.md",
+              "scope": "user",
+              "enabled": true,
+              "pluginId": null
+            }
+          ],
+          "errors": [],
+          "status": "passed"
+        },
+        {
+          "state": "missing",
+          "skills": [],
+          "errors": [],
+          "status": "passed"
+        },
+        {
+          "state": "malformed",
+          "skills": [],
+          "errors": [
+            {
+              "path": "$WORK/explicit-user/home/.agents/skills/engineering/implementation-strategy/SKILL.md",
+              "message": "missing field `description`"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "state": "restored",
+          "skills": [
+            {
+              "name": "implementation-strategy",
+              "description": "Read the repository, map impacted files and commands, then write a change strategy before editing code. Use for non-trivial code maintenance tasks or any request that may affect core runtime behavior.",
+              "path": "$WORK/explicit-user/home/.agents/skills/engineering/implementation-strategy/SKILL.md",
+              "scope": "user",
+              "enabled": true,
+              "pluginId": null
+            }
+          ],
+          "errors": [],
+          "status": "passed"
+        }
+      ],
+      "initialize": {
+        "userAgent": "skills_hub_discovery_check/0.168.0 (Mac OS 26.6.2; arm64) unknown (skills_hub_discovery_check; 0.1.0)",
+        "codexHome": "$WORK/explicit-user/home/.codex",
+        "platformFamily": "unix",
+        "platformOs": "macos"
+      },
+      "payload_sha256": "7e65be96fd5a03612e4ff681f08c3eb7d3b55e29bee7693716e6df32ebe7ccec",
+      "receipt_verified": true
+    },
+    {
+      "case": "explicit-repository",
+      "status": "passed",
+      "target": "$WORK/explicit-repository/repository/.agents/skills",
+      "explicit_target": true,
+      "probes": [
+        {
+          "state": "baseline",
+          "skills": [],
+          "errors": [],
+          "status": "passed"
+        },
+        {
+          "state": "installed",
+          "skills": [
+            {
+              "name": "implementation-strategy",
+              "description": "Read the repository, map impacted files and commands, then write a change strategy before editing code. Use for non-trivial code maintenance tasks or any request that may affect core runtime behavior.",
+              "path": "$WORK/explicit-repository/repository/.agents/skills/engineering/implementation-strategy/SKILL.md",
+              "scope": "repo",
+              "enabled": true,
+              "pluginId": null
+            }
+          ],
+          "errors": [],
+          "status": "passed"
+        },
+        {
+          "state": "missing",
+          "skills": [],
+          "errors": [],
+          "status": "passed"
+        },
+        {
+          "state": "malformed",
+          "skills": [],
+          "errors": [
+            {
+              "path": "$WORK/explicit-repository/repository/.agents/skills/engineering/implementation-strategy/SKILL.md",
+              "message": "missing field `description`"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "state": "restored",
+          "skills": [
+            {
+              "name": "implementation-strategy",
+              "description": "Read the repository, map impacted files and commands, then write a change strategy before editing code. Use for non-trivial code maintenance tasks or any request that may affect core runtime behavior.",
+              "path": "$WORK/explicit-repository/repository/.agents/skills/engineering/implementation-strategy/SKILL.md",
+              "scope": "repo",
+              "enabled": true,
+              "pluginId": null
+            }
+          ],
+          "errors": [],
+          "status": "passed"
+        }
+      ],
+      "initialize": {
+        "userAgent": "skills_hub_discovery_check/0.168.0 (Mac OS 26.6.2; arm64) unknown (skills_hub_discovery_check; 0.1.0)",
+        "codexHome": "$WORK/explicit-repository/home/.codex",
+        "platformFamily": "unix",
+        "platformOs": "macos"
+      },
+      "payload_sha256": "7e65be96fd5a03612e4ff681f08c3eb7d3b55e29bee7693716e6df32ebe7ccec",
+      "receipt_verified": true
+    },
+    {
+      "case": "codex-home",
+      "status": "passed",
+      "target": "$WORK/codex-home/legacy codex home/skills",
+      "explicit_target": false,
+      "probes": [
+        {
+          "state": "baseline",
+          "skills": [],
+          "errors": [],
+          "status": "passed"
+        },
+        {
+          "state": "installed",
+          "skills": [
+            {
+              "name": "implementation-strategy",
+              "description": "Read the repository, map impacted files and commands, then write a change strategy before editing code. Use for non-trivial code maintenance tasks or any request that may affect core runtime behavior.",
+              "path": "$WORK/codex-home/legacy codex home/skills/engineering/implementation-strategy/SKILL.md",
+              "scope": "user",
+              "enabled": true,
+              "pluginId": null
+            }
+          ],
+          "errors": [],
+          "status": "passed"
+        },
+        {
+          "state": "missing",
+          "skills": [],
+          "errors": [],
+          "status": "passed"
+        },
+        {
+          "state": "malformed",
+          "skills": [],
+          "errors": [
+            {
+              "path": "$WORK/codex-home/legacy codex home/skills/engineering/implementation-strategy/SKILL.md",
+              "message": "missing field `description`"
+            }
+          ],
+          "status": "passed"
+        },
+        {
+          "state": "restored",
+          "skills": [
+            {
+              "name": "implementation-strategy",
+              "description": "Read the repository, map impacted files and commands, then write a change strategy before editing code. Use for non-trivial code maintenance tasks or any request that may affect core runtime behavior.",
+              "path": "$WORK/codex-home/legacy codex home/skills/engineering/implementation-strategy/SKILL.md",
+              "scope": "user",
+              "enabled": true,
+              "pluginId": null
+            }
+          ],
+          "errors": [],
+          "status": "passed"
+        }
+      ],
+      "initialize": {
+        "userAgent": "skills_hub_discovery_check/0.168.0 (Mac OS 26.6.2; arm64) unknown (skills_hub_discovery_check; 0.1.0)",
+        "codexHome": "$WORK/codex-home/legacy codex home",
+        "platformFamily": "unix",
+        "platformOs": "macos"
+      },
+      "payload_sha256": "7e65be96fd5a03612e4ff681f08c3eb7d3b55e29bee7693716e6df32ebe7ccec",
+      "receipt_verified": true
+    },
+    {
+      "case": "unregistered-target",
+      "status": "passed",
+      "target": "$WORK/unregistered-target/unregistered skills",
+      "explicit_target": true,
+      "probes": [
+        {
+          "state": "baseline",
+          "skills": [],
+          "errors": [],
+          "status": "passed"
+        },
+        {
+          "state": "unregistered",
+          "skills": [],
+          "errors": [],
+          "status": "passed"
+        }
+      ],
+      "initialize": {
+        "userAgent": "skills_hub_discovery_check/0.168.0 (Mac OS 26.6.2; arm64) unknown (skills_hub_discovery_check; 0.1.0)",
+        "codexHome": "$WORK/unregistered-target/home/.codex",
+        "platformFamily": "unix",
+        "platformOs": "macos"
+      },
+      "payload_sha256": "7e65be96fd5a03612e4ff681f08c3eb7d3b55e29bee7693716e6df32ebe7ccec",
+      "receipt_verified": true
+    }
+  ],
+  "scope": "native discovery only; no model turn, skill execution or readiness promotion",
+  "release": {
+    "tag": "v0.4.0-alpha.1",
+    "url": "https://github.com/ai-knowledge-hub/ai-skills-guide/releases/tag/v0.4.0-alpha.1",
+    "assets": [
+      "SHA256SUMS",
+      "skills-hub_v0.4.0-alpha.1_darwin_amd64",
+      "skills-hub_v0.4.0-alpha.1_darwin_arm64",
+      "skills-hub_v0.4.0-alpha.1_linux_amd64",
+      "skills-hub_v0.4.0-alpha.1_linux_arm64",
+      "skills-hub_v0.4.0-alpha.1_provenance.json",
+      "skills-hub_v0.4.0-alpha.1_windows_amd64.exe",
+      "skills-hub_v0.4.0-alpha.1_windows_arm64.exe"
+    ],
+    "checksum_and_provenance": "passed"
+  },
+  "installer_sha256": "1e26906d6f2e7fba2b3807953683a47f9caa5b6e59db15c41bc5f3ec08f9f34e",
+  "verifier_sha256": "23adf56725a6d522fa95dcfe6a8030575f1c8b06293605930869a592d76a66b9",
+  "pinned_manifest": {
+    "id": "engineering/implementation-strategy",
+    "version": "0.1.0",
+    "runtimes": [
+      "codex",
+      "claude",
+      "generic"
+    ],
+    "runtime_contract_sha256": "695b5bccd308e33ab968c5673c3fc37b84ad7d18af13a85e141e3dc627cda6b0",
+    "name": "Implementation Strategy",
+    "description": "Plan repo-aware code changes before editing by mapping scope, commands, risks, and likely side effects."
+  },
+  "registry_sha256": "31b3310d93073e9f89d674bc604d75fbf40f188bab94442add2ba23ffa9279ec",
+  "selected_release": {
+    "version": "0.1.0",
+    "released_at": "2026-03-19T00:00:00Z",
+    "manifest_url": "https://skills.ai-knowledge-hub.org/release-manifests/skills/engineering/implementation-strategy/0.1.0.yaml",
+    "manifest_sha256": "79bbfdb791b739c6fa8396ba27fb3de48354707f00932221f0e4b1f55e2ab199",
+    "artifact_url": "https://skills.ai-knowledge-hub.org/artifacts/engineering/implementation-strategy/0.1.0.tar.gz",
+    "sha256": "6e0946ab1e76fc8769171fa874f8cd4373e47655559a26c90cca4914efe5ab72"
+  },
+  "published_files": {
+    "README.md": "4589fc48729e8e42cd55cd7d626577973515e7ef351d425274cde2c01c39d0de",
+    "SKILL.md": "b06bf3e43f62774787484a04e7293e414f71fe7222202a51dc475898a633cc9b",
+    "config/repo-intake-checklist.yaml": "03b2326fa67b6f54e57d2fd8d0f35cb1b8618df92ca13605ee2c43f45054963c",
+    "examples/input.json": "3ba8fad01c2dd872b9a993e3a0eac2d2cc479b332624cd9f8ab464cc6e1e03de",
+    "examples/output.json": "f73acc8122a1f67594f66b1846eda72d189f027ac109e239887e91510e50785e",
+    "skill.yaml": "79bbfdb791b739c6fa8396ba27fb3de48354707f00932221f0e4b1f55e2ab199",
+    "tests/test-prompts.md": "fed9eb01d1b194f09c6c65acd2a46005c172d244b4a923ef6e64818c362f6bbf"
+  }
+}

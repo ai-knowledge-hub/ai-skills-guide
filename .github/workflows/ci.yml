@@ -27,6 +27,8 @@ jobs:
           cache: true
       - name: Test published-install evidence checks with local fixtures
         run: python3 -m unittest discover -s scripts/tests -p 'test_published_install.py'
+      - name: Test native Codex discovery evidence boundaries without downloads or model calls
+        run: python3 -m unittest discover -s scripts/tests -p 'test_native_codex_discovery.py'
       - name: Test Windows delivery boundaries with local fixtures
         run: python3 -m unittest discover -s scripts/tests -p 'test_published_windows.py'
       - uses: actions/setup-node@v4

@@ -18,6 +18,10 @@ The separately pinned `code-maintenance` sample verifies a self-contained plugin
 and its activated skill closure; see [published plugin verification](published-plugin-verification.md).
 Released-client instruction dispatches also run on Windows AMD64; see
 [Windows verification scope and evidence](published-windows-verification.md).
+The separate [native Codex discovery check](native-codex-discovery.md) uses the
+same exact instruction release and verifies actual client-reported discovery,
+including default and explicit targets. It does not expand this delivery-only
+check into native execution or provider readiness.
 
 ## Client provenance is explicit
 

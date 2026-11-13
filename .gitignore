@@ -38,3 +38,4 @@ apps/web/public/tools-mcp/
 # Local visual review evidence
 /output/playwright/
 /output/published-install/
+/output/native-codex/

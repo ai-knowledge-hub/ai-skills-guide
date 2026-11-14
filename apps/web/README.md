@@ -12,7 +12,7 @@ pnpm dev
 
 Then open `http://localhost:3000`.
 
-## E2E smoke tests (Playwright)
+## Browser verification (Playwright)
 
 First-time setup downloads the browser binary:
 
@@ -27,12 +27,24 @@ Run tests:
 pnpm test:e2e
 ```
 
-Current smoke coverage:
+The suite covers:
 
 - home module navigation
 - skills catalog and skill detail
 - agents catalog and agent detail
+- plugins catalog, template/bundle comparison and plugin detail
 - tools-mcp catalog and tool detail
+- browsing-to-first-use tasks, copy failure recovery and evidence limits
+- family navigation, optional companions, filter/history/theme recovery
+- 320px, 390px and desktop layouts, keyboard, reduced motion and no-JavaScript reading
+
+To check a production build, run `pnpm build` and `pnpm start` before the
+tests. Local tests reuse the server on port 3000; otherwise Playwright starts
+the dev server. `PLAYWRIGHT_BROWSER_CHANNEL=chrome pnpm test:e2e` selects an
+installed Chrome when the pinned Chromium cannot run on the host. Keep native
+browser 200%/400% zoom inspection separate from viewport-size emulation. See
+`docs/reviews/catalogue-task-acceptance-2026-11-12.md` at the repository root
+for the bounded acceptance results and residual verification limits.
 
 ## Build
 
@@ -60,5 +72,7 @@ extraction and admission checks before indexing.
 - `/skills/<category>/<slug>` skill details with install snippets and an expandable `SKILL.md` preview from the same retained release archive
 - `/agents` catalog with filters
 - `/agents/<category>/<slug>` agent details
+- `/plugins` catalog with filters
+- `/plugins/<category>/<slug>` plugin details and contents
 - `/tools-mcp` catalog with filters
 - `/tools-mcp/<category>/<slug>` tool and MCP details
